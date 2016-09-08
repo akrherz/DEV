@@ -1,0 +1,432 @@
+import calendar
+import pandas as pd
+import matplotlib.pyplot as plt
+from StringIO import StringIO
+
+data = """month|word|count
+ 200011 | MAY  |    36
+ 200011 | WILL |   103
+ 200012 | MAY  |    52
+ 200012 | WILL |   404
+ 200101 | MAY  |    62
+ 200101 | WILL |   443
+ 200102 | MAY  |   125
+ 200102 | WILL |   639
+ 200103 | MAY  |   178
+ 200103 | WILL |   746
+ 200104 | MAY  |   217
+ 200104 | WILL |   900
+ 200105 | MAY  |   257
+ 200105 | WILL |  1293
+ 200106 | MAY  |   287
+ 200106 | WILL |  1050
+ 200107 | MAY  |   376
+ 200107 | WILL |  1572
+ 200108 | MAY  |   500
+ 200108 | WILL |  1831
+ 200109 | MAY  |   386
+ 200109 | WILL |  1428
+ 200110 | MAY  |   248
+ 200110 | WILL |  1115
+ 200111 | MAY  |   201
+ 200111 | WILL |   775
+ 200112 | MAY  |    90
+ 200112 | WILL |   365
+ 200201 | MAY  |   111
+ 200201 | WILL |   505
+ 200202 | MAY  |    71
+ 200202 | WILL |   401
+ 200203 | MAY  |   114
+ 200203 | WILL |   762
+ 200204 | MAY  |   205
+ 200204 | WILL |   888
+ 200205 | MAY  |   214
+ 200205 | WILL |   847
+ 200206 | MAY  |    39
+ 200206 | WILL |   230
+ 200207 | MAY  |    86
+ 200207 | WILL |   401
+ 200208 | MAY  |   191
+ 200208 | WILL |   705
+ 200209 | MAY  |   187
+ 200209 | WILL |   705
+ 200210 | MAY  |   134
+ 200210 | WILL |   694
+ 200211 | MAY  |   115
+ 200211 | WILL |   463
+ 200212 | MAY  |    75
+ 200212 | WILL |   333
+ 200301 | MAY  |    46
+ 200301 | WILL |   304
+ 200302 | MAY  |   100
+ 200302 | WILL |   538
+ 200303 | MAY  |   115
+ 200303 | WILL |   591
+ 200304 | MAY  |   178
+ 200304 | WILL |   937
+ 200305 | MAY  |   233
+ 200305 | WILL |  1256
+ 200306 | MAY  |   173
+ 200306 | WILL |  1090
+ 200307 | MAY  |   274
+ 200307 | WILL |  1150
+ 200308 | MAY  |   316
+ 200308 | WILL |  1394
+ 200309 | MAY  |   193
+ 200309 | WILL |  1178
+ 200310 | MAY  |   140
+ 200310 | WILL |  1011
+ 200311 | MAY  |   128
+ 200311 | WILL |  1042
+ 200312 | MAY  |   106
+ 200312 | WILL |   878
+ 200401 | MAY  |   117
+ 200401 | WILL |   840
+ 200402 | MAY  |   112
+ 200402 | WILL |   941
+ 200403 | MAY  |   221
+ 200403 | WILL |  1129
+ 200404 | MAY  |   258
+ 200404 | WILL |  1366
+ 200405 | MAY  |   271
+ 200405 | WILL |  1539
+ 200406 | MAY  |   303
+ 200406 | WILL |  1440
+ 200407 | MAY  |   227
+ 200407 | WILL |   952
+ 200408 | MAY  |   279
+ 200408 | WILL |  1454
+ 200409 | MAY  |   191
+ 200409 | WILL |   981
+ 200410 | MAY  |   210
+ 200410 | WILL |  1080
+ 200411 | MAY  |   117
+ 200411 | WILL |   699
+ 200412 | MAY  |    85
+ 200412 | WILL |   625
+ 200501 | MAY  |   127
+ 200501 | WILL |   749
+ 200502 | MAY  |   106
+ 200502 | WILL |   819
+ 200503 | MAY  |   181
+ 200503 | WILL |  1010
+ 200504 | MAY  |   280
+ 200504 | WILL |  1343
+ 200505 | MAY  |   239
+ 200505 | WILL |  1109
+ 200506 | MAY  |   203
+ 200506 | WILL |   941
+ 200507 | MAY  |   291
+ 200507 | WILL |  1218
+ 200508 | MAY  |   231
+ 200508 | WILL |  1121
+ 200509 | MAY  |   288
+ 200509 | WILL |  1274
+ 200510 | MAY  |   163
+ 200510 | WILL |  1003
+ 200511 | MAY  |   128
+ 200511 | WILL |   934
+ 200512 | MAY  |    88
+ 200512 | WILL |   791
+ 200601 | MAY  |   141
+ 200601 | WILL |   956
+ 200602 | MAY  |   123
+ 200602 | WILL |   616
+ 200603 | MAY  |   233
+ 200603 | WILL |   945
+ 200604 | MAY  |   255
+ 200604 | WILL |   997
+ 200605 | MAY  |   264
+ 200605 | WILL |  1058
+ 200606 | MAY  |   271
+ 200606 | WILL |  1091
+ 200607 | MAY  |   287
+ 200607 | WILL |  1103
+ 200608 | MAY  |   285
+ 200608 | WILL |  1083
+ 200609 | MAY  |   219
+ 200609 | WILL |   907
+ 200610 | MAY  |   189
+ 200610 | WILL |   786
+ 200611 | MAY  |   144
+ 200611 | WILL |   624
+ 200612 | MAY  |   100
+ 200612 | WILL |   514
+ 200701 | MAY  |   104
+ 200701 | WILL |   499
+ 200702 | MAY  |   105
+ 200702 | WILL |   561
+ 200703 | MAY  |   199
+ 200703 | WILL |   842
+ 200704 | MAY  |   215
+ 200704 | WILL |  1046
+ 200705 | MAY  |   303
+ 200705 | WILL |  1247
+ 200706 | MAY  |   367
+ 200706 | WILL |  1184
+ 200707 | MAY  |   388
+ 200707 | WILL |  1266
+ 200708 | MAY  |   364
+ 200708 | WILL |  1082
+ 200709 | MAY  |   192
+ 200709 | WILL |   982
+ 200710 | MAY  |   185
+ 200710 | WILL |   779
+ 200711 | MAY  |    85
+ 200711 | WILL |   535
+ 200712 | MAY  |    42
+ 200712 | WILL |   198
+ 200801 | MAY  |    94
+ 200801 | WILL |   439
+ 200802 | MAY  |   138
+ 200802 | WILL |   752
+ 200803 | MAY  |   133
+ 200803 | WILL |   891
+ 200804 | MAY  |   169
+ 200804 | WILL |   903
+ 200805 | MAY  |   244
+ 200805 | WILL |  1264
+ 200806 | MAY  |   225
+ 200806 | WILL |  1160
+ 200807 | MAY  |   299
+ 200807 | WILL |  1171
+ 200808 | MAY  |   303
+ 200808 | WILL |  1211
+ 200809 | MAY  |    10
+ 200809 | WILL |    45
+ 200812 | MAY  |    42
+ 200812 | WILL |   139
+ 200901 | MAY  |    67
+ 200901 | WILL |   545
+ 200902 | MAY  |   111
+ 200902 | WILL |   741
+ 200903 | MAY  |   181
+ 200903 | WILL |   958
+ 200904 | MAY  |   305
+ 200904 | WILL |  1354
+ 200905 | MAY  |   419
+ 200905 | WILL |  1492
+ 200906 | MAY  |   307
+ 200906 | WILL |  1673
+ 200907 | MAY  |   288
+ 200907 | WILL |  1514
+ 200908 | MAY  |   255
+ 200908 | WILL |  1314
+ 200909 | MAY  |   189
+ 200909 | WILL |   938
+ 200910 | MAY  |   192
+ 200910 | WILL |   919
+ 200911 | MAY  |   117
+ 200911 | WILL |   493
+ 200912 | MAY  |   132
+ 200912 | WILL |   779
+ 201001 | MAY  |   115
+ 201001 | WILL |   654
+ 201002 | MAY  |   101
+ 201002 | WILL |   561
+ 201003 | MAY  |   173
+ 201003 | WILL |   917
+ 201004 | MAY  |   158
+ 201004 | WILL |  1036
+ 201005 | MAY  |   293
+ 201005 | WILL |  1402
+ 201006 | MAY  |   306
+ 201006 | WILL |  1362
+ 201007 | MAY  |   287
+ 201007 | WILL |  1408
+ 201008 | MAY  |   219
+ 201008 | WILL |  1377
+ 201009 | MAY  |   190
+ 201009 | WILL |  1089
+ 201010 | MAY  |   133
+ 201010 | WILL |   779
+ 201011 | MAY  |   109
+ 201011 | WILL |   689
+ 201012 | MAY  |    74
+ 201012 | WILL |   673
+ 201101 | MAY  |    66
+ 201101 | WILL |   606
+ 201102 | MAY  |   107
+ 201102 | WILL |   595
+ 201103 | MAY  |   184
+ 201103 | WILL |   914
+ 201104 | MAY  |   218
+ 201104 | WILL |  1276
+ 201105 | MAY  |   361
+ 201105 | WILL |  1319
+ 201106 | MAY  |   257
+ 201106 | WILL |  1548
+ 201107 | MAY  |   321
+ 201107 | WILL |  1443
+ 201108 | MAY  |   241
+ 201108 | WILL |  1314
+ 201109 | MAY  |   182
+ 201109 | WILL |  1149
+ 201110 | MAY  |   181
+ 201110 | WILL |   947
+ 201111 | MAY  |   125
+ 201111 | WILL |   790
+ 201112 | MAY  |   134
+ 201112 | WILL |   818
+ 201201 | MAY  |   122
+ 201201 | WILL |   818
+ 201202 | MAY  |   164
+ 201202 | WILL |   882
+ 201203 | MAY  |   205
+ 201203 | WILL |  1206
+ 201204 | MAY  |   225
+ 201204 | WILL |  1333
+ 201205 | MAY  |   381
+ 201205 | WILL |  1462
+ 201206 | MAY  |   369
+ 201206 | WILL |  1557
+ 201207 | MAY  |   379
+ 201207 | WILL |  1675
+ 201208 | MAY  |   291
+ 201208 | WILL |  1346
+ 201209 | MAY  |   249
+ 201209 | WILL |  1142
+ 201210 | MAY  |   206
+ 201210 | WILL |   962
+ 201211 | MAY  |   111
+ 201211 | WILL |   609
+ 201212 | MAY  |   140
+ 201212 | WILL |   955
+ 201301 | MAY  |    90
+ 201301 | WILL |   757
+ 201302 | MAY  |   159
+ 201302 | WILL |   748
+ 201303 | MAY  |   198
+ 201303 | WILL |   803
+ 201304 | MAY  |   268
+ 201304 | WILL |  1166
+ 201305 | MAY  |   369
+ 201305 | WILL |  1306
+ 201306 | MAY  |   303
+ 201306 | WILL |  1456
+ 201307 | MAY  |   329
+ 201307 | WILL |  1393
+ 201308 | MAY  |   322
+ 201308 | WILL |  1333
+ 201309 | MAY  |   233
+ 201309 | WILL |   950
+ 201310 | MAY  |   195
+ 201310 | WILL |   908
+ 201311 | MAY  |   110
+ 201311 | WILL |   680
+ 201312 | MAY  |   104
+ 201312 | WILL |   739
+ 201401 | MAY  |    94
+ 201401 | WILL |   573
+ 201402 | MAY  |   137
+ 201402 | WILL |   735
+ 201403 | MAY  |   203
+ 201403 | WILL |   965
+ 201404 | MAY  |   270
+ 201404 | WILL |  1274
+ 201405 | MAY  |   429
+ 201405 | WILL |  1367
+ 201406 | MAY  |   375
+ 201406 | WILL |  1639
+ 201407 | MAY  |   402
+ 201407 | WILL |  1509
+ 201408 | MAY  |   344
+ 201408 | WILL |  1363
+ 201409 | MAY  |   267
+ 201409 | WILL |  1050
+ 201410 | MAY  |   242
+ 201410 | WILL |  1020
+ 201411 | MAY  |   165
+ 201411 | WILL |   772
+ 201412 | MAY  |   129
+ 201412 | WILL |   830
+ 201501 | MAY  |   120
+ 201501 | WILL |   599
+ 201502 | MAY  |   136
+ 201502 | WILL |   644
+ 201503 | MAY  |   259
+ 201503 | WILL |   902
+ 201504 | MAY  |   321
+ 201504 | WILL |  1264
+ 201505 | MAY  |   314
+ 201505 | WILL |  1305
+ 201506 | MAY  |   348
+ 201506 | WILL |  1432
+ 201507 | MAY  |   356
+ 201507 | WILL |  1332
+ 201508 | MAY  |   339
+ 201508 | WILL |  1093
+ 201509 | MAY  |   225
+ 201509 | WILL |   786
+ 201510 | MAY  |   220
+ 201510 | WILL |   828
+ 201511 | MAY  |   143
+ 201511 | WILL |   768
+ 201512 | MAY  |   164
+ 201512 | WILL |   828
+ 201601 | MAY  |   134
+ 201601 | WILL |   690
+ 201602 | MAY  |   119
+ 201602 | WILL |   701
+ 201603 | MAY  |   291
+ 201603 | WILL |  1101
+ 201604 | MAY  |   253
+ 201604 | WILL |  1053
+ 201605 | MAY  |   385
+ 201605 | WILL |  1267
+ 201606 | MAY  |   323
+ 201606 | WILL |  1310
+ 201607 | MAY  |   117
+ 201607 | WILL |   295
+ 200810 | WILL | 1211
+ 200810 | MAY  | 303
+ 200811 | WILL | 1211
+ 200811 | MAY  | 303
+"""
+
+df = pd.read_csv(StringIO(data.replace(" ", "")), sep='|')
+df['date'] = df['month'].astype(str) + "01"
+df['date'] = pd.to_datetime(df['date'])
+df.drop('month', axis=1, inplace=True)
+jdf = df.pivot(index='date', columns='word', values='count')
+jdf['ratio'] = jdf['WILL'] / jdf['MAY']
+overall = jdf['WILL'].sum() / float(jdf['MAY'].sum())
+s = pd.rolling_mean(jdf['ratio'], window=12)
+jdf['month'] = jdf.index.month
+
+(fig, ax) = plt.subplots(2, 1)
+ax[0].bar(jdf.index.values, jdf['ratio'], width=31, ec='tan', fc='tan',
+          align='center')
+ax[0].plot(s.index.values, s.values, lw=2, color='k', zorder=5,
+           label='12mon trailing avg')
+ax[0].grid(True)
+ax[0].axhline(overall, color='r', lw=2, label='Avg', zorder=4)
+ax[0].legend(loc=4, fontsize=10, ncol=2)
+ax[0].text(0.5, 0.92, "Monthly", transform=ax[0].transAxes, ha='center',
+           va='center', bbox=dict(color='white'))
+ax[0].set_ylabel("Ratio ('WILL' / 'MAY')")
+fig.text(0.5, 0.95, ("2001-2016 Storm Prediction Center Day1 Outlook Text\n"
+                     "Ratio of the words 'WILL' vs 'MAY' appearing "
+                     "in the text, Avg: %.1f"
+                     ) % (overall,),
+         ha='center', va='center')
+
+
+g = jdf.groupby('month').sum()
+g['ratio'] = g['WILL'] / g['MAY']
+print g
+print g['WILL'].sum() / float(g['MAY'].sum())
+
+ax[1].bar(g.index.values, g['ratio'], ec='tan', fc='tan', align='center')
+ax[1].axhline(overall, color='r', lw=2, label='Avg', zorder=4)
+ax[1].set_xticks(range(1, 13))
+ax[1].text(0.5, 0.92, "By Month", transform=ax[1].transAxes, ha='center',
+           va='center', bbox=dict(color='white'))
+ax[1].set_xticklabels(calendar.month_abbr[1:])
+ax[1].grid(True)
+ax[1].set_xlim(0.5, 12.5)
+ax[1].set_ylabel("Ratio ('WILL' / 'MAY')")
+
+fig.text(0.01, 0.01, "Generated 6 July 2016 by @akrherz", fontsize=10)
+
+fig.savefig('test.png')

@@ -1,0 +1,12 @@
+select to_char(entered, 'YYYYmm') as mo, word, count(*) from 
+ (select entered, regexp_split_to_table(substr(data, 180, 100000), '\s+') as word from products 
+  where pil = 'SWODY1') as foo where word in ('MAY', 'WILL') 
+  GROUP by mo, word ORDER by mo ASC, word ASC;
+
+with data as (select to_char(entered, 'YYYYmm') as mo, word, count(*) from 
+ (select entered, regexp_split_to_table(substr(data, 180, 100000), '\s+') as word from products 
+  where pil = 'SWODY1') as foo where word in ('MAY', 'PERHAPS', 'UNCERTAIN', 'COULD', 'MAYBE', 'WILL', 'LIKELY', 'UNLIKELY', 'CERTAINLY', 'UNDOUBTEDLY') 
+  GROUP by mo, word) SELECT mo, case when word in ('MAY', 'PERHAPS', 'UNCERTAIN', 'COULD', 'MAYBE') then 1 else 0 end as typ, sum(count) from data GROUP by mo, typ ORDER by mo ASC, typ ASC;
+
+
+with aaa as (SELECT ugc, extract(year from issue) as yr, issue, expire, eventid from warnings where phenomena = 'SV' and significance = 'A'), wwww as (SELECT ugc, phenomena, eventid, wfo, issue from warnings where phenomena in ('SV', 'TO') and significance = 'W'), agg as (SELECT a.yr as a_yr, a.ugc as a_ugc, a.issue as a_issue, a.eventid as a_eventid, w.eventid as w_eventid, w.wfo as w_wfo, w.issue as w_issue, w.phenomena as w_phenomena from aaa a LEFT JOIN wwww w on (a.ugc = w.ugc and w.issue >= a.issue and w.issue < a.expire)), agg2 as (SELECT distinct a_yr, a_eventid, w_eventid, w_wfo, w_phenomena from agg), agg3 as (SELECT a_yr, a_eventid, count(*) as cnt from agg2 GROUP by a_yr, a_eventid) select cnt, count(*) from agg3 GROUP by cnt ORDER by cnt
