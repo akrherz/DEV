@@ -6,6 +6,7 @@ import datetime
 obj = imaplib.IMAP4_SSL('imap.gmail.com', 993)
 obj.login('akrherz', raw_input("Password is:"))
 
+"""
 now = datetime.datetime(2014, 6, 1)
 ets = datetime.datetime(2016, 9, 1)
 
@@ -20,11 +21,35 @@ while now < ets:
     now = now.replace(day=1)
 
 """
-typ, data = obj.search(None, 'SUBJECT', 'Twitter Support')
+
+
+def compute(to, cc):
+    if to is None:
+        return []
+    base = to.split("<")[-1].replace(">", "")
+    res = []
+    if base.find("unidata.ucar.edu") > -1:
+        res.append(base)
+    if cc is not None:
+        for token in cc.split(","):
+            base = token.split(">")[-1].replace(">", "")
+            if base.find("unidata.ucar.edu") > -1:
+                res.append(base.strip())
+    return res
+
+obj.select("[Gmail]/All Mail")
+typ, data = obj.search(None, '(to "ucar.edu") (from "akrherz@iastate.edu")')
+counts = dict()
 for num in data[0].split():
-  typ, data = obj.fetch(num, '(RFC822)')
-  msg = email.message_from_string(data[0][1])
-  tokens = re.findall("#([0-9]+) Twitter Support", msg['Subject'])
-  if len(tokens) == 1:
-      print tokens[0]
-"""
+    typ, data = obj.fetch(num, '(RFC822)')
+    msg = email.message_from_string(data[0][1])
+    if msg['From'].find('akrherz@iastate.edu') == -1:
+        # print msg['From']
+        continue
+    for myto in compute(msg['To'], msg['Cc']):
+        if myto not in counts:
+            counts[myto] = 0
+        counts[myto] += 1
+        print num, myto, counts[myto], msg['Cc']
+
+print counts
