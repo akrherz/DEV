@@ -11,6 +11,7 @@ print df
 
 for _, row in df.iterrows():
     c = 'r' if row['Year'] in [2011, 2012, 2013] else 'k'
+    c = 'g' if row['Year'] in [1980, 1992, 1993] else c
     ax.text(row['t'], row['p'], ("%i" % (row['Year'],))[-2:], color=c,
             ha='center')
 
