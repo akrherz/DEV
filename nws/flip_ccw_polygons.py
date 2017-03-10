@@ -1,6 +1,56 @@
-from pyiem.nws.product import str2polygon
+from shapely.geometry import Polygon
+import re
+import sys
+LAT_LON = re.compile("([0-9]{4,8})\s+")
 
-for line in open('/tmp/DMX-reach-latlon.txt'):
+FILENAME = sys.argv[1]
+
+
+def checker(lon, lat, strdata):
+    # make sure our values are within physical bounds
+    if lat >= 90 or lat <= -90:
+        raise Exception("invalid latitude %s from %s" % (
+                                                lat, strdata))
+    if lon > 180 or lon < -180:
+        raise Exception("invalid longitude %s from %s" % (
+                                                lon, strdata))
+    return (lon, lat)
+
+
+def str2polygon(strdata):
+    pts = []
+    partial = None
+
+    # We have two potential formats, one with 4 or 5 places and one
+    # with eight!
+    vals = re.findall(LAT_LON, strdata)
+    for val in vals:
+        if len(val) == 8:
+            lat = float(val[:4]) / 100.00
+            lon = float(val[4:]) / 100.00
+            if lon < 40:
+                lon += 100.
+            lon = 0 - lon
+            pts.append(checker(lon, lat, strdata))
+        else:
+            s = float(val) / 100.00
+            if partial is None:  # we have lat
+                partial = s
+                continue
+            # we have a lon
+            if s < 40:
+                s += 100.
+            s = 0 - s
+            pts.append(checker(s, partial, strdata))
+            partial = None
+
+    if len(pts) == 0:
+        return None
+    if pts[0][0] != pts[-1][0] and pts[0][1] != pts[-1][1]:
+        pts.append(pts[0])
+    return Polygon(pts)
+
+for line in open(FILENAME):
     tokens = line.replace("||", "").replace('"', "").split(";")
     if len(tokens) != 2:
         continue
