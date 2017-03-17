@@ -1,13 +1,14 @@
 import requests
 import sys
 
-RELEASE = sys.argv[1]
+PACKAGE = sys.argv[1]
+RELEASE = sys.argv[2]
 
-req = requests.get(("https://api.github.com/repos/igniterealtime/Openfire/"
-                    "releases/tags/v" + RELEASE))
+req = requests.get(("https://api.github.com/repos/igniterealtime/%s/"
+                    "releases/tags/v%s" % (PACKAGE, RELEASE)))
 j = req.json()
 total = 0
-print("Openfire Download Stats for Release: %s" % (RELEASE,))
+print("%s Download Stats for Release: %s" % (PACKAGE, RELEASE))
 for a in j['assets']:
     print("%27s %6i" % (a['name'], a['download_count']))
     total += a['download_count']
