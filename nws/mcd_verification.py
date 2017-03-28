@@ -108,6 +108,34 @@ def do_plotting(threshold):
     fig.savefig('test%s.png' % (threshold, ))
 
 
+def do_plotting2():
+    df = pd.read_excel('mcd_verif.xlsx')
+    (fig, ax) = plt.subplots(1, 1)
+    for threshold in range(10, 101, 10):
+        probs = [5, 20, 40, 60, 80, 95]
+        verif = []
+        for prob in probs:
+            df2 = df[df['probability'] == prob]
+            events = len(df2.index)
+            hits = len(df2[df2['verif%s' % (threshold,)] > 0].index)
+            verif.append(float(hits) / float(events) * 100.)
+
+        ax.plot(probs, verif, label='%.0f' % (threshold,))
+
+    ax.set_title(("SPC MCD Watch Probability Verification "
+                  "(1 May 2012 - 27 Mar 2017)\n"
+                  "Subsequent Watch (within 2.5 hours of MCD, "
+                  "Given Spatial Overlap)"))
+    ax.set_ylabel("Watch Issuance Frequency [%]")
+    ax.set_xlabel("MCD Watch Confidence [%]")
+    ax.plot([0, 100], [0, 100], linestyle='-.', lw=2)
+    ax.legend(loc=2)
+    ax.grid(True)
+    ax.set_xticks(probs)
+    ax.set_yticks(probs)
+    fig.savefig('line.png')
+
+
 def do_work():
     """Do Something Fun"""
     df = get_mcds()
@@ -122,4 +150,4 @@ def do_work():
 
 if __name__ == '__main__':
     # do_work()
-    do_plotting(90)
+    do_plotting2()
