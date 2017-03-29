@@ -84,15 +84,20 @@ def do_plotting(threshold):
     (fig, ax) = plt.subplots(1, 1)
     probs = [5, 20, 40, 60, 80, 95]
     verif = []
+    hits = []
+    events = []
     for prob in probs:
         df2 = df[df['probability'] == prob]
-        events = len(df2.index)
-        hits = len(df2[df2['verif%s' % (threshold,)] > 0].index)
-        verif.append(float(hits) / float(events) * 100.)
+        event = len(df2.index)
+        hit = len(df2[df2['verif%s' % (threshold,)] > 0].index)
+        hits.append(hit)
+        events.append(event)
+        verif.append(float(hit) / float(event) * 100.)
 
     ax.bar(range(len(probs)), verif)
     for i, v in enumerate(verif):
-        ax.text(i, v + 3, "%.1f%%" % (v,), ha='center',
+        ax.text(i, v + 3, "(%s/%s)\n%.1f%%" % (hits[i], events[i],
+                                               v), ha='center',
                 bbox=dict(color='white'))
     ax.set_xticks(range(len(probs)))
     ax.set_xticklabels(probs)
@@ -104,7 +109,10 @@ def do_plotting(threshold):
                   "Subsequent Watch (within 2.5 hours of MCD, "
                   "Spatial Overlap: >= %.0f%%)" % (threshold, )))
     ax.set_ylabel("Watch Issuance Frequency [%]")
-    ax.set_xlabel("MCD Watch Confidence [%]")
+    ax.set_xlabel("MCD Watch Issuance Confidence [%]")
+    ax.text(0, 95, "(hits/events)\npercent", ha='center', va='center',
+            bbox=dict(color='white'))
+    fig.text(0.01, 0.01, "@akrherz, 28 Mar 2017")
     fig.savefig('test%s.png' % (threshold, ))
 
 
@@ -120,7 +128,7 @@ def do_plotting2():
             hits = len(df2[df2['verif%s' % (threshold,)] > 0].index)
             verif.append(float(hits) / float(events) * 100.)
 
-        ax.plot(probs, verif, label='%.0f' % (threshold,))
+        ax.plot(probs, verif, label='%.0f%%' % (threshold, ))
 
     ax.set_title(("SPC MCD Watch Probability Verification "
                   "(1 May 2012 - 27 Mar 2017)\n"
@@ -129,10 +137,13 @@ def do_plotting2():
     ax.set_ylabel("Watch Issuance Frequency [%]")
     ax.set_xlabel("MCD Watch Confidence [%]")
     ax.plot([0, 100], [0, 100], linestyle='-.', lw=2)
-    ax.legend(loc=2)
+    ax.legend(loc=2, title='Spatial\nOverlap %')
     ax.grid(True)
     ax.set_xticks(probs)
     ax.set_yticks(probs)
+    ax.set_xlim(-0.5, 101)
+    ax.set_ylim(-0.5, 101)
+    fig.text(0.01, 0.01, "@akrherz, 28 Mar 2017")
     fig.savefig('line.png')
 
 
@@ -150,4 +161,5 @@ def do_work():
 
 if __name__ == '__main__':
     # do_work()
+    do_plotting(50)
     do_plotting2()
