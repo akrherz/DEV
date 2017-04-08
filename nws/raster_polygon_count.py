@@ -13,34 +13,35 @@ GRIDEAST = -55.1
 GRIDNORTH = 54.51
 GRIDSOUTH = 19.47
 
-
-
 PRECIP_AFF = Affine(0.01, 0., GRIDWEST, 0., -0.01, GRIDNORTH)
 YSZ = (GRIDNORTH - GRIDSOUTH) / 0.01
 XSZ = (GRIDEAST - GRIDWEST) / 0.01
 
 ones = np.ones((int(YSZ), int(XSZ)))
-#counts = np.zeros((int(YSZ), int(XSZ)))
-counts = np.load('counts.npy')
+counts = np.zeros((int(YSZ), int(XSZ)))
+#counts = np.load('counts.npy')
 lons = np.arange(GRIDWEST, GRIDEAST, griddelta)
 lats = np.arange(GRIDSOUTH, GRIDNORTH, griddelta)
 
 pgconn = psycopg2.connect(database='postgis', host='localhost', port=5555,
                           user='nobody')
 # TODO: Figure out which 2017 SVR warning causes segfault!
-for year in range(2015, 2017):
+YEAR1 = 2002
+YEAR2 = 2016  # Inclusive
+YEARS = (YEAR2 - YEAR1) + 1
+for year in range(YEAR1, YEAR2 + 1):
     df = read_postgis("""SELECT ST_Forcerhr(geom) as geom, wfo, eventid
-     from sbw_""" + str(year) + """ where eventid not in (205, 328, 275, 325) and 
-     phenomena = 'SV' and status = 'NEW' and significance = 'W' and eventid not in (76)
+     from sbw_""" + str(year) + """ where eventid not in (205, 328, 275, 325, 76) and 
+     phenomena = 'TO' and status = 'NEW' and significance = 'W' and wfo = 'JAN'
      and ST_Within(geom, ST_GeomFromEWKT('SRID=4326;POLYGON((%s %s, %s %s,
      %s %s, %s %s, %s %s))')) and ST_IsValid(geom) ORDER by wfo, eventid
      """, pgconn, params=(GRIDWEST, GRIDSOUTH, GRIDWEST, GRIDNORTH, GRIDEAST,
                           GRIDNORTH, GRIDEAST, GRIDSOUTH, GRIDWEST, GRIDSOUTH),
                       geom_col='geom')
     print year, len(df.index)
-    for i, row in df.iterrows():
-        print row['wfo'], row['eventid'], row['geom']
-        zs = zonal_stats(row['geom'], ones, affine=PRECIP_AFF, nodata=-1,
+    #for i, row in df.iterrows():
+    #    print row['wfo'], row['eventid'], row['geom']
+    zs = zonal_stats(df['geom'], ones, affine=PRECIP_AFF, nodata=-1,
                      all_touched=True, raster_out=True)
 
     for z in zs:
@@ -57,19 +58,19 @@ for year in range(2015, 2017):
         counts[y0:y1, x0:x1] += np.where(raster.mask, 0, 1)
     np.save('counts', counts)
 
-print np.max(counts) / 15.
-m = MapPlot(sector='conus',
-            title='Avg Number of Storm Based Severe T\'Storm Warnings per Year',
-            subtitle=("(2002 through 2016) based on unofficial "
+print("Maximum value is: %.1f" % (np.max(counts) / YEARS,))
+m = MapPlot(sector='cwa', cwa='JAN',
+            title='Jackson MS Avg Number of Storm Based Tornado Warnings per Year',
+            subtitle=("(%s through %s) based on unofficial "
                       "archives maintained by the IEM, %sx%s analysis grid"
-                      ) % (griddelta, griddelta))
+                      ) % (YEAR1, YEAR2, griddelta, griddelta))
 cmap = plt.get_cmap('jet')
 cmap.set_under('white')
 cmap.set_over('black')
 lons, lats = np.meshgrid(lons, lats)
-rng = np.arange(0, 14.1, 1.)
+rng = np.arange(0, 6.1, 0.5)
 rng[0] = 0.01
-m.pcolormesh(lons, lats, counts / 15.,
+m.pcolormesh(lons, lats, counts / YEARS,
              rng, cmap=cmap, units='count')
 # m.drawcounties()
 m.postprocess(filename='count.png')
