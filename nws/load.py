@@ -1,4 +1,6 @@
 """Warning load by minute"""
+from __future__ import print_function
+import datetime
 import psycopg2
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -9,24 +11,26 @@ PGCONN = psycopg2.connect(database='postgis', host='localhost',
                           port=5555, user='nobody')
 
 
-def getp(phenomena):
+def getp(phenomena, sts, ets):
     """Do Query"""
     cursor = PGCONN.cursor()
+    table = "sbw_%s" % (sts.year,)
+    print("%s %s %s" % (table, sts, ets))
     cursor.execute("""
      WITH data as
      (SELECT t, count(*) from
      (select phenomena,
      generate_series(issue, expire, '1 minute'::interval) as t
-     from sbw_2011 where status = 'NEW' and issue > '2011-04-26' and
-     issue < '2011-04-29' and phenomena in %s) as foo
+     from """ + table + """ where status = 'NEW' and issue > %s and
+     issue < %s and phenomena in %s) as foo
      GROUP by t),
 
-     ts as (select generate_series('2011-04-26'::timestamptz,
-      '2011-04-29 00:00-05'::timestamptz, '1 minute'::interval) as t)
+     ts as (select generate_series(%s,
+      %s, '1 minute'::interval) as t)
 
      SELECT ts.t, data.count from ts LEFT JOIN data on (data.t = ts.t)
      ORDER by ts.t ASC
-    """, (phenomena,))
+    """, (sts, ets, phenomena, sts, ets))
     times = []
     counts = []
     for row in cursor:
@@ -36,31 +40,28 @@ def getp(phenomena):
     return times, counts
 
 
-def main():
+def main(date):
     """Main"""
-    to_t, to_c = getp(('TO',))
-    for t, c in zip(to_t, to_c):
-        if c > 40:
-            print t, c
-
-    b_t, b_c = getp(('SV', 'TO'))
+    sts = date - datetime.timedelta(hours=24)
+    ets = date + datetime.timedelta(hours=24)
+    to_t, to_c = getp(('TO',), sts, ets)
+    b_t, b_c = getp(('SV', 'TO'), sts, ets)
 
     (fig, ax) = plt.subplots(1, 1, figsize=(8, 6))
 
-    ax.fill(b_t, b_c, zorder=1, color='teal', label='Severe TStorm + Tornado')
-    ax.fill(to_t, to_c, zorder=2, color='r', label='Tornado')
+    ax.fill_between(b_t, 0, b_c, zorder=1, color='teal', label='Severe TStorm + Tornado')
+    ax.fill_between(to_t, 0, to_c, zorder=2, color='r', label='Tornado')
 
     ax.grid(True)
-    ax.xaxis.set_major_locator(mdates.HourLocator(byhour=[0, 12],
+    ax.xaxis.set_major_locator(mdates.HourLocator(byhour=[0, 6, 12, 18],
                                                   tz=TZ))
     ax.xaxis.set_major_formatter(
         mdates.DateFormatter('%I %p\n%d %b',
                              tz=TZ))
 
-    ax.set_title(("26-28 April 2011 National Weather Service "
-                  "Storm Based Warning Load\n"
-                  "At least 1 Tornado Warning active "
-                  "between: 3:10 PM 26 April - 8:45 AM 28 April"))
+    ax.set_title(("%s National Weather Service "
+                  "Storm Based Warning Load"
+                  ) % (date.strftime("%-d %b %Y"),))
     ax.set_ylabel("Active Warning Count")
     ax.legend(loc='best', ncol=2)
     ax.set_ylim(bottom=0.1)
@@ -68,8 +69,20 @@ def main():
     ax.set_xlabel("Central Daylight Time")
     fig.text(0.01, 0.01, "@akrherz, generated 27 Apr 2017")
 
-    fig.savefig('test.png')
+    fig.savefig('%s.png' % (date.strftime("%Y%m%d"),))
+    plt.close()
+
+
+def work():
+    events = ("4/27/11, 3/2/11, 4/26/11, 5/25/11, 10/26/10, 4/15/11, 1/10/08,"
+              " 4/10/09, 6/11/09, 5/11/08, 5/22/11, 6/2/09, 7/22/08, 7/1/12, "
+              "8/5/10, 6/9/11, 6/21/11, 5/26/11, 4/26/11, 8/2/08")
+    for event in events.split(","):
+        print(event)
+        date = datetime.datetime.strptime(event.strip(), '%m/%d/%y')
+        date = date.replace(hour=12, tzinfo=pytz.utc)
+        main(date)
 
 
 if __name__ == '__main__':
-    main()
+    work()
