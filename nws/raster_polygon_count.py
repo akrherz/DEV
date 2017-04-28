@@ -19,7 +19,7 @@ XSZ = (GRIDEAST - GRIDWEST) / 0.01
 
 ones = np.ones((int(YSZ), int(XSZ)))
 counts = np.zeros((int(YSZ), int(XSZ)))
-#counts = np.load('counts.npy')
+# counts = np.load('counts.npy')
 lons = np.arange(GRIDWEST, GRIDEAST, griddelta)
 lats = np.arange(GRIDSOUTH, GRIDNORTH, griddelta)
 
@@ -30,9 +30,9 @@ YEAR1 = 2002
 YEAR2 = 2016  # Inclusive
 YEARS = (YEAR2 - YEAR1) + 1
 for year in range(YEAR1, YEAR2 + 1):
-    df = read_postgis("""SELECT ST_Forcerhr(geom) as geom, wfo, eventid
-     from sbw_""" + str(year) + """ where eventid not in (205, 328, 275, 325, 76) and 
-     phenomena = 'TO' and status = 'NEW' and significance = 'W' and wfo = 'JAN'
+    df = read_postgis("""SELECT ST_Forcerhr(ST_Buffer(geom, 0.0005)) as geom, wfo, eventid
+     from sbw_""" + str(year) + """ where wfo = 'OUN' and
+     phenomena = 'TO' and status = 'NEW' and significance = 'W'
      and ST_Within(geom, ST_GeomFromEWKT('SRID=4326;POLYGON((%s %s, %s %s,
      %s %s, %s %s, %s %s))')) and ST_IsValid(geom) ORDER by wfo, eventid
      """, pgconn, params=(GRIDWEST, GRIDSOUTH, GRIDWEST, GRIDNORTH, GRIDEAST,
@@ -59,8 +59,8 @@ for year in range(YEAR1, YEAR2 + 1):
     np.save('counts', counts)
 
 print("Maximum value is: %.1f" % (np.max(counts) / YEARS,))
-m = MapPlot(sector='cwa', cwa='JAN',
-            title='Jackson MS Avg Number of Storm Based Tornado Warnings per Year',
+m = MapPlot(sector='cwa', cwa='OUN',
+            title='Norman OK Avg Number of Tornado Warnings per Year',
             subtitle=("(%s through %s) based on unofficial "
                       "archives maintained by the IEM, %sx%s analysis grid"
                       ) % (YEAR1, YEAR2, griddelta, griddelta))
@@ -68,7 +68,7 @@ cmap = plt.get_cmap('jet')
 cmap.set_under('white')
 cmap.set_over('black')
 lons, lats = np.meshgrid(lons, lats)
-rng = np.arange(0, 6.1, 0.5)
+rng = np.arange(0, 1.5, 0.2)
 rng[0] = 0.01
 m.pcolormesh(lons, lats, counts / YEARS,
              rng, cmap=cmap, units='count')
