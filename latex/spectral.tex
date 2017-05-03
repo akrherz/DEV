@@ -1,0 +1,367 @@
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\bfseries\thepage}
+\fancyhead[LO,RE]{\bfseries\leftmark}
+\fancypagestyle{plain}{
+  \fancyhead{}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+\include{eqns}
+
+\begin{document}
+
+Spectral Energetics of the Atmosphere.
+
+\begin{itemize}
+
+\item Saltzman, B. 1957: Equations governing the energetics of the large scales of atmosperic turbulence in the domain of wave number. J. Met, 14, 513-523.
+
+\item Saltzman, B., 1970: Large-scale atmospheric energetics in the wave number domain.  Rev. Geophys. Space Phys, 8, 289-302.
+
+\item Yang, C.-H. 1967: Nonlinear aspects of the large-scale motion in the atmosphere.  Techincal Report 08759-1-T, 173pp.  Univ of Michigan.
+
+\item Steinberg, Win-Nielsen, Yang, 1971: On nonlinear cascades in large-scale atmospheric flow.  J.G.R., 76, 8629-8640.
+
+\end{itemize}
+
+A) Available Potential Energy
+
+\begin{equation}
+A = \frac{1}{4 \pi a^2}\oog \iopo \ip \iztp \oots \alpha'^2 (\cos{\phi}) a^2 d\phi d\lambda dp
+\label{ape}
+\end{equation}
+
+We can define a term $\overline{e}$ to simplify this equation some.
+
+\begin{equation}
+\overline{e} = \frac{1}{2\pi} \iztp \oots \alpha'^2 d\lambda
+\label{e}
+\end{equation}
+
+And so Eqn \ref{ape} reduces to.
+
+\begin{equation}
+A = \frac{1}{2g} \iopo \ip \overline{e} (\cos{\phi}) d\phi dp
+\end{equation}
+
+Recall that 
+
+\begin{equation}
+\alpha' = \sni \alpha_n e^{in\lambda}
+\label{alphaprime}
+\end{equation}
+
+\begin{equation}
+\alpha_n = \frac{1}{2\pi} \iztp \alpha' e^{-in\lambda} d\lambda
+\label{alphan}
+\end{equation}
+
+So Eqn \ref{e} can be expressed by inserting $\alpha'$ to get
+
+\begin{equation}
+\overline{e} = \frac{1}{2\pi} \iztp \oots [\sum_{n} \alpha_n e^{in\lambda} ][\sum_{n'} \alpha_n' e^{in'\lambda} ] d\lambda
+\end{equation}
+
+\begin{equation}
+\overline{e} = \sni \oots \alpha_n\alpha_{-n} = \oots \alpha_{o}^2 + \sum_{n=1}^{\infty} \frac{1}{\overline{\sigma}} \alpha_n\alpha_{n}^{*}
+\end{equation}
+
+
+\begin{equation}
+\frac{\delta \overline{e}}{\delta t} = \sni \oots [ \alpha_{-n} \frac{\delta \alpha_n}{\delta t} + \alpha_n \frac{\delta \alpha_{-n}}{\delta t} ]
+\end{equation}
+
+\begin{equation}
+\frac{\delta \alpha'}{\delta t} = - (\frac{u}{a \cos{\phi}} \frac{\delta \alpha'}{\delta \lambda} + \frac{v}{a}\frac{\delta \alpha'}{\delta \phi} )
+\end{equation}
+
+u and v can be expressed as a sumation of their n components
+
+\begin{equation}
+u = \sni U_n e^{in\lambda}
+\end{equation}
+
+\begin{equation}
+v = \sni V_n e^{in\lambda}
+\end{equation}
+
+
+\begin{equation}
+\sni \frac{\delta \alpha_n}{\delta t} e^{in\lambda} = - [ \ooacp \snpi U_{n'} e^{in'\lambda} \snppi (in'') \alpha_{n''} e^{in''\lambda} + \frac{1}{a} \snpi V_{n'} e^{in'\lambda} \snppi \frac{\delta \alpha_{n''}}{\delta \phi} e^{in''\lambda} ]
+\end{equation}
+
+\begin{equation}
+\sni \frac{\delta \alpha_n}{\delta t} e^{in\lambda} = - \snpi \snppi [ \frac{in''}{a \cos{\phi}} U_{n'} \alpha_{n''} + \frac{1}{a} V_{n'} \frac{\delta \alpha_{n''}}{\delta \phi} ] e^{i(n'+n'')\lambda}
+\end{equation}
+
+\begin{equation}
+\frac{\delta \alpha_n}{\delta t} = - \frac{1}{2\pi} \iztp [ \snpi \snppi [ \frac{in''}{a \cos{\phi}} U_{n'} \alpha_{n''} + \frac{1}{a} V_{n'} \frac{\delta \alpha_{n''}}{\delta \phi} ] e^{i(n'+n''-n)\lambda} ] d\lambda
+\label{dandt}
+\end{equation}
+
+Some simple identities include
+
+$n' + n'' -n = 0$
+
+$n'' = m$
+
+$n' = n - m$
+
+So we can then express Eqn \ref{dandt} as
+
+\begin{equation}
+\frac{\delta \alpha_n}{\delta t} = - \smi [ \frac{im}{a \cos{\phi}} U_{(n-m)} \alpha_m + \frac{1}{a} V_{(n-m)} \frac{\delta \alpha_m}{\delta \phi} ]
+\label{e1}
+\end{equation}
+
+\begin{equation}
+\frac{\delta \alpha_{-n}}{\delta t} = - \smi [ \frac{im}{a \cos{\phi}} U_{(-n-m)} \alpha_m + \frac{1}{a} V_{(-n-m)} \frac{\delta \alpha_m}{\delta \phi} ]
+\label{e2}
+\end{equation}
+
+And now we take $\alpha_{-n}$ times Eqn \ref{e1} and $\alpha_n$ times Eqn \ref{e2} and add those two resultant eqns together to get
+
+\begin{equation}
+\alpha_{-n} \frac{\delta \alpha_{n}}{\delta t} + \alpha_{n} \frac{\delta \alpha_{-n}}{\delta t} = - \smi [ \frac{im}{a \cos{\phi}} \alpha_m [ U_{(n-m)} \alpha_{-n} + U_{(-n-m)} \alpha_n ] + \frac{1}{a} \frac{\delta \alpha_m}{\delta \phi} [ V_{(n-m)} \alpha_{-n} + V_{(-n-m)} \alpha_n ] ]
+\end{equation}
+
+\begin{equation}
+\frac{\delta \overline{e}_n}{\delta t} = - \oots \smi [ \frac{im}{a \cos{\phi}} \alpha_m [ U_{(n-m)} \alpha_{-n} + U_{(-n-m)} \alpha_{n} ] + \frac{1}{a} \frac{\delta \alpha_m}{\delta \phi} [ V_{(n-m)} \alpha_{-n} + V_{(-n-m)} \alpha_n ] ]
+\end{equation}
+
+Recall that our rate of change of Available Potential Energy (A) is
+
+\begin{equation}
+\frac{dA}{dt} = \frac{1}{2g} \iopo \ip \frac{\delta \overline{e}}{\delta t} )\cos{\phi}) \delta \phi \delta p
+\end{equation}
+
+\begin{equation}
+\frac{dA}{dt} = \frac{1}{2g} \iopo \ip \sni \frac{\delta \overline{e}_n}{\delta t} \cos{\phi} d\phi dp
+\end{equation}
+
+\begin{equation}
+\frac{dA}{dt} = \sni \frac{d A_n}{d t}
+\end{equation}
+
+where
+
+\begin{equation}
+\frac{dA_n}{dt} = \frac{1}{2g} \iztp \ip \frac{\delta \overline{e}_n}{\delta t} (\cos{\phi}) du dp
+\end{equation}
+
+B) Kinectic energy equation
+
+\begin{equation}
+K = \frac{1}{4\pi a^2} \frac{1}{g} \iopo \ip \iztp \frac{1}{2} \nabla \psi \nabla \psi (a^2 \cos{\phi}) d\phi d\alpha dp
+\end{equation}
+
+\begin{equation}
+\frac{dK}{dt} = \frac{1}{4\pi} \frac{1}{g} \iopo \ip \iztp \nabla \psi \frac{\delta}{\delta t} (\nabla \psi) \cos{\phi} d\phi d\lambda dp
+\end{equation}
+
+\begin{equation}
+\frac{dK}{dt} = - \frac{1}{4\pi} \frac{1}{g} \iopo \ip \iztp \psi \frac{\delta \zeta}{\delta t} (\cos{\phi}) d\phi d\lambda dp
+\end{equation}
+
+\begin{equation}
+\psi = \sni \Psi_n e^{in\lambda}
+\end{equation}
+
+\begin{equation}
+\Psi_n = \frac{1}{2\pi} \iztp \psi e^{-in\lambda} d\lambda
+\end{equation}
+
+\begin{equation}
+\zeta = \frac{1}{a \cos{\phi}} [ \frac{\delta v}{\delta \lambda} - \frac{\delta}{\delta \phi} (u \cos{\phi}) ]
+\end{equation}
+
+\begin{equation}
+\zeta = \frac{1}{a \cos{\phi}} [ \frac{\delta}{\delta \lambda} (\frac{\delta \psi}{a \cos{\phi} \delta \lambda} + \frac{\delta}{\delta \phi} ( \cos{\phi} \frac{\delta \psi}{a \delta \phi} ) ]
+\end{equation}
+
+\begin{equation}
+\zeta = \frac{1}{a^2 \cos^2{\phi}} \frac{\delta^2 \psi}{\delta \lambda^2} + \ooascp \frac{\delta}{\delta \phi} ( \cos{\phi} \frac{\delta \psi}{\delta \phi} )
+\end{equation}
+
+\begin{equation}
+\zeta = \sni [ - \frac{n^2}{a^2 \cos^2{\phi}} \Psi_n + \ooascp \ddphi (\cos{\phi} \frac{\Psi_n}{\delta \phi} ) ] e^{in\lambda}
+\end{equation}
+
+\begin{equation}
+\zeta = \sni Z_n e^{in\lambda}
+\end{equation}
+
+\begin{equation}
+Z_n = - \frac{n^2}{a^2 \cos^2{\phi}} \Psi_n + \frac{1}{a^2 \cos{\phi}} \frac{\delta}{\delta \phi} ( \cos{\phi} \frac{\delta \Psi_n}{\delta \psi} )
+\end{equation}
+
+\begin{equation}
+\frac{\delta \zeta}{\delta t} = - \vec{V} \nabla \zeta = \frac{1}{a^2 \cos{\phi}} \frac{\delta \psi}{\delta \phi} \frac{\delta \zeta}{\delta \lambda} - \ooascp \frac{\delta \psi}{\delta \lambda} \frac{\delta \zeta}{\delta \phi} 
+\end{equation}
+
+\begin{equation}
+= \ooascp (\frac{\delta \zeta}{\delta \lambda} \frac{\delta \psi}{\delta \phi} - \frac{\delta \zeta}{\delta \phi} \frac{\delta \psi}{\delta \alpha} )
+\end{equation}
+
+\begin{equation}
+\frac{dK}{dt} = - \frac{1}{4\pi} \frac{1}{g} \iopo  \ip \iztp [ \sum_{n'} \Psi_{n'} e^{in'\lambda} ] [ \sum_{n''} \frac{\delta Z_{n''}}{\delta t} e^{in''\lambda} ] (\cos{\phi}) d\lambda d\phi dp
+\end{equation}
+
+\begin{equation}
+\frac{dK}{dt} = - \frac{1}{4\pi} \frac{1}{g} \iopo \ip \iztp \sum_{n'} \sum_{n''} \Psi_{n'} \frac{\delta Z_{n''}}{\delta t} e^{i(n'+n'')\lambda} (\cos{\phi}) d\lambda d\phi dp
+\end{equation}
+
+\begin{equation}
+\frac{dK}{dt} = - \frac{1}{2g} \iopo \ip \sum_n [ \Psi_{n} \frac{\delta Z_{-n}}{\delta t} + \Psi_{-n} \frac{\delta Z_n}{\delta t} ] \cos{\phi} d\phi dp
+\end{equation}
+
+\begin{equation}
+\sni \frac{\delta Z_n}{\delta t} e^{in\lambda} = \ooascp  [ \sum_{n'}  Z_{n'} (in') e^{in'\lambda} \sum_{n''} \frac{\delta \Psi_{n''}}{\delta \phi} e^{in''\lambda} - \sum_{n'} \frac{\delta Z_{n'}}{\delta \phi} e^{in'\lambda} \sum_{n''} \Psi_{n''} (in'') e^{in''\lambda} ]
+\end{equation}
+
+\begin{equation}
+= \ooascp \sum_{n'} \sum_{n''} [ (in') Z_{n'} \frac{\delta \Psi_{n''}}{\delta \phi} - (in'') \Psi_{n''} \frac{\delta Z_{n''}}{\delta \phi} ] e^{i(n'+n'')\lambda}
+\end{equation}
+
+Recall again that
+
+$n'+n''-n = 0$
+
+$n'' = m$
+
+$n'= n-m$
+
+\begin{equation}
+\frac{\delta Z_n}{\delta t} = \sum_m [ \frac{i(n-m)}{a^2 \cos{\phi}} Z_{n-m} \frac{\delta \Psi_m}{\delta \phi} - \frac{im}{a^2 \cos{\phi}} \Psi_m \frac{\delta Z_{n-m}}{\delta \phi} ]
+\label{dzndt}
+\end{equation}
+
+\begin{equation}
+\frac{\delta Z_{-n}}{\delta t} = \sum_m [ \frac{i(-n-m)}{a^2 \cos{\phi}} Z_{-n-m} \frac{\delta \Psi_m}{\delta \phi} - \frac{im}{a^2 \cos{\phi}} \Psi_m \frac{\delta Z_{-n-m}}{\delta \phi} ]
+\label{dzmndt}
+\end{equation}
+
+To get an expression of the rate of change of Kinetic Energy, we take $\psi_{-n}$ times Eqn \ref{dzndt} and $\psi_n$ times Eqn \ref{dzmndt}.  We get
+
+%split
+\begin{equation}
+\frac{dK}{dt} = - \frac{1}{2g} \iopo \ip \sum_n [ \sum_m \frac{1}{a^2} \frac{\delta \Psi_m}{\delta \phi} [ i(n-m) Z_{n-m} \Psi_{-n} + i(-n-m) Z_{-n-m} \Psi_n ] - \frac{1}{a^2} im \Psi_m [ \Psi_{-n} \frac{\delta Z_{n-m}}{\delta \phi} + \Psi_n \frac{\delta Z_{-n-m}}{\delta \phi}] ] d\phi dp
+\label{dKdt}
+\end{equation}
+
+We can pull the $\sum_n$ out front of Eqn \ref{dKdt}
+
+\begin{equation}
+\frac{dK}{dt} = \sum_n [ - \frac{1}{2g} \iopo \ip \sum_m d\phi dp
+\end{equation}
+
+Also...
+
+\begin{equation}
+\frac{dK}{dt} = \sum_n \frac{dK_n}{dt}
+\end{equation}
+
+% split
+\begin{equation}
+\frac{dK_n}{dt} = - \frac{1}{2g} \iopo \ip \sum_m [ \frac{\delta \Psi_m}{a^2 \delta \phi} [i(n-m) Z_{n-m} \Psi_{-n} + i(-n-m) Z_{-n-m} \Psi_{n} ] - \frac{im}{a^2} \Psi_m [ \Psi_{-n} \frac{\delta Z_{n-m}}{\delta \phi} + \Psi_n \frac{\delta Z_{-n-m}}{\delta \phi} ] ] d\phi dp
+\end{equation}
+
+C. Enstrophy
+
+Recall that our barotropic vorticity equation is $\frac{\delta \zeta}{\delta t} + \vec{V} \nabla {\zeta} = 0$ and we re-express as
+
+\begin{equation}
+\frac{\delta}{\delta t} (\frac{1}{2} \zeta^2 ) = - \vec{V} \nabla (\frac{1}{2} \zeta^2 )
+\end{equation}
+
+We can express Enstrophy (E) as 
+
+\begin{equation}
+E = \frac{1}{4\pi a^2} \frac{1}{p_o} \iopo \ip \iztp \frac{1}{2} \zeta^2 a^2 \cos{\phi} d\phi d\alpha dp
+\end{equation}
+
+and the rate of change is 
+
+\begin{equation}
+\frac{dE}{dt} = \frac{1}{4\pi} \frac{1}{p_o} \iopo \ip \iztp \zeta \frac{\delta \zeta}{\delta t} \cos{\phi} d\phi d\alpha dp
+\end{equation}
+
+\begin{equation}
+= \frac{1}{2 p_o} \iopo \ip {(\zeta \frac{\delta \zeta}{\delta t})}_z \cos{\phi} d\phi dp
+\end{equation}
+
+\begin{equation}
+(\zeta \frac{\delta \zeta}{\delta t})_z = \frac{1}{2\pi} \iztp [ Z_{n'} \zeta_{n'} e^{in'\lambda} ] [ \sum_{n''} \frac{\delta Z_{n''}}{\delta t} e^{in''\lambda} ] d\lambda
+\end{equation}
+
+\begin{equation}
+(\zeta \frac{\delta \zeta}{\delta t})_z = \frac{1}{2\pi} \iztp \sum_{n'} \sum_{n''} Z_{n'} \frac{\delta Z_{n''}}{\delta t} e^{i(n'+n'')\lambda} d\alpha
+\end{equation}
+
+\begin{equation}
+(\zeta \frac{\delta \zeta}{\delta t})_z = \sum_n (Z_n \frac{Z_{-n}}{\delta t} + Z_{-n} \frac{\delta Z_n}{\delta t} )
+\end{equation}
+
+% split
+\begin{equation}
+Z_n \frac{\delta Z_{-n}}{\delta t} + Z_{-n} \frac{\delta Z_n}{\delta t} = \sum_m [ \frac{i(n-m)}{a^2 \cos{\phi}} Z_n Z_{n-m} \frac{\delta \Psi_m}{\delta \phi} - \frac{im}{a^2 \cos{\phi}} Z_n \Psi_m \frac{\delta Z_{n-m}}{\delta \phi} + \frac{i(-n-m)}{a^2 \cos{\phi}} Z_{-n} Z_{-n-m} \frac{\delta \Psi_m}{\delta \phi} - \frac{im}{a^2 \cos{\phi}} Z_{-n} \Psi_m \frac{\delta Z_{-n-m}}{\delta \phi} ]
+\end{equation}
+
+\begin{equation}
+\frac{dE}{dt} = \frac{1}{2g} \iztp \ip \sum_n [ Z_n \frac{\delta Z_{-n}}{\delta t} + Z_{-n} \frac{\delta Z_n}{\delta t} ] (\cos{\phi}) d\phi dp
+\end{equation}
+
+\begin{equation}
+\frac{dE}{dt} = \sum_n [ \frac{1}{2g} \iztp \ip (Z_n \frac{\delta Z_{-n}}{\delta t} + Z_{-n} \frac{\delta Z_n}{\delta t} ) (\cos{\phi}) d\phi dp ]
+\end{equation}
+
+\begin{equation}
+\frac{dE}{dt} = \sum_n \frac{dE_n}{dt}
+\end{equation}
+
+\begin{equation}
+\frac{dE_n}{dt} = \frac{1}{2g} \iztp \ip [ \sum_m \frac{\delta \Psi_m}{\delta \phi} [ \frac{i(n-m)}{a^2} Z_n Z_{n-m} + \frac{1(-n-m)}{a^2} Z_{-n} Z_{-n-m} ] - \frac{im}{a^2} \Psi_m [ Z_n \frac{\delta Z_{n-m}}{\delta \phi} + Z_{-n} \frac{\delta Z_{-n-m}}{\delta \phi} ] ] d\phi dp
+\end{equation}
+
+Diagnostic study:
+
+1. Wiin-Nielsen (1967, Tellus)
+
+$8 \leq n \leq 15$
+
+$A \sim n^{-3}$
+
+$K \sim n^{-3}$
+
+2. Steinerg et al (1971, JGR)
+
+$E \sim n^{-1}$
+
+(i) nonlinear transfer of K, A, and E
+
+\begin{equation}
+\frac{\delta A(m)}{\delta t} \sim C_{A}(m|n,l) + C_{A}(m|0) + F_{A}(m)
+\end{equation}
+\begin{equation}
+\frac{\delta K(m)}{\delta t} \sim C_{K}(m|n,l) + C_{K}(m|0) + F_{K}(m)
+\end{equation}
+\begin{equation}
+\frac{\delta E(m)}{\delta t} \sim C_{E}(m|n,l) + C_{E}(m|0) + F_{E}(m) + \beta (m)
+\end{equation}
+
+(ii) Flux of K and E:
+
+\begin{equation}
+\frac{\delta F}{\delta m} = - C_{K}(m|n,l)
+\end{equation}
+
+\begin{equation}
+\frac{\delta H}{\delta m} = - C_{E}(m|n,l)
+\end{equation}
+
+
+\end{document}
