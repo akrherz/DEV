@@ -1,7 +1,7 @@
 """Some stats based on distance from issuance time to issue
 
+Flash Flood Watches are by Zone and Flash Flood Warnings are by County!
 """
-import sys
 import psycopg2
 from tqdm import tqdm
 import pandas as pd
@@ -11,26 +11,39 @@ from pyiem.plot import MapPlot
 import matplotlib.pyplot as plt
 
 
-def workflow(wfo, phenomena):
+def workflow(wfo):
     """do work"""
     pgconn = psycopg2.connect(database='postgis', user='nobody', port=5555,
                               host='localhost')
     df = read_sql("""
-    WITH mywatches as (
-        SELECT product_issue, eventid, wfo, ugc, issue,
-        greatest(expire, init_expire) as expire
-        from warnings w
-        WHERE phenomena = %s and significance = 'A' and wfo = %s
+    with counties as (
+        select ugc, name, geom from ugcs where wfo = %s and
+        substr(ugc, 3, 1) = 'C' and end_ts is null),
+    zones as (
+        select ugc, name, geom from ugcs where wfo = %s and
+        substr(ugc, 3, 1) = 'Z' and end_ts is null and
+        substr(ugc, 4, 3)::int < 300),
+    -- assign every zone a primary county
+    xref as (
+        select c.ugc as county_ugc, z.ugc as zone_ugc
+        from counties c JOIN zones z on
+        (substr(c.ugc, 1, 2) = substr(z.ugc, 1, 2)
+        and
+        (st_area(ST_intersection(z.geom, c.geom)) / st_area(z.geom)) > 0.5)),
+    mywatches as (
+        SELECT product_issue, eventid, wfo, ugc, issue, expire, x.county_ugc
+        from warnings w JOIN xref x on (w.ugc = x.zone_ugc)
+        WHERE phenomena = 'FF' and significance = 'A' and wfo = %s
         and issue > '2006-01-01'),
     mywarnings as (
         SELECT wfo, ugc, issue, expire from warnings w
-        WHERE phenomena = %s and significance = 'W' and wfo = %s
+        WHERE phenomena = 'FF' and significance = 'W' and wfo = %s
         and issue > '2006-01-01'),
     agg1 as (
         SELECT a.wfo, a.eventid, a.ugc as watch_ugc, w.ugc as warn_ugc,
         a.product_issue, a.issue as watch_issue, a.expire as watch_expire,
         w.issue as warning_issue from mywatches a LEFT JOIN mywarnings w on
-        (a.ugc = w.ugc
+        (a.county_ugc = w.ugc
          and a.issue <= w.issue and a.expire > w.issue)),
     agg2 as (
         select wfo, extract(year from watch_issue) as yr,
@@ -49,7 +62,7 @@ def workflow(wfo, phenomena):
     count(*) as watch_zones,
     sum(case when warning_issue is not null then 1 else 0 end) as warn_counties
     from agg2 GROUP by wfo, yr, eventid ORDER by yr ASC, eventid ASC
-    """, pgconn, params=(phenomena, wfo, phenomena, wfo), index_col=None)
+    """, pgconn, params=(wfo, wfo, wfo, wfo), index_col=None)
     if len(df.index) == 0:
         return None
     return len(df[df['warn_counties'] > 0].index) / float(len(df.index)) * 100.
@@ -82,5 +95,4 @@ def plot():
 
 if __name__ == '__main__':
     # main()
-    # plot()
-    print workflow(sys.argv[1], sys.argv[2])
+    plot()
