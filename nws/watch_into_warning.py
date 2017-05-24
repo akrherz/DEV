@@ -52,8 +52,10 @@ def workflow(wfo, phenomena):
     """, pgconn, params=(phenomena, wfo, phenomena, wfo), index_col=None)
     if len(df.index) == 0:
         return None
-    return len(df[df['warn_counties'] > 0].index) / float(len(df.index)) * 100.
-
+    eff = len(df[df['warn_counties'] > 0].index) / float(len(df.index)) * 100.
+    overall = df['warn_counties'].sum() / float(df['watch_zones'].sum()) * 100.
+    print("WFO: %s Efficiency: %.1f  Overall: %.1f" % (wfo, eff, overall))
+    return eff
 
 def main():
     """Go Main"""
@@ -83,4 +85,4 @@ def plot():
 if __name__ == '__main__':
     # main()
     # plot()
-    print workflow(sys.argv[1], sys.argv[2])
+    workflow(sys.argv[1], sys.argv[2])

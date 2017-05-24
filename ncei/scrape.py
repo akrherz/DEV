@@ -46,7 +46,7 @@ def main(year):
         ends = []
         for day in range(1, 26, 5):
             begins.append(datetime.date(year, month, day))
-            ends.append(datetime.date(year, month, day + 5))
+            ends.append(datetime.date(year, month, day + 4))
         # Cleanup the 26th to whatever period
         nextmonth = datetime.date(year, month, 26) + datetime.timedelta(days=8)
         nextmonth = nextmonth.replace(day=1) - datetime.timedelta(days=1)

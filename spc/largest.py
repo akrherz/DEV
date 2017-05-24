@@ -19,9 +19,9 @@ def main():
     valid from data where rank = 1 ORDER by category, threshold
     """, pgconn, index_col=None)
     for _, row in df.iterrows():
-        print(("%-12s %-4s %6.0f %s"
+        print(("%-12s %-4s %6.0f %s %s"
                ) % (row['category'], row['threshold'], row['area'] / 1000.,
-                    row['valid'].strftime("%b %d, %Y")))
+                    row['valid'].strftime("%b %d, %Y"), row['valid']))
 
 
 if __name__ == '__main__':

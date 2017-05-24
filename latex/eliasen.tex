@@ -1,0 +1,462 @@
+\documentclass{article}
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\bfseries\thepage}
+\fancyhead[LO,RE]{\bfseries\leftmark}
+\fancypagestyle{plain}{
+  \fancyhead{}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+\include{eqns}
+
+\begin{document}
+
+We first have our governing equations in spherical coordinates.
+
+\begin{equation}
+\dudt + \
+\frac{u}{a\cos{\phi}} \frac{\delta u}{\delta \lambda}+ \
+\frac{v}{a} \frac{\delta u}{\delta \phi} + \
+\omega \frac{\delta u}{\delta p} - \
+\frac{uv}{a} \tan{\phi} - fv + \
+\frac{g}{a \cos{\phi}} \frac{\delta z}{\delta \lambda} - \
+F_\lambda = 0
+\label{ugov}
+\end{equation}
+
+\begin{equation}
+\dvdt \
++ \frac{u}{a \cos{\phi}} \dvdl \
++ \frac{v}{a} \dvdl \
++ \omega \dvdp \
++ \frac{u^2}{a} \tan{u} + fu \
++ \frac{g}{a} \frac{\delta z}{\delta \phi} \
+- F_\phi = 0
+\label{vgov}
+\end{equation}
+
+\begin{equation}
+\frac{\delta z}{\delta p} = - \frac{\alpha}{g} \
+= - \frac{RT}{pg} = - \frac{R}{pg}(\frac{T}{\theta})\theta \
+= - \frac{R}{pg}(\frac{p}{p_0})^\kappa \theta
+\label{Zgov}
+\end{equation}
+
+\begin{equation}
+\frac{1}{a \cos{\phi}} \dudl \
++ \frac{1}{a \cos{\phi}} \frac{\delta (v \cos{\phi})}{\delta \phi} \
++ \frac{\delta{\omega}}{\delta p} = 0
+\label{cgov}
+\end{equation}
+
+\begin{equation}
+\frac{\delta \theta}{\delta t} \
++ \frac{u}{a \cos{\phi}} \frac{\delta \theta}{\delta \lambda} \
++ \frac{v}{a} \frac{\delta \theta}{\delta \phi} \
++ \omega \frac{\delta \theta}{\delta p} \
+= \frac{\theta}{C_p T} Q
+\label{thetagov}
+\end{equation}
+
+Combine governing equations with the continuity equation:
+
+\begin{equation}
+\dudt \
++ \frac{1}{a \cos{\phi}} \frac{\delta u^2}{\delta \lambda} \
++ \frac{1}{a \cos^2{\phi}} \frac{\delta}{\delta \phi}(uv\cos^2{\phi}) \
++ \frac{\delta}{\delta p}(u \omega) - fv \
++ \frac{g}{a \cos{\phi}} \frac{\delta z}{\delta \lambda} - F_\lambda \
+= 0 
+\end{equation}
+
+\begin{equation}
+\dvdt \
++ \frac{1}{a \cos{\phi}} \frac{\delta}{\delta \lambda}(uv)\
++ \frac{1}{a \cos{\phi}} \frac{\delta}{\delta \phi}(v^2\cos{\phi}) \
++ \ddp(v \omega) \
++ \frac{u^2}{a} \tan{\phi} \
++ fu \
++ \frac{g}{a} \frac{\delta z}{\delta \phi} \
+- F_\phi = 0
+\end{equation}
+
+\begin{equation}
+\dtdt \
++ \frac{\delta (\theta u)}{a \cos{\phi} \delta \lambda} \
++ \frac{1}{a \cos{\phi}} \frac{\delta}{\delta \phi}(\theta v \cos{\phi}) \
++ \ddp (\theta \omega) \
+= \frac{\theta}{C_p T} Q
+\end{equation}
+
+zonally average Eq \ref{ugov}
+
+\begin{equation}
+\duzdt + \ooacsp \ddphi [ (uv)_z \cos^2{\phi} ] \
++ \ddp (u\omega)_z - fv_z - F_{{\lambda}z} = 0
+\label{zonalu}
+\end{equation}
+
+zonally average Eq \ref{vgov}
+
+\begin{equation}
+\dvzdt + \ooacp \ddphi[(v^2)_z \cos{\phi}] \
++ \ddp (v \omega)_z \
++ \frac{(u^2)_z}{a} \tan \phi + fu_z + \frac{g}{a} \frac{\delta z_z}{\delta \phi} \
+- F_{{\phi}z} = 0 
+\label{zonalv}
+\end{equation}
+
+We now zonally average Eq \ref{Zgov}
+
+\begin{equation}
+\ddp z_z = - \frac{R}{pg}(\frac{p}{p_0})^\kappa \theta_z
+\label{zonaltheta}
+\end{equation}
+
+zonally average Eq \ref{cgov}
+
+\begin{equation}
+\frac{1}{a \cos{\phi}} \ddphi (v_z \cos{\phi}) + \frac{\delta \omega_z}{\delta p} = 0
+\label{zonalc}
+\end{equation}
+
+zonally average Eq \ref{thetagov}
+
+\begin{equation}
+\dtzdt + \ooacp \ddphi [ (\theta v)_z \cos {\phi}] \
++ \ddp(\theta \omega)_z = \frac{1}{C_p}(\frac{p_0}{p})^\kappa Q_z
+\label{zonaltheta}
+\end{equation}
+
+Now we seperate equations \ref{zonalu} , \ref{zonalv}, \ref{zonaltheta} into 
+zonal and eddy components.
+
+\begin{equation}
+\duzdt + \ooacsp \ddphi (v_z u_z \cos^2 \phi ) \
++ \ddp (u_z \omega_z) - f v_z = \\
+F_{\lambda z} - \ooacsp \ddphi [ ( v_e u_e )_z \cos^2 \phi ] \
+- \ddp (u_e \omega_e )_z
+\label{zeu}
+\end{equation}
+
+\begin{eqnarray}
+\dvzdt + \ooacp \ddp ({v_z}^2 \cos \phi ) + \ddp (v_z \omega_z) 
++ \frac{{u_z}^2}{a} \tan{\phi} +fu_z + \frac{g}{a} \frac{\delta z_z}{\delta \phi} 
+\\
+= F_{\phi z} - \ooacp \ddphi [ (v_e v_e)_z \cos \phi ] 
+- \ddp (v_e w_e)_z - \frac{(u_e u_e)_z}{a} \tan \phi
+\label{zev}
+\end{eqnarray}
+
+\begin{equation}
+\dtzdt + \ooacp \ddphi (\theta_z v_z \cos \phi ) + \ddp (\theta_z \omega_z) \
+= \frac{1}{C_p} (\frac{p_0}{p})^\kappa Q_z - \ooacp \ddp [ (\theta_e v_e)_z \cos {\phi} ] \
++ \ddp (\theta_e \omega_e )_z
+\label{zetheta}
+\end{equation}
+
+For our purposes, zonally averaged $v_z$ is small.  So Equation \ref{zev} reduces to.
+
+\begin{equation}
+\frac{{u_z}^2}{a} \tan{\phi} +fu_z + \frac{g}{a} \frac{\delta z_z}{\delta \phi} = 0
+\end{equation}
+
+This then simplifies to the geostrophic relation
+
+\begin{equation}
+u_z (f + \frac{u_z}{a}\tan \phi ) = - \frac{g}{a}\frac{z_z}{\delta \phi}
+\end{equation}
+
+We can quickly take the vertical derviative $\ddp ()$ of the prior equation to
+arrive at the thermal wind equation:
+
+\begin{equation}
+(\frac{2u_z \tan{\phi}}{a} + f) \duzdp = - \frac{g}{a} \ddphi (\dZzdp)
+= - \frac{g}{a} \ddp (- \frac{\alpha_z}{g}) = \frac{1}{a} \ddphi(\frac{R}{p} T_z) = (\frac{R}{p}) \frac{1}{a} \dTzdphi 
+\label{thermal}
+\end{equation}
+
+or 
+
+\begin{equation}
+(\frac{2u_z \tan{\phi}}{a} + f) \duzdp = (\frac{R}{p}) (\frac{p}{p_0})^\kappa \frac{1}{a} \dtzdphi = (\frac{R}{p}) \frac{1}{a} \dTzdphi 
+\end{equation}
+
+We are now ready to combine the zonally averaged continuity equation
+with the $u_z$ (Eq \ref{zeu}) and $\theta_z$ (Eq \ref{zetheta}) equations.
+
+\begin{equation}
+\duzdt \
++ \frac{v_z}{a} \duzdphi \
++ \omega_z \duzdp \
+- fv_z \
+= F_{\lambda z} \
+- \ooacsp \ddphi [ ( v_e u_e )_z \cos^2 \phi ] \
+- \ddp (u_e \omega_e )_z
+\label{combineu}
+\end{equation}
+
+\begin{equation}
+\dtzdt + \frac {v_z}{a} \dtzdphi
++ \omega_z \dtzdp
+= \frac{1}{C_p} (\frac{p_0}{p})^\kappa Q_z \
+- \ooacp \ddphi [ (\theta_e v_e)_z \cos {\phi} ] \
+- \ddp (\theta_e \omega_e )_z
+\label{combinetheta}
+\end{equation}
+
+Now lets write the $\omega_z\dtzdp$ term of Eq (\ref{combinetheta} as
+
+\begin{eqnarray}
+\omega_z \frac{\theta_z}{\theta_z} \dtzdp \
+\nonumber\\
+\omega_z (\frac{p_0}{p})^\kappa \frac{T_z}{\theta_z}\dtzdp \
+\nonumber\\
+(\frac{p_0}{p})^\kappa \sigma_z \omega_z \
+\nonumber
+\end{eqnarray}
+
+where 
+
+\begin{equation}
+\theta_z =  (\frac{p_0}{p})^\kappa T_z
+\end{equation}
+
+\begin{equation}
+\theta_e =  (\frac{p_0}{p})^\kappa T_e
+\end{equation}
+
+Getting back to the problem at hand, we can define the terms on the LHS on
+equations \ref{combineu} and \ref{combinetheta} as $\chi$ and H. These 
+terms representing the forcing. And so by
+substituting $T$ in for $\theta$ we get.
+
+\begin{equation}
+\chi =  F_{\lambda z} \
+- \ooacsp \ddphi [ ( v_e u_e )_z \cos^2 \phi ] \
+- \ddp (u_e \omega_e )_z
+\end{equation}
+
+\begin{equation}
+H = \frac{1}{C_p} Q_z - \ooacp \ddp [ (\theta_e v_e)_z \cos {\phi} ] \
+- \ddp (\theta_e \omega_e )_z
+\end{equation}
+
+and so now we have
+
+\begin{equation}
+\duzdt \
++ \frac{v_z}{a} \duzdphi \
++ \omega_z \duzdp \
+- fv_z = \chi
+\label{four}
+\end{equation}
+
+\begin{equation}
+\dTzdt + \frac{v_z}{a} \dTzdphi + \theta_z \omega_z = H
+\label{five}
+\end{equation}
+
+The time dervative of the thermal wind equation would provide the connection
+for $u_z$ and $T_z$ :
+
+taking $\ddt$ of Eq \ref{thermal} we get
+
+\begin{equation}
+(\frac{2 u_z}{a} \tan \phi + f) \frac{\delta^2 u_z}{\delta t \delta p} \
++ \frac{2 \tan \phi}{a} \duzdt \duzdp = (\frac{R}{p}) \frac{\delta}{a \delta \phi} (\dTzdt)
+\label{six}
+\end{equation}
+
+taking $\ddp$ of Eq \ref{four} we get
+\begin{equation}
+\frac{\delta^2 u_z}{\delta p \delta t } \
+= - \frac{v_z}{a} \ddphi \duzdp \
+- \frac{1}{a} \dvzdp \duzdphi \
+- \dozdp \duzdp \
+- \omega_z \frac{\delta^2 u_z}{\delta p^2} \
++ f \dvzdp \
++ \frac{\delta \chi}{\delta p}
+\label{seven}
+\end{equation}
+
+rearranging Eq \ref{four} we get
+\begin{equation}
+\duzdt =
+- \frac{v_z}{a} \duzdphi \
+- \omega_z \duzdp \
++ fv_z + \chi
+\label{eight}
+\end{equation}
+
+and finally, taking $\ddphi$ and multipling by $\frac{1}{a}$ with Eq 
+\ref{eight} we get
+
+\begin{equation}
+\frac{1}{a} \ddphi (\dTzdt) \
+= - \frac{v_z}{a^2} \frac{\delta^2 T_z}{\delta \phi^2} \
+- \frac{1}{a^2} \dvzdphi \dTzdphi \
+- \sigma_z \frac{1}{a} \dozdphi \
++ \frac{1}{a} \frac{\delta H}{\delta \phi}
+\label{nine}
+\end{equation}
+
+We now introduce streamfunction for meridional circulation using zonally 
+averaged continuity equation.
+
+\begin{equation}
+\ddphi (v_z \cos{\phi}) \
++ \ddp (\omega_z a \cos \phi) = 0
+\end{equation}
+
+\begin{eqnarray}
+v_z \cos \phi = \frac{\delta \psi}{\delta p}
+\nonumber\\
+v_z = \frac{1}{\cos \phi} \frac{\delta \psi}{\delta \phi}
+\nonumber\\
+\omega_z a \cos {\psi} = - \frac{\delta \psi}{\delta \phi}
+\nonumber\\
+\omega_z = - \frac{1}{a \cos \phi} \frac{\delta \psi}{\delta \phi}
+\label{ten}
+\end{eqnarray}
+
+We can now substitute Eq \ref{ten} back into equations \ref{seven}, 
+\ref{eight}, and \ref{nine} to get
+
+\begin{equation}
+\duzdt = \
+- \ooacp \dpsidp \duzdphi \
++ \ooacp \dpsidphi \duzdp \
++ \focp \dpsidp + \chi
+\label{eightprime}
+\end{equation}
+
+\begin{equation}
+\frac{\delta^2 u_z}{\delta p \delta t} = \
+- \ooacp \dpsidp \ddphi (\duzdp) \
+- \ooacp \frac{\delta^2 \psi}{\delta p^2} \duzdt \
++ \ooacp \frac{\delta^2 \psi}{\delta p \delta \phi} \duzdp \
++ \ooacp \dpsidphi \frac{\delta^2 u_z }{\delta p^2} \
++ \frac{f}{\cos \phi} \frac{\delta^2 \psi}{\delta p^2} \
++ \frac{\delta \chi}{\delta p}
+\label{sevenprime}
+\end{equation}
+
+\begin{equation}
+\frac{1}{a} \ddphi (\dTzdt) = \
+- \ooascp \dpsidp \frac{\delta^2 T_z}{\delta \phi^2} \
+- \ooascp \frac{\delta_2 \psi}{\delta p \delta \phi} \dTzdt \
++ \frac{\sigma_z}{a^2 \cos \phi} \frac{\delta^2 \psi}{\delta \phi^2} \
++ \frac{1}{a} \frac{\delta H}{\delta \phi}
+\label{nineprime}
+\end{equation}
+
+We are now ready to substitute Eqs \ref{sevenprime}, \ref{eightprime}, and 
+\ref{nineprime} into Eq \ref{six} , which is the thermal wind equation.  This
+gets long and messy!
+
+\begin{eqnarray}
+(\frac{2 u_z \tan \phi}{a} + f) [ - \ooacp \dpsidp \ddphi (\duzdp) \
+\\
+- \ooacp \frac{\delta^2 \psi}{\delta p^2} \duzdphi \
++ \ooacp \frac{\delta^2 \psi}{\delta p \delta \phi} \duzdp \
++ \ooacp \dpsidphi \frac{\delta^2 u_z}{\delta p^2} \
++ \frac{f}{\cos \phi} \frac{\delta^2 \psi}{\delta p^2} \
++ \frac{\delta \chi}{\delta p} ] \
+\nonumber\\
++ \frac{2 \tan \phi}{a} \duzdp [ \
+- \ooacp \dpsidp \duzdphi
++ \ooacp \dpsidphi \duzdp 
++ \frac{f}{\cos \phi} \dpsidp
++ \chi ]
+\nonumber\\
+= - \frac{R}{p} \ooascp \dpsidp \frac{\delta^2 T_z}{\delta \phi_2}
+- (\frac{R}{p}) \ooascp \frac{\delta^2 \psi}{\delta p \delta \phi} \frac{\delta T_z}{\delta \phi} \
++ (\frac{R}{p}) \frac{\sigma^2}{a^2 \cos{\phi}} \frac{\delta^2 \psi}{\delta \phi^2} \
++ (\frac{R}{p}) \frac{1}{a} \frac{\delta H}{\delta \phi}
+\end{eqnarray}
+
+Wow, wasn't that fun!  Now we break up this equation by similar terms.
+
+\begin{eqnarray}
+\frac{\delta^2 \psi}{\delta p^2} & [ \
+- \ooacp \duzdphi (\frac{2 u_z \tan \phi}{a} + f) \
++ \frac{f}{\cos \phi}(\frac{2 u_z \tan \phi}{a} + f) ] \
+\nonumber\\
+\frac{\delta^2 \psi}{\delta p \delta \phi} & [ \
+\ooacp \duzdp  (\frac{2 u_z \tan \phi }{a} + f) \
++ (\frac{R}{p}) \ooacp \dTzdphi ] \
+\nonumber\\
+\frac{\delta^2 \psi}{\delta \phi^2} & [ \
+- (\frac{R}{p}) \frac{\sigma_z}{a^2 \cos \phi} ] \
+\nonumber\\
+\dpsidphi & [ \
+(\frac{2 u_z \tan \phi}{a} + f) \ooacp \frac{\delta^2 u_z}{\delta p^2} \
++ \frac{2 \tan \phi}{a} (\duzdp) \ooacp \duzdp ] \
+\nonumber\\
+\dpsidp & [ \
+(\frac{2 u_z \tan \phi}{a} + f) \frac{-1}{a \cos \phi} \frac{\delta^2 u_z}{\delta \phi \delta p} \
++ \frac{2 \tan \phi}{a} \duzdp \frac{-1}{a \cos \phi} \duzdphi \
++ \frac{2 \tan \phi}{a} \duzdp \frac{f}{\cos \phi} \
++ (\frac{R}{p}) \ooascp \frac{\delta^2 T_z}{\delta \phi^2} ] \
+\nonumber\\
+& = (\frac{R}{p}) \frac{1}{a} \frac{\delta H}{\delta \phi} \
+- (\frac{2 u_z \tan \phi}{a} + f) \frac{\delta \chi}{\delta p} \
+- \frac{2 \tan \phi}{a} (\duzdp) \chi 
+\end{eqnarray}
+
+And so now, we can name the terms in the brackets from the previous equation
+as something shorter, 
+like A, B, C, D, and E.  Relax, we are on the home stretch here!!
+
+\begin{eqnarray}
+A & = & \
+- \ooacp \duzdphi (\frac{2 u_z \tan \phi}{a} + f) \
++ \frac{f}{\cos \phi}(\frac{2 u_z \tan \phi}{a} + f) \
+\nonumber\\
+& = &(\frac{2 u_z \tan \phi}{a} + f) \frac{1}{\cos \phi} (f - \frac{\delta u_z}{a \delta \phi})
+\\
+B & = & \
+\ooacp \duzdp  (\frac{2 u_z \tan \phi }{a} + f) \
++ (\frac{R}{p}) \ooacp \dTzdphi \
+\nonumber\\
+& = & \
+\ooacp \duzdp (\frac{2 u_z \tan \phi }{a} + f) \
++ \ooacp \duzdp (\frac{2 u_z \tan \phi }{a} + f) \
+\nonumber\\
+& = &\
+\frac{2}{a \cos \phi} \duzdp (\frac{2 u_z \tan \phi }{a} + f) \
+\nonumber\\
+& = &\
+\frac{2}{a^2 \cos \phi} (\frac{R}{p}) \dTzdphi \
+\\
+C & = & - (\frac{R}{p}) \frac{\sigma_z}{a \cos \phi} \
+\\
+D & = & \
+- (\frac{2 u_z \tan \phi}{a} + f) \ooacp \frac{\delta^2 u_z}{\delta p^2} \
++ \frac{2 \tan \phi}{a} \duzdp \ooacp \duzdp \
+\nonumber\\
+& = &\frac{2 \tan \phi}{a} \duzdp \frac{f}{\cos \phi} \
+\\
+E & = & \ddp [ (\frac{2 u_z \tan \phi}{a} + f) \frac{1}{a \cos \phi} \duzdp ] \
+= \ddp [ \ooascp (\frac{R}{p}) \dTzdphi ]
+\end{eqnarray}
+
+And so we finally get to the "Kuo-Eliassen Equation"
+
+\begin{eqnarray}
+A \frac{\delta^2 \psi}{\delta p^2} \
++ B \frac{\delta^2 \psi}{\delta p \delta \phi} \
++ C \frac{\delta^2 \psi}{\delta \phi^2} \
++ D \dpsidp \
++ E \dpsidphi \
+\nonumber\\
+= \frac{1}{a} (\frac{R}{p}) \frac{\delta H}{\delta \phi} \
+- f \frac{\delta \chi}{\delta p} \
+- \ddp (\frac{2 \tan \phi}{a} u_z \chi)
+\end{eqnarray}
+
+\end{document}

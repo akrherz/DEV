@@ -8,8 +8,8 @@ import requests
 
 def main():
     # Generate series of images between 0z and 12z on the 3rd of August
-    now = datetime.datetime(2017, 5, 11, 0, 0)
-    ets = datetime.datetime(2017, 5, 12, 0, 0)
+    now = datetime.datetime(2017, 5, 22, 0, 0)
+    ets = datetime.datetime(2017, 5, 23, 0, 0)
     interval = datetime.timedelta(minutes=5)
 
     uri = ("http://mesonet.agron.iastate.edu/"
