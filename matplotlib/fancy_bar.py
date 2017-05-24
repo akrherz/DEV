@@ -2,10 +2,19 @@
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
-XLABELS = ['Tornado', 'Flash Flood', 'Winter Storm', 'Severe Thunderstorm',
-           'Blizzard', 'High Wind']
-VALS = [55, 59, 69, 73, 85, 86]
-VALS2 = [16, 19, 51, 35, 74, 80]
+YEAR = """ 2013 |  0.145804676753783
+ 2014 |  0.150943396226415
+ 2015 |  0.126315789473684
+ 2016 |   0.12796697626419"""
+YTD = """ 2013 |   0.12781954887218
+ 2014 |  0.144329896907216
+ 2015 |  0.152291105121294
+ 2016 |  0.107223476297968
+ 2017 | 0.073"""
+YEARS = range(2013, 2018)
+VALS = [float(line.split("|")[1].strip()) * 100. for line in YEAR.split("\n")]
+VALS2 = [float(line.split("|")[1].strip()) * 100. for line in YTD.split("\n")]
+
 FONT = FontProperties()
 FONT.set_weight('bold')
 
@@ -13,30 +22,29 @@ FONT.set_weight('bold')
 def main():
     """Go"""
     plt.style.use('ggplot')
-    ax = plt.axes([0.3, 0.15, 0.65, 0.7])
-    ax.barh(range(len(VALS)), VALS, height=0.4, align='edge',
-            label='Per Watch')
-    ax.barh(range(len(VALS)), VALS2, height=-0.4, align='edge',
-            label='Per County/Zone in Watch')
-    for y, x in enumerate(VALS):
-        ax.text(x - 2, y + 0.2, "%s%%" % (x, ), va='center', ha='right',
-                color='yellow', fontproperties=FONT)
-    for y, x in enumerate(VALS2):
-        ax.text(x - 2, y - 0.2, "%s%%" % (x, ), va='center', ha='right',
-                color='yellow', fontproperties=FONT)
-    ax.set_xlim(0, 100)
-    ax.set_xticks(range(0, 101, 25))
+    ax = plt.axes([0.15, 0.15, 0.8, 0.7])
+    ax.bar(YEARS[:-1], VALS, width=0.4, align='edge',
+           label='Full Year')
+    ax.bar(YEARS, VALS2, width=-0.4, align='edge',
+           label='YTD to 24 May')
+    for x, y in zip(YEARS, VALS):
+        ax.text(x + 0.25, y + 0.5, "%.1f%%" % (y, ), ha='center',
+                color='k', fontproperties=FONT)
+    for x, y in zip(YEARS, VALS2):
+        ax.text(x - 0.25, y + 0.5, "%.1f%%" % (y, ), ha='center',
+                color='k', fontproperties=FONT)
+    ax.set_ylim(0, 20)
+    ax.set_xticks(YEARS)
     ax.legend(loc=(0.0, -0.15), ncol=2)
     plt.gcf().text(0.5, 0.93,
-                   ("NWS Des Moines 2007-2016\n"
-                    "percentage of watches that receive 1+ warning\n"
-                    "values are for straight conversions, not higher end warnings"
+                   ("NWS Tornado Warning Issuance Tornado Tag\n"
+                    "percentage of warnings indicating Tornado was OBSERVED\n"
+                    "warnings without 'TORNADO...' tags were omitted"
                     ), fontsize=14, ha='center', va='center')
     plt.gcf().text(0.5, 0.01,
-                   "* based on unofficial archives maintained by the IEM, 10 May 2017",
+                   "* based on unofficial IEM, 24 May 2017, participating WFOs/Regions have changed",
                    ha='center')
-    ax.set_yticks(range(len(VALS)))
-    ax.set_yticklabels(XLABELS)
+    ax.set_ylabel("Percentage of Warnings")
     plt.gcf().savefig('test.png')
 
 
