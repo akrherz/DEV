@@ -1,51 +1,69 @@
-import netCDF4
-from pyiem import iemre, plot
-import numpy
+"""Period between rainfalls"""
+from __future__ import print_function
 import datetime
+
+import numpy as np
+import netCDF4
+import matplotlib.pyplot as plt
+from pyiem import iemre, plot
+from pyiem.datatypes import distance
 import pytz
-
-sts = datetime.datetime(2015,5,1, 0)
-sts = sts.replace(tzinfo=pytz.timezone("UTC"))
-ets = datetime.datetime(2015,6,28, 0)
-ets = ets.replace(tzinfo=pytz.timezone("UTC"))
+THRESHOLD = distance(0.25, 'in').value('mm')
 
 
-nc = netCDF4.Dataset('/mesonet/data/iemre/2015_mw_hourly.nc')
-lons = nc.variables['lon'][:]
-lats = nc.variables['lat'][:]
-running = numpy.zeros( (len(nc.dimensions['lat']), len(nc.dimensions['lon'])))
-maxval = numpy.zeros( (len(nc.dimensions['lat']), len(nc.dimensions['lon'])))
-interval = datetime.timedelta(hours=1)
-now = sts
-i,j = iemre.find_ij(-93.61, 41.99)
-while now < ets:
-    offset = iemre.hourly_offset(now)
-    p01m = nc.variables['p01m'][offset]
-    # 0.05in is 1.27 mm
-    this = numpy.where(p01m > 1.27, 1, 0)
-    running = numpy.where(this == 1, 0, running + 1)
-    maxval = numpy.where(running > maxval, running, maxval)
-    print now, running[j,i], maxval[j,i]
-    
-    now += interval
+def main():
+    """Go Main Go"""
+    sts = datetime.datetime(2017, 4, 25, 0)
+    sts = sts.replace(tzinfo=pytz.timezone("UTC"))
+    ets = datetime.datetime(2017, 5, 30, 0)
+    ets = ets.replace(tzinfo=pytz.timezone("UTC"))
 
-nc2 = netCDF4.Dataset("/mesonet/data/iemre/state_weights.nc")
-domain = nc2.variables['domain'][:]
-nc2.close()
-#maxval = numpy.where(domain == 1, maxval, 1.e20)
+    nc = netCDF4.Dataset('/mesonet/data/iemre/%s_mw_hourly.nc' % (sts.year, ))
+    lons = nc.variables['lon'][:]
+    lats = nc.variables['lat'][:]
+    running = np.zeros((len(nc.dimensions['lat']), len(nc.dimensions['lon'])))
+    maxval = np.zeros((len(nc.dimensions['lat']), len(nc.dimensions['lon'])))
+    interval = datetime.timedelta(hours=1)
+    now = sts
+    i, j = iemre.find_ij(-93.61, 41.99)
+    while now < ets:
+        offset = iemre.hourly_offset(now)
+        p01m = np.sum(nc.variables['p01m'][offset - 24:offset], axis=0)
+        # 0.05in is 1.27 mm
+        this = np.where(p01m > THRESHOLD, 1, 0)
+        running = np.where(this == 1, 0, running + 1)
+        maxval = np.where(running > maxval, running, maxval)
+        print("%s %s %s" % (now, running[j, i], maxval[j, i]))
 
-m = plot.MapPlot(sector='midwest',
-                title='1 May - 28 June 2015 Max Period between hourly 0.05+ inch Precip',
-                subtitle='based on NCEP Stage IV data')
+        now += interval
 
-extra = lons[-1] + (lons[-1] - lons[-2])
-#lons = numpy.concatenate([lons, [extra,]])
+    nc2 = netCDF4.Dataset("/mesonet/data/iemre/state_weights.nc")
+    domain = nc2.variables['domain'][:]
+    nc2.close()
+    # maxval = numpy.where(domain == 1, maxval, 1.e20)
 
-extra = lats[-1] + (lats[-1] - lats[-2])
-lats[-1] = extra
-#lats = numpy.concatenate([lats, [extra,]])
+    m = plot.MapPlot(sector='midwest',
+                     title=('Max Period '
+                            'between 24 Hour 0.25+ inch Total Precipitation'),
+                     subtitle=('Period of 25 Apr - 30 May 2017, '
+                               'based on NCEP Stage IV data'))
 
-x, y = numpy.meshgrid(lons, lats)
-#m.pcolormesh(x, y, maxval / 24.0, numpy.arange(0,25,1), units='days')
-m.contourf(x, y, maxval / 24.0, numpy.arange(0,25,2), units='days')
-m.postprocess(filename='test.png')
+    extra = lons[-1] + (lons[-1] - lons[-2])
+    lons[-1] = extra
+    # lons = np.concatenate([lons, [extra, ]])
+
+    extra = lats[-1] + (lats[-1] - lats[-2])
+    lats[-1] = extra
+    # lats = np.concatenate([lats, [extra, ]])
+
+    lons, lats = np.meshgrid(lons, lats)
+    # m.pcolormesh(x, y, maxval / 24.0, numpy.arange(0,25,1), units='days')
+    maxval = np.where(maxval > 800, 73., maxval)
+    cmap = plt.get_cmap('terrain')
+    m.contourf(lons, lats, maxval / 24.0, np.arange(1, 11.1, 1), cmap=cmap,
+               units='days', clip_on=False)
+    m.postprocess(filename='test.png')
+
+
+if __name__ == '__main__':
+    main()
