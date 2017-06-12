@@ -1,37 +1,40 @@
+"""Map values"""
+
+from pandas.io.sql import read_sql
 import psycopg2
 from pyiem.plot import MapPlot
 from pyiem.network import Table as NetworkTable
-nt = NetworkTable("IACLIMATE")
-COOP = psycopg2.connect(database='coop', host='iemdb', user='nobody')
-cursor = COOP.cursor()
 
-cursor.execute("""
- WITH yearly as (
-   SELECT station, year, sum(precip) from alldata_ia where
-   station in (select distinct station from alldata_ia where year = 1893)
-   and year > 1892 GROUP by station, year)
 
- SELECT station, sum(case when sum > 41.14 then 1 else 0 end), count(*)
- from yearly GROUP by station ORDER by sum ASC
+def main():
+    """Go Main!"""
+    nt = NetworkTable("WICLIMATE")
+    pgconn = psycopg2.connect(database='coop', host='localhost', port=5555,
+                              user='nobody')
 
-""")
-lats = []
-lons = []
-ranks = []
-for row in cursor:
-    if row[0][2] == 'C' or row[0] in ['IA0000']:
-        continue
-    print row
+    df = read_sql("""
+        SELECT station, max(year) as val from alldata_wi where
+        high >= 100 and substr(station, 3, 1) != 'C'
+        and station != 'IA0000' GROUP by station
+    """, pgconn, index_col='station')
+    df['lat'] = 0.
+    df['lon'] = 0.
+    for station, _ in df.iterrows():
+        if station in nt.sts:
+            df.at[station, 'lat'] = nt.sts[station]['lat']
+            df.at[station, 'lon'] = nt.sts[station]['lon']
 
-    lats.append(nt.sts[row[0]]['lat'])
-    lons.append(nt.sts[row[0]]['lon'])
-    ranks.append(row[1])
+    mp = MapPlot(title="Year of Last 100+ Daily High Temperature",
+                 subtitle=('Valid up till 9 June 2017'), sector='state',
+                 state='WI',
+                 drawstates=True, continentalcolor='white')
+    mp.plot_values(df['lon'].values,
+                   df['lat'].values,
+                   df['val'].values, textsize=12, labelbuffer=5, color='k')
+    mp.drawcounties()
+    mp.postprocess(filename='test.png')
+    mp.close()
 
-m = MapPlot(title="Where would Sioux City's 41.14 inch 2014 Total Rank?",
-            subtitle=('period 1893-2014, number of years (out of 122) '
-                      'with local total over 41.14 inches'),
-            drawstates=True, axisbg='white')
-m.plot_values(lons, lats, ranks, textsize=20, color='r')
-m.drawcounties()
 
-m.makefeature()
+if __name__ == '__main__':
+    main()
