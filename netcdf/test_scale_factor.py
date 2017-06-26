@@ -14,7 +14,7 @@ class TestScaleFactor(unittest.TestCase):
         nc = netCDF4.Dataset(self.testfn, 'w')
         nc.createDimension('x', 10)
         ncvar = nc.createVariable('ncvar', np.ushort, ('x', ))
-        ncvar.scale_factor = 100.
+        ncvar.scale_factor = 0.01
         ncvar.add_offset = 0.
         nc.close()
 
