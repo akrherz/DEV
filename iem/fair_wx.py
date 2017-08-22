@@ -1,9 +1,16 @@
+"""State Fair Wx"""
+from __future__ import print_function
+
 import mx.DateTime
 import psycopg2
+import numpy
+import numpy.ma
+import matplotlib.pyplot as plt
+import pandas as pd
+
 COOP = psycopg2.connect(database='coop', host='iemdb', user='nobody')
-ccursor = COOP.cursor()
-ASOS = psycopg2.connect(database='asos', host='iemdb', user='nobody')
-acursor = ASOS.cursor()
+ASOS = psycopg2.connect(database='asos', host='localhost', port=5555,
+                        user='nobody')
 
 FAIRS = [
 [mx.DateTime.DateTime(1880,9,6),mx.DateTime.DateTime(1880,9,10)],
@@ -137,82 +144,53 @@ FAIRS = [
 [mx.DateTime.DateTime(2013,8,8),mx.DateTime.DateTime(2013,8,18)],
 [mx.DateTime.DateTime(2014,8,7),mx.DateTime.DateTime(2014,8,17)],
 [mx.DateTime.DateTime(2015,8,13),mx.DateTime.DateTime(2015,8,23)],
+    [mx.DateTime.DateTime(2016, 8, 11), mx.DateTime.DateTime(2016, 8, 21)],
+    [mx.DateTime.DateTime(2017, 8, 10), mx.DateTime.DateTime(2017, 8, 20)],
 ]
 
-import numpy
-import numpy.ma
 
-avgH = numpy.ma.zeros( (2016-1880) )
-avgL = numpy.ma.zeros( (2016-1880) )
-precip = numpy.ma.zeros( (2016-1880) )
-precip[:] = -0.000000001
-#heatcnt = numpy.ma.zeros( (2012-1880) )
-#heatcnt[:] = -1
+def main():
+    """Do Something!"""
+    acursor = ASOS.cursor()
+    rows = []
 
-cnts = numpy.zeros( (12) )
-hits = numpy.zeros( (12) )
-rains = numpy.zeros( (12) )
-total = numpy.zeros( (12) )
+    for sts, ets in FAIRS:
+        if sts.year < 1951:
+            continue
+        acursor.execute("""
+            WITH hourly as (
+                SELECT date_trunc('hour', valid) as hr, max(tmpf) from
+                t""" + str(sts.year) + """ WHERE station = 'DSM' and
+                valid between '%s 00:00' and '%s 00:00' and
+                extract(hour from valid) between 6 and 20
+                and dwpf is not null GROUP by hr
+            ) SELECT count(*),
+            sum(case when max >= 79.5 then 1 else 0 end) from hourly
+        """ % (sts.strftime("%Y-%m-%d"), ets.strftime("%Y-%m-%d")))
+        row = acursor.fetchone()
+        rows.append(dict(year=sts.year, count=row[0], hits=row[1]))
 
-dwpfs = open('dwpf.txt', 'w')
+    df = pd.DataFrame(rows)
+    df['percentage'] = df['hits'] / df['count'] * 100.
+    (fig, ax) = plt.subplots(1, 1)
+    ax.bar(df['year'], df['percentage'])
+    ax.grid(True)
+    ax.axhline(df['percentage'].mean(), lw=2, color='r')
+    ax.text(2019, df['percentage'].mean(),
+            "Avg:\n%.1f" % (df['percentage'].mean(),), va='center')
+    ax.set_xlim(1949, 2018)
+    ax.set_ylabel("Percentage of Hours")
+    ax.set_title(("Iowa State Fair Weather (via Des Moines Airport)\n"
+                  r"% of Hours between 7 AM and 10 PM "
+                  r"with Temperature >= 80$^\circ$F"
+                  ))
+    fig.savefig('test.png')
 
-for sts, ets in FAIRS:
-  #if sts.year < 1933:
-  #  continue
-  ccursor.execute("""
-  SELECT avg(high), avg(low), sum(case when low < 60 then 1 else 0 end) from 
-  alldata_ia where station = 'IA2203' and
-  day >= '%s' and day <= '%s' 
-  """ % (sts.strftime("%Y-%m-%d"), ets.strftime("%Y-%m-%d")))
-  i = 0
-  row = ccursor.fetchone()
-  avgH[sts.year-1880] = row[0]
-  avgL[sts.year-1880] = row[1]
-  print sts, row[2]
 
-  # Heat index
-#  if sts.year < 1933:
-#    continue
-#  acursor.execute("""
-#   SELECT date(valid) as d, max(dwpf), min(dwpf) from t%s 
-#   WHERE station = 'DSM' and tmpf > 0 and dwpf > 0 and 
-#   valid BETWEEN '%s 00:00' and '%s 23:59' GROUP by d ORDER by d ASC
-#  """ % (sts.year, sts.strftime("%Y-%m-%d"), ets.strftime("%Y-%m-%d")))
-#  keys = {}
-#  cnt = 0
-#  data = ['M']*12
-#  data2 = ['M']*12
-#  cnt = 0
-#  for row in acursor:
-#    data[cnt] = str(row[1])
-#    data2[cnt] = str(row[2])
-#    cnt += 1
-    #h = mesonet.heatidx(row[1], mesonet.relh(row[1], row[2]))
-    #if h >= 90:
-    #  keys[ row[0].strftime("%Y%m%d%H") ] = 1
- 
-#  dwpfs.write("%s,%s,%s\n" % (`sts.year`, ",".join(data), ",".join(data2)))
-  #if cnt > 50:
-  #  heatcnt[sts.year-1880] = len(keys.keys())
+if __name__ == '__main__':
+    main()
 
-#dwpfs.close()
-
-#decades = numpy.ma.zeros( (2012-1880) )
-
-#for decade in range(1880,2020,10):
-#  avg = numpy.ma.average( precip[decade-1880:decade-1880+10] )
-#  decades[decade-1880:decade-1880+10] = avg
-
-#avgT[2011-1880] = 88
-avgH.mask = numpy.where(avgH == 0, True, False)
-avgL.mask = numpy.where(avgL == 0, True, False)
-#heatcnt.mask = numpy.where(heatcnt == -1, True, False)
-avgHH = numpy.ma.average(avgH)
-avgLL = numpy.ma.average(avgL)
-#precip = numpy.where(precip < 0, 9, precip)
-
-import matplotlib.pyplot as plt
-
+"""
 (fig, ax) = plt.subplots(2,1, sharex=True)
 bars = ax[0].bar(numpy.arange(1880,2016)-0.4, avgH, edgecolor='r', facecolor='r')
 for bar in bars:
@@ -237,3 +215,4 @@ ax[1].grid(True)
 ax[1].set_ylabel("Low Temperature $^{\circ}\mathrm{F}$")
 
 fig.savefig('test.png')
+"""
