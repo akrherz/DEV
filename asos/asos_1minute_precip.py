@@ -11,12 +11,12 @@ ASOS = psycopg2.connect(database='asos', host='localhost', user='nobody',
                         port=5555)
 acursor = ASOS.cursor()
 
-sts = datetime.datetime(2017, 5, 20, 16, 0)
+sts = datetime.datetime(2017, 8, 26, 7, 0)
 sts = sts.replace(tzinfo=pytz.timezone("UTC"))
-ets = datetime.datetime(2017, 5, 21, 6, 1)
+ets = datetime.datetime(2017, 8, 28, 7, 0)
 ets = ets.replace(tzinfo=pytz.timezone("UTC"))
 tzname = 'America/Chicago'
-station = 'MGM'
+station = 'IAH'
 
 sz = int((ets - sts).days * 1440 + (ets - sts).seconds / 60.) + 1
 
@@ -64,9 +64,10 @@ interval = datetime.timedelta(minutes=1)
 now = lsts
 i = 0
 while now < lets:
-    if now.minute == 0 and now.hour % 1 == 0:
+    if now.minute == 0 and now.hour % 6 == 0:
         xticks.append(i)
-        xlabels.append(now.strftime("%-I %p"))
+        fmt = "%-I %p" if now.hour != 0 else '%-d %b'
+        xlabels.append(now.strftime(fmt))
 
     i += 1
     now += interval
@@ -96,7 +97,7 @@ print("MaxI: %s, rate: %s, window: %s-%s" % (maxi, rate1[maxi], maxwindowi,
                                              maxwindowi+10))
 
 x = 0.02
-ax.text(x, 0.935, "Peak 10min Window", transform=ax.transAxes,
+ax.text(x, 0.935, "26 Aug Peak 10min Window", transform=ax.transAxes,
         bbox=dict(fc='white', ec='None'))
 for i in range(maxwindowi+1, maxwindowi+11):
     ts = lsts + datetime.timedelta(minutes=i)
@@ -110,11 +111,11 @@ ax.set_ylabel("Precipitation [inch or inch/hour]")
 ax.set_xticklabels(xlabels)
 ax.grid(True)
 ax.set_xlim(0, sz)
-ax.legend(loc=(0.18, 0.68), prop=prop, ncol=1)
-ax.set_ylim(0, 10)
-ax.set_yticks(range(0, 11, 1))
-ax.set_xlabel("20 May 2017 (%s)" % (tzname,))
-ax.set_title(("20 May 2017 Montgomery, AL (KMGM)\n"
+ax.legend(loc=(0.2, 0.68), prop=prop, ncol=1)
+ax.set_ylim(0, 26)
+ax.set_yticks([0, 1, 2, 3, 5, 10, 15, 20, 25])
+ax.set_xlabel("2 AM 26 Aug to 2 AM 28 Aug 2017 (%s)" % (tzname,))
+ax.set_title(("26-28 August 2017 Houston, TX (KIAH)\n"
               "One Minute Rainfall, %.2f inches total plotted"
               ) % (prec[-1],))
 
