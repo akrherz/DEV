@@ -13,10 +13,10 @@ acursor = ASOS.cursor()
 
 sts = datetime.datetime(2017, 8, 26, 7, 0)
 sts = sts.replace(tzinfo=pytz.timezone("UTC"))
-ets = datetime.datetime(2017, 8, 28, 7, 0)
+ets = datetime.datetime(2017, 8, 29, 11, 0)
 ets = ets.replace(tzinfo=pytz.timezone("UTC"))
 tzname = 'America/Chicago'
-station = 'IAH'
+station = 'HOU'
 
 sz = int((ets - sts).days * 1440 + (ets - sts).seconds / 60.) + 1
 
@@ -25,7 +25,7 @@ prec = np.ones((sz,), 'f') * -1
 acursor.execute("""
  SELECT valid, tmpf, dwpf, drct,
  sknt, pres1, gust_sknt, precip from t2017_1minute WHERE station = %s
- and valid >= %s and valid < %s
+ and valid >= %s and valid < %s and precip < 1
  ORDER by valid ASC
 """, (station, sts, ets))
 tot = 0
@@ -78,7 +78,11 @@ prop = matplotlib.font_manager.FontProperties(size=12)
 
 ax.bar(np.arange(sz), rate1, fc='b', ec='b', label="Hourly Rate over 1min",
        zorder=1)
-ax.plot(np.arange(sz), prec, color='k', label="Accumulation", lw=2, zorder=2)
+ax2 = ax.twinx()
+ax2.set_ylabel("Precipitation Accumulation [inch]")
+ax2.plot(np.arange(sz), prec, color='k', label="Accumulation", lw=2, zorder=2)
+ax2.set_ylim(0, 36)
+ax2.set_yticks(range(0, 37, 3))
 ax.plot(np.arange(sz), rate15, color='tan', label="Hourly Rate over 15min",
         linewidth=3.5, zorder=3)
 ax.plot(np.arange(sz), rate60, color='r', label="Actual Hourly Rate",
@@ -107,15 +111,15 @@ for i in range(maxwindowi+1, maxwindowi+11):
             bbox=dict(fc='white', ec='None'))
 
 ax.set_xticks(xticks)
-ax.set_ylabel("Precipitation [inch or inch/hour]")
+ax.set_ylabel("Precipitation Rate [inch/hour]")
 ax.set_xticklabels(xlabels)
 ax.grid(True)
 ax.set_xlim(0, sz)
-ax.legend(loc=(0.2, 0.68), prop=prop, ncol=1)
-ax.set_ylim(0, 26)
-ax.set_yticks([0, 1, 2, 3, 5, 10, 15, 20, 25])
-ax.set_xlabel("2 AM 26 Aug to 2 AM 28 Aug 2017 (%s)" % (tzname,))
-ax.set_title(("26-28 August 2017 Houston, TX (KIAH)\n"
+ax.legend(loc=(0.35, 0.72), prop=prop, ncol=1)
+ax.set_ylim(0, 12)
+ax.set_yticks(range(0, 13, 1))
+ax.set_xlabel("2 AM 26 Aug to 6 AM 29 Aug 2017 (CDT)")
+ax.set_title(("26-29 August 2017 Houston (Hobby), TX (KHOU)\n"
               "One Minute Rainfall, %.2f inches total plotted"
               ) % (prec[-1],))
 
