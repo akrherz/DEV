@@ -11,12 +11,12 @@ ASOS = psycopg2.connect(database='asos', host='localhost', user='nobody',
                         port=5555)
 acursor = ASOS.cursor()
 
-sts = datetime.datetime(2017, 8, 26, 7, 0)
+sts = datetime.datetime(2017, 8, 26, 13, 0)
 sts = sts.replace(tzinfo=pytz.timezone("UTC"))
-ets = datetime.datetime(2017, 8, 29, 11, 0)
+ets = datetime.datetime(2017, 8, 30, 20, 0)
 ets = ets.replace(tzinfo=pytz.timezone("UTC"))
 tzname = 'America/Chicago'
-station = 'HOU'
+station = 'BPT'
 
 sz = int((ets - sts).days * 1440 + (ets - sts).seconds / 60.) + 1
 
@@ -66,7 +66,7 @@ i = 0
 while now < lets:
     if now.minute == 0 and now.hour % 6 == 0:
         xticks.append(i)
-        fmt = "%-I %p" if now.hour != 0 else '%-d %b'
+        fmt = "%-I\n%p" if now.hour != 0 else '%-d\n%b'
         xlabels.append(now.strftime(fmt))
 
     i += 1
@@ -81,8 +81,8 @@ ax.bar(np.arange(sz), rate1, fc='b', ec='b', label="Hourly Rate over 1min",
 ax2 = ax.twinx()
 ax2.set_ylabel("Precipitation Accumulation [inch]")
 ax2.plot(np.arange(sz), prec, color='k', label="Accumulation", lw=2, zorder=2)
-ax2.set_ylim(0, 36)
-ax2.set_yticks(range(0, 37, 3))
+ax2.set_ylim(0, 48)
+ax2.set_yticks(range(0, 49, 4))
 ax.plot(np.arange(sz), rate15, color='tan', label="Hourly Rate over 15min",
         linewidth=3.5, zorder=3)
 ax.plot(np.arange(sz), rate60, color='r', label="Actual Hourly Rate",
@@ -101,7 +101,7 @@ print("MaxI: %s, rate: %s, window: %s-%s" % (maxi, rate1[maxi], maxwindowi,
                                              maxwindowi+10))
 
 x = 0.02
-ax.text(x, 0.935, "26 Aug Peak 10min Window", transform=ax.transAxes,
+ax.text(x, 0.935, "29 Aug Peak 10min Window", transform=ax.transAxes,
         bbox=dict(fc='white', ec='None'))
 for i in range(maxwindowi+1, maxwindowi+11):
     ts = lsts + datetime.timedelta(minutes=i)
@@ -118,8 +118,8 @@ ax.set_xlim(0, sz)
 ax.legend(loc=(0.35, 0.72), prop=prop, ncol=1)
 ax.set_ylim(0, 12)
 ax.set_yticks(range(0, 13, 1))
-ax.set_xlabel("2 AM 26 Aug to 6 AM 29 Aug 2017 (CDT)")
-ax.set_title(("26-29 August 2017 Houston (Hobby), TX (KHOU)\n"
+ax.set_xlabel("8 AM 26 Aug to 3 PM 30 Aug 2017 (CDT)")
+ax.set_title(("26-30 August 2017 Beaumont, TX (KBPT)\n"
               "One Minute Rainfall, %.2f inches total plotted"
               ) % (prec[-1],))
 
