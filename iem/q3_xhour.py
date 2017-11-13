@@ -40,8 +40,7 @@ DATES = """2015-06-03
 2017-07-10
 2017-07-22
 2017-07-27
-"""
-DATES = """2017-08-06
+2017-08-06
 2017-08-22
 2017-08-26"""
 
@@ -88,10 +87,11 @@ def doit(ts, hours):
 
     # Scale factor is 10
 
-    lts = (ts + datetime.timedelta(hours=3)).astimezone(pytz.timezone("America/Chicago"))
+    lts = (ts + datetime.timedelta(hours=3)).astimezone(
+        pytz.timezone("America/Chicago"))
     subtitle = 'Total up to %s' % (lts.strftime("%d %B %Y %I:%M %p %Z"),)
-    mp = MapPlot(
-        sector='midwest', title=("NCEP MRMS Q3 (RADAR+GaugeCorr) %s Hour "
+    mp = MapPlot(sector='midwest',
+                 title=("NCEP MRMS Q3 (RADAR+GaugeCorr) %s Hour "
                         "Precipitation [inch]") % (hours,),
                  subtitle=subtitle)
 
@@ -106,10 +106,11 @@ def doit(ts, hours):
 
 
 def main2():
+    """Hack from above"""
     for date in DATES.split("\n"):
         ts = datetime.datetime.strptime(date, '%Y-%m-%d')
         ts = ts.replace(tzinfo=pytz.utc)
-        for hr in [0, 3, 6]:
+        for hr in [0, 3, 6, 9]:
             ts = ts.replace(hour=hr)
             doit(ts, 3)
 
