@@ -10,17 +10,19 @@ def main():
     cursor = pgconn.cursor()
     cursor.execute("""
     WITH climo as (
-        select sday, avg(high) from alldata_ia where station = 'IA1319'
+        select sday, avg(high) from alldata_ia where station = 'IA2203'
         GROUP by sday)
     select day, high, c.avg from alldata_ia a JOIN climo c on (a.sday = c.sday)
-    WHERE a.station = 'IA1319' ORDER by day ASC
+    WHERE a.station = 'IA2203' ORDER by day ASC
     """)
 
     running = 0
     maxrunning = 0
     for row in cursor:
-        if row[1] < row[2]:
+        if row[1] < (row[2] - 3):
             running += 1
+            if running > 10 and row[0].year > 2006:
+                print("   running: %s date: %s" % (running, row[0]))
             if running > maxrunning:
                 print("maxrunning: %s date: %s" % (maxrunning, row[0]))
                 maxrunning = running
