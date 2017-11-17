@@ -15,10 +15,10 @@ def main(argv):
     total = 0
     print("%s Download Stats for Release: %s" % (package, release))
     for asset in j['assets']:
-        print("%33s %6i" % (asset['name'], asset['download_count']))
+        print("%38s %6i" % (asset['name'], asset['download_count']))
         total += asset['download_count']
-    print("%33s ======" % ("", ))
-    print("%33s %6i" % ("", total))
+    print("%38s ======" % ("", ))
+    print("%38s %6i" % ("", total))
 
 
 if __name__ == '__main__':
