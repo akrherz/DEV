@@ -1,0 +1,11 @@
+21 April 2014 meeting with Dr Takle, Sam
+ - Dr Takle will email about elevation data
+ - Sam will send daryl the lat/lon data [done]
+ - Dr Takle noted a 60% reduction of power from downwind sites
+ - Unsure exactly what this 'pitch value' is, will have to investigate it
+ - Better not email around plots, but have password protected website
+ - They have a coding of turbines, etc, to prevent things from leaking
+   out, better use those in plots
+
+22 April 2014
+ - Email from Dr Takle notes that timestamps are in CST/CDT
