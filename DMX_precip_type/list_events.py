@@ -101,15 +101,40 @@ def grouper():
 def plot():
     """Make a plot"""
     df = pd.read_csv('events.csv')
-    (fig, ax) = plt.subplots(1, 1)
-    hist, xedges, yedges = np.histogram2d(df['tmpf'].values, df['dwpf'].values,
-                                          range(-20, 60, 2))
+    df['wetbulb'] = calc(df['tmpf'].values, df['dwpf'].values)
+    df2 = df[df['zr']]
+    (fig, ax) = plt.subplots(2, 1, sharex=True)
+    fig.text(0.5, 0.95, "Frequency of Freezing Rain (ZR) 1997-2017",
+             ha='center')
+    hist, xedges, yedges = np.histogram2d(df2['tmpf'].values,
+                                          df2['dwpf'].values,
+                                          np.arange(-20.5, 40.5, 1))
     hist = np.ma.array(hist)
     hist.mask = np.ma.where(hist < 1, True, False)
     # ax.scatter(df['tmpf'], df['dwpf'])
-    res = ax.pcolormesh(xedges, yedges, hist.T)
-    ax.grid(True)
-    fig.colorbar(res)
+    res = ax[0].pcolormesh(xedges, yedges, hist.T)
+    ax[0].grid(True)
+    ax[0].set_ylabel("Dew Point Temp F")
+    ax[0].set_ylim(20, 40)
+    ax[0].set_xticks(range(21, 41, 2))
+    ax[0].set_yticks(range(21, 41, 2))
+    fig.colorbar(res, ax=ax[0], label='events')
+
+    hist, xedges, yedges = np.histogram2d(df2['tmpf'].values,
+                                          df2['wetbulb'].values,
+                                          np.arange(-20.5, 40.5, 1))
+    hist = np.ma.array(hist)
+    hist.mask = np.ma.where(hist < 1, True, False)
+    # ax.scatter(df['tmpf'], df['dwpf'])
+    res = ax[1].pcolormesh(xedges, yedges, hist.T)
+    ax[1].grid(True)
+    ax[1].set_xlabel("Air Temperature F")
+    ax[1].set_ylabel("Wet Bulb Temp F")
+    ax[1].set_xlim(20, 40)
+    ax[1].set_xticks(range(21, 41, 2))
+    ax[1].set_yticks(range(21, 41, 2))
+    ax[1].set_ylim(20, 40)
+    fig.colorbar(res, ax=ax[1], label='events')
     fig.savefig('test.png')
 
 
@@ -146,12 +171,16 @@ def plot3():
               'tmpf': 'Air Temperature'}
     for i, label in enumerate(['i_wetbulb', 'tmpf', 'dwpf']):
         gdf = df.groupby(label).sum()
-        total = gdf['snow'] + gdf['zr'] + gdf['rain']
+        total = gdf['snow'] + gdf['zr'] + gdf['rain']  # + gdf['pl']
         ax = axes[i]
-        ax.plot(gdf.index.values, gdf['snow'] / total * 100., label='Snow')
+        ax.plot(gdf.index.values,
+                gdf['snow'] / total * 100., label='Snow')
         ax.plot(gdf.index.values, gdf['zr'] / total * 100.,
                 label='Freeze Rain')
-        ax.plot(gdf.index.values, gdf['rain'] / total * 100., label='Rain')
+        ax.plot(gdf.index.values,
+                gdf['rain'] / total * 100., label='Rain')
+        # ax.plot(gdf.index.values,
+        #        gdf['pl'] / total * 100., label='Sleet')
         ax.grid(True)
         ax.legend(loc=6)
         ax.set_xticks(range(20, 41, 2))
@@ -160,7 +189,7 @@ def plot3():
                 rotation=-90, fontsize=15, va='center')
         ax.set_ylabel("Frequency [%]")
         ax.set_yticks(range(0, 101, 10))
-    axes[0].set_title(("For Precipitating Events\n"
+    axes[0].set_title(("For Precipitating Events (1997-2017)\n"
                        "Frequency of Precip Type by Temperature"))
     fig.savefig('test.png')
 
@@ -223,6 +252,7 @@ def workflow(pgconn, sid):
     where station = %s and tmpf >= 20 and tmpf < 50 and tmpf >= dwpf
     and dwpf > -40 and presentwx is not null and
     (strpos(presentwx, 'SN') > 0 or strpos(presentwx, 'RA') > 0)
+    and valid > '1997-01-01'
     """, pgconn, params=(sid, ), index_col=None)
     df['snow'] = df['presentwx'].apply(is_in, args=(['-SN', 'SN', '+SN',
                                                      '-RASN',
@@ -233,6 +263,8 @@ def workflow(pgconn, sid):
                                                      '-TSRA', 'TSRA',
                                                      '+TSRA'],))
     df['zr'] = df['presentwx'].apply(is_in, args=(['-FZRA', 'FZRA', '+FZRA'],))
+    df['pl'] = df['presentwx'].apply(is_in, args=(['-PLRA', '-PLSN', '-PL',
+                                                   'PL', '-RAPL'],))
     return df
 
 
@@ -259,5 +291,5 @@ def main():
 if __name__ == '__main__':
     # main()
     # grouper()
-    # plot3()
-    plot4()
+    plot()
+    # plot4()
