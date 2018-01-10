@@ -1,5 +1,14 @@
 """
-with warns as (select ugc, issue, expire from warnings where phenomena = 'SV' and significance ='W' and issue > '2005-10-01'), watch as (select ugc, issue, expire from warnings where phenomena in ('SV', 'TO') and significance = 'A'), agg as ( SELECT w.ugc, w.issue as w_issue, w.expire, a.ugc as a_ugc, a.issue, a.expire from warns w LEFT JOIN watch a on (w.ugc = a.ugc and w.issue < a.expire and w.expire > a.issue)), agg2 as (SELECT extract(week from w_issue) as week, count(*), sum(case when a_ugc is not null then 1 else 0 end) from agg GROUP by week)  select week, sum / count::float * 100 from agg2 ORDER by week;
+with warns as (select ugc, issue, expire from warnings 
+where phenomena = 'SV' and significance ='W' and issue > '2005-10-01'),
+watch as (select ugc, issue, expire from warnings where 
+phenomena in ('SV', 'TO') and significance = 'A'), 
+agg as ( SELECT w.ugc, w.issue as w_issue, w.expire, a.ugc as a_ugc,
+ a.issue, a.expire from warns w LEFT JOIN watch a on (w.ugc = a.ugc 
+ and w.issue < a.expire and w.expire > a.issue)), 
+ agg2 as (SELECT extract(week from w_issue) as week, count(*), 
+ sum(case when a_ugc is not null then 1 else 0 end) from agg GROUP by week) 
+  select week, sum / count::float * 100 from agg2 ORDER by week;
 
 
 """
