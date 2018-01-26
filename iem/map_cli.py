@@ -13,16 +13,13 @@ def main():
 
     cursor.execute("""
     WITH data as (
-        SELECT station, valid,
-        snow + lag(snow) OVER (PARTITION by station ORDER by valid ASC) as s
-        from cli_data)
+        SELECT station, snow_jul1 - snow_jul1_normal as s
+        from cli_data where valid = '2018-01-24' and snow_jul1 > 0
+        and snow_jul1_normal > 0)
 
-    select station, st_x(geom), st_y(geom),
-    max(case when c.s >= 3 then valid else '1990-01-01'::date end),
-    max(case when c.s > 0 then valid else '1990-01-01'::date end) from
+    select station, st_x(geom), st_y(geom), c.s from
     data c JOIN stations s on (s.id = c.station)
     WHERE s.network = 'NWSCLI'
-    GROUP by station, st_x, st_y
     """)
 
     lats = []
@@ -30,24 +27,16 @@ def main():
     colors = []
     vals = []
 
-    base = datetime.date.today()
-
     for row in cursor:
-        if row[4].year < 2017:
-            # print(row)
-            continue
         lats.append(row[2])
         lons.append(row[1])
-        days = (base - row[3]).days
-        if days > 10000:
-            print(row)
-            continue
-        vals.append(days)
-        colors.append('#ff0000' if days > 1000 else '#0000ff')
+        vals.append(row[3])
+        colors.append('#ff0000' if row[3] < 0 else '#0000ff')
 
     mp = MapPlot(sector='midwest', axisbg='white',
-                 title="Days since last Two Day Snowfall of 3+ Inches",
-                 subtitle='17 Jan 2017 based on NWS issued CLI Reports')
+                 title=("2017-2018 Snowfall Total Departure "
+                        "from Average [inches]"),
+                 subtitle='25 Jan 2018 Based on NWS CLI Reporting Sites')
     mp.plot_values(lons, lats, vals, fmt='%s', textsize=12, color=colors,
                    labelbuffer=1)
     mp.postprocess(filename='test.png')
