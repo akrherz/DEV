@@ -1,5 +1,5 @@
-import psycopg2
 import datetime
+from pyiem.util import get_dbconn
 
 data = """2002-09-14 17:05 S
 2003-09-13 11:30 I
@@ -16,7 +16,7 @@ data = """2002-09-14 17:05 S
 2014-09-13 15:30 S
 2015-09-12 15:45 I"""
 
-pgconn = psycopg2.connect(database='asos', host='iemdb', user='nobody')
+pgconn = get_dbconn('asos')
 cursor = pgconn.cursor()
 
 years = []

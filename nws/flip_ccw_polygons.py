@@ -1,6 +1,7 @@
-from shapely.geometry import Polygon
+"""Tool shared with NWS to flip CCW polygons"""
 import re
 import sys
+from shapely.geometry import Polygon
 LAT_LON = re.compile("([0-9]{4,8})\s+")
 
 FILENAME = sys.argv[1]

@@ -13,8 +13,8 @@ SELECT d, count(*) from data GROUP by d ORDER by d
     |  4551
 """
 
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
 
 data = [860, 1902, 1450, 717, 656, 313, 4551]
 cats = ['5%', '20%', '40%', '60%', '80%', '95%', 'No\nMention']

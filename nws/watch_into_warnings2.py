@@ -22,8 +22,9 @@ combo2 as (
   count(*) from combo2 GROUP by mo ORDER by mo ASC;
 
 """
-import matplotlib.pyplot as plt
 import calendar
+
+import matplotlib.pyplot as plt
 import numpy as np
 
 data = """  1 |  6622 |   7453
