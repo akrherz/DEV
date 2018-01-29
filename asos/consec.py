@@ -1,36 +1,24 @@
-import psycopg2
+from __future__ import print_function
 import sys
+from pyiem.util import get_dbconn
 
 site = sys.argv[1]
-pgconn = psycopg2.connect(database='asos', host='localhost', port=5555,
-                          user='nobody')
+pgconn = get_dbconn('asos')
 cursor = pgconn.cursor()
 
 cursor.execute("""
-  select valid, skyc1, skyc2, skyc3, skyc4 from alldata where station = %s and
-  extract(hour from (valid + '10 minutes'::interval) at time zone 'UTC') = 15
-  and report_type = 2 ORDER by valid
+  select valid, round(tmpf::numeric, 0) from alldata where station = %s and
+  extract(minute from valid) in (53, 0) and tmpf is not null
+  and report_type = 2 ORDER by valid ASC
   """, (site,))
-lastts = None
-startts = None
-maxperiod = [0, None, None]
+lastval = 0
+running = []
 for row in cursor:
-    if lastts is None:
-        lastts = row[0]
-    overcast = ('OVC' in row[1:])
-    if overcast:
-        if startts is None:
-            startts = row[0]
-        period = (row[0] - startts).total_seconds()
-        if period >= (86400. * 9.):
-            print("%s -> %s %.0f days" % (startts.strftime("%-d %b %Y"),
-                                          row[0].strftime("%-d %b %Y"),
-                                          (period / 86400.) + 1.))
-    else:
-        if startts is not None:
-            period = (row[0] - startts).total_seconds()
-            if period > maxperiod[0]:
-                maxperiod = [period, startts, row[0]]
-                print("%s -> %s %.0f days" % (startts, row[0],
-                                              period / 86400.))
-        startts = None
+    if (lastval - row[1]) == 1:
+        running.append(row[0])
+        lastval = row[1]
+        continue
+    if len(running) > 10:
+        print("%s %s" % (len(running), running))
+    lastval = row[1]
+    running = []
