@@ -1,14 +1,12 @@
 """Find afos database entries that have null PIL values"""
 from __future__ import print_function
-import psycopg2
-from pyiem.util import noaaport_text
+from pyiem.util import noaaport_text, get_dbconn
 from pyiem.nws.product import TextProduct
 
 
 def dotable(table):
     """Go main go"""
-    pgconn = psycopg2.connect(database='afos', host='localhost', port=5555,
-                              user='mesonet')
+    pgconn = get_dbconn('afos')
     cursor = pgconn.cursor()
     cursor2 = pgconn.cursor()
     cursor.execute("""SELECT entered, data, source, wmo from """ + table + """

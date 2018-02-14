@@ -1,12 +1,11 @@
 """Do Something Fun"""
-import psycopg2
 from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn
 
 
 def main():
     """Do Something"""
-    pgconn = psycopg2.connect(database='postgis', host='localhost',
-                              port=5555, user='nobody')
+    pgconn = get_dbconn('postgis')
     df = read_sql("""SELECT ugc, eventid,
     generate_series(issue, expire, '1 minute'::interval) as ts from warnings
     WHERE phenomena = 'TO' and significance = 'W'
