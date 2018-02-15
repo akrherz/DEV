@@ -6,8 +6,8 @@ from pyiem.nws.product import TextProduct, ugc
 import datetime
 import numpy
 import matplotlib.pyplot as plt
-import psycopg2
-AFOS = psycopg2.connect(database='afos', host='iemdb', user='nobody')
+from pyiem.util import get_dbconn
+AFOS = get_dbconn('afos')
 acursor = AFOS.cursor()
 
 

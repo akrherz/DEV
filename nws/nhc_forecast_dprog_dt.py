@@ -1,8 +1,9 @@
+"""uses basemap, so no longer functioning :/"""
 from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import matplotlib.font_manager
-import psycopg2
+from pyiem.util import get_dbconn
 
 fig = plt.figure(num=None, figsize=(9.3, 7.00))
 ax = plt.axes([0.15, 0.1, 0.75, 0.75], axisbg=(0.4471, 0.6235, 0.8117))
@@ -16,7 +17,7 @@ m.drawcountries(zorder=1)
 m.drawstates(zorder=1)
 m.drawcoastlines(zorder=1)
 
-AFOS = psycopg2.connect(database='afos', host='iemdb', user='nobody')
+AFOS = get_dbconn('afos')
 acursor = AFOS.cursor()
 
 acursor.execute("""SELECT data, entered from products_2005_0712

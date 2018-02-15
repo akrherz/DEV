@@ -1,14 +1,15 @@
-import psycopg2
+"""One off"""
 import math
 import matplotlib.pyplot as plt
 import numpy
 import random
-ASOS = psycopg2.connect(database='asos', host='iemdb', user='nobody')
+from pyiem.util import get_dbconn
+ASOS = get_dbconn('asos')
 acursor = ASOS.cursor()
-POSTGIS = psycopg2.connect(database='postgis', host='iemdb', user='nobody')
+POSTGIS = get_dbconn('postgis')
 pcursor = POSTGIS.cursor()
 pcursor2 = POSTGIS.cursor()
-MESOSITE = psycopg2.connect(database='mesosite', host='iemdb', user='nobody')
+MESOSITE = get_dbconn('mesosite')
 mcursor = MESOSITE.cursor()
 
 stations = {}
@@ -88,14 +89,14 @@ for row in pcursor:
     if acursor.rowcount < 4:
         print 'ASOS Missing!', row[0], row[1]
         continue
-        
+
     for row2 in acursor:
         u,v = uv(row2[1] * 0.514, row2[2])
         lats.append( stations[row2[0]]['lat'] + random.random() * 0.01)
         lons.append( stations[row2[0]]['lon'] + random.random() * 0.01)
         U.append( u )
         V.append( v )
-        
+
     xaxis = numpy.arange(row[4], row[3], 0.25)
     yaxis = numpy.arange(row[6], row[5], 0.25)
     Ugrid = Ngl.natgrid(lons, lats, U, xaxis, yaxis)
@@ -121,6 +122,5 @@ ax.set_thetagrids(angles=theta_angles, labels=theta_labels)
 
 res = ax.scatter( - dirs + math.pi/2.,  sknts, c=reports, s=reports)
 fig.colorbar(res)
-
 
 fig.savefig('test.png')

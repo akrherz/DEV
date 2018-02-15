@@ -1,7 +1,7 @@
 
 import matplotlib.pyplot as plt
-import psycopg2
-POSTGIS = psycopg2.connect(database='postgis', host='iemdb', user='nobody')
+from pyiem.util import get_dbconn
+POSTGIS = get_dbconn('postgis')
 pcursor = POSTGIS.cursor()
 pcursor.execute("""SET TIME ZONE 'UTC'""")
 
