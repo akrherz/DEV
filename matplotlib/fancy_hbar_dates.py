@@ -4,14 +4,16 @@ import datetime
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
-DATA = """ 2017-09-10 |    48
- 2008-08-19 |    15
- 2007-02-02 |    12
- 1998-09-25 |    11
- 2004-08-13 |    11
- 2010-03-11 |    11
- 1997-04-28 |    10
- 2013-06-06 |    10"""
+DATA = """  2018-02-21 |   269
+ 2001-12-05 |   252
+ 2002-04-16 |   229
+ 2015-12-24 |   226
+ 2012-03-19 |   217
+ 2015-12-14 |   208
+ 2012-03-18 |   203
+ 2012-03-20 |   203
+ 2015-12-27 |   203
+ 2018-02-20 |   202"""
 
 FONT = FontProperties()
 FONT.set_weight('bold')
@@ -20,7 +22,7 @@ FONT.set_weight('bold')
 def main():
     """Go"""
     plt.style.use('ggplot')
-    ax = plt.axes([0.3, 0.15, 0.65, 0.7])
+    ax = plt.axes([0.2, 0.15, 0.75, 0.7])
 
     ylabels = []
     vals = []
@@ -39,14 +41,14 @@ def main():
         ax.text(x - 2, y, "%s" % (x, ), va='center', ha='right',
                 color='yellow', fontproperties=FONT)
     plt.gcf().text(0.5, 0.93,
-                   ("Largest Number of NWS Melbourne Tornado Warnings Issued\n"
-                    "for One Calendar Day (US Eastern Time Zone) [1996-2017]"
+                   ("Number of NWS Issued Record Event Reports (RER)\n"
+                    "by calendar date (US Central Time Zone) [2001-2018]"
                     ), fontsize=14, ha='center', va='center')
     plt.gcf().text(0.5, 0.01,
                    ("* based on unofficial archives maintained by the IEM, "
-                    "thru 10 Sep 2017, @akrherz"),
+                    "thru 21 Feb 2018, @akrherz"),
                    ha='center')
-    ax.set_xlabel("Number of Tornado Warnings")
+    ax.set_xlabel("Number of Record Event Reports")
     ax.set_yticks(range(len(vals)))
     ax.set_yticklabels(ylabels)
     plt.gcf().savefig('test.png')
