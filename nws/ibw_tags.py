@@ -1,9 +1,9 @@
-import psycopg2
+"""A plot of IBW tags"""
 import numpy as np
 import matplotlib.pyplot as plt
 from pandas.io.sql import read_sql
-pgconn = psycopg2.connect(database='postgis', host='localhost', port=5555,
-                          user='nobody')
+from pyiem.util import get_dbconn
+pgconn = get_dbconn('postgis')
 
 df = read_sql("""
     SELECT windtag, hailtag, issue from sbw WHERE (windtag > 0 or hailtag > 0)

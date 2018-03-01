@@ -9,12 +9,12 @@
  grant select on warnings_temp to nobody;
 
 """
-import psycopg2
+from __future__ import print_function
 from tqdm import tqdm
 from pyiem.plot import MapPlot
+from pyiem.util import get_dbconn
 
-POSTGIS = psycopg2.connect(database='postgis', host='localhost',
-                           port=5555, user='nobody')
+POSTGIS = get_dbconn('postgis')
 cursor = POSTGIS.cursor()
 cursor2 = POSTGIS.cursor()
 
@@ -25,7 +25,7 @@ cursor.execute("""
  significance = 'A' and issue > '2005-10-01' ORDER by issue ASC
 """, (phenomena, ))
 total = cursor.rowcount
-print 'Events is ', total
+print('Events is %s' % (total, ))
 
 hits = {}
 hits2 = {}
@@ -65,6 +65,7 @@ m = MapPlot(sector='nws', axisbg='white',
 m.fill_cwas(data, ilabel=True, lblformat='%.0f')
 m.postprocess(filename='test.png')
 
-print 'Misses %s %.1f%%' % (misses, misses / float(total) * 100.0)
+print('Misses %s %.1f%%' % (misses, misses / float(total) * 100.0))
 for key in hits2.keys():
-    print '%s %s %.1f%%' % (key, hits2[key], hits2[key] / float(total) * 100.0)
+    print('%s %s %.1f%%' % (key, hits2[key],
+                            hits2[key] / float(total) * 100.0))

@@ -1,8 +1,9 @@
+from __future__ import print_function
 import matplotlib.pyplot as plt
 import psycopg2
 from pandas.io.sql import read_sql
-pgconn = psycopg2.connect(database='postgis', host='localhost', port=5555,
-                          user='nobody')
+from pyiem.util import get_dbconn
+pgconn = get_dbconn('postgis')
 df = read_sql("""
 with watches as (
   SELECT ugc, eventid, extract(year from issue) as yr,
@@ -32,7 +33,7 @@ and a.eventid = w.eventid)
 """, pgconn, index_col=None)
 df.fillna(0, inplace=True)
 df['percent'] = df['warning_zones'] / df['issue_zones'] * 100.
-print df
+print(df)
 
 total = float(len(df.index))
 xs = ['0', '1-10', '11-20', '21-30', '31-40', '41-50', '51-60', '61-70',

@@ -1,9 +1,9 @@
+from __future__ import print_function
 import pandas as pd
-import psycopg2
-from pyiem.network import Table as NetworkTable
 from pandas.io.sql import read_sql
-pgconn = psycopg2.connect(database='postgis', host='localhost', port=5555,
-                          user='nobody')
+from pyiem.network import Table as NetworkTable
+from pyiem.util import get_dbconn
+pgconn = get_dbconn('postgis')
 nt = NetworkTable("WFO")
 
 df = read_sql("""

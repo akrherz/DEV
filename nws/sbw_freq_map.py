@@ -1,14 +1,15 @@
+"""Note, this does things the old and slow way"""
+from __future__ import print_function
 import numpy as np
-import psycopg2
 import datetime
 import pytz
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 from pyiem.plot import MapPlot
 from pyiem import reference
+from pyiem.util import get_dbconn
 
-pgconn = psycopg2.connect(database='postgis', host='localhost', port=5555,
-                          user='nobody')
+pgconn = get_dbconn('postgis')
 cursor = pgconn.cursor()
 
 dx = 0.01

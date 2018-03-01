@@ -1,17 +1,18 @@
 """
 """
-import psycopg2
+from __future__ import print_function
+import datetime
+
 import pandas as pd
 from pandas.io.sql import read_sql
 import pytz
-import datetime
-from pyiem.nws.products.mcd import parser
 import matplotlib.pyplot as plt
+from pyiem.nws.products.mcd import parser
+from pyiem.util import get_dbconn
 
 
 def get_mcds():
-    pgconn = psycopg2.connect(database='afos', host='localhost', port=5555,
-                              user='nobody')
+    pgconn = get_dbconn('afos')
     df = read_sql("""
     SELECT entered as mcdtime, data from products where pil = 'SWOMCD' and
     entered > '2012-05-01' ORDER by mcdtime ASC
@@ -46,14 +47,13 @@ def overlap(cursor, prod, threshold):
 
 def do_verification(df):
     """Do Verification"""
-    pgconn = psycopg2.connect(database='postgis', host='localhost', port=5555,
-                              user='nobody')
+    pgconn = get_dbconn('postgis')
     cursor = pgconn.cursor()
     for idx, row in df.iterrows():
         try:
             prod = parser(row['data'])
         except Exception as _:
-            print _
+            print(_)
             print(row['data'])
             continue
         if not prod.geometry.is_valid:
