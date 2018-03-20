@@ -1,12 +1,13 @@
 """MRMS Plotting util for zoomed in areas"""
-
+from __future__ import print_function
 import pygrib
-from pyiem.plot import MapPlot, nwsprecip, Z_OVERLAY2
-from pyiem.datatypes import distance
 import shapefile
+from pandas.io.sql import read_sql
 from shapely.geometry import shape
 import cartopy.crs as ccrs
-import psycopg2
+from pyiem.plot import MapPlot, nwsprecip, Z_OVERLAY2
+from pyiem.datatypes import distance
+from pyiem.util import get_dbconn
 
 
 def get_data():
@@ -15,8 +16,14 @@ def get_data():
     lats = []
     vals = []
     labels = []
-    pgconn = psycopg2.connect(database='iem', host='localhost', port=5555,
-                              user='nobody')
+    pgconn = get_dbconn('postgis')
+    df = read_sql("""
+    SELECT st_x(geom) as lon, st_y(geom) as lat, magnitude from lsrs_2018
+    where wfo = 'DMX' and valid between '2018-03-16' and '2018-03-18'
+    and typetext = 'SNOW'
+    """, pgconn, index_col=None)
+    print(df)
+    return df.lon.values, df.lat.values, df.magnitude.values, None
     cursor = pgconn.cursor()
     for network in ['IA_ASOS', 'AWOS', 'IA_COOP', 'IACOCORAHS']:
         cursor.execute("""
@@ -37,12 +44,12 @@ def get_data():
 
 def main():
     """Go!"""
-    title = 'NOAA MRMS Q3: RADAR + Gauge Corrected Estimated Precipitation'
+    title = 'NOAA MRMS Q3: RADAR Est Liquid Precip + NWS Snowfall Reports'
     mp = MapPlot(sector='custom',
-                 north=41.3, east=-91.9, south=40.7, west=-93.0,
+                 north=42.3, east=-93.0, south=41.45, west=-94.4,
                  axisbg='white',
                  title=title,
-                 subtitle='Valid: Two day total of 20 and 21 September 2017')
+                 subtitle='Valid: 16-17 March 2018')
 
     shp = shapefile.Reader('cities.shp')
     for record in shp.shapeRecords():
@@ -50,7 +57,7 @@ def main():
         mp.ax.add_geometries([geo], ccrs.PlateCarree(), zorder=Z_OVERLAY2,
                              facecolor='None', edgecolor='k', lw=2)
 
-    grbs = pygrib.open('MRMS_GaugeCorr_QPE_24H_00.00_20170921-170000.grib2')
+    grbs = pygrib.open('RadarOnly_QPE_24H_00.00_20180318-000000.grib2')
     grb = grbs.message(1)
     pcpn = distance(grb['values'], 'MM').value('IN')
     lats, lons = grb.latlons()
