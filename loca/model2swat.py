@@ -1,55 +1,23 @@
-"""Dump regcm4 data to SWAT files
-
-We had a discussion on using the 0z to 0z summary data or computing 6z to 6z
-totals from the 3-hourly or hourly files.  We appear to be going with the
-6z to 6z option
-
-The SRF files contain the following. For most runs they are written every 3
-hours but recently I have been specifying 1 hour frequency:
-
-surface (10 m) u wind (uas), instantaneous
-surface (10 m) v wind (vas), instantaneous
-surface (2 m) specific humidity (qas), instantaneous
-surface (2 m) temperature (tas), instantaneous
-time mean precipitation rate (pr)
-time mean incident SW (rsds)
-time mean net SW, i.e. incident minus reflected (rsns)
-
-/opt/miniconda2/bin/ncrcat -v uas regcm4_erai_12km_SRF.*.nc
-    ../singlevar/regcm4_erai_12km_uas.nc
-
-tasmax and tasmin
------------------
-/opt/miniconda2/bin/ncra -O --mro -d time,6,,24,24 -v tas -y min
-    regcm4_erai_12km_tas.????.nc ../daily6z/regcm4_erai_12km_tasmin.nc
-/opt/miniconda2/bin/ncra -O --mro -d time,6,,24,24 -v tas -y max
-    regcm4_erai_12km_tas.????.nc ../daily6z/regcm4_erai_12km_tasmax.nc
-
-precip
-------
-/opt/miniconda2/bin/ncra -O --mro -d time,6,,24,24 -v pr -y avg
-    regcm4_erai_12km_pr.????.nc ../daily6z/regcm4_erai_12km_pr.nc
-
-
-wind
-----
-/opt/miniconda2/bin/ncks -A regcm4_erai_12km_uas.1989.nc
-    regcm4_erai_12km_vas.1989.nc
-mv regcm4_erai_12km_vas.1989.nc regcm4_erai_12km_uas_vas.1989.nc
-rm regcm4_erai_12km_uas.1989.nc
-# the -6 appears to allow it to even work
-/opt/miniconda2/bin/ncap2 -6 -O -s 'sped=sqrt(pow(uas,2)+pow(vas,2))'
-    regcm4_erai_12km_uas_vas.1989.nc regcm4_erai_12km_sped.1989.nc
-
+"""Dump LOCA data to SWAT files
+1979-2010 and 2039-2070
 """
 from __future__ import print_function
 import sys
+import os
 import datetime
+from collections import namedtuple
 
 from tqdm import tqdm
 import netCDF4
+import numpy as np
+from affine import Affine
+import geopandas as gpd
+from pyiem.grid.zs import CachingZonalStats
+from pyiem.util import get_dbconn
+from pyiem.datatypes import temperature
 
-BASEDIR = "/mnt/nrel/akrherz/DEV/loca"
+GRIDINFO = namedtuple("GridInfo", ['x0', 'y0', 'xsz', 'ysz', 'mask'])
+PROJSTR = '+proj=longlat +datum=WGS84 +no_defs'
 
 
 def get_basedate(ncfile):
@@ -63,40 +31,92 @@ def get_basedate(ncfile):
 
 def main(argv):
     """Go Main Go"""
-    model = "bcc-csm1-1-m_r1i1p1_rcp85"
-    tasmax_nc = netCDF4.Dataset("%s/tasmax_%s.nc" % (BASEDIR, model))
-    tasmin_nc = netCDF4.Dataset("%s/tasmin_%s.nc" % (BASEDIR, model))
-    pr_nc = netCDF4.Dataset("%s/pr_%s.nc" % (BASEDIR, model))
+    model = argv[1]
+    rcp = argv[2]
+    basedir = "/mnt/nrel/akrherz/loca/%s/16th/%s/r1i1p1" % (model, rcp)
+    outdir = "swatfiles_%s_%s" % (model, rcp)
+    if os.path.isdir(outdir):
+        print("ABORT: as %s exists" % (outdir, ))
+        return
+    os.mkdir(outdir)
+    pgconn = get_dbconn('idep')
+    huc12df = gpd.GeoDataFrame.from_postgis("""
+    SELECT huc12, ST_Transform(simple_geom, %s) as geo from wbd_huc12
+    WHERE swat_use ORDER by huc12
+    """, pgconn, params=(PROJSTR,), index_col='huc12', geom_col='geo')
+    hucs = huc12df.index.values
+    years = range(1979, 2011) if rcp == 'historical' else range(2039, 2071)
+    nc = netCDF4.Dataset(("%s/pr/pr_day_%s_%s_r1i1p1"
+                          "_%.0f0101-%.0f1231.LOCA_2016-04-02.16th.nc"
+                          ) % (basedir, model, rcp, years[0], years[0]))
 
-    basedate, timesz = get_basedate(pr_nc)
-    for i, lon in enumerate(tqdm(pr_nc.variables['lon'][:])):
-        for j, lat in enumerate(pr_nc.variables['lat'][:]):
-            pcpfp = open('swatfiles/%.4f_%.4f.pcp' % (lon - 360., lat), 'wb')
-            tmpfp = open('swatfiles/%.4f_%.4f.tmp' % (lon - 360., lat), 'wb')
-            pcpfp.write("""model %s
+    # compute the affine
+    ncaffine = Affine(nc.variables['lon'][1] - nc.variables['lon'][0],
+                      0.,
+                      nc.variables['lon'][0] - 360.,
+                      0.,
+                      nc.variables['lat'][0] - nc.variables['lat'][1],
+                      nc.variables['lat'][-1])
+    czs = CachingZonalStats(ncaffine)
+    nc.close()
+
+    fps = []
+    for year in years:
+        # assume 2006-2010 is closely represented by rcp45
+        if year >= 2006 and year < 2011:
+            rcp = 'rcp45'
+            basedir = "/mnt/nrel/akrherz/loca/%s/16th/%s/r1i1p1" % (model, rcp)
+        pr_nc = netCDF4.Dataset(("%s/pr/pr_day_%s_%s_r1i1p1"
+                                 "_%.0f0101-%.0f1231.LOCA_2016-04-02.16th.nc"
+                                 ) % (basedir, model, rcp, year, year))
+        tasmax_nc = netCDF4.Dataset(("%s/tasmax/tasmax_day_%s_%s_r1i1p1"
+                                     "_%.0f0101-%.0f1231.LOCA_"
+                                     "2016-04-02.16th.nc"
+                                     ) % (basedir, model, rcp, year, year))
+        tasmin_nc = netCDF4.Dataset(("%s/tasmin/tasmin_day_%s_%s_r1i1p1"
+                                     "_%.0f0101-%.0f1231.LOCA_"
+                                     "2016-04-02.16th.nc"
+                                     ) % (basedir, model, rcp, year, year))
+        basedate, timesz = get_basedate(pr_nc)
+        for i in tqdm(range(timesz), desc=str(year)):
+            date = basedate + datetime.timedelta(days=i)
+
+            # keep array logic in top-down order
+            tasmax = np.flipud(
+                temperature(tasmax_nc.variables['tasmax'][i, :, :],
+                            'K').value('C'))
+            tasmin = np.flipud(
+                temperature(tasmin_nc.variables['tasmin'][i, :, :],
+                            'K').value('C'))
+            pr = np.flipud(pr_nc.variables['pr'][i, :, :])
+            mytasmax = czs.gen_stats(tasmax, huc12df['geo'])
+            mytasmin = czs.gen_stats(tasmin, huc12df['geo'])
+            mypr = czs.gen_stats(pr, huc12df['geo'])
+            for j, huc12 in enumerate(hucs):
+                if i == 0 and year == years[0]:
+                    fps.append([open('%s/%s.pcp' % (outdir, huc12), 'wb'),
+                                open('%s/%s.tmp' % (outdir, huc12), 'wb')])
+                    fps[j][0].write("""HUC12 %s
 
 
 
-""" % (model, ))
-            tmpfp.write("""model %s
+    """ % (huc12, ))
+                    fps[j][1].write("""HUC12 %s
 
 
 
-""" % (model, ))
-            tasmax = tasmax_nc.variables['tasmax_%s' % (model, )][:, j, i]
-            tasmin = tasmin_nc.variables['tasmin_%s' % (model, )][:, j, i]
-            pr = pr_nc.variables['pr_%s' % (model, )][:, j, i]
-            for k in range(timesz):
-                date = basedate + datetime.timedelta(days=k)
-                pcpfp.write(("%s%03i%5.1f\n"
-                             ) % (date.year, float(date.strftime("%j")),
-                                  pr[k]))
-                tmpfp.write(("%s%03i%5.1f%5.1f\n"
-                             ) % (date.year, float(date.strftime("%j")),
-                                  tasmax[k], tasmin[k]))
+    """ % (huc12, ))
 
-            pcpfp.close()
-            tmpfp.close()
+                fps[j][0].write(("%s%03i%5.1f\n"
+                                 ) % (date.year, float(date.strftime("%j")),
+                                      mypr[j] * 86400.))
+                fps[j][1].write(("%s%03i%5.1f%5.1f\n"
+                                 ) % (date.year, float(date.strftime("%j")),
+                                      mytasmax[j], mytasmin[j]))
+
+    for fp in fps:
+        fp[0].close()
+        fp[1].close()
 
 
 if __name__ == '__main__':
