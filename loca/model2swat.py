@@ -100,12 +100,12 @@ def main(argv):
 
 
 
-    """ % (huc12, ))
+""" % (huc12, ))
                     fps[j][1].write("""HUC12 %s
 
 
 
-    """ % (huc12, ))
+""" % (huc12, ))
 
                 fps[j][0].write(("%s%03i%5.1f\n"
                                  ) % (date.year, float(date.strftime("%j")),
