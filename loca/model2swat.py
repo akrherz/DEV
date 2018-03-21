@@ -1,5 +1,7 @@
-"""Dump LOCA data to SWAT files
-1979-2010 and 2039-2070
+"""See email from Dr Arritt on 20 Mar 2018 for more detailed info
+
+1979 thru 2000
+2039 thur 2060
 """
 from __future__ import print_function
 import sys
@@ -45,7 +47,7 @@ def main(argv):
     WHERE swat_use ORDER by huc12
     """, pgconn, params=(PROJSTR,), index_col='huc12', geom_col='geo')
     hucs = huc12df.index.values
-    years = range(1979, 2011) if rcp == 'historical' else range(2039, 2071)
+    years = range(1979, 2001) if rcp == 'historical' else range(2039, 2061)
     nc = netCDF4.Dataset(("%s/pr/pr_day_%s_%s_r1i1p1"
                           "_%.0f0101-%.0f1231.LOCA_2016-04-02.16th.nc"
                           ) % (basedir, model, rcp, years[0], years[0]))
