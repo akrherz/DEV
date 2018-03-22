@@ -1,6 +1,11 @@
+"""Plot the scam that is DST"""
+
+import tqdm
 import numpy
 import ephem
 import mx.DateTime
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.font_manager
@@ -13,13 +18,11 @@ def compute_sunrise(lat, long):
     ames = ephem.Observer()
     ames.lat = lat
     ames.long = long
-    sts = mx.DateTime.DateTime(2016, 3, 12)
+    sts = mx.DateTime.DateTime(2018, 3, 10)
     interval = mx.DateTime.RelativeDateTime(days=1)
     now = sts
     doy = []
-    i = 1
     returnD = 0
-    findT = 0
     ames.date = now.strftime("%Y/%m/%d")
     rise = mx.DateTime.strptime(str(ames.next_rising(sun)), "%Y/%m/%d %H:%M:%S")
     rise = rise.localtime()
@@ -41,7 +44,7 @@ def compute_sunrise(lat, long):
 lats = []
 lons = []
 vals = []
-for lon in range(-130, -60, 2):
+for lon in tqdm.tqdm(range(-130, -60, 2)):
     for lat in range(20, 55, 1):
         lats.append(lat)
         lons.append(lon)
@@ -49,6 +52,7 @@ for lon in range(-130, -60, 2):
 
 m = MapPlot(sector='conus',
             title='Days to Recover Morning Hour after Spring Saving Time Change',
-            subtitle='days until local time of sunrise is earlier than on 12 March')
+            subtitle=('days until local time of sunrise is earlier '
+                      'than on 10 March, local DST rules ignored for plot'))
 m.contourf(lons, lats, vals, range(27, 78, 3), units='days')
-m.postprocess(filename='160314.png')
+m.postprocess(filename='180313.png')
