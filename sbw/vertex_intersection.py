@@ -3,9 +3,29 @@ from __future__ import print_function
 
 import tqdm
 import pandas as pd
+import matplotlib
+matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
+from pyiem.plot import MapPlot
 from pyiem.network import Table as NetworkTable
+
+
+def make_map():
+    """Generate a map plot"""
+    df = pd.read_csv('vertex_intersects.csv')
+    gdf = df.groupby('wfo').sum()
+    allvals = (gdf['allhits'] - gdf['cwahits']) / gdf['verticies'] * 100.
+    avgv = ((gdf['allhits'].sum() - gdf['cwahits'].sum()) /
+            gdf['verticies'].sum() * 100.)
+    mp = MapPlot(sector='nws', continentalcolor='white',
+                 title=('Percent of SVR+TOR Warning Vertices within 2km '
+                        'of County Border'),
+                 subtitle=('1 Oct 2007 through 29 Mar 2018, '
+                           'Overall Avg: %.1f%%, * CWA Borders Excluded'
+                           ) % (avgv,))
+    mp.fill_cwas(allvals.to_dict(), ilabel=True, lblformat='%.0f')
+    mp.postprocess(filename='test.png')
 
 
 def plot():
@@ -48,7 +68,7 @@ def main():
                 """ + table + """
                 where wfo = %(wfo)s
                 and phenomena in ('SV', 'TO')
-                and status = 'NEW'),
+                and status = 'NEW' and issue > '2007-10-01'),
             points as (
                 SELECT path, geom from dumps),
             cbuf as (
@@ -89,5 +109,6 @@ def main():
 
 
 if __name__ == '__main__':
-    plot()
     # main()
+    # plot()
+    make_map()
