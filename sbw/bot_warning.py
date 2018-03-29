@@ -50,9 +50,10 @@ def main(argv):
         issue = row['issue']
         expire = row['init_expire']
         tml_direction = row['tml_direction']
-        tml_sknt = row['tml_sknt']
-        if float(tml_sknt) == 0:
-            continue
+        tml_sknt = float(row['tml_sknt'])
+        # Slow moving storms are trouble
+        if tml_sknt < 5:
+            tml_sknt = 5
         lat = row['tml_lat']
         lon = row['tml_lon']
         if lat is None:
