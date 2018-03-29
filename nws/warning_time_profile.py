@@ -45,7 +45,7 @@ def main():
     ax.set_yticks([0, 5, 10, 25, 40, 50, 60, 75, 90, 95, 100])
     ax.set_xlim(0, 3.1)
     ax.set_title(("Time Duration of NWS Warnings Relative to Issuance\n"
-                  "1 Oct 2005 - 29 Dec 2017"))
+                  "1 Oct 2005 - 29 Mar 2018"))
     ax.set_xlabel("Relative to Issuance Duration")
     ax.set_ylabel("Percent by Issuance Counties/Zones Still Valid [%]")
 
