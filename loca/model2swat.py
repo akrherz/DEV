@@ -41,6 +41,8 @@ def main(argv):
         print("ABORT: as %s exists" % (outdir, ))
         return
     os.mkdir(outdir)
+    for dirname in ['precipitation', 'temperature']:
+        os.mkdir("%s/%s" % (outdir, dirname))
     pgconn = get_dbconn('idep')
     huc12df = gpd.GeoDataFrame.from_postgis("""
     SELECT huc12, ST_Transform(simple_geom, %s) as geo from wbd_huc12
@@ -96,8 +98,10 @@ def main(argv):
             mypr = czs.gen_stats(pr, huc12df['geo'])
             for j, huc12 in enumerate(hucs):
                 if i == 0 and year == years[0]:
-                    fps.append([open('%s/%s.pcp' % (outdir, huc12), 'wb'),
-                                open('%s/%s.tmp' % (outdir, huc12), 'wb')])
+                    fps.append([open(('%s/precipitation/P%s.txt'
+                                      ) % (outdir, huc12), 'wb'),
+                                open(('%s/temperature/T%s.txt'
+                                      ) % (outdir, huc12), 'wb')])
                     fps[j][0].write("""HUC12 %s
 
 
