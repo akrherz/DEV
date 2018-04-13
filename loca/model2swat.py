@@ -46,7 +46,7 @@ def main(argv):
     pgconn = get_dbconn('idep')
     huc12df = gpd.GeoDataFrame.from_postgis("""
     SELECT huc12, ST_Transform(simple_geom, %s) as geo from wbd_huc12
-    WHERE swat_use ORDER by huc12
+    WHERE swat_use ORDER by huc12 LIMIT 1
     """, pgconn, params=(PROJSTR,), index_col='huc12', geom_col='geo')
     hucs = huc12df.index.values
     years = range(1979, 2001) if rcp == 'historical' else range(2039, 2061)
@@ -83,7 +83,7 @@ def main(argv):
                                      ) % (basedir, model, rcp, year, year))
         basedate, timesz = get_basedate(pr_nc)
         for i in tqdm(range(timesz), desc=str(year)):
-            date = basedate + datetime.timedelta(days=i)
+            # date = basedate + datetime.timedelta(days=i)
 
             # keep array logic in top-down order
             tasmax = np.flipud(
@@ -102,23 +102,13 @@ def main(argv):
                                       ) % (outdir, huc12), 'wb'),
                                 open(('%s/temperature/T%s.txt'
                                       ) % (outdir, huc12), 'wb')])
-                    fps[j][0].write("""HUC12 %s
+                    fps[j][0].write("%s\n" % (basedate.strftime("%Y%m%d"), ))
+                    fps[j][1].write("%s\n" % (basedate.strftime("%Y%m%d"), ))
 
-
-
-""" % (huc12, ))
-                    fps[j][1].write("""HUC12 %s
-
-
-
-""" % (huc12, ))
-
-                fps[j][0].write(("%s%03i%5.1f\n"
-                                 ) % (date.year, float(date.strftime("%j")),
-                                      mypr[j] * 86400.))
-                fps[j][1].write(("%s%03i%5.1f%5.1f\n"
-                                 ) % (date.year, float(date.strftime("%j")),
-                                      mytasmax[j], mytasmin[j]))
+                fps[j][0].write(("%.1f\n"
+                                 ) % (mypr[j] * 86400., ))
+                fps[j][1].write(("%.2f,%.2f\n"
+                                 ) % (mytasmax[j], mytasmin[j]))
 
     for fp in fps:
         fp[0].close()
