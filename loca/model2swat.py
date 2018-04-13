@@ -46,7 +46,7 @@ def main(argv):
     pgconn = get_dbconn('idep')
     huc12df = gpd.GeoDataFrame.from_postgis("""
     SELECT huc12, ST_Transform(simple_geom, %s) as geo from wbd_huc12
-    WHERE swat_use ORDER by huc12 LIMIT 1
+    WHERE swat_use ORDER by huc12
     """, pgconn, params=(PROJSTR,), index_col='huc12', geom_col='geo')
     hucs = huc12df.index.values
     years = range(1979, 2001) if rcp == 'historical' else range(2039, 2061)
