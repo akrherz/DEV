@@ -3,40 +3,41 @@ from __future__ import print_function
 import datetime
 
 import numpy as np
+from pandas.io.sql import read_sql
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
 from pyiem.plot import MapPlot
 from pyiem.network import Table
-import matplotlib.pyplot as plt
-import psycopg2
-from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn
 
 
 def get_database_data():
     """Get data from database"""
-    pgconn = psycopg2.connect(database='postgis', host='localhost',
-                              port=5555, user='nobody')
+    pgconn = get_dbconn('postgis')
     df = read_sql("""
-    with bnds as (
-        select wfo, min(extract(year from issue)) from sbw
-        WHERE phenomena = 'FL' and significance = 'W'
-        and issue > '2001-01-01' GROUP by wfo)
-    select s.wfo, b.min::int as year from sbw s, bnds b
-    WHERE s.wfo = b.wfo ORDER by year ASC
+    with data as (
+        select distinct wfo, valid, geom from lsrs_2018 WHERE
+        valid >= '2018-04-01' and type = 'S'
+        )
+    select wfo, count(*) from data GROUP by wfo ORDER by count DESC
     """, pgconn, index_col='wfo')
-    print(df['year'].describe())
-    return df['year'].to_dict()
+    print(df['count'].describe())
+    return df['count'].to_dict()
 
 
 def main():
     """Go MAin"""
     vals = get_database_data()
 
-    bins = np.arange(2011, 2019, 1, dtype='i')
+    bins = np.arange(0, 900, 100, dtype='i')
+    bins[0] = 1
     cmap = plt.get_cmap('plasma')
     cmap.set_over('black')
-    cmap.set_under('black')
+    cmap.set_under('white')
     mp = MapPlot(sector='nws', continentalcolor='white',
-                 title=("Year of First Flood Warning (FL.W) Polygon"),
-                 subtitle=('based on unofficial IEM Processing and Archiving'))
+                 title=("April 2018 Number of Local Storm Reports for Snowfall Issued"),
+                 subtitle=('based on unofficial IEM Processing thru 18 April 2018 18 UTC (number of reports not LSR Text Products)'))
     mp.fill_cwas(vals, bins=bins, lblformat='%.0f', cmap=cmap, ilabel=True,
                  units='Count')
     mp.postprocess(filename='test.png')
