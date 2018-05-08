@@ -17,18 +17,19 @@ def get_database_data():
     """Get data from database"""
     pgconn = get_dbconn('postgis')
     df = read_sql("""
-    with warns as (
-        SELECT wfo, avg(st_area(geography(geom))) from sbw WHERE
-        issue > '2015-01-01' and phenomena = 'SV' and status = 'NEW'
-        GROUP by wfo ORDER by wfo
-        ),
-    sps as (
-        SELECT substr(product_id, 15, 3) as wfo, avg(st_area(geography(geom)))
-        from text_products where issue > '2015-01-01' GROUP by wfo
-    )
-    SELECT w.wfo, coalesce(s.avg, 0) / w.avg as ratio
-    from warns w LEFT JOIN sps s
-    on (w.wfo = s.wfo) ORDER by ratio DESC
+    with data as (
+        select distinct wfo, extract(year from issue) as year,
+        extract(week from issue) as week from warnings where
+        phenomena in ('SV', 'TO') and significance  = 'W'
+        and issue < '2018-01-01'),
+    agg as (
+        select wfo, week, count(*) from data GROUP by wfo, week),
+    agg2 as (
+        select wfo, week, rank() OVER
+        (PARTITION by wfo ORDER by count DESC, week ASC)
+        from agg)
+    select wfo, '2000-01-01'::date + ((week * 7 + 3)::text||' days')::interval
+    as date from agg2 where rank = 1 
     """, pgconn, index_col='wfo')
     print(df)
     return df
@@ -42,20 +43,19 @@ def main():
     for wfo, row in df.iterrows():
         if wfo == 'JSJ':
             wfo = 'SJU'
-        vals[wfo] = row['ratio']
-        labels[wfo] = "%.1f" % (row['ratio'], )
+        vals[wfo] = int(row['date'].strftime("%j"))
+        labels[wfo] = "%s" % (row['date'].strftime("%b %-d"), )
         
-    bins = [0.25, 0.5, 0.75, 1., 1.25, 1.5, 1.75, 2., 5, 10]
-    bins[0] = 0.01
+    bins = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335]
     cmap = plt.get_cmap('plasma_r')
     cmap.set_over('black')
     cmap.set_under('white')
     mp = MapPlot(sector='nws', continentalcolor='white', figsize=(12., 9.),
-                 title=("1 Jan 2015 - 24 Apr 2018 Ratio of Average Polygon Size SPS / SVR"),
-                 subtitle=('Special Weather Statement (SPS) Polygon to Severe TStorm Polygon, based on unofficial IEM Archives'))
+                 title=("1986-2017 Week with Most Number of Years having 1+ SVR/TOR Warning"),
+                 subtitle=('Midpoint of week plotted, partitioned by week of the year, first week plotted in case of ties, based on unofficial IEM Archives'))
     mp.fill_cwas(vals, bins=bins, lblformat='%s', labels=labels,
-                 cmap=cmap, ilabel=True, # clevlabels=month_abbr[1:],
-                 units='Ratio')
+                 cmap=cmap, ilabel=True, clevlabels=month_abbr[1:],
+                 units='calendar')
     mp.postprocess(filename='test.png')
 
 
