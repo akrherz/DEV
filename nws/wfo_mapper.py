@@ -20,7 +20,7 @@ def get_database_data():
     with data as (
         select distinct wfo, extract(year from issue) as year,
         extract(week from issue) as week from warnings where
-        phenomena in ('SV', 'TO') and significance  = 'W'
+        phenomena in ('FF') and significance  = 'W'
         and issue < '2018-01-01'),
     agg as (
         select wfo, week, count(*) from data GROUP by wfo, week),
@@ -51,7 +51,7 @@ def main():
     cmap.set_over('black')
     cmap.set_under('white')
     mp = MapPlot(sector='nws', continentalcolor='white', figsize=(12., 9.),
-                 title=("1986-2017 Week with Most Number of Years having 1+ SVR/TOR Warning"),
+                 title=("1986-2017 Week with Most Number of Years having 1+ Flash Flood Warnings"),
                  subtitle=('Midpoint of week plotted, partitioned by week of the year, first week plotted in case of ties, based on unofficial IEM Archives'))
     mp.fill_cwas(vals, bins=bins, lblformat='%s', labels=labels,
                  cmap=cmap, ilabel=True, clevlabels=month_abbr[1:],
