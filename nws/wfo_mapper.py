@@ -19,7 +19,7 @@ def get_database_data():
     df = read_sql("""
     with data as (
         select distinct wfo, extract(year from issue) as year,
-        extract(week from issue) as week from warnings where
+        (extract(doy from issue) / 7)::int as week from warnings where
         phenomena in ('TO') and significance  = 'W'
         and issue < '2018-01-01'),
     agg as (
@@ -52,7 +52,7 @@ def main():
     cmap.set_under('white')
     mp = MapPlot(sector='nws', continentalcolor='white', figsize=(12., 9.),
                  title=("1986-2017 Week with Most Number of Years having 1+ Tornado Warnings"),
-                 subtitle=('Midpoint of week plotted, partitioned by week of the year, first week plotted in case of ties, based on unofficial IEM Archives'))
+                 subtitle=('Midpoint of week plotted, partitioned by (day of the year)/7, first week plotted in case of ties, based on unofficial IEM Archives'))
     mp.fill_cwas(vals, bins=bins, lblformat='%s', labels=labels,
                  cmap=cmap, ilabel=True, clevlabels=month_abbr[1:],
                  units='calendar')
