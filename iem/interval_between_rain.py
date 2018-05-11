@@ -3,22 +3,22 @@ from __future__ import print_function
 import datetime
 
 import numpy as np
-import netCDF4
 import matplotlib.pyplot as plt
-from pyiem import iemre, plot
-from pyiem.datatypes import distance
 import pytz
+from pyiem import iemre, plot
+from pyiem.util import ncopen
+from pyiem.datatypes import distance
 THRESHOLD = distance(0.25, 'in').value('mm')
 
 
 def main():
     """Go Main Go"""
-    sts = datetime.datetime(2017, 4, 25, 0)
-    sts = sts.replace(tzinfo=pytz.timezone("UTC"))
-    ets = datetime.datetime(2017, 5, 30, 0)
-    ets = ets.replace(tzinfo=pytz.timezone("UTC"))
+    sts = datetime.datetime(2018, 4, 20, 0)
+    sts = sts.replace(tzinfo=pytz.utc)
+    ets = datetime.datetime(2018, 5, 11, 0)
+    ets = ets.replace(tzinfo=pytz.utc)
 
-    nc = netCDF4.Dataset('/mesonet/data/iemre/%s_mw_hourly.nc' % (sts.year, ))
+    nc = ncopen(iemre.get_hourly_ncname(sts.year))
     lons = nc.variables['lon'][:]
     lats = nc.variables['lat'][:]
     running = np.zeros((len(nc.dimensions['lat']), len(nc.dimensions['lon'])))
@@ -37,15 +37,12 @@ def main():
 
         now += interval
 
-    nc2 = netCDF4.Dataset("/mesonet/data/iemre/state_weights.nc")
-    domain = nc2.variables['domain'][:]
-    nc2.close()
     # maxval = numpy.where(domain == 1, maxval, 1.e20)
 
     m = plot.MapPlot(sector='midwest',
                      title=('Max Period '
                             'between 24 Hour 0.25+ inch Total Precipitation'),
-                     subtitle=('Period of 25 Apr - 30 May 2017, '
+                     subtitle=('Period of 20 Apr - 11 May 2018, '
                                'based on NCEP Stage IV data'))
 
     extra = lons[-1] + (lons[-1] - lons[-2])
