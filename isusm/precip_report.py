@@ -1,15 +1,14 @@
 """Report on our second tipping bucket"""
 from __future__ import print_function
 
-import psycopg2
 import pandas as pd
 from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn
 
 
 def main():
     """Go Main Go"""
-    pgconn = psycopg2.connect(database='iem', host='localhost', port=5555,
-                              user='nobody')
+    pgconn = get_dbconn('iem')
     amsi4 = read_sql("""
     SELECT to_char(day + '16 hours'::interval, 'YYYY-MM-DD HH:MI AM') as valid,
     pday as coop
@@ -18,8 +17,7 @@ def main():
     ORDER by day ASC
     """, pgconn, index_col='valid')
 
-    pgconn = psycopg2.connect(database='isuag', host='localhost', port=5555,
-                              user='nobody')
+    pgconn = get_dbconn('isuag')
     df = read_sql("""
     SELECT to_char(valid, 'YYYY-MM-DD HH:MI AM') as valid,
     rain_mm_tot / 25.4 as bucket1,
