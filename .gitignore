@@ -8,6 +8,7 @@
 */*.dbf
 */*.sbx
 */*.sbn
+*/*.txt
 */*.shx
 */*.shp
 */*.wld

@@ -16,7 +16,7 @@ from pyiem.util import get_dbconn
 
 def main():
     """Go MAin"""
-    df = pd.read_csv('flood_emergencies.csv')
+    df = pd.read_csv('tornado_emergencies.csv')
     df2 = df[['source', 'eventid', 'phenomena', 'significance', 'year']].drop_duplicates()
     gdf = df2.groupby('source').count()
     vals = {}
@@ -35,9 +35,9 @@ def main():
     cmap.set_over('black')
     cmap.set_under('white')
     mp = MapPlot(sector='nws', continentalcolor='white', figsize=(12., 9.),
-                 title=("2009-2018 Flash Flood Emergency Events"),
+                 title=("2005-2018 Tornado Emergency Events"),
                  subtitle=('based on unofficial IEM archives, searching '
-                           '"FFW", "FFS", "FLW". Thru 15 May 2018'))
+                           '"TOR", "SVS". Thru 16 May 2018'))
     mp.fill_cwas(vals, bins=bins, lblformat='%s', labels=labels,
                  cmap=cmap, ilabel=True,  # clevlabels=month_abbr[1:],
                  units='count')

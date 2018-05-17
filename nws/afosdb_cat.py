@@ -6,20 +6,19 @@ AFOS = get_dbconn('afos')
 acursor = AFOS.cursor()
 
 
-o = open('flood_emergency.txt', 'a')
-for year in tqdm(range(2018, 2019)):
+o = open('tornado_emergency.txt', 'a')
+for year in tqdm(range(1996, 2019)):
     for suffix in ['0106', '0712']:
         table = "products_%s_%s" % (year, suffix)
         acursor.execute("""
             SELECT data from """ + table + """
-            WHERE substr(pil, 1, 3) in ('FFW', 'FFS', 'FLW')
+            WHERE substr(pil, 1, 3) in ('TOR', 'SVS')
             and data ~* 'EMERGENCY' ORDER by entered ASC
         """)
         for row in acursor:
             raw = " ".join(
                 row[0].upper().replace("\r", "").replace("\n", " ").split())
-            if raw.find("FLASH FLOOD EMERGENCY") == -1:
+            if raw.find("TORNADO EMERGENCY") == -1:
                 continue
-            print('yo')
             o.write(noaaport_text(row[0]))
 o.close()
