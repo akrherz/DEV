@@ -19,6 +19,11 @@ def main():
                 'year': v.valid.year}
         if len(v.segments[0].vtec) == 1:
             vt = v.segments[0].vtec[0]
+            if vt.action == 'CAN':
+                print("False Positive?!")
+                pos = report.find("FLASH FLOOD EMERGENCY")
+                print(report[pos-50:pos+50])
+                continue
             data['eventid'] = vt.etn
             data['phenomena'] = vt.phenomena
             data['significance'] = vt.significance

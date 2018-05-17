@@ -6,8 +6,8 @@ AFOS = get_dbconn('afos')
 acursor = AFOS.cursor()
 
 
-o = open('flood_emergency.txt', 'w')
-for year in tqdm(range(1996, 2018)):
+o = open('flood_emergency.txt', 'a')
+for year in tqdm(range(2018, 2019)):
     for suffix in ['0106', '0712']:
         table = "products_%s_%s" % (year, suffix)
         acursor.execute("""
@@ -20,5 +20,6 @@ for year in tqdm(range(1996, 2018)):
                 row[0].upper().replace("\r", "").replace("\n", " ").split())
             if raw.find("FLASH FLOOD EMERGENCY") == -1:
                 continue
+            print('yo')
             o.write(noaaport_text(row[0]))
 o.close()
