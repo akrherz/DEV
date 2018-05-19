@@ -45,7 +45,7 @@ def main():
                     fp.close()
                     # write files for re-ingest by Ridge
                     # ICT_20180519_1030_N0U.ridge
-                    ridgefn = ("/mesonet/tmp/ridge/%s_%s_%s_%s.ridge"
+                    ridgefn = ("/mesonet/tmp/ridge/%s_%s_%s_%s"
                                ) % (nexrad, token[2], token[3], nids)
                     fp = open(ridgefn, 'wb')
                     fp.write(req.content)
