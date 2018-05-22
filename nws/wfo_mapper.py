@@ -9,53 +9,62 @@ import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
 from pyiem.plot import MapPlot
-from pyiem.network import Table
-from pyiem.util import get_dbconn
+from pyiem.network import Table as NetworkTable
+from pyiem.util import get_dbconn, drct2text
 
 
 def get_database_data():
     """Get data from database"""
     pgconn = get_dbconn('postgis')
     df = read_sql("""
-    with data as (
-        select distinct wfo, extract(year from issue) as year,
-        (extract(doy from issue) / 7)::int as week from warnings where
-        phenomena in ('TO') and significance  = 'W'
-        and issue < '2018-01-01'),
+    WITH data as (
+        SELECT wfo, tml_direction / 5 * 5 as drct, count(*) from sbw
+        WHERE phenomena = 'TO' and status = 'NEW' and significance = 'W'
+        and tml_direction >= 0 and tml_direction <= 360
+        GROUP by wfo, drct),
     agg as (
-        select wfo, week, count(*) from data GROUP by wfo, week),
-    agg2 as (
-        select wfo, week, rank() OVER
-        (PARTITION by wfo ORDER by count DESC, week ASC)
-        from agg)
-    select wfo, '2000-01-01'::date + ((week * 7 + 3)::text||' days')::interval
-    as date from agg2 where rank = 1 
+        SELECT wfo, drct,
+        rank() OVER (PARTITION by wfo ORDER by count DESC, drct ASC)
+        from data
+    )
+    select wfo, drct from agg where rank = 1
     """, pgconn, index_col='wfo')
     print(df)
     return df
 
 
+def draw_line(plt, x, y, angle):
+    """Draw a line"""
+    r = 0.25
+    plt.arrow(x, y, r * np.cos(angle), r * np.sin(angle),
+              head_width=0.35, head_length=0.5, fc='k', ec='k')
+
+
 def main():
-    """Go MAin"""
+    """Go Main"""
+    nt = NetworkTable("WFO")
     df = get_database_data()
+    df['drct2'] = (270. - df['drct']) / 180. * np.pi
     vals = {}
     labels = {}
     for wfo, row in df.iterrows():
         if wfo == 'JSJ':
             wfo = 'SJU'
-        vals[wfo] = int(row['date'].strftime("%j"))
-        labels[wfo] = "%s" % (row['date'].strftime("%b %-d"), )
+        vals[wfo] = row['drct']
+        labels[wfo.encode('utf-8')] = drct2text(row['drct'])
         
-    bins = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335]
+    bins = range(0, 361, 45)
+    clevlabels = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N']
     cmap = plt.get_cmap('plasma_r')
     cmap.set_over('black')
     cmap.set_under('white')
     mp = MapPlot(sector='nws', continentalcolor='white', figsize=(12., 9.),
-                 title=("1986-2017 Week with Most Number of Years having 1+ Tornado Warnings"),
-                 subtitle=('Midpoint of week plotted, partitioned by (day of the year)/7, first week plotted in case of ties, based on unofficial IEM Archives'))
-    mp.fill_cwas(vals, bins=bins, lblformat='%s', labels=labels,
-                 cmap=cmap, ilabel=True, clevlabels=month_abbr[1:],
-                 units='calendar')
+                 title=("2007-2018 Most Frequent Storm Motion for Tornado Warnings"),
+                 subtitle=('based on IEM archives of issuance Time...Motion...Location warning tags, binned every 5 degrees'))
+    mp.fill_cwas(vals, bins=bins, lblformat='%.0f',  # labels=labels,
+                 cmap=cmap, ilabel=True, clevlabels=clevlabels,
+                 units='Direction ($^\circ$N)')
+    
     mp.postprocess(filename='test.png')
 
 
