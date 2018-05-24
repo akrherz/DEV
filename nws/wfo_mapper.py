@@ -13,13 +13,13 @@ from pyiem.network import Table as NetworkTable
 from pyiem.util import get_dbconn, drct2text
 
 
-def get_database_data():
+def get_database_data(phenomena):
     """Get data from database"""
     pgconn = get_dbconn('postgis')
     df = read_sql("""
     WITH data as (
         SELECT wfo, tml_direction / 5 * 5 as drct, count(*) from sbw
-        WHERE phenomena = 'TO' and status = 'NEW' and significance = 'W'
+        WHERE phenomena = %s and status = 'NEW' and significance = 'W'
         and tml_direction >= 0 and tml_direction <= 360
         GROUP by wfo, drct),
     agg as (
@@ -28,8 +28,7 @@ def get_database_data():
         from data
     )
     select wfo, drct from agg where rank = 1
-    """, pgconn, index_col='wfo')
-    print(df)
+    """, pgconn, params=(phenomena, ), index_col='wfo')
     return df
 
 
@@ -43,27 +42,36 @@ def draw_line(plt, x, y, angle):
 def main():
     """Go Main"""
     nt = NetworkTable("WFO")
-    df = get_database_data()
-    df['drct2'] = (270. - df['drct']) / 180. * np.pi
+    todf = get_database_data("TO")
+    todf['drct2'] = (270. - todf['drct']) / 180. * np.pi
+    svdf = get_database_data("SV")
+    svdf['drct2'] = (270. - svdf['drct']) / 180. * np.pi
     vals = {}
     labels = {}
-    for wfo, row in df.iterrows():
+    for wfo, row in svdf.iterrows():
+        if wfo not in todf.index.values:
+            continue
+        diff = todf.at[wfo, 'drct'] - row['drct'] 
+        if diff > 180:
+            diff = diff - 180
+        if diff < -180:
+            diff = diff + 180
         if wfo == 'JSJ':
             wfo = 'SJU'
-        vals[wfo] = row['drct']
+        vals[wfo] = diff
         labels[wfo.encode('utf-8')] = drct2text(row['drct'])
         
-    bins = range(0, 361, 45)
-    clevlabels = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N']
-    cmap = plt.get_cmap('plasma_r')
-    cmap.set_over('black')
-    cmap.set_under('white')
+    bins = range(-180, 181, 45)
+    #clevlabels = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N']
+    cmap = plt.get_cmap('RdBu')
+    #cmap.set_over('black')
+    #cmap.set_under('white')
     mp = MapPlot(sector='nws', continentalcolor='white', figsize=(12., 9.),
-                 title=("2007-2018 Most Frequent Storm Motion for Tornado Warnings"),
-                 subtitle=('based on IEM archives of issuance Time...Motion...Location warning tags, binned every 5 degrees'))
+                 title=("2007-2018 Difference in Most Frequent Storm Motion (SVR to TOR)"),
+                 subtitle=('based on IEM archives of issuance Time...Motion...Location warning tags, binned every 5 degrees, (+) val is clockwise'))
     mp.fill_cwas(vals, bins=bins, lblformat='%.0f',  # labels=labels,
-                 cmap=cmap, ilabel=True, clevlabels=clevlabels,
-                 units='Direction ($^\circ$N)')
+                 cmap=cmap, ilabel=True, #  clevlabels=clevlabels,
+                 units='Direction Difference ($^\circ$)')
     
     mp.postprocess(filename='test.png')
 
