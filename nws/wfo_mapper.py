@@ -17,9 +17,9 @@ def get_database_data():
     """Get data from database"""
     pgconn = get_dbconn('postgis')
     df = read_sql("""
-        SELECT wfo, sum(case when tml_direction > 180 and tml_direction < 360
+        SELECT wfo, sum(case when tml_direction > 90 and tml_direction < 270
         then 1 else 0 end) / count(*)::float * 100. as percent from sbw
-        WHERE phenomena = 'SV' and status = 'NEW' and significance = 'W'
+        WHERE phenomena = 'TO' and status = 'NEW' and significance = 'W'
         and tml_direction >= 0 and tml_direction <= 360
         GROUP by wfo
     """, pgconn, index_col='wfo')
@@ -44,8 +44,8 @@ def main():
     cmap.set_over('black')
     cmap.set_under('white')
     mp = MapPlot(sector='nws', continentalcolor='white', figsize=(12., 9.),
-                 title=("2007-2018 Percent of Severe T'Storm Warnings with Storm Motion > 180$^\circ$ and < 360$^\circ$"),
-                 subtitle=('based on IEM archives of issuance Time...Motion...Location warning tags, storm motion west to east'))
+                 title=("2007-2018 Percent of Tornado Warnings with Storm Motion > 90$^\circ$ and < 270$^\circ$"),
+                 subtitle=('based on IEM archives of issuance Time...Motion...Location warning tags, north-bound storm motion'))
     mp.fill_cwas(vals, bins=bins, lblformat='%.0f',  # labels=labels,
                  cmap=cmap, ilabel=True, #  clevlabels=clevlabels,
                  units='percent')
