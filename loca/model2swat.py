@@ -101,9 +101,9 @@ def main(argv):
             for j, huc12 in enumerate(hucs):
                 if i == 0 and year == years[0]:
                     fps.append([open(('%s/precipitation/P%s.txt'
-                                      ) % (outdir, huc12), 'wb'),
+                                      ) % (outdir, huc12), 'w'),
                                 open(('%s/temperature/T%s.txt'
-                                      ) % (outdir, huc12), 'wb')])
+                                      ) % (outdir, huc12), 'w')])
                     fps[j][0].write("%s\n" % (basedate.strftime("%Y%m%d"), ))
                     fps[j][1].write("%s\n" % (basedate.strftime("%Y%m%d"), ))
 
