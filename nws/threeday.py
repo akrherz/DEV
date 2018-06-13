@@ -4,7 +4,7 @@ import datetime
 
 import pandas as pd
 from pandas.io.sql import read_sql
-import psycopg2
+from pyiem.util import get_dbconn
 
 COMPAREWFOS = ['DMX', 'DVN', 'ARX', 'FSD', 'OAX']
 
@@ -21,8 +21,7 @@ def printr(row):
 
 def main():
     """Go"""
-    pgconn = psycopg2.connect(database='postgis', host='localhost', port=5555,
-                              user='nobody')
+    pgconn = get_dbconn('postgis')
     df = read_sql("""
     with data as (
         select distinct date(issue), wfo, eventid from warnings

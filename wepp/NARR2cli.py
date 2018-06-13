@@ -1,4 +1,3 @@
-#!/usr/local/python/bin/python
 # Generate a WEPP format cli file from NARR analysis
 # Daryl Herzmann 1 Oct 2008
 

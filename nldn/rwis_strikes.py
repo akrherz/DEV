@@ -34,7 +34,7 @@ def main():
     # RGAI4 5-9z 11 Jun 2018
     process('RGAI4', utc(2018, 6, 11, 5), utc(2018, 6, 11, 9))
     # VCTI4 17-19z 26 May 2018
-    process('VCTI4', utc(2018, 5, 26, 17), utc(2018, 5, 26, 19))
+    process('VCTI4', utc(2018, 5, 26, 19), utc(2018, 5, 26, 21))
 
 
 if __name__ == '__main__':

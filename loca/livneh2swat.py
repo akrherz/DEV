@@ -3,19 +3,16 @@
 1989 thru 2010
 """
 from __future__ import print_function
-import sys
 import os
 import datetime
 from collections import namedtuple
 
 from tqdm import tqdm
-import netCDF4
 import numpy as np
 from affine import Affine
 import geopandas as gpd
 from pyiem.grid.zs import CachingZonalStats
 from pyiem.util import get_dbconn, ncopen
-from pyiem.datatypes import temperature
 
 GRIDINFO = namedtuple("GridInfo", ['x0', 'y0', 'xsz', 'ysz', 'mask'])
 PROJSTR = '+proj=longlat +datum=WGS84 +no_defs'
@@ -30,7 +27,7 @@ def get_basedate(ncfile):
     return datetime.date(ts.year, ts.month, ts.day), len(nctime[:])
 
 
-def main(argv):
+def main():
     """Go Main Go"""
     basedir = "/mnt/nrel/akrherz/livneh"
     outdir = "swatfiles_livneh"
@@ -65,9 +62,9 @@ def main(argv):
             nc = ncopen(("%s/livneh_NAmerExt_15Oct2014.%s%02i.nc"
                          ) % (basedir, year, month))
             basedate, timesz = get_basedate(nc)
-            for i in tqdm(range(timesz), desc="%s%s" % (year, month)):
+            for i in tqdm(range(timesz), desc="%s%02i" % (year, month)):
                 tasmax = np.flipud(nc.variables['Tmax'][i, :, :])
-                tasmin = np.flipud(nc.variables['Tmin'][i, :, :])                             
+                tasmin = np.flipud(nc.variables['Tmin'][i, :, :])
                 pr = np.flipud(nc.variables['Prec'][i, :, :])
                 mytasmax = czs.gen_stats(tasmax, huc12df['geo'])
                 mytasmin = czs.gen_stats(tasmin, huc12df['geo'])
@@ -94,4 +91,4 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main()

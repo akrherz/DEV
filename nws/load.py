@@ -1,14 +1,14 @@
 """Warning load by minute"""
 from __future__ import print_function
 import datetime
-import psycopg2
+
+import pytz
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import pytz
+from pyiem.util import get_dbconn
 
 TZ = pytz.timezone("America/Chicago")
-PGCONN = psycopg2.connect(database='postgis', host='localhost',
-                          port=5555, user='nobody')
+PGCONN = get_dbconn('postgis')
 
 
 def getp(phenomena, sts, ets):
@@ -49,7 +49,8 @@ def main(date):
 
     (fig, ax) = plt.subplots(1, 1, figsize=(8, 6))
 
-    ax.fill_between(b_t, 0, b_c, zorder=1, color='teal', label='Severe TStorm + Tornado')
+    ax.fill_between(b_t, 0, b_c, zorder=1, color='teal',
+                    label='Severe TStorm + Tornado')
     ax.fill_between(to_t, 0, to_c, zorder=2, color='r', label='Tornado')
 
     ax.grid(True)
@@ -74,6 +75,7 @@ def main(date):
 
 
 def work():
+    """Our workflow"""
     events = ("4/27/11, 3/2/11, 4/26/11, 5/25/11, 10/26/10, 4/15/11, 1/10/08,"
               " 4/10/09, 6/11/09, 5/11/08, 5/22/11, 6/2/09, 7/22/08, 7/1/12, "
               "8/5/10, 6/9/11, 6/21/11, 5/26/11, 4/26/11, 8/2/08")
