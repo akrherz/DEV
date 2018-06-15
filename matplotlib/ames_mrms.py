@@ -19,8 +19,8 @@ def get_data():
     pgconn = get_dbconn('postgis')
     df = read_sql("""
     SELECT st_x(geom) as lon, st_y(geom) as lat, magnitude from lsrs_2018
-    where wfo = 'DMX' and valid between '2018-03-16' and '2018-03-18'
-    and typetext = 'SNOW'
+    where wfo = 'DMX' and valid between '2018-06-14 10:00' and '2018-06-18'
+    and typetext = 'HEAVY RAIN' ORDER by magnitude DESC
     """, pgconn, index_col=None)
     print(df)
     return df.lon.values, df.lat.values, df.magnitude.values, None
@@ -44,12 +44,13 @@ def get_data():
 
 def main():
     """Go!"""
-    title = 'NOAA MRMS Q3: RADAR Est Liquid Precip + NWS Snowfall Reports'
+    title = 'NOAA MRMS Q3: RADAR + Guage Corrected Rainfall Estimates + NWS Storm Reports'
     mp = MapPlot(sector='custom',
-                 north=42.3, east=-93.0, south=41.45, west=-94.4,
+                 north=42.3, east=-93.0, south=41.65, west=-94.1,
                  axisbg='white',
+                 titlefontsize=14,
                  title=title,
-                 subtitle='Valid: 16-17 March 2018')
+                 subtitle='Valid: 14 June 2018')
 
     shp = shapefile.Reader('cities.shp')
     for record in shp.shapeRecords():
@@ -57,7 +58,7 @@ def main():
         mp.ax.add_geometries([geo], ccrs.PlateCarree(), zorder=Z_OVERLAY2,
                              facecolor='None', edgecolor='k', lw=2)
 
-    grbs = pygrib.open('RadarOnly_QPE_24H_00.00_20180318-000000.grib2')
+    grbs = pygrib.open('MRMS_GaugeCorr_QPE_24H_00.00_20180614-200000.grib2')
     grb = grbs.message(1)
     pcpn = distance(grb['values'], 'MM').value('IN')
     lats, lons = grb.latlons()
