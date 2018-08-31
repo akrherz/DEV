@@ -1,11 +1,13 @@
-import psycopg2
-import pytz
-from pyiem.nws import vtec
 import datetime
+
+import pytz
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+from pyiem.nws import vtec
+from pyiem.util import get_dbconn
 
-MOS = psycopg2.connect(database='mos', host='iemdb', user='nobody')
+
+MOS = get_dbconn('mos')
 mcursor = MOS.cursor()
 mcursor.execute("""SELECT ftime, tmp from t2013 where station = 'KCID'
   and model = 'GFS' and runtime = '2013-01-29 18:00' ORDER by ftime ASC""")
@@ -15,7 +17,7 @@ for row in mcursor:
     mvalid.append(row[0])
     mtmpf.append(row[1])
 
-IEM = psycopg2.connect(database='asos', host='iemdb', user='nobody')
+IEM = get_dbconn('asos')
 icursor = IEM.cursor()
 icursor.execute("""SELECT valid, tmpf from t2013 WHERE station = 'CID'
   and valid > '2013-01-25' ORDER by valid ASC""")
@@ -25,7 +27,7 @@ for row in icursor:
     valid.append(row[0])
     tmpf.append(row[1])
 
-POSTGIS = psycopg2.connect(database='postgis', host='iemdb', user='nobody')
+POSTGIS = get_dbconn('postgis')
 pcursor = POSTGIS.cursor()
 
 pcursor.execute("""SELECT issue, expire, phenomena, significance, eventid
@@ -44,7 +46,6 @@ for row in pcursor:
 
 i = 1
 for l, e in zip(labels, events):
-    print e[1], e[0]
     secs = (e[1]-e[0]).seconds
     ax.barh(i - 0.4, secs / 86400.0, left=e[0])
     i += 1

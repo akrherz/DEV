@@ -1,13 +1,15 @@
-import psycopg2
+"""One off feature plot."""
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+from pyiem.util import get_dbconn
 
-OTHER = psycopg2.connect(database='other', host='iemdb', user='nobody')
+OTHER = get_dbconn('other')
 ocursor = OTHER.cursor()
 
 
 def getsite(station):
+    """Get data."""
     ocursor.execute("""
     SELECT valid, outgoing_sw, incoming_sw from flux2014 where station = %s
     and extract(hour from valid) = 12 and extract(minute from valid) = 0
@@ -22,6 +24,7 @@ def getsite(station):
         val2.append(row[2])
     return valid, soil, val2
 
+
 v1, s1, s2 = getsite('nstl11')
 # v2, s2 = getsite('nstlnsp')
 s1 = np.array(s1)
@@ -32,7 +35,7 @@ s2 = np.array(s2)
 
 ax[0].bar(v1, s2, label='Downwelling', zorder=1, fc='tan', ec='tan')
 ax[0].bar(v1, s1, label='Upwelling', zorder=2, fc='green', ec='green')
-ax[0].legend(loc=2, prop={'size': 9})
+# ax[0].legend(loc=2, prop={'size': 9})
 
 ax[0].set_title(("NLAE Flux Site 2014 Data over Corn Crop "
                  "(local noon each day)"))

@@ -1,11 +1,11 @@
-import matplotlib.colors as mpcolors
-import matplotlib.cm as cm
-import psycopg2
 import datetime
 import subprocess
 
+import matplotlib.colors as mpcolors
+import matplotlib.cm as cm
 from pyiem.plot import MapPlot
-POSTGIS = psycopg2.connect(database='postgis', host='iemdb', user='nobody')
+from pyiem.util import get_dbconn
+POSTGIS = get_dbconn('postgis')
 pcursor = POSTGIS.cursor()
 
 opts = {'subtitle': "In Tornado, SVR, or Flash Flood Warnings",
