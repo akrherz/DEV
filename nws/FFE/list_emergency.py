@@ -17,7 +17,7 @@ def main():
                          'p.php?pid=%s') % (v.get_product_id(), ),
                 'utc_valid': v.valid.strftime("%Y-%m-%d %H:%M"),
                 'source': v.source,
-                'phenomena': 'TO', 'significance': 'W', 'eventid': etn,
+                'phenomena': 'FF', 'significance': 'W', 'eventid': etn,
                 'year': v.valid.year}
         if v.segments[0].vtec:
             vt = v.segments[0].vtec[0]

@@ -34,9 +34,11 @@ def main():
                          climo.at[dt2.strftime("%m%d"), 'high'])
             harr.append(deltahigh)
             deltalow = (df.at[dt2.strftime("%Y%m%d"), 'low'] -
-                         climo.at[dt2.strftime("%m%d"), 'low'])
+                        climo.at[dt2.strftime("%m%d"), 'low'])
             larr.append(deltalow)
-            parr.append(1 if df.at[dt2.strftime("%Y%m%d"), 'precip'] >= 0.01 else 0)
+            parr.append(
+                1 if df.at[dt2.strftime("%Y%m%d"), 'precip'] >= 0.01 else 0
+            )
         hevents.append(harr)
         levents.append(larr)
         pevents.append(parr)

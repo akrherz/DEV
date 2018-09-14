@@ -12,7 +12,8 @@ for year in tqdm(range(2018, 2019)):
         table = "products_%s_%s" % (year, suffix)
         acursor.execute("""
             SELECT data, source, entered from """ + table + """
-            WHERE substr(pil, 1, 3) in ('FFW', 'FFS')
+            WHERE entered > '2018-08-20 12:00' and
+            substr(pil, 1, 3) in ('FFW', 'FFS')
             and data ~* 'EMERGENCY' ORDER by entered ASC
         """)
         for row in acursor:
