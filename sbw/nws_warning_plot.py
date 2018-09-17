@@ -1,7 +1,7 @@
 """Make a plot of all the bot warnings"""
 
-import cartopy.crs as ccrs
 from geopandas import read_postgis
+import cartopy.crs as ccrs
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn
 
@@ -10,9 +10,9 @@ def main():
     """Go Main"""
     pgconn = get_dbconn('postgis')
     df = read_postgis("""
-    select geom, issue from sbw where wfo = 'LBF' and phenomena = 'TO'
+    select geom, issue from sbw where wfo = 'EAX' and phenomena = 'TO'
     and significance = 'W' and status = 'NEW' and issue > '2007-10-01'
-    and issue < '2018-01-01'
+    and issue < '2019-01-01'
     """, pgconn, geom_col='geom', crs={'init': 'epsg:4326', 'no_defs': True})
 
     bounds = df['geom'].total_bounds
@@ -21,8 +21,8 @@ def main():
     mp = MapPlot(sector='custom', west=bounds[0] - bbuf,
                  south=bounds[1] - bbuf,
                  east=bounds[2] + bbuf, north=bounds[3] + bbuf,
-                 continentalcolor='white',
-                 title='NWS North Platte Issued Tornado Warnings [2008-2017]',
+                 continentalcolor='white',  # '#b3242c',
+                 title='NWS Pleasant Hill Issued Tornado Warnings [2008-2018]',
                  subtitle='%s warnings plotted' % (len(df.index), ))
     crs_new = ccrs.Mercator()
     crs = ccrs.PlateCarree()
@@ -32,7 +32,7 @@ def main():
     mp.ax.add_geometries(new_geometries, crs=crs_new, lw=0.5,
                          edgecolor='red', facecolor='None', alpha=1,
                          zorder=5)
-    # mp.drawcounties()
+    mp.drawcounties()
     mp.postprocess(filename='test.png')
 
 

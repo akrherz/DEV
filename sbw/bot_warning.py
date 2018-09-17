@@ -44,7 +44,7 @@ def main(argv):
         ST_x(tml_geom) as tml_lon, ST_y(tml_geom) as tml_lat, wfo,
         phenomena, significance, eventid from sbw WHERE
         phenomena = 'TO' and status = 'NEW' and wfo = %s
-        and issue between '2008-01-01' and '2018-01-01'
+        and issue between '2008-01-01' and '2019-01-01'
         """, (argv[1], ))
     for row in tqdm(pcursor, total=pcursor.rowcount):
         issue = row['issue']

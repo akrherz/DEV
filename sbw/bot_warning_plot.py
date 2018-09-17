@@ -10,17 +10,17 @@ def main():
     """Go Main"""
     pgconn = get_dbconn('postgis')
     df = read_postgis("""
-    select geom, issue from bot_warnings where wfo = 'LBF'
+    select geom, issue from bot_warnings where wfo = 'EAX'
     """, pgconn, geom_col='geom', crs={'init': 'epsg:4326', 'no_defs': True})
 
-    # bounds = df['geom'].total_bounds
-    bounds = [-102.90293903,   40.08745967,  -97.75622311,   43.35172981]
+    bounds = df['geom'].total_bounds
+    # bounds = [-102.90293903,   40.08745967,  -97.75622311,   43.35172981]
     bbuf = 0.25
     mp = MapPlot(sector='custom', west=bounds[0] - bbuf,
                  south=bounds[1] - bbuf,
                  east=bounds[2] + bbuf, north=bounds[3] + bbuf,
                  continentalcolor='white',
-                 title='Bot Issued Tornado Warnings [2008-2017] for LBF',
+                 title='Bot Issued Tornado Warnings [2008-2018] for EAX',
                  subtitle='%s warnings plotted' % (len(df.index), ))
     crs_new = ccrs.Mercator()
     crs = ccrs.PlateCarree()
