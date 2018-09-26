@@ -3,6 +3,25 @@
 Archives of text data have been processed by the IEM.  Products prior to
 NWS modernization (early 2000s) used a mixture of WMO source codes.  These
 codes are important to various apps.  So this script attempts to fix it.
+
+Attempts to create lookups for one-off CLI products
+with data as (
+    select distinct source, pil from products_1999_0106),
+ agg as (
+     select source, count(*), max(pil) from data GROUP by source),
+ agg2 as (
+     select * from agg where count = 1 and substr(max, 1, 3) = 'CLI')
+
+ select distinct '"'||a.source||'": "'||c.source||'",'
+ from products_2018_0712 c, agg2 a WHERE c.pil = a.max;
+
+ with data as (
+     select distinct pil from products_2009_0106 where source is null),
+ present as (
+     select distinct c.source, d.pil from products_2018_0712 c, data d
+     where c.pil = d.pil)
+ update products_2009_0106 t SET source = p.source
+ FROM present p WHERE t.source is null and t.pil = p.pil;
 """
 import sys
 import json
@@ -56,29 +75,62 @@ XREF = {
     "KSTL": "KLSX",
     "KTLH": "KTAE",
     "KTUL": "KTSA",
-    "KTUS": "KTWC"
+    "KTUS": "KTWC",
+    "KALO": "KDMX",
+    "KDBQ": "KDVN",
+    "KCAK": "KCLE",
+    "KHLN": "KTFX",
+    "KPNS": "KMOB",
+    "KAVP": "KBGM",
+    "KCOS": "KPUB",
+    "KERI": "KCLE",
+    "KTPA": "KTBW",
+    "KWMC": "KLKN",
+    "KSYR": "KBGM",
+    "KPBI": "KMFL",
+    "KCPR": "KRIW",
+    "KCLT": "KGSP",
+    "KBFL": "KHNX",
+    "KEUG": "KPQR",
+    "KYNG": "KCLE",
+    "KCSG": "KFFC",
+    "KALS": "KPUB",
+    "KBPT": "KLCH",
+    "KDCA": "KLWX",
+    "KLND": "KRIW",
+    "KTOL": "KCLE",
+    "KAHN": "KFFC",
+    "KMFD": "KCLE",
+    "KBFF": "KCYS",
+    "KAST": "KPQR",
+    "KORH": "KBOX",
+    "KSPS": "KOUN",
+    "KSMX": "KLOX",
 }
 UNKNOWN = [
-    'KABE', 'KABI', 'KACT', 'KACY', 'KADG', 'KAGS', 'KAHN', 'KALO', 'KALS',
-    'KAPN', 'KARB', 'KAST', 'KAVL', 'KAVP', 'KBDL', 'KBDR', 'KBFF', 'KBFL',
-    'KBIX', 'KBKW', 'KBLU', 'KBNO', 'KBPT', 'KBTM', 'KBTR', 'KBWI', 'KBZN',
-    'KCAK', 'KCLT', 'KCMH', 'KCNK', 'KCNU', 'KCON', 'KCOS', 'KCOU', 'KCPR',
-    'KCRW', 'KCSG', 'KCVG', 'KDAY', 'KDBQ', 'KDCA', 'KDMO', 'KDRT', 'KEAT',
-    'KEKN', 'KELY', 'KERI', 'KEUG', 'KEVV', 'KEWR', 'KFAR', 'KFMY', 'KFNT',
+    'KABE', 'KABI', 'KACT', 'KACY', 'KADG', 'KAGS',
+    'KAPN', 'KARB', 'KAVL', 'KBDL', 'KBDR',
+    'KBIX', 'KBKW', 'KBLU', 'KBNO', 'KBTM', 'KBTR', 'KBWI', 'KBZN',
+    'KCMH', 'KCNK', 'KCNU', 'KCON', 'KCOU',
+    'KCRW', 'KCVG', 'KDAY', 'KDMO', 'KDRT', 'KEAT',
+    'KEKN', 'KELY', 'KEVV', 'KEWR', 'KFAR', 'KFMY', 'KFNT',
     'KFOK', 'KFSM', 'KFTW', 'KFWA', 'KGCN', 'KGEG', 'KGLS', 'KGRI', 'KGSO',
-    'KGTF', 'KHAF', 'KHFD', 'KHLN', 'KHMS', 'KHON', 'KHTS', 'KHUF', 'KHVR',
+    'KGTF', 'KHAF', 'KHFD', 'KHMS', 'KHON', 'KHTS', 'KHUF', 'KHVR',
     'KIAD', 'KILG', 'KINL', 'KINW', 'KIPT', 'KISN', 'KLAF', 'KLEX', 'KLGB',
-    'KLMT', 'KLND', 'KLNK', 'KLWS', 'KLYH', 'KMCN', 'KMEI', 'KMFD', 'KMGM',
+    'KLMT', 'KLNK', 'KLWS', 'KLYH', 'KMCN', 'KMEI', 'KMGM',
     'KMGW', 'KMHK', 'KMKC', 'KMKE', 'KMKG', 'KMLS', 'KMOD', 'KMRY', 'KMSN',
-    'KMYR', 'KNBC', 'KOAK', 'KOFK', 'KOLM', 'KORF', 'KORH', 'KPBI', 'KPGA',
-    'KPHL', 'KPIA', 'KPNS', 'KPVD', 'KPWM', 'KRBL', 'KRDD', 'KRFD', 'KRIC',
+    'KMYR', 'KNBC', 'KOAK', 'KOFK', 'KOLM', 'KORF', 'KPGA',
+    'KPHL', 'KPIA', 'KPVD', 'KPWM', 'KRBL', 'KRDD', 'KRFD', 'KRIC',
     'KRNO', 'KROA', 'KROC', 'KRST', 'KSAV', 'KSBN', 'KSCK', 'KSDF', 'KSEA',
     'KSEZ', 'KSHR', 'KSLE', 'KSMP', 'KSNS', 'KSPI', 'KSPS', 'KSTC', 'KSTJ',
-    'KSUX', 'KSXT', 'KSYR', 'KTOL', 'KTPA', 'KTRM', 'KTUP', 'KTYS', 'KUIL',
-    'KUKI', 'KVCT', 'KVTN', 'KWAL', 'KWMC', 'KXMR', 'KYKM', 'KYNG', 'KYUM',
+    'KSUX', 'KSXT', 'KTRM', 'KTUP', 'KTYS', 'KUIL',
+    'KUKI', 'KVCT', 'KVTN', 'KWAL', 'KXMR', 'KYKM', 'KYUM',
     'PAFA', 'PHLI', 'PHNL', 'PHTO', 'PTKK', 'PTPN', 'PTRO', 'PTYA', 'KCEC',
     'KMHS', 'KRDM', 'KSJC', 'KSMX', 'PADK', 'KAUO', 'KAWO', 'KVBG', 'KEDW',
-    'KPRC', 'KVPS', 'KAPG', 'KGBN', 'KNGU', 'PAJN']
+    'KPRC', 'KVPS', 'KAPG', 'KGBN', 'KNGU', 'PAJN', 'KCQC', 'KGDP', 'KGNT',
+    'KGUY', 'KMWT', 'KNMT', 'KOQT', 'KRAM', 'KROW', 'KRTN', 'PKMJ',
+    'PKWA', 'PWAK', 'PAVD', 'PGSN', 'KASD', 'KBUO', 'KCHO', 'KCZK', 'KGFL',
+    'KHMM', 'KJNW', 'KLVM', 'KMLD', 'KMRB', 'KSJX', 'KSOW', 'PKMR']
 
 
 def main(argv):
