@@ -1,11 +1,12 @@
-from pyiem.network import Table as NetworkTable
-import psycopg2
-import pandas as pd
-from pyiem.datatypes import pressure, temperature
-from pyiem.meteorology import heatindex
 import urllib2
 import datetime
 import cStringIO
+
+import pandas as pd
+from pyiem.datatypes import pressure, temperature
+from pyiem.network import Table as NetworkTable
+from pyiem.meteorology import heatindex
+from pyiem.util import get_dbconn
 
 
 def two():
@@ -13,7 +14,7 @@ def two():
     sids = nt.sts.keys()
     sids.sort()
     for sid in sids:
-        print '-------------------------------------------------------------'
+        print('-------------------------------------------------------------')
         print((' Data Since: %s Station: [%s] %s'
                ) % (nt.sts[sid]['archive_begin'].year, sid,
                     nt.sts[sid]['name']))
@@ -68,23 +69,22 @@ def two():
             if not found2015:
                 print('  -- 2015 not in top 10 for site --')
             break
-two()
+
 
 def one():
-    pgconn = psycopg2.connect(database='asos', host='localhost', port=5555,
-                              user='nobody')
+    pgconn = get_dbconn('asos')
     cursor = pgconn.cursor()
     nt = NetworkTable(["IA_ASOS", "AWOS"])
     ids = nt.sts.keys()
     ids.sort()
 
-    print """
+    print("""
     <table class="table table-condensed table-striped">
     <thead>
     <tr><th>ID</th><th>Station Name</th><th>3 Sep Peak Heat Index</th>
     <th>Last Highest</th><th>Date</th></tr>
     </thead>
-    """
+    """)
 
     bah = nt.sts.keys()
 
@@ -114,5 +114,5 @@ def one():
                             hdx, row[1], row[2],
                             row[0].strftime("%d %b %Y %I:%M %p")))
                 break
-    print 'missed', bah
-    print "</table>"
+    print('missed %s' % (bah, ))
+    print("</table>")

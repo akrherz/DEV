@@ -1,9 +1,9 @@
 """ Attempt to compute the time of a record high temperature! """
-import psycopg2
 import matplotlib.pyplot as plt
-COOP = psycopg2.connect(database='coop', host='iemdb', user='nobody')
+from pyiem.util import get_dbconn
+COOP = get_dbconn('coop')
 ccursor = COOP.cursor()
-ASOS = psycopg2.connect(database='asos', host='iemdb', user='nobody')
+ASOS = get_dbconn('asos')
 acursor = ASOS.cursor()
 
 # Get records

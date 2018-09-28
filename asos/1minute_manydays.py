@@ -2,8 +2,9 @@ import psycopg2
 import datetime
 import numpy as np
 import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn
 
-ASOS = psycopg2.connect(database='asos', host='iemdb', user='nobody')
+ASOS = get_dbconn('asos')
 cursor = ASOS.cursor()
 
 def smooth(x,window_len=11,window='hanning'):

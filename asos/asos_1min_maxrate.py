@@ -4,8 +4,9 @@ import pytz
 import numpy as np
 from numpy.lib import stride_tricks
 import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn
 
-pgconn = psycopg2.connect(database='asos', host='iemdb', user='nobody')
+pgconn = get_dbconn('asos')
 cursor = pgconn.cursor()
 
 basets = datetime.datetime(1999, 1, 1)

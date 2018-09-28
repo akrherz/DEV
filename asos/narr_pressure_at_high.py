@@ -1,10 +1,10 @@
 import urllib
-import psycopg2
 import numpy as np
 import netCDF4
+from pyiem.util import get_dbconn
 from pyiem.plot import MapPlot
 
-COOP = psycopg2.connect(database='coop', host='iemdb', user='nobody')
+COOP = get_dbconn('coop')
 cursor = COOP.cursor()
 
 total = None

@@ -8,8 +8,9 @@ import matplotlib.colors as mpcolors
 import psycopg2
 import pyiem.datatypes as dt
 from pyiem import meteorology
+from pyiem.util import get_dbconn
 
-dbconn = psycopg2.connect(database='asos', host='iemdb', user='nobody')
+dbconn = get_dbconn('asos')
 cursor = dbconn.cursor()
 
 otmpf = []

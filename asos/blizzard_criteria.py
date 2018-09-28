@@ -5,7 +5,9 @@ import pylab
 import psycopg2
 from pyiem.network import Table as NetworkTable
 import numpy
-IEM = psycopg2.connect(database='iem', host='iemdb', user='nobody')
+from pyiem.util import get_dbconn
+
+IEM = get_dbconn('iem')
 icursor = IEM.cursor()
 st = NetworkTable( ('IA_ASOS', 'AWOS') )
 
