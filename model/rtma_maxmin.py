@@ -6,36 +6,35 @@ import datetime
 from metpy.units import units
 import numpy as np
 import pygrib
-import matplotlib
-matplotlib.use('agg')
-import matplotlib.pyplot as plt
+from pyiem.plot.use_agg import plt
 from pyiem.plot import MapPlot
 
 
 def plot():
     """Do plotting work"""
-    cmap = plt.get_cmap('terrain')
-    cmap.set_under('black')
-    cmap.set_over('red')
+    cmap = plt.get_cmap('inferno_r')
+    # cmap.set_under('black')
+    # cmap.set_over('red')
     minval = (np.load('minval.npy') * units.degK).to(units.degF)
     maxval = (np.load('maxval.npy') * units.degK).to(units.degF)
     diff = maxval - minval
     lons = np.load('lons.npy')
     lats = np.load('lats.npy')
     mp = MapPlot(sector='conus',
-                 title=(r"2017 Difference $^\circ$F between Warmest and "
-                        "Coldest 2m Temperature"),
+                 title=(r"Difference between warmest 3 Oct and coldest 4 "
+                        "Oct 2m Temperature"),
                  subtitle=("based on hourly NCEP Real-Time Mesoscale Analysis "
-                           "(RTMA) ending midnight 31 Dec 2017 CST"))
-    mp.ax.text(0.02, 1.01,
+                           "(RTMA) ending midnight CDT"))
+    mp.ax.text(0.5, 0.97,
                (r"Pixel Difference Range: %.1f$^\circ$F to %.1f$^\circ$F, "
                 r"Domain Analysis Range: %.1f$^\circ$F to %.1f$^\circ$F"
                 ) % (np.min(diff).magnitude,
                      np.max(diff).magnitude,
                      np.min(minval).magnitude,
                      np.max(maxval).magnitude),
-               transform=mp.ax.transAxes, fontsize=12)
-    mp.pcolormesh(lons, lats, diff, range(10, 141, 10),
+               transform=mp.ax.transAxes, fontsize=12, ha='center',
+               bbox=dict(pad=0, color='white'), zorder=50)
+    mp.pcolormesh(lons, lats, diff, range(0, 61, 5),
                   cmap=cmap, clip_on=False,
                   units=r"$^\circ$F")
     mp.postprocess(filename='test.png')
@@ -43,8 +42,8 @@ def plot():
 
 def process():
     """Go Main Go"""
-    now = datetime.datetime(2017, 1, 1)
-    ets = datetime.datetime(2018, 1, 1)
+    now = datetime.datetime(2018, 10, 4, 6)
+    ets = datetime.datetime(2018, 10, 5, 6)
     interval = datetime.timedelta(hours=1)
     minval = None
     maxval = None
@@ -78,7 +77,7 @@ def process():
 
         now += interval
 
-    np.save('maxval', maxval)
+    # np.save('maxval', maxval)
     np.save('minval', minval)
 
 
