@@ -60,7 +60,7 @@ def dotable(table):
 
 def main():
     """Do Main"""
-    for year in range(1996, 2018):
+    for year in range(2000, 2018):
         for col in ['0106', '0712']:
             table = "products_%s_%s" % (year, col)
             dotable(table)
