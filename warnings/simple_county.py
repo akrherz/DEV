@@ -1,31 +1,33 @@
+"""Map of hour of most common warning."""
 import matplotlib.colors as mpcolors
 import matplotlib.cm as cm
-import psycopg2
 import numpy as np
 
 from pyiem.plot import MapPlot
-POSTGIS = psycopg2.connect(database='postgis', host='localhost', user='nobody',
-                           port=5555)
+from pyiem.util import get_dbconn
+POSTGIS = get_dbconn('postgis')
 pcursor = POSTGIS.cursor()
 
 cmap = cm.get_cmap("jet")
 cmap.set_under("#ffffff")
 cmap.set_over("black")
 
-m = MapPlot(sector='conus', axisbg='#EEEEEE',
-            title='Hour of Day with Most Number of Severe T\'Storm Warnings Issued',
-            subtitle='Hours presented are local to the NWS Office that issued the warning',
-            cwas=True)
+m = MapPlot(
+    sector='conus', axisbg='#EEEEEE',
+    title='Hour of Day with Most Number of Severe T\'Storm Warnings Issued',
+    subtitle=('Hours presented are local to the NWS Office '
+              'that issued the warning'),
+    cwas=True)
 
 bins = np.arange(0, 25, 1)
 norm = mpcolors.BoundaryNorm(bins, cmap.N)
-
 
 pcursor.execute("""
 WITH data as (
     SELECT ugc, issue at time zone tzname as v
     from warnings w JOIN stations t
-    ON (w.wfo = (case when length(t.id) = 4 then substr(t.id, 1, 3) else t.id end))
+    ON (w.wfo =
+        (case when length(t.id) = 4 then substr(t.id, 1, 3) else t.id end))
     WHERE t.network = 'WFO' and
     phenomena = 'SV' and significance = 'W' and issue is not null),
     agg as (

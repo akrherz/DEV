@@ -8,7 +8,7 @@ for root, dirs, files in os.walk("."):
         for line in open(localfn):
             if line.strip() == '*' and lastline.strip() == '/**':
                 # if line.strip() == '-->' and lastline.strip() == '<!--':
-                print localfn, line, lastline
+                # print localfn, line, lastline
                 dofile = True
             lastline = line.strip()
         if not dofile:

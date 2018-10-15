@@ -2,7 +2,8 @@ import numpy
 import psycopg2
 import math
 import matplotlib.pyplot as plt
-ASOS = psycopg2.connect(database='asos', host='iemdb', user='nobody')
+from pyiem.util import get_dbconn
+ASOS = get_dbconn('asos')
 acursor = ASOS.cursor()
 
 

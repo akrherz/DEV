@@ -87,6 +87,6 @@ data = {}
 for row in pcursor:
     data[row[0]] = float(row[2 if opts['normalized'] else 1])
 
-m.fill_ugc_counties(data, bins, cmap=cmap, units=opts['units'])
+m.fill_ugcs(data, bins, cmap=cmap, units=opts['units'])
 m.postprocess(filename=fn)
 subprocess.call("xv %s" % (fn,), shell=True)

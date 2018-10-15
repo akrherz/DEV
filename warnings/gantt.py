@@ -38,8 +38,8 @@ labels = []
 events = []
 
 for row in pcursor:
-    labels.append("%s\n%s" % ("\n".join(vtec._phenDict[row[2]].split()),
-                              vtec._sigDict[row[3]]))
+    labels.append("%s\n%s" % ("\n".join(vtec.VTEC_PHENOMENA[row[2]].split()),
+                              vtec.VTEC_SIGNIFICANCE[row[3]]))
     events.append([row[0], row[1]])
 
 (fig, ax) = plt.subplots(1, 1)

@@ -1,8 +1,8 @@
 """barplot of daily requests"""
 import datetime
 
-import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+from pyiem.plot.use_agg import plt
 
 
 def main():
@@ -34,8 +34,10 @@ def main():
     ax.set_ylabel("Website Requests")
     ax.set_xlim(datetime.datetime(2017, 7, 23, 12),
                 datetime.datetime(2017, 8, 25))
-    ax.set_title(("IEM NEXRAD Level II Download Website (24 Jul - 24 Aug 2017)\n"
-                  "Daily Requests for KBRO Brownsville Level II Data"))
+    ax.set_title(
+        ("IEM NEXRAD Level II Download Website (24 Jul - 24 Aug 2017)\n"
+         "Daily Requests for KBRO Brownsville Level II Data")
+    )
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%-d\n%b"))
     fig.savefig('test.png')
 

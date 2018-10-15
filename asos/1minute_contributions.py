@@ -1,6 +1,7 @@
+from io import StringIO
+
 import pandas as pd
-from StringIO import StringIO
-import matplotlib.pyplot as plt
+from pyiem.plot.use_agg import plt
 
 """
  select precip, sum(precip), count(*) from alldata_1minute

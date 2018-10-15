@@ -1,8 +1,8 @@
 import pyproj
 import netCDF4
 import numpy as np
+from pyiem.plot.use_agg import plt
 from pyiem.plot import MapPlot
-import matplotlib.pyplot as plt
 
 
 LCC = pyproj.Proj(("+lon_0=-95. +y_0=0.0 +R=6371200. +proj=lcc +x_0=0.0"
@@ -23,4 +23,3 @@ for sector in ['I', 'J', 'C', 'D']:
     m.pcolormesh(lon, lat, vals, np.arange(0.02, 0.78, 0.02), cmap=cmap,
                  clip_on=False, clevstride=5, units='TOA Bidirectional Reflectance')
 m.postprocess(filename='170303.png')
-

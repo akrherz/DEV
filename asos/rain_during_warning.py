@@ -4,9 +4,10 @@ Compute the amount of precipitation that falls during a SVR,TOR warning
 import psycopg2
 import numpy
 import matplotlib.pyplot as plt
-POSTGIS = psycopg2.connect(database='postgis', host='iemdb', user='nobody')
+from pyiem.util import get_dbconn
+POSTGIS = get_dbconn('postgis')
 pcursor = POSTGIS.cursor()
-ASOS = psycopg2.connect(database='asos', host='iemdb', user='nobody')
+ASOS = get_dbconn('asos')
 acursor = ASOS.cursor()
 
 

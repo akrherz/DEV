@@ -1,11 +1,11 @@
+"""did the UGC have a warning on most active days."""
 import matplotlib.colors as mpcolors
 import matplotlib.cm as cm
-import psycopg2
 import numpy as np
 
 from pyiem.plot import MapPlot
-POSTGIS = psycopg2.connect(database='postgis', host='localhost', user='nobody',
-                           port=5555)
+from pyiem.util import get_dbconn
+POSTGIS = get_dbconn('postgis')
 pcursor = POSTGIS.cursor()
 
 cmap = cm.get_cmap("Accent")
@@ -14,7 +14,7 @@ cmap.set_over("black")
 
 m = MapPlot(sector='nws', axisbg='#EEEEEE',
             title='1+ TOR warn for 100 most active TOR warn days 1986-2015',
-            subtitle=('A day is defined as 12 to12 UTC period, did the '
+            subtitle=('A day is defined as 12 to 12 UTC period, did the '
                       'county get 1+ warning during those 100 events?'),
             cwas=True)
 
