@@ -82,13 +82,15 @@ def main():
                                           ) % (outdir, huc12), 'w'),
                                     open(('%s/temperature/T%s.txt'
                                           ) % (outdir, huc12), 'w')])
-                        fps[j][0].write("%s\n" % (basedate.strftime("%Y%m%d"), ))
-                        fps[j][1].write("%s\n" % (basedate.strftime("%Y%m%d"), ))
+                        fps[j][0].write(
+                            "%s\n" % (basedate.strftime("%Y%m%d"), ))
+                        fps[j][1].write(
+                            "%s\n" % (basedate.strftime("%Y%m%d"), ))
 
                     fps[j][0].write(("%.1f\n"
-                                    ) % (mypr[j], ))
+                                     ) % (mypr[j], ))
                     fps[j][1].write(("%.2f,%.2f\n"
-                                    ) % (mytasmax[j], mytasmin[j]))
+                                     ) % (mytasmax[j], mytasmin[j]))
 
     for fp in fps:
         fp[0].close()

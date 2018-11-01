@@ -1,13 +1,13 @@
 """plot precip accumulator"""
 from __future__ import print_function
-import psycopg2
+
 import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn
 
 
 def main():
     """Plot"""
-    pgconn = psycopg2.connect(database='hads', host='localhost', port=5556,
-                              user='nobody')
+    pgconn = get_dbconn('hads')
     cursor = pgconn.cursor()
     cursor.execute("""SELECT valid, value from raw2017_08 where
     station = 'CFMT2' and valid > '2017-08-25' and key = 'PCIRZZ'

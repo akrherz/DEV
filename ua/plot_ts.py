@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 import psycopg2
 import matplotlib.dates as mdates
+from pyiem.util import get_dbconn
 
-dbconn = psycopg2.connect(database='postgis', host='iemdb', user='nobody')
+dbconn = get_dbconn('postgis')
 cursor = dbconn.cursor()
 
 times = []

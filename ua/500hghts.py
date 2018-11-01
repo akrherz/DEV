@@ -1,20 +1,25 @@
 '''
  Compute the difference between the 12 UTC 850 hPa temp and afternoon high
 '''
-from pyiem.datatypes import temperature
-import psycopg2
 import datetime
+
 import numpy as np
-ASOS = psycopg2.connect(database='asos', host='iemdb', user='nobody')
+from pyiem.plot.use_agg import plt
+from pyiem.datatypes import temperature
+from pyiem.util import get_dbconn
+
+ASOS = get_dbconn('asos')
 acursor = ASOS.cursor()
 
-POSTGIS = psycopg2.connect(database='postgis', host='iemdb', user='nobody')
+POSTGIS = get_dbconn('postgis')
 pcursor = POSTGIS.cursor()
 
 rain500 = []
 raintmpf = []
 snow500 = []
 snowtmpf = []
+
+
 def run():
     pcursor.execute("""
  select valid, max(case when p.pressure = 500 then height else 0 end) - min(case when p.pressure = 1000 then height else 9999 end) from raob_profile p JOIN raob_flights f on 
@@ -58,7 +63,6 @@ snow500 = np.load('snow500.npy')
 rain500 = np.load('rain500.npy')
 raintmpf = np.load('raintmpf.npy')
     
-import matplotlib.pyplot as plt
 
 (fig, ax) = plt.subplots(2,1, sharex=True)
 
@@ -82,6 +86,4 @@ ax[1].axhline(5400, c='k')
 ax[1].axvline(32, c='k')
 ax[1].text(33,5050, "32$^\circ$F")
 
-fig.savefig('test.ps')
-import iemplot
-iemplot.makefeature('test')
+fig.savefig('test.png')
