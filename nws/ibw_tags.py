@@ -39,7 +39,7 @@ def main():
         val = row['cnt'] / total * 100.
         ax.text(x, y, "%.2f" % (val, ), ha='center', fontsize=FONTSIZE,
                 color='r' if val >= 10 else 'k',
-                va='center', bbox=dict(color='white'))
+                va='center', bbox=dict(color='white', boxstyle='square,pad=0'))
 
     for hailtag, row in df.groupby('hailtag').sum().iterrows():
         y = uniquehail.index(hailtag)
@@ -47,7 +47,7 @@ def main():
         val = row['cnt'] / total * 100.
         ax.text(x, y, "%.2f" % (val, ), ha='center', fontsize=FONTSIZE,
                 color='r' if val >= 10 else 'k',
-                va='center', bbox=dict(color='white'))
+                va='center', bbox=dict(color='white', boxstyle='square,pad=0'))
 
     for windtag, row in df.groupby('windtag').sum().iterrows():
         y = -1
@@ -55,7 +55,7 @@ def main():
         val = row['cnt'] / total * 100.
         ax.text(x, y, "%.2f" % (val, ), ha='center', fontsize=FONTSIZE,
                 color='r' if val >= 10 else 'k',
-                va='center', bbox=dict(color='white'))
+                va='center', bbox=dict(color='white', boxstyle='square,pad=0'))
 
     ax.set_xticks(range(len(uniquewind) + 1))
     ax.set_yticks(range(-1, len(uniquehail) + 1))
