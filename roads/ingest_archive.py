@@ -9,8 +9,8 @@ def main():
     """Go Main Go."""
     pgconn = get_dbconn('postgis')
     codes = read_sql("""
-    SELECT segid, major || ': ' || minor as label from roads_base
-    WHERE archive_end > '2017-01-01'
+    SELECT segid, idot_id, major || ': ' || minor as label from roads_base
+    WHERE archive_end is null or archive_end > '2017-01-01'
     """, pgconn, index_col=None)
     df = gpd.read_file('Export20162017.shp')
     # HEADLINE should be mapable back to my cond
@@ -19,10 +19,10 @@ def main():
     # CARS_SHORT_NAME
     unknown = []
     for _i, row in df.iterrows():
-        if row['CARS_SHORT'] not in codes['label'].values:
-            if row['CARS_SHORT'] not in unknown:
+        if row['CARS_SEGME'] not in codes['idot_id'].values:
+            if row['CARS_SEGME'] not in unknown:
                 print(row)
-                unknown.append(row['CARS_SHORT'])
+                unknown.append(row['CARS_SEGME'])
     print(len(unknown))
 
 
