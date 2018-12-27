@@ -1,15 +1,15 @@
-"""Reporting Smoke"""
+"""Reporting Smoke."""
 from __future__ import print_function
-import psycopg2
+
+import pytz
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import pytz
+from pyiem.util import get_dbconn
 
 
 def main():
     """Go"""
-    pgconn = psycopg2.connect(database='iem', host='iemdb', user='nobody',
-                              port=5555)
+    pgconn = get_dbconn('iem')
     cursor = pgconn.cursor()
 
     cursor.execute("""
