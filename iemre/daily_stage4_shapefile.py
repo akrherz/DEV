@@ -1,4 +1,7 @@
-"""Dump daily precip totals to shapefiles"""
+"""Dump daily precip totals to shapefiles.
+
+NOTE: DBF has a 256 column limit, so we dump twice here.
+"""
 from __future__ import print_function
 import datetime
 
@@ -26,7 +29,7 @@ def compute_bounds(nc):
 
 def main():
     """Go Main Go"""
-    nc = netCDF4.Dataset('/mesonet/data/stage4/2017_stage4_hourly.nc')
+    nc = netCDF4.Dataset('/mesonet/data/stage4/2018_stage4_hourly.nc')
     precip = nc.variables['p01m']
     # Compute needed grid bounds
     #     y,  x
@@ -46,8 +49,8 @@ def main():
         pts.append(Point(lon, lat))
     df = gpd.GeoDataFrame({'geometry': pts})
     # iterate over days
-    now = datetime.date(2017, 3, 1)
-    ets = datetime.date(2017, 10, 1)
+    now = datetime.date(2018, 7, 1)
+    ets = datetime.date(2019, 1, 1)
     while now < ets:
         valid = util.utc(now.year, now.month, now.day, 5)
         tidx0 = iemre.hourly_offset(valid)
