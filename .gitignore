@@ -3,6 +3,8 @@
 /ldm/*.log
 **/.ipynb_checkpoints
 **/*.png
+**/*.png
+**/*.mp4
 **/*.csv
 **/*.cpg
 **/*.xml
