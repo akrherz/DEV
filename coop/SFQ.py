@@ -2,9 +2,7 @@ import psycopg2
 from collections import OrderedDict
 import datetime
 import pytz
-import matplotlib
-matplotlib.use('agg')
-import matplotlib.pyplot as plt
+from pyiem.plot.use_agg import plt
 
 HADS = psycopg2.connect(database='hads', host='iemdb-hads', user='nobody')
 cursor = HADS.cursor()
@@ -48,7 +46,6 @@ for i, station in enumerate(STATIONS):
     for row in cursor:
         ts = row[0].astimezone(EASTERN)
         if station == 'BSPM2' and row[0].hour % 6 != 0:
-            print 'skip', row
             continue
         ax.text(ts - datetime.timedelta(hours=3), y,
                 "%.1f" % (row[1], ) if row[1] > 0.05 else 'T',

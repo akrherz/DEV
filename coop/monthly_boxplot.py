@@ -1,7 +1,8 @@
 import psycopg2
 import calendar
 import matplotlib.pyplot as plt
-CONN = psycopg2.connect(database='coop', host='iemdb', user='nobody')
+from pyiem.util import get_dbconn
+CONN = get_dbconn('coop')
 cursor = CONN.cursor()
 
 data = []

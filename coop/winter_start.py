@@ -1,8 +1,10 @@
-import psycopg2
+
 import datetime
+
 from pyiem.plot import MapPlot
 from pyiem.network import Table as NetworkTable
-COOP = psycopg2.connect(database="coop", host='iemdb', user='nobody')
+from pyiem.util import get_dbconn
+COOP = get_dbconn("coop")
 ccursor = COOP.cursor()
 
 nt = NetworkTable("NCDC81")

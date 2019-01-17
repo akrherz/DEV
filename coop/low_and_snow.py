@@ -1,6 +1,6 @@
-import psycopg2
 import matplotlib.pyplot as plt
-COOP = psycopg2.connect(database='coop', host='iemdb', user='nobody')
+from pyiem.util import get_dbconn
+COOP = get_dbconn('coop')
 ccursor = COOP.cursor()
 
 ccursor.execute("""

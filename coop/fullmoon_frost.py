@@ -1,10 +1,11 @@
-import ephem
-import psycopg2
 import datetime
+
+import ephem
 import numpy as np
 import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn
 
-COOP = psycopg2.connect(database='coop', host='iemdb', user='nobody')
+COOP = get_dbconn('coop')
 cursor = COOP.cursor()
 
 moon = ephem.Moon()
@@ -51,7 +52,7 @@ juliandays = np.array(juliandays)
 
 (fig, ax) = plt.subplots(1, 1)
 ax.scatter(moondiff, juliandays, marker='x', s=40)
-ax.set_title("1893-2012 Ames First Fall sub 29$^\circ$F Temperature")
+ax.set_title(r"1893-2012 Ames First Fall sub 29$^\circ$F Temperature")
 ax.set_ylabel("Date")
 ax.set_xlabel("Days to nearest Full Moon")
 ax.set_yticks((258, 265, 274, 281, 288, 295, 305, 312, 319))
