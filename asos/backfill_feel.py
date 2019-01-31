@@ -17,6 +17,7 @@ def not_nan(val):
 
 def main(argv):
     """Go Main Go."""
+    start_time = datetime.datetime.now()
     sts = utc(int(argv[1]), int(argv[2]), int(argv[3]))
     ets = sts + datetime.timedelta(hours=24)
     pgconn = get_dbconn('asos')
@@ -24,9 +25,13 @@ def main(argv):
     table = "t%s" % (sts.year, )
     df = read_sql("""
     SELECT station, valid, tmpf, dwpf, sknt from """ + table + """
-    WHERE valid >= %s and valid < %s and tmpf is not null and dwpf is not null
+    WHERE valid >= %s and valid < %s and tmpf >= dwpf
     and sknt is not null and feel is null
     """, pgconn, params=(sts, ets), index_col=None)
+    print("%s query of %s rows finished in %.4fs" % (sts.strftime("%Y%m%d"),
+        len(df.index),
+        (datetime.datetime.now() - start_time).total_seconds(), ))
+    start_time = datetime.datetime.now()
     df['relh'] = mcalc.relative_humidity_from_dewpoint(
         df['tmpf'].values * units.degF,
         df['dwpf'].values * units.degF
@@ -36,14 +41,17 @@ def main(argv):
         df['relh'].values * units.percent,
         df['sknt'].values * units.knots
     ).to(units.degF).magnitude
-    for _, row in df.iterrows():
+    df2 = df[(df['relh'] > 1) & (df['relh'] < 100.1)]
+    for _, row in df2.iterrows():
         cursor.execute("""UPDATE """ + table + """
         SET feel = %s, relh = %s WHERE station = %s and valid = %s
         """, (not_nan(row['feel']), not_nan(row['relh']),
               row['station'], row['valid']))
     cursor.close()
     pgconn.commit()
-    print("%s processed %s rows" % (sts, len(df.index)))
+    print("%s edit of %s rows finished in %.4fs" % (sts.strftime("%Y%m%d"),
+        len(df2.index),
+        (datetime.datetime.now() - start_time).total_seconds(), ))
 
 
 if __name__ == '__main__':
