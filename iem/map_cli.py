@@ -1,7 +1,7 @@
 """Map cli_data"""
 from __future__ import print_function
-import datetime
 
+from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
 from pyiem.plot import MapPlot
 
@@ -9,36 +9,28 @@ from pyiem.plot import MapPlot
 def main():
     """Map some CLI data"""
     pgconn = get_dbconn('iem')
-    cursor = pgconn.cursor()
 
-    cursor.execute("""
+    df = read_sql("""
     WITH data as (
         SELECT station, snow_jul1 - snow_jul1_normal as s
-        from cli_data where valid = '2018-01-24' and snow_jul1 > 0
+        from cli_data where valid = '2019-02-18' and snow_jul1 > 0
         and snow_jul1_normal > 0)
 
-    select station, st_x(geom), st_y(geom), c.s from
+    select station, st_x(geom) as lon, st_y(geom) as lat, c.s as val from
     data c JOIN stations s on (s.id = c.station)
     WHERE s.network = 'NWSCLI'
-    """)
-
-    lats = []
-    lons = []
-    colors = []
-    vals = []
-
-    for row in cursor:
-        lats.append(row[2])
-        lons.append(row[1])
-        vals.append(row[3])
-        colors.append('#ff0000' if row[3] < 0 else '#0000ff')
+    """, pgconn, index_col=None)
+    df['color'] = '#ff0000'
+    df.loc[df['val'] > 0, 'color'] = '#0000ff'
 
     mp = MapPlot(sector='midwest', axisbg='white',
-                 title=("2017-2018 Snowfall Total Departure "
+                 title=("2018-2019 Snowfall Total Departure "
                         "from Average [inches]"),
-                 subtitle='25 Jan 2018 Based on NWS CLI Reporting Sites')
-    mp.plot_values(lons, lats, vals, fmt='%s', textsize=12, color=colors,
-                   labelbuffer=1)
+                 subtitle='18 Feb 2019 Based on NWS CLI Reporting Sites')
+    mp.plot_values(
+        df['lon'].values, df['lat'].values,
+        df['val'].values, fmt='%.1f', textsize=12, color=df['color'].values,
+        labelbuffer=1)
     mp.postprocess(filename='test.png')
 
 
