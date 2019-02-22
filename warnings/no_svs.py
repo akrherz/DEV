@@ -28,9 +28,10 @@ def main():
     )
     df.to_csv("140401_190221_ffw_nofls.csv")
 
+    # NOTE: FFW followup is FFS
     mp = MapPlot(
         sector='nws',
-        title='Percentage of Flash Flood Warnings without a FLS Update Issued',
+        title='Percentage of Flash Flood Warnings without a FFS Update Issued',
         subtitle='1 April 2014 - 21 February 2019, based on unofficial data'
     )
     cmap = plt.get_cmap("copper_r")
