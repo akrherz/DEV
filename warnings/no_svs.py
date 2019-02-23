@@ -14,7 +14,9 @@ def main():
         SELECT wfo, eventid, extract(year from issue) as year,
         max(case when svs is not null then 1 else 0 end) as hit from
         warnings where product_issue > '2014-04-01' and
-        product_issue < '2019-02-22' and phenomena = 'FF'
+        product_issue < '2019-02-22' and phenomena = 'SV'
+        and date(issue) not in ('2017-08-25', '2017-08-26', '2017-08-27',
+        '2017-08-28', '2017-08-29', '2017-08-30')
         and significance = 'W' GROUP by wfo, eventid, year
     )
     SELECT wfo, sum(hit) as got_update, count(*) as total_events from data
@@ -26,13 +28,14 @@ def main():
     df['no_update_percent'] = (
         100. - df['got_update'] / df['total_events'] * 100.
     )
-    df.to_csv("140401_190221_ffw_nofls.csv")
+    df.to_csv("140401_190221_svr_nofls.csv")
 
     # NOTE: FFW followup is FFS
     mp = MapPlot(
         sector='nws',
-        title='Percentage of Flash Flood Warnings without a FFS Update Issued',
-        subtitle='1 April 2014 - 21 February 2019, based on unofficial data'
+        title='Percentage of Severe TStorm Warnings without a SVS Update Issued',
+        subtitle=('1 April 2014 - 21 February 2019 (exclude Harvey 26-30 Aug '
+                  '2017), based on unofficial data')
     )
     cmap = plt.get_cmap("copper_r")
     cmap.set_under('white')
@@ -42,7 +45,7 @@ def main():
         df['no_update_percent'], bins=ramp, cmap=cmap, units='%', ilabel=True,
         lblformat='%.1f'
     )
-    mp.postprocess(filename='140401_190221_ffw_nosvs.png')
+    mp.postprocess(filename='140401_190221_svr_nosvs.png')
 
 
 if __name__ == '__main__':
