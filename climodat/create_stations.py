@@ -43,6 +43,8 @@ def main():
             continue
         name = "%s - %s Climate Division" % (state_names[row['st_abbrv']],
                                              row['name'].title())
+        # can't have commas
+        name = name.replace(",", " ")
         sql = """
         INSERT into stations(id, name, network, country, state,
         plot_name, online, metasite, geom) VALUES
@@ -52,6 +54,7 @@ def main():
                name, row['lon'], row['lat'])
         output.write(sql)
     output.close()
+
 
 if __name__ == '__main__':
     main()
