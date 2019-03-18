@@ -49,23 +49,25 @@ def plot():
         dfs[scenario]['accum'] = dfs[scenario]['avg'].cumsum()
 
     for i, sday in enumerate(dfs[0].index.values):
+        if i == 0:
+            continue
         (fig, ax) = plt.subplots(1, 1)
         for scenario in [0, 36, 37, 38]:
             df = dfs[scenario]
             ax.plot(
-                range(i+1), df.iloc[:(i+1)]['accum'],
+                range(i), df.iloc[:i]['avg'],
                 label=SCENARIOS[scenario], lw=2)
         ax.set_xlim(0, 366)
-        ax.set_ylim(0, 6)
+        ax.set_ylim(0, 0.2)
         ax.grid(True)
         ax.legend(loc=2)
         ax.set_xticks((1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305,
                        335, 365))
         ax.set_xticklabels(calendar.month_abbr[1:])
-        ax.set_ylabel("Hillslope Soil Loss [T/a]")
-        ax.set_title("2008-2017 DEP Average Year-to-Date Hillslope Soil Loss")
+        ax.set_ylabel("Hillslope Soil Loss [T/a/day]")
+        ax.set_title("2008-2017 DEP Daily Average Hillslope Soil Loss")
 
-        fig.savefig('/tmp/frames/%05i.png' % (i, ))
+        fig.savefig('/tmp/frames/%05i.png' % (i - 1, ))
         plt.close()
 
 
