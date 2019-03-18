@@ -10,7 +10,7 @@ def main():
     """Go Main"""
     pgconn = get_dbconn('postgis')
     df = read_postgis("""
-    select geom, issue from bot_warnings where wfo = 'EAX'
+    select geom, issue from bot_warnings where wfo = 'PUB'
     """, pgconn, geom_col='geom', crs={'init': 'epsg:4326', 'no_defs': True})
 
     bounds = df['geom'].total_bounds
@@ -20,7 +20,7 @@ def main():
                  south=bounds[1] - bbuf,
                  east=bounds[2] + bbuf, north=bounds[3] + bbuf,
                  continentalcolor='white',
-                 title='Bot Issued Tornado Warnings [2008-2018] for EAX',
+                 title='Bot Issued Tornado Warnings [2008-2018] for PUB',
                  subtitle='%s warnings plotted' % (len(df.index), ))
     crs_new = ccrs.Mercator()
     crs = ccrs.PlateCarree()

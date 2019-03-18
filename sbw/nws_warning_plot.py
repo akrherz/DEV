@@ -10,7 +10,7 @@ def main():
     """Go Main"""
     pgconn = get_dbconn('postgis')
     df = read_postgis("""
-    select geom, issue from sbw where wfo = 'EAX' and phenomena = 'TO'
+    select geom, issue from sbw where wfo = 'PUB' and phenomena = 'TO'
     and significance = 'W' and status = 'NEW' and issue > '2007-10-01'
     and issue < '2019-01-01'
     """, pgconn, geom_col='geom', crs={'init': 'epsg:4326', 'no_defs': True})
@@ -18,12 +18,13 @@ def main():
     bounds = df['geom'].total_bounds
     # bounds = [-102.90293903,   40.08745967,  -97.75622311,   43.35172981]
     bbuf = 0.25
-    mp = MapPlot(sector='custom', west=bounds[0] - bbuf,
-                 south=bounds[1] - bbuf,
-                 east=bounds[2] + bbuf, north=bounds[3] + bbuf,
-                 continentalcolor='white',  # '#b3242c',
-                 title='NWS Pleasant Hill Issued Tornado Warnings [2008-2018]',
-                 subtitle='%s warnings plotted' % (len(df.index), ))
+    mp = MapPlot(
+        sector='custom', west=bounds[0] - bbuf,
+        south=bounds[1] - bbuf,
+        east=bounds[2] + bbuf, north=bounds[3] + bbuf,
+        continentalcolor='white',  # '#b3242c',
+        title='NWS Pueblo Issued Tornado Warnings [2008-2018]',
+        subtitle='%s warnings plotted' % (len(df.index), ))
     crs_new = ccrs.Mercator()
     crs = ccrs.PlateCarree()
     new_geometries = [crs_new.project_geometry(ii, src_crs=crs)
