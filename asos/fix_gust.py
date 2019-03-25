@@ -1,7 +1,6 @@
 """Correct some bad gust data that went into the database.
 
 see akrherz/iem#188"""
-import sys
 import re
 
 from pyiem.util import get_dbconn
@@ -46,4 +45,4 @@ def main(argv):
 
 if __name__ == '__main__':
     for _year in range(1929, 1990):
-        main([str(_year)])
+        main([None, str(_year)])
