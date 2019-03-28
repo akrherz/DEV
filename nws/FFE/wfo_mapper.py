@@ -36,7 +36,7 @@ def main():
     mp = MapPlot(sector='nws', continentalcolor='white', figsize=(12., 9.),
                  title=("2003-2018 Flash Flood Emergency Events"),
                  subtitle=('based on unofficial IEM archives, searching '
-                           '"FFS", "FLW", "FFS". Thru 12 PM 14 Sep 2018'))
+                           '"FFS", "FLW", "FFS".'))
     mp.fill_cwas(vals, bins=bins, lblformat='%s', labels=labels,
                  cmap=cmap, ilabel=True,  # clevlabels=month_abbr[1:],
                  units='count')
