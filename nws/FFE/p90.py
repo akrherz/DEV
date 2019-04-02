@@ -80,7 +80,8 @@ def plotter(ctx):
         title='2009-2018 Flash Flood Emergency Polygon Heatmap',
         sector='custom', axisbg='white',
         # west=-107, south=25.5, east=-88, north=41,
-        west=-82, south=36., east=-68, north=48,
+        # west=-82, south=36., east=-68, north=48,
+        west=-85, south=31.8, north=45.2, east=-69,
         subtitle='based on unofficial IEM Archives', nocaption=True)
     cmap = plt.get_cmap('jet')
     cmap.set_under('white')

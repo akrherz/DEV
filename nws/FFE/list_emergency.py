@@ -14,7 +14,7 @@ project = partial(
 
 def main():
     """Go Main Go"""
-    data = open('flood_emergency_filtered.txt', 'rb').read().decode('ascii')
+    data = open('flood_emergency_filtered_2019.txt', 'rb').read().decode('ascii')
     rows = []
     etn = 9000
     for report in data.split("\003"):
@@ -48,7 +48,7 @@ def main():
             etn += 1
         rows.append(data)
     df = pd.DataFrame(rows)
-    df.to_csv('flood_emergencies.csv')
+    df.to_csv('flood_emergencies_2019.csv')
 
 
 if __name__ == '__main__':

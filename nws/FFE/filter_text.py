@@ -3,9 +3,9 @@
 
 def main():
     """Go Main Go"""
-    output = open('flood_emergency_filtered.txt', 'wb')
+    output = open('flood_emergency_filtered_2019.txt', 'wb')
     good = 0
-    for report in open('flood_emergency.txt', 'rb').read().split(b"\003"):
+    for report in open('flood_emergency_2019.txt', 'rb').read().split(b"\003"):
         raw = b" ".join(
             report.upper().replace(b"\r", b"").replace(b"\n", b" ").split())
         if raw.find(b"ACTUAL FLASH FLOOD EMERGENCY") > 0:
