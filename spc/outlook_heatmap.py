@@ -33,12 +33,12 @@ def main():
     pgconn = get_dbconn('postgis')
     df = read_postgis("""
         select valid, issue, expire, geom from spc_outlooks where
-        outlook_type = 'C' and day = 1 and threshold = 'MRGL' and
+        outlook_type = 'C' and day = 1 and threshold = 'HIGH' and
         category = 'CATEGORICAL' and
         ST_Within(geom, ST_GeomFromEWKT('SRID=4326;POLYGON((%s %s, %s %s,
         %s %s, %s %s, %s %s))'))
         and extract(hour from valid at time zone 'UTC') in (15, 16)
-        and valid < '2019-01-01' and valid > '2015-01-01'
+        and valid < '2019-01-01' and valid > '2002-01-01'
         and ST_Area(geom) < 10000
     """, pgconn, params=(
         GRIDWEST, GRIDSOUTH, GRIDWEST, GRIDNORTH, GRIDEAST,
@@ -61,22 +61,24 @@ def main():
             counts[y0:y1, x0:x1] += np.where(raster.mask, 0, 1)
 
     np.save('day1_0z', counts)
-
-    YEARS = (2018. - 2015.) + 1.
+    # ENH MRGL only go back Oct 2014
+    YEARS = (2018. - 2002.) + 1.
     m = MapPlot(
         sector='conus',
-        title='Avg Number of Day 1 (@16z) Categorical Marginal Risks per year',
-        subtitle=("(2015 through 2018) based on unofficial "
+        title='Avg Number of Day 1 (@16z) Categorical High Risks per year',
+        subtitle=("(2002 through 2018) based on unofficial "
                   "archives maintained by the IEM, %sx%s analysis grid"
                   ) % (griddelta, griddelta))
     cmap = plt.get_cmap('jet')
     cmap.set_under('white')
     cmap.set_over('black')
     lons, lats = np.meshgrid(lons, lats)
-    # rng = np.arange(0., 3.1, 0.3)
+    # rng = np.arange(0., 0.81, 0.1)
     # rng[0] = 0.01
     data = counts / YEARS
-    rng = [0.01, 0.5, 1, 3, 5, 7, 10, 15, 20, 25, 30, 40, 50]
+    # rng = [0.01, 0.5, 1, 3, 5, 7, 10, 15, 20, 25, 30, 40, 50]
+    # rng = [0.01, 0.1, 0.25, 0.5, 0.75, 1, 1.5, 2, 2.5, 3, 4, 5]
+    rng = [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
     res = m.pcolormesh(
         lons, lats, data, rng, cmap=cmap, units='count')
     res.set_rasterized(True)
