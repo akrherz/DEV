@@ -24,13 +24,17 @@ def main():
             total = grb['values']
             continue
         total += grb['values']
-    analtime = grb.analDate - datetime.timedelta(hours=6)
+    # TODO tz-hack here
+    analtime = grb.analDate - datetime.timedelta(hours=5)
 
-    mp = MapPlot(sector='custom', west=-100, east=-68, north=50, south=32,
-                 axisbg='tan',
-                 title=("NWS Forecasted Accumulated Snowfall "
-                        "thru 8 PM 21 Jan 2019"),
-                 subtitle='NDFD Forecast Issued %s' % (analtime.strftime("%-I %p %-d %B %Y"), ))
+    mp = MapPlot(
+        sector='custom', west=-100, east=-92, north=45, south=41,
+        axisbg='tan',
+        title=("NWS Forecasted Accumulated Snowfall "
+               "thru 7 PM 12 April 2019"),
+        subtitle='NDFD Forecast Issued %s' % (
+            analtime.strftime("%-I %p %-d %B %Y"), )
+    )
     cmap = nwssnow()
     cmap.set_bad('tan')
     mp.pcolormesh(
@@ -39,6 +43,8 @@ def main():
         cmap=cmap,
         units='inch')
 
+    mp.drawcounties()
+    mp.drawcities()
     mp.postprocess(filename='test.png')
     mp.close()
 
