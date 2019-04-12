@@ -36,10 +36,11 @@ def main():
     # Copy any data older than 12 AM from yesterday
     yest = today - datetime.timedelta(days=1)
     fndate = today - datetime.timedelta(days=2)
+    tmpfn = "%s.db" % (fndate.strftime("%Y%m%d"), )
     sql = """
         COPY (select * from current_log where valid < '%s 00:00')
-        to '/tmp/%s.db'
-    """ % (yest.strftime("%Y-%m-%d"), fndate.strftime("%Y%m%d"))
+        to '/tmp/%s' WITH HEADER CSV
+    """ % (yest.strftime("%Y-%m-%d"), tmpfn)
     atomic(pgconn, sql)
 
     # Delete out any data older than that
@@ -52,13 +53,14 @@ def main():
     mydir = "iemaccess/%s" % (fndate.strftime("%Y_%m"), )
     if not os.path.isdir(mydir):
         os.makedirs(mydir)
-    shutil.move("/tmp/%s.db" % (fndate.strftime("%Y%m%d"), ), mydir)
+    subprocess.call("gzip /tmp/%s" % (tmpfn, ), shell=True)
+    shutil.move("/tmp/%s.gz" % (tmpfn, ), mydir)
 
     # Vacuum
     subprocess.call("vacuumdb -q -z -t current iem", shell=True)
     subprocess.call("vacuumdb -q -z -t current_log iem", shell=True)
     subprocess.call(
-        "vacuumdb -z -t summary_%s iem" % (today.year, ), shell=True)
+        "vacuumdb -q -z -t summary_%s iem" % (today.year, ), shell=True)
 
 
 if __name__ == '__main__':
