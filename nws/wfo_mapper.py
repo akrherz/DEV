@@ -16,11 +16,19 @@ def get_database_data():
     pgconn = get_dbconn('postgis')
     df = read_sql("""
     with data as (
-        select distinct wfo,
-        generate_series(issue, expire, '1 minute'::interval) as ts
-        from warnings_2018 where phenomena = 'FL' and significance = 'W')
-    select wfo, count(*) / 391621. * 100. as percent from data
-    GROUP by wfo ORDER by percent DESC
+        select wfo, count(*) / 10. as cnt
+        from sbw WHERE phenomena in ('TO') and significance = 'W'
+        and status = 'NEW' and issue > '2009-01-01' and issue < '2019-01-01'
+        and to_char(issue, 'mmdd') < '0523'
+        GROUP by wfo),
+    d2019 as (
+        select wfo, count(*)
+        from sbw_2019 WHERE phenomena in ('TO') and significance = 'W'
+        and status = 'NEW'
+        GROUP by wfo)
+
+    SELECT d.wfo, coalesce(t.count, 0) / d.cnt * 100. as percent from
+    data d LEFT JOIN d2019 t on (d.wfo = t.wfo)
     """, pgconn, index_col='wfo')
     return df
 
@@ -39,15 +47,15 @@ def main():
         #if row['count'] == 0:
         #    labels[wfo] = '-'
 
-    bins = np.arange(0, 101, 10)    
-    #bins = [1, 25, 50, 75, 100, 125, 150, 200, 300]
-    #bins = [-50, -25, -10, -5, 0, 5, 10, 25, 50]
+    # bins = np.arange(0, 101, 10)    
+    bins = [1, 25, 50, 75, 100, 125, 150, 200, 300]
+    # bins = [-50, -25, -10, -5, 0, 5, 10, 25, 50]
     # bins[0] = 1
-    #clevlabels = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N']
+    # clevlabels = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N']
     cmap = plt.get_cmap('PuOr')
     mp = MapPlot(sector='nws', continentalcolor='white', figsize=(12., 9.),
-                 title=("2018 Percentage of Time with 1+ Flood Warning Active"),
-                 subtitle=('1 January - 30 September 2018, based on IEM archives'))
+                 title=("2019 YTD Issued Tornado Warnings Departure from Average"),
+                 subtitle=('1 Jan till 12 AM 23 May 2019 vs 2009-2018, based on IEM archives'))
     mp.fill_cwas(vals, bins=bins, lblformat='%s', labels=labels,
                  cmap=cmap, ilabel=True,  # clevlabels=clevlabels,
                  units='percent')
