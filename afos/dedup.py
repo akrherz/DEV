@@ -1,9 +1,8 @@
 """Deduplicate."""
-import sys
 
 from tqdm import tqdm
-from pandas.io.sql import read_sql
 from pyiem.util import noaaport_text, get_dbconn
+from pandas.io.sql import read_sql
 
 
 def dotable(table):
@@ -14,7 +13,8 @@ def dotable(table):
         WITH data as (
             SELECT entered, pil, wmo, source, count(*) from """ + table + """
             WHERE source is not null and wmo is not null and pil is not null
-            and entered is not null GROUP by entered, pil, wmo, source)
+            and entered is not null
+            GROUP by entered, pil, wmo, source)
         select * from data where count > 1
     """, pgconn, index_col=None)
     hits = 0
@@ -24,11 +24,14 @@ def dotable(table):
         cursor.execute("""
             SELECT data from """ + table + """
             WHERE source = %s and entered = %s and pil = %s and wmo = %s
+            ORDER by length(data) DESC
         """, (row['source'], row['entered'], row['pil'], row['wmo']))
         data = []
         for row2 in cursor:
             data.append(noaaport_text(row2[0]))
-        if data[0][11:] == data[1][11:] and len(data) == 2:
+        if len(data) == 2 and (
+                data[0][11:] == data[1][11:] or
+                (abs(len(data[0]) - len(data[1])) < 6)):
             hits += 1
             # delete old entries
             cursor.execute("""
@@ -43,15 +46,7 @@ def dotable(table):
                 data[0][:-1], row['pil'], row['entered'], row['source'],
                 row['wmo'])
             )
-        continue
-        if data[0][11:] != data[1][11:]:
-            o = open('one.txt', 'w')
-            o.write(data[0])
-            o.close()
-            o = open('two.txt', 'w')
-            o.write(data[1])
-            o.close()
-            sys.exit()
+            continue
     print("%s rows were updated..." % (hits, ))
     cursor.close()
     pgconn.commit()
@@ -60,7 +55,7 @@ def dotable(table):
 
 def main():
     """Do Main"""
-    for year in range(2000, 2018):
+    for year in range(2009, 2010):
         for col in ['0106', '0712']:
             table = "products_%s_%s" % (year, col)
             dotable(table)
