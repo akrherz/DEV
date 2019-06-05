@@ -44,8 +44,9 @@ def main():
     yearmax = df[['year', 'delta']].groupby('year').max()
     for year, df2 in df.groupby('year'):
         for _, row in df2.iterrows():
+            # NOTE: minus 3.5 to center the 7 day bar
             ax.bar(
-                row['doy'], 1, bottom=year-0.5, width=7, ec='None',
+                row['doy'] - 3.5, 1, bottom=year-0.5, width=7, ec='None',
                 fc=cmap(norm([row['delta']]))[0])
 
     sts = datetime.datetime(2000, 3, 22)
