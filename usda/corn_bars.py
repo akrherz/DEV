@@ -16,7 +16,7 @@ def get_data():
     df = read_sql("""
         select year, week_ending, num_value, state_alpha from nass_quickstats
         where commodity_desc = 'CORN' and statisticcat_desc = 'PROGRESS'
-        and unit_desc = 'PCT PLANTED' and state_alpha = 'IN' and
+        and unit_desc = 'PCT PLANTED' and state_alpha = 'IA' and
         util_practice_desc = 'ALL UTILIZATION PRACTICES'
         and num_value is not null
         ORDER by state_alpha, week_ending
@@ -78,7 +78,7 @@ def main():
     ax.grid(linestyle='-', linewidth='0.5', color='#EEEEEE', alpha=0.7)
     ax.set_title((
         "USDA NASS Weekly Corn Planting Progress, till 2 June 2019\n"
-        "Indiana % acres planted over weekly periods, "
+        "Iowa % acres planted over weekly periods, "
         "yearly max labelled at side"))
 
     ax2 = plt.axes(
