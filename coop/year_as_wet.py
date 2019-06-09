@@ -9,7 +9,7 @@ from pandas.io.sql import read_sql
 
 def main():
     """Go Main Go."""
-    nt = NetworkTable(["IACLIMATE", "ILCLIMATE", "INCLIMATE"])
+    nt = NetworkTable(["IACLIMATE", "ILCLIMATE", "INCLIMATE", "MOCLIMATE"])
     pgconn = get_dbconn('coop')
     df = read_sql("""
         SELECT station,
@@ -18,24 +18,27 @@ def main():
         WHERE (month > 9 or month < 6) and
         substr(station, 3, 1) not in ('C', 'T')
         and substr(station, 3, 4) != '0000'
-        and substr(station, 1, 2) in ('IA', 'IL', 'IN')
+        and substr(station, 1, 2) in ('IA', 'IL', 'IN', 'MO')
         GROUP by station, myyear
     """, pgconn, index_col=None)
     y2019 = df[df['myyear'] == 2019].set_index('station')
     lats = []
     lons = []
     vals = []
+    colors = []
     for station, df2 in df.groupby('station'):
         df3 = df2[df2['total'] > y2019.at[station, 'total']]
         last = df3['myyear'].max()
         lats.append(nt.sts[station]['lat'])
         lons.append(nt.sts[station]['lon'])
-        vals.append('--' if pd.isna(last) else last)
+        vals.append('R' if pd.isna(last) else last)
+        colors.append('k' if vals[-1] != 'R' else 'b')
     mp = MapPlot(
         sector='iailin',
         continentalcolor='white',
-        title='Previoous year wetter than 1 Oct 2018 - 31 May 2019')
-    mp.plot_values(lons, lats, vals, textsize=12, labelbuffer=1)
+        subtitle='Locations with blue "R" had the largest accumulation for period',
+        title='Previous year wetter than 1 Oct 2018 - 31 May 2019')
+    mp.plot_values(lons, lats, vals, textsize=12, labelbuffer=1, color=colors)
     mp.postprocess(filename='test.png')
 
 
