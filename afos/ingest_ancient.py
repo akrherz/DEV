@@ -6,7 +6,7 @@ import datetime
 
 import pytz
 from pyiem.util import noaaport_text
-from pyiem.nws.product import TextProduct, TextProductException
+from pyiem.nws.product import TextProduct
 from pyiem.util import utc, get_dbconn
 from tqdm import tqdm
 
@@ -32,6 +32,17 @@ def save(prod, cursor):
           XREF_SOURCE.get(prod.source, prod.source), wmo))
 
 
+def splitter(fn):
+    """Generate products."""
+    data = open(fn, 'rb').read().decode('ascii', 'ignore')
+    tokens = re.split("[0-9]{3} \r\r\n", data)
+    for token in tokens:
+        product = "000 \r\r\n%s" % (token, )
+        product = product.split("\003")[0]
+        product = noaaport_text(product).replace("\000", "")
+        yield product
+
+
 def main():
     """Go Main Go."""
     os.chdir("/mesonet/tmp/poker")
@@ -43,13 +54,7 @@ def main():
                 continue
             date = datetime.datetime.strptime(dirpath[:12], "./%Y/%b%d")
             utcnow = utc(date.year, date.month, date.day)
-            data = open(
-                "%s/%s" % (dirpath, fn), 'rb').read().decode('ascii', 'ignore')
-            tokens = re.split("[0-9]{3} \r\r\n", data)
-            for token in tokens:
-                product = "000 \r\r\n%s" % (token, )
-                product = noaaport_text(product).replace("\000", "")
-                product = product.split("\003")[0]
+            for product in splitter(dirpath + "/" + fn):
                 try:
                     prod = TextProduct(
                         product, utcnow=utcnow, parse_segments=False)
@@ -58,6 +63,12 @@ def main():
                     continue
         cursor.close()
         dbconn.commit()
+
+
+def test_splitter():
+    """Can we make things happen."""
+    tokens = list(splitter('/tmp/1113.gdbm'))
+    assert len(tokens) == 16
 
 
 if __name__ == '__main__':
