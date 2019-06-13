@@ -34,6 +34,7 @@ def main(argv):
         if updated % 1000 == 0:
             cursor2.close()
             pgconn.commit()
+            cursor2 = pgconn.cursor()
 
     print("updated %s rows" % (updated, ))
     cursor2.close()
