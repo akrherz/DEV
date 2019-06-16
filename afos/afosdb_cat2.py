@@ -1,31 +1,24 @@
-# Send products from AFOS database to pyWWA
+"""Send products from AFOS database to pyWWA."""
 
-import psycopg2
-import os
-AFOS = psycopg2.connect(database='afos', host='iemdb', port=5555,
-                        user='nobody')
-acursor = AFOS.cursor('streamer')
+from pyiem.util import get_dbconn, noaaport_text
 
-o = open('KUNR.txt', 'w')
 
-acursor.execute("""
-    SELECT pil, entered at time zone 'UTC', source, pil from products
-    WHERE source = 'KUNR'""")
-for i, row in enumerate(acursor):
-    uri = "http://mesonet.agron.iastate.edu/wx/afos/p.php?pil=%s&e=%s" % (
-                    row[0], row[1].strftime("%Y%m%d%H%M"))
-    o.write("%s,%s,%s,%s\n" % (row[1].strftime("%Y-%m-%d %H:%M"),
-                               row[1].hour, row[0], uri))
-    # skip below
-    continue
-    mydir = "KOKX/%s" % (row[3],)
-    if not os.path.isdir(mydir):
-        os.makedirs(mydir)
-    o = open('%s/%s_%s_%s.txt' % (mydir, row[1].strftime("%Y%m%d%H%M"),
-                                  row[2], row[3]),
-             'a')
-    o.write(row[0])
-    o.write('\r\r\n\003')
-    o.close()
+def main():
+    """Go Main Go."""
+    pgconn = get_dbconn('afos')
+    cursor = pgconn.cursor('streamer')
 
-o.close()
+    fp = open('SWOMCD.txt', 'w')
+
+    cursor.execute("""
+        SELECT data from products
+        WHERE pil = 'SWOMCD' and entered < '2008-10-21 15:34'
+        ORDER by entered ASC
+    """)
+    for _i, row in enumerate(cursor):
+        fp.write(noaaport_text(row[0]))
+    fp.close()
+
+
+if __name__ == '__main__':
+    main()
