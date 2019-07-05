@@ -13,9 +13,14 @@ def main(argv):
     """Go Main Go."""
     year = int(argv[1])
     table = argv[2]
+    if table == 'hourly':
+        month = int(argv[3])
+        dbtable = "iemre_hourly_%i%02i" % (year, month)
+    else:
+        dbtable = "iemre_daily_%i" % (year, )
     pgconn = get_dbconn('iemre')
     cursor = pgconn.cursor()
-    cursor.execute("TRUNCATE iemre_%s_%s" % (table, year))
+    cursor.execute("TRUNCATE " + dbtable)
     cursor.close()
     pgconn.commit()
     nc = ncopen("/mesonet/data/iemre/%s_iemre_%s.nc" % (year, table))
@@ -29,6 +34,8 @@ def main(argv):
     for tstep in tqdm(nc.variables['time'][:]):
         date = datetime.datetime(year, 1, 1) + datetime.timedelta(
             hours=int(tstep) * multi)
+        if table == 'hourly' and date.month != month:
+            continue
         grids = {}
         for vname in ncvars:
             grids[vname] = ncvars[vname][tstep].flatten()
@@ -41,9 +48,7 @@ def main(argv):
         df.to_csv(sio, sep='\t', header=False, index=False, na_rep='null')
         sio.seek(0)
         cursor = pgconn.cursor()
-        cursor.copy_from(
-            sio, 'iemre_%s_%s' % (table, year), columns=df.columns,
-            null='null')
+        cursor.copy_from(sio, dbtable, columns=df.columns, null='null')
         cursor.close()
         pgconn.commit()
 
