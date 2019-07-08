@@ -1,30 +1,34 @@
-"""Copy IEMRE data to the database."""
-import sys
-import datetime
+"""Copy IEMRE data to the database.
 
-from tqdm import tqdm
+    Usage: python copy_to_database.py <hourly/daily> <YYYY> <mm> <dd> <HH24>
+"""
+import sys
+
 from pyiem.util import ncopen, utc
 from pyiem import iemre
 
 
 def main(argv):
     """Go Main Go."""
-    year = int(argv[1])
-    table = argv[2]
-    nc = ncopen("/mesonet/data/iemre/%s_iemre_%s.nc" % (year, table))
+    table = argv[1]
+    valid = utc(int(argv[2]), int(argv[3]), int(argv[4]), int(argv[5]))
+    if table == 'daily':
+        valid = valid.date()
+        tidx = iemre.daily_offset(valid)
+    else:
+        tidx = iemre.hourly_offset(valid)
     ncvars = {}
-    for vname in nc.variables.keys():
-        if vname in ['lat', 'lon', 'time', 'hasdata']:
-            continue
-        ncvars[vname] = nc.variables[vname]
+    with ncopen(
+            "/mesonet/data/iemre/%s_iemre_%s.nc" % (valid.year, table)) as nc:
+        for vname in nc.variables.keys():
+            if vname in ['lat', 'lon', 'time', 'hasdata']:
+                continue
+            ncvars[vname] = nc.variables[vname][tidx, :, :]
 
-    multi = 24 if table == 'daily' else 1
-    for tstep in tqdm(nc.variables['time'][:]):
-        ts = utc(year, 1, 1) + datetime.timedelta(hours=int(tstep) * multi)
-        ds = iemre.get_grids(ts if table == 'hourly' else ts.date())
-        for vname in ncvars:
-            ds[vname].values = ncvars[vname][tstep]
-        iemre.set_grids(ts if table == 'hourly' else ts.date(), ds)
+    ds = iemre.get_grids(valid)
+    for vname in ncvars:
+        ds[vname].values = ncvars[vname]
+    iemre.set_grids(valid, ds)
 
 
 if __name__ == '__main__':
