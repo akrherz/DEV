@@ -38,28 +38,36 @@ def get_database_data():
 def main():
     """Go Main"""
     df = get_database_data()
+    pgconn = get_dbconn('postgis')
+    df2 = read_sql("""
+        SELECT wfo, st_area(the_geom::geography) / 1000000000. as area
+        from cwa""" 
+    , pgconn, index_col='wfo')
+    df['area'] = df2['area']
+    df['ratio'] = df['days'] / df['area']
+    print(df['ratio'].describe())
     vals = {}
     labels = {}
     for wfo, row in df.iterrows():
         if wfo == 'JSJ':
             wfo = 'SJU'
-        vals[wfo] = row['days']
-        labels[wfo] = '%.0f' % (row['days'], )
+        vals[wfo] = row['ratio']
+        labels[wfo] = '%.1f' % (row['ratio'], )
         #if row['count'] == 0:
         #    labels[wfo] = '-'
 
-    # bins = np.arange(0, 101, 10)    
-    bins = [1, 2, 5, 10, 20, 30, 50, 75, 100, 125, 150, 175]
+    bins = np.arange(0, 3.1, 0.25)    
+    # bins = [1, 2, 5, 10, 20, 30, 50, 75, 100, 125, 150, 175]
     # bins = [-50, -25, -10, -5, 0, 5, 10, 25, 50]
     # bins[0] = 1
     # clevlabels = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N']
     cmap = plt.get_cmap('magma')
     mp = MapPlot(sector='conus', continentalcolor='white', figsize=(12., 9.),
-                 title=("2002-2019 SPC Day 1 Moderate Convective Risk Days by WFO"),
+                 title=("2002-2019 SPC Day 1 Moderate Convective Risk Days/WFO Area by WFO"),
                  subtitle=('till 17 Jul 2019, based on unofficial IEM Archives of any part of risk area overlapping CWA'))
     mp.fill_cwas(vals, bins=bins, lblformat='%s', labels=labels,
                  cmap=cmap, ilabel=True,  # clevlabels=clevlabels,
-                 units='days')
+                 units='days / 1000 sqkm')
     
     mp.postprocess(filename='test.png')
 
