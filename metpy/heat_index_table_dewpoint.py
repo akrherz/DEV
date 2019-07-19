@@ -6,7 +6,7 @@ import seaborn as sns
 import matplotlib.colors as mpcolors
 from matplotlib.font_manager import FontProperties
 from matplotlib import patches
-from metpy.calc.basic import heat_index
+from metpy.calc import heat_index, relative_humidity_from_dewpoint
 from metpy.units import units
 from metpy.plots import add_metpy_logo
 
@@ -25,10 +25,11 @@ def main():
     lblfont = titlefont.copy()
     lblfont.set_size(15)
 
-    rh1d = np.arange(5, 101, 5)
+    dwpf1d = np.arange(40, 90, 2)
     tmpf1d = np.arange(80, 131, 2)
-    tmpf, rh = np.meshgrid(tmpf1d, rh1d)
-    hi = heat_index(tmpf * units.degF, rh * units.percent)
+    tmpf, dwpf = np.meshgrid(tmpf1d, dwpf1d)
+    rh = relative_humidity_from_dewpoint(tmpf * units.degF, dwpf * units.degF)
+    hi = heat_index(tmpf * units.degF, rh)
     hi[hi > 137.5 * units.degF] = np.nan
     fig = plt.Figure(figsize=(12.48 * 1.2, 7.44 * 1.2))
 
@@ -72,25 +73,29 @@ def main():
     sns.heatmap(
         hi, annot=True, fmt='.0f', linewidths=0, ax=ax, cmap=cmap, norm=norm,
         xticklabels=[str(x) for x in tmpf1d],
-        yticklabels=[str(x) for x in rh1d], cbar=False,
+        yticklabels=[str(x) for x in dwpf1d], cbar=False,
         annot_kws=dict(color='k', fontsize=16)
     )
-    ax.set_ylim(len(rh1d), 0)
+    ax.set_ylim(len(dwpf1d), 0)
     ax.set_xlim(0, len(tmpf1d))
     ax.xaxis.tick_top()
     ax.xaxis.set_label_position('top')
     ax.tick_params(axis='both', which='both', length=0)
     ax.set_ylabel(
-        "Relative Humidity (%)", fontproperties=lblfont, labelpad=15 * 1.2)
+        r"Dew Point Temperature ($^\circ$F)", fontproperties=lblfont,
+        labelpad=15 * 1.8)
     ax.set_xlabel(
         r"Temperature ($^\circ$F)", fontproperties=lblfont, labelpad=20 * 1.2)
     plt.setp(
         ax.yaxis.get_majorticklabels(), rotation=0, fontproperties=lblfont)
     plt.setp(
         ax.xaxis.get_majorticklabels(), rotation=0, fontproperties=lblfont)
-    # add_metpy_logo(fig, 1030, 110, size='large')
+    # add_metpy_logo(fig, 1290, 150, size='large')
 
-    fig.savefig('test.pdf', orientation='landscape')
+    for x in range(5, 25, 5):
+        ax.axhline(x, color='k')
+
+    fig.savefig('test.png')  # , orientation='horizontal')
 
 
 if __name__ == '__main__':
