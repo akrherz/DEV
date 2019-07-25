@@ -14,15 +14,15 @@ from metpy.units import units
 from metpy.calc.basic import heat_index
 
 
-def repair(pgconn, df, table):
+def repair(pgconn, df):
     """Make the repairs."""
     cursor = pgconn.cursor()
     count = 0
-    for _, row in df.iterrows():
+    for _, row in tqdm(df.iterrows()):
         cursor.execute("""
-            UPDATE """ + table + """
-            SET feel = %s where station = %s and valid = %s
-        """, (row['calc_heat'], row['station'], row['valid']))
+            UPDATE current_log
+            SET feel = %s where iemid = %s and valid = %s
+        """, (row['calc_heat'], row['iemid'], row['valid']))
         count += 1
     cursor.close()
     pgconn.commit()
@@ -31,26 +31,16 @@ def repair(pgconn, df, table):
 
 def main(argv):
     """Go Main Go."""
-    pgconn = get_dbconn('asos')
-    done = 0
-    pbar = tqdm(pd.date_range(argv[1], argv[2]))
-    for date in pbar:
-        pbar.set_description(date.strftime("%Y-%m-%d"))
-        sts = utc(date.year, date.month, date.day)
-        ets = sts + datetime.timedelta(days=1)
-        table = "t%s" % (sts.year, )
-        df = read_sql("""
-            SELECT valid, station, tmpf, relh, feel from """ + table + """
-            WHERE valid >= %s and valid < %s and tmpf > 70
+    pgconn = get_dbconn('iem')
+    df = read_sql("""
+            SELECT valid, iemid, tmpf, relh, feel from current_log
+            WHERE tmpf > 70
             and relh is not null
-        """, pgconn, params=(sts, ets))
-        df['calc_heat'] = heat_index(
+        """, pgconn)
+    df['calc_heat'] = heat_index(
             df['tmpf'].values * units.degF, df['relh'].values * units.percent)
-        df2 = df[(df['calc_heat'] - df['feel']).abs() > 1]
-        if df2.empty:
-            continue
-        done += repair(pgconn, df2, table)
-    print("Turned over %s rows" % (done, ))
+    df2 = df[(df['calc_heat'] - df['feel']).abs() > 1]
+    print(repair(pgconn, df2))
 
 
 if __name__ == '__main__':
