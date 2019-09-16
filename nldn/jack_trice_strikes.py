@@ -1,11 +1,10 @@
 """The 30 minute shot clock."""
 import datetime
 
-import pytz
-import pandas as pd
-from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
 from pyiem.plot.use_agg import plt
+import pandas as pd
+from pandas.io.sql import read_sql
 
 
 def get_data():
@@ -69,7 +68,8 @@ def main():
     ax.grid(True)
     ax.set_title((
         "Iowa State vs Iowa Football Game\n"
-        "Time since Last Lightning Strike within 8 miles of Jack Trice Stadium\n"
+        "Time since Last Lightning Strike within 8 miles "
+        "of Jack Trice Stadium\n"
         "Data courtesy of National Lightning Detection Network"))
     fig.savefig('test.png')
 
