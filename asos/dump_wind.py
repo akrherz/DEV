@@ -18,7 +18,8 @@ def main(argv):
         gust as wind_gust_kts, peak_wind_gust as peak_wind_gust_kts,
         peak_wind_drct as peak_wind_drct,
         to_char(peak_wind_time at time zone 'UTC', 'YYYYmmddHH24MI')
-          as utc_peak_wind_time
+          as utc_peak_wind_time,
+        case when array_to_string(wxcodes, ' ') ~* 'TS' then 1 else 0 end
         from t""" + str(year) + """ d, stations t
         WHERE t.id = d.station and (t.network ~* 'ASOS' or t.network = 'AWOS')
         and report_type = 2 and country = 'US' and
@@ -28,7 +29,7 @@ def main(argv):
         fp.write((
             "utc_valid,id,lon,lat,wind_speed_kts,wind_direction,"
             "wind_gust_kts,peak_wind_gust_kts,peak_wind_drct,"
-            "utc_peak_wind_time\n"
+            "utc_peak_wind_time,ts_present\n"
         ))
         for row in tqdm(cursor):
             fp.write(",".join([str(s) for s in row]) + "\n")
