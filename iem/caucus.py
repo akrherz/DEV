@@ -1,10 +1,9 @@
-import matplotlib
-matplotlib.use('agg')
-import matplotlib.pyplot as plt
+"""Hawkeye Cauci."""
 import datetime
 import numpy as np
-import psycopg2
-ASOS = psycopg2.connect(database='asos', host='iemdb', user='nobody')
+from pyiem.util import get_dbconn
+from pyiem.plot.use_agg import plt
+ASOS = get_dbconn('asos')
 acursor = ASOS.cursor()
 
 dates = [
@@ -32,12 +31,12 @@ for dt in dates:
     '%s 18:50' and '%s 19:10' and tmpf > -50
     """ % (dt.year, dt.strftime("%Y-%m-%d"), dt.strftime("%Y-%m-%d")))
     for i, row in enumerate(acursor):
-        print i, dt, row[2]
+        print("%s %s %s" % (i, dt, row[2]))
         if i == 0:
             tmpfs.append(row[1])
 
 tmpfs.append(36)
-print tmpfs, len(dates), len(tmpfs)
+print("%s %s %s" % (tmpfs, len(dates), len(tmpfs)))
 
 
 fig = plt.figure()
@@ -55,5 +54,5 @@ ax.set_xticks(range(0, len(tmpfs)))
 ax.set_xlim(-0.5, 12)
 ax.set_ylim(0, 41)
 ax.set_title("Iowa Presidential Caucus - 7 PM Des Moines Airport Temperature")
-ax.set_ylabel("7 PM Temperature $^{\circ}\mathrm{F}$")
+ax.set_ylabel(r"7 PM Temperature $^{\circ}\mathrm{F}$")
 fig.savefig('test.png')

@@ -1,10 +1,8 @@
 """High temp after snow cover of depth"""
 
-import matplotlib
-matplotlib.use('agg')
-import matplotlib.pyplot as plt
-from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
+from pyiem.plot.use_agg import plt
+from pandas.io.sql import read_sql
 
 
 def main():
@@ -29,8 +27,9 @@ def main():
     ax.set_xlabel("Reported Snow Depth [inch], n=%.0f" % (len(df.index), ))
     ax.set_ylabel(r"Next Day High Temperature [$^\circ$F]")
     plt.suptitle('')
-    ax.set_title(("[IA0200] Ames Snow Depth and Next Day High Temperature\n"
-                  r"boxes are inner quartile range, whiskers are 1.5 $\sigma$"))
+    ax.set_title(
+        ("[IA0200] Ames Snow Depth and Next Day High Temperature\n"
+         r"boxes are inner quartile range, whiskers are 1.5 $\sigma$"))
     fig.savefig('test.png')
 
 

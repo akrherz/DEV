@@ -1,8 +1,14 @@
-import iemdb
+"""Blah."""
 import math
-import iemtz
 import numpy
-HADS = iemdb.connect('hads', bypass=True)
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import matplotlib.ticker
+import matplotlib.transforms as transforms
+import matplotlib.patches as patches
+from pyiem.util import get_dbconn
+
+HADS = get_dbconn('hads')
 hcursor = HADS.cursor()
 
 def uv(sped, drct2):
@@ -22,10 +28,10 @@ hcursor.execute("""
 valid = {'HPIRGZ': [], 'UDIRGZ': [], 'USIRGZ': []}
 values = {'HPIRGZ': [], 'UDIRGZ': [], 'USIRGZ': []}
 for row in hcursor:
-    valid[row[1]].append( row[0] )
-    values[row[1]].append( row[2] )
+    valid[row[1]].append(row[0])
+    values[row[1]].append(row[2])
 
-u, v = uv( numpy.array(values['USIRGZ']), numpy.array(values['UDIRGZ']))
+u, v = uv(numpy.array(values['USIRGZ']), numpy.array(values['UDIRGZ']))
 
 hcursor.execute("""
  select valid, key, value from raw2012_03 where station = 'SAYI4' 
@@ -41,11 +47,7 @@ for row in hcursor:
 
 u2, v2 = uv( numpy.array(values2['USIRGZ']), numpy.array(values2['UDIRGZ']))
 
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-import matplotlib.ticker
-import matplotlib.transforms as transforms
-import matplotlib.patches as patches
+
 
 (fig, ax) = plt.subplots(2,1, figsize=(5,8))
 
@@ -65,7 +67,7 @@ rect = patches.Rectangle((0.55,0), width=0.3, height=1,
 ax[0].add_patch(rect)
 ax2.text(0.6, 0.8 , "NW Winds push\nwater to gauge", transform=ax2.transAxes)
 
-ax[0].plot( valid['HPIRGZ'], values['HPIRGZ'], zorder=2)
+ax[0].plot(valid['HPIRGZ'], values['HPIRGZ'], zorder=2)
 
 
 dt = (valid['USIRGZ'][-1] - valid['USIRGZ'][0]).days * 86400.0 + (valid['USIRGZ'][-1] - valid['USIRGZ'][0]).seconds

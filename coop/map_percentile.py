@@ -1,9 +1,9 @@
 """Map values"""
 
-from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
 from pyiem.plot import MapPlot
 from pyiem.network import Table as NetworkTable
+from pandas.io.sql import read_sql
 
 
 def main():
@@ -33,10 +33,11 @@ def main():
             df.at[station, 'lat'] = nt.sts[station]['lat']
             df.at[station, 'lon'] = nt.sts[station]['lon']
 
-    mp = MapPlot(title="Largest Positive Change in Month to Month Average Temperature",
-                 subtitle=('values in red set record for April to May 2018'), sector='state',
-                 state='IA',
-                 drawstates=True, continentalcolor='white')
+    mp = MapPlot(
+        title="Largest Positive Change in Month to Month Average Temperature",
+        subtitle=('values in red set record for April to May 2018'),
+        sector='state', state='IA',
+        drawstates=True, continentalcolor='white')
     df2 = df[df['year'] == 2018]
     mp.plot_values(df2['lon'].values,
                    df2['lat'].values,
@@ -49,7 +50,6 @@ def main():
                    color='b')
     mp.drawcounties()
     mp.postprocess(filename='test.png')
-    mp.close()
 
 
 if __name__ == '__main__':

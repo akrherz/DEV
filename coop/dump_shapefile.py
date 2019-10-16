@@ -1,13 +1,13 @@
 """Fill a data request from Fawaz Alharbi"""
 from __future__ import print_function
-from StringIO import StringIO
+from io import StringIO
 import shutil
 
 import geopandas as gpd
-import pandas as pd
 from pyiem.util import get_dbconn
 import requests
 import tqdm
+import pandas as pd
 
 
 def main():

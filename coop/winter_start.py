@@ -1,4 +1,4 @@
-
+"""start of coldest 91 day period."""
 import datetime
 
 from pyiem.plot import MapPlot

@@ -1,9 +1,9 @@
-# Compute mean depatures at or around a holiday
+"""Compute mean depatures at or around a holiday."""
+import sys
 
 import mx.DateTime
-import iemdb
-import sys
-COOP = iemdb.connect('coop', bypass=True)
+from pyiem.util import get_dbconn
+COOP = get_dbconn('coop')
 ccursor = COOP.cursor()
 
 #climate = {}

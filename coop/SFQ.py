@@ -1,10 +1,12 @@
-import psycopg2
+"""exploritory look at 6 hourly snowfall."""
 from collections import OrderedDict
 import datetime
+
 import pytz
+from pyiem.util import get_dbconn
 from pyiem.plot.use_agg import plt
 
-HADS = psycopg2.connect(database='hads', host='iemdb-hads', user='nobody')
+HADS = get_dbconn('hads')
 cursor = HADS.cursor()
 
 STATIONS = OrderedDict([('BSPM2', 'Baltimore BWI\n'),
@@ -39,9 +41,11 @@ ax.set_yticks(range(y, 0))
 ax.set_yticklabels(["%s [%s]" % (STATIONS[k], k) for k in STATIONS])
 
 for i, station in enumerate(STATIONS):
-    cursor.execute("""SELECT valid, min(value) from raw2016_01 where station = %s
-    and valid >= %s and value > 0 and
-    substr(key, 1, 3) = 'SFQ' GROUP by valid ORDER by valid""", (station, x0))
+    cursor.execute("""
+        SELECT valid, min(value) from raw2016_01 where station = %s
+        and valid >= %s and value > 0 and
+        substr(key, 1, 3) = 'SFQ' GROUP by valid ORDER by valid
+    """, (station, x0))
     total = 0
     for row in cursor:
         ts = row[0].astimezone(EASTERN)

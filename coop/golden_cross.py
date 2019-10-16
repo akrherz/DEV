@@ -1,8 +1,8 @@
 """Stock Analysis."""
 import numpy
+from pyiem.util import get_dbconn
 import matplotlib.pyplot as plt
 import matplotlib.font_manager
-from pyiem.util import get_dbconn
 
 
 def main():
@@ -11,7 +11,8 @@ def main():
     ccursor = COOP.cursor()
     elnino = []  # Starts 1950
     ccursor.execute("""
-    SELECT extract(year from monthdate + '1 month'::interval) as yr, avg(anom_34)
+    SELECT extract(year from monthdate + '1 month'::interval) as yr,
+    avg(anom_34)
     from elnino where extract(month from monthdate) in (12,1,2) GROUP by yr
     ORDER by yr ASC
     """)
@@ -36,7 +37,8 @@ def main():
     for row in ccursor:
         dates.append(row[0])
         t.append(float(row[1]))
-        if row[0].year > 2009 and row[0].day == 1 and (row[0].month - 1) % 3 == 0:
+        if (row[0].year > 2009 and row[0].day == 1
+                and (row[0].month - 1) % 3 == 0):
             xticks.append(len(t)-1)
             fmt = "%b"
             if row[0].month == 1:
@@ -78,7 +80,7 @@ def main():
     ax[0].grid(True)
     ax[0].legend(loc='best', ncol=3, prop=prop)
     ax[0].set_title("Des Moines Daily Average Temperature [1900-2012]")
-    ax[0].set_ylabel("Temperature $^{\circ}\mathrm{F}$")
+    ax[0].set_ylabel(r"Temperature $^{\circ}\mathrm{F}$")
 
     ax[1].set_title(("Date of Yearly 'Death Cross' "
                     "(50DMA breaches 200DMA), JJA ENSO 3.4"))

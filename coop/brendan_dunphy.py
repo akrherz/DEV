@@ -1,7 +1,9 @@
+"""weekly data dump."""
 import datetime
-import psycopg2
 import sys
-pgconn = psycopg2.connect(database='coop', host='iemdb', user='nobody')
+
+from pyiem.util import get_dbconn
+pgconn = get_dbconn('coop')
 cursor = pgconn.cursor()
 
 sts = datetime.datetime(2016, 2, 1)
@@ -16,6 +18,6 @@ while now < ets:
         """ % (sys.argv[1], now.strftime("%Y-%m-%d"), e.strftime("%Y-%m-%d"))
     cursor.execute(sql)
     row = cursor.fetchone()
-    print "%s,%.1f,%.1f,%.2f" % (now.strftime("%Y-%m-%d"), row[0],
-                                 row[1], row[2])
+    print("%s,%.1f,%.1f,%.2f" % (now.strftime("%Y-%m-%d"), row[0],
+                                 row[1], row[2]))
     now += interval
