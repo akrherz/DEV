@@ -1,5 +1,5 @@
-import iemdb
-ASOS = iemdb.connect('asos', bypass=True)
+from pyiem.util import get_dbconn
+ASOS = get_dbconn('asos')
 acursor = ASOS.cursor()
 import mx.DateTime
 

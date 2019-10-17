@@ -1,7 +1,4 @@
-"""
-Extract N0Q values from the raw RIDGE images :)
-$Id: $:
-"""
+"""Extract N0Q values from the raw RIDGE images :)"""
 
 import osgeo.gdal as gdal
 import mx.DateTime
@@ -63,16 +60,15 @@ def main():
     interval = mx.DateTime.RelativeDateTime(days=1)
     now = sts
     while now < ets:
-        print 'Process', now
         for scan in get_scans_for_date( now ):
             if imgx is None:
                 imgx, imgy = compute_xy(scan, lon, lat)
-                print imgx, imgy
                 sys.exit()
             val = get_value(scan, imgx, imgy)
             output.write("%s,%.2f\n" %(scan, vals[val]))
         now += interval
     output.close()
-    
-    
-main()
+
+
+if __name__ == '__main__':
+    main()

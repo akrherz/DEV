@@ -11,7 +11,7 @@ def main():
     pgconn = get_dbconn('isuag')
     df = read_sql("""
         SELECT valid, rain_mm_tot, rain_mm_tot_qc from sm_hourly WHERE
-        station = 'CIRI4' and valid > '2019-03-29' ORDER by valid ASC
+        station = 'CIRI4' and valid > '2019-03-29' and valid < '2019-04-30' ORDER by valid ASC
     """, pgconn, index_col='valid')
 
     (fig, ax) = plt.subplots(1, 1)

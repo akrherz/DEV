@@ -1,11 +1,11 @@
 from scipy import stats
-import psycopg2
 import numpy
 from pyiem import reference
 from pyiem.plot import MapPlot
+from pyiem.util import get_dbconn
 import matplotlib.pyplot as plt
 
-POSTGIS = psycopg2.connect(database='postgis', user='nobody', host='iemdb')
+POSTGIS = get_dbconn('postgis')
 cursor = POSTGIS.cursor()
 
 lons = []

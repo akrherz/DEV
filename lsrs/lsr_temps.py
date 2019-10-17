@@ -1,9 +1,10 @@
 import psycopg2
 import datetime
 import matplotlib.pyplot as plt
-IEM = psycopg2.connect(database='iem', host='iemdb', user='nobody')
+from pyiem.util import get_dbconn
+IEM = get_dbconn('iem')
 icursor = IEM.cursor()
-POSTGIS = psycopg2.connect(database='postgis', host='iemdb', user='nobody')
+POSTGIS = get_dbconn('postgis')
 pcursor = POSTGIS.cursor()
 
 pcursor.execute("""SELECT distinct ST_X(geom), ST_Y(geom), magnitude,

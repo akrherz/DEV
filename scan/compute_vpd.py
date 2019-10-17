@@ -30,7 +30,8 @@ def main():
                 temperature(df['tmpf'].values, 'F')).value('KG/KG'))
         df['saturation_vapor_pressure'] = mcalc.vapor_pressure(
             1000. * units.mbar,
-            df['saturation_mixingratio'].values * units('kg/kg')).to(units('kPa'))
+            df['saturation_mixingratio'].values * units('kg/kg')
+        ).to(units('kPa'))
         df['vpd'] = df['saturation_vapor_pressure'] - df['vapor_pressure']
         means = df.groupby('wy').mean()
         counts = df.groupby('wy').count()

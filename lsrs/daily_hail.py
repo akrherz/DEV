@@ -1,15 +1,16 @@
-# Generate imshow plot of daily hail reports
+"""Generate imshow plot of daily hail reports"""
 
 import psycopg2
 import matplotlib.pyplot as plt
 import numpy.ma
+from pyiem.util import get_dbconn
 
 obs = numpy.ma.zeros((8, 54), 'f')
 
 hrs = numpy.ma.zeros((24, 54), 'f')
 
 
-POSTGIS = psycopg2.connect(database='postgis', host='iemdb', user='nobody')
+POSTGIS = get_dbconn('postgis')
 pcursor = POSTGIS.cursor()
 
 pcursor.execute("""

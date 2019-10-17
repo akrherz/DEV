@@ -2,7 +2,7 @@
   Example script that uses IEM APIs to download raw RIDGE images from my
   archive
 """
-
+from __future__ import print_function
 import urllib2
 import urllib
 import json
@@ -16,7 +16,7 @@ RADAR = "EAX"
 PRODUCT = "N0Z"
 
 while now < ets:
-    print 'Fetching %s-%s tiles for %s' % (RADAR, PRODUCT, now)
+    print('Fetching %s-%s tiles for %s' % (RADAR, PRODUCT, now))
     getvars = {'operation': 'list',
                'radar': RADAR,
                'product': PRODUCT,
@@ -24,10 +24,10 @@ while now < ets:
                'end': "%sT00:00Z" % ((now +
                     datetime.timedelta(days=1)).strftime("%Y-%m-%d"),),               
     }
-    
+
     thisurl = URI + urllib.urlencode(getvars)
     data = urllib2.urlopen(thisurl).read()
-    
+
     j = json.loads(data)
     for scan in j['scans']:
         valid = datetime.datetime.strptime(scan['ts'], '%Y-%m-%dT%H:%MZ')
@@ -37,11 +37,10 @@ while now < ets:
             tileuri = valid.strftime(("https://mesonet.agron.iastate.edu/archive/"
                     +"data/%Y/%m/%d/GIS/ridge/"+RADAR+"/"+PRODUCT+"/"+RADAR
                     +"_"+PRODUCT+"_%Y%m%d%H%M."+suffix))
-        
+
             localfn = valid.strftime(RADAR+"_"+PRODUCT+"_%Y%m%d%H%M."+suffix)
             fp = urllib2.urlopen(tileuri).read()
-            output = open(localfn, 'w')
-            output.write( fp )
-            output.close()
-    
+            with open(localfn, 'w') as fh:
+                fh.write(fp)
+
     now += datetime.timedelta(days=1)

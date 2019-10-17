@@ -1,8 +1,8 @@
 
 from matplotlib import pyplot as plt
-import psycopg2
 import mx.DateTime
-asos = psycopg2.connect(database='asos', host='iemdb', user='nobody')
+from pyiem.util import get_dbconn
+asos = get_dbconn('asos')
 acursor = asos.cursor()
 
 acursor.execute("""

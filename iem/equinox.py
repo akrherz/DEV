@@ -1,11 +1,11 @@
 import ephem
 import datetime
 import pytz
-import iemdb
 import numpy
 import matplotlib.patheffects as PathEffects
+from pyiem.util import get_dbconn
 
-COOP = iemdb.connect('coop', bypass=True)
+COOP = get_dbconn('coop')
 ccursor = COOP.cursor()
 
 ccursor.execute("""SELECT valid, high from climate71 where

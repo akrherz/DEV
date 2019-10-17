@@ -1,3 +1,4 @@
+"""Plot the time we are robbed of."""
 import numpy
 import ephem
 import mx.DateTime
@@ -94,7 +95,6 @@ while now < ets:
 
 #print len(highs), len(lows)
 ax.plot( doy, ames, color='k', label="Ames - %s days" % (rames - 71,))
-print [71, rames], [ames[69], ames[rames]]
 ax.plot( [71, rames], [ames[69], ames[rames]], color='k', linestyle='--')
 ax.plot( doy, msp, color='b', label="Minneapolis - %s days" % (rmsp-71,))
 ax.plot( [71, rmsp], [msp[69], msp[rmsp]], color='b', linestyle='--')
