@@ -2,13 +2,13 @@
 from __future__ import print_function
 import datetime
 
-import pandas as pd
-from pandas.io.sql import read_sql
-from metpy.units import units
-import metpy.calc as mcalc
 from pyiem.util import get_dbconn
 from pyiem.datatypes import temperature
 from pyiem import meteorology
+from metpy.units import units
+import metpy.calc as mcalc
+import pandas as pd
+from pandas.io.sql import read_sql
 
 
 def main():

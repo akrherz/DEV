@@ -1,10 +1,10 @@
-import psycopg2
+"""List out some presentwx events."""
 import datetime
 import sys
+from pyiem.util import get_dbconn
 
 site = sys.argv[1]
-pgconn = psycopg2.connect(database='asos', host='localhost', port=5555,
-                          user='nobody')
+pgconn = get_dbconn('asos')
 cursor = pgconn.cursor()
 
 cursor.execute("""

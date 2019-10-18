@@ -3,7 +3,7 @@ import datetime
 import psycopg2.extras
 import pytz
 from pyiem.util import get_dbconn
-pgconn = get_dbconn('asos', user='nobody')
+pgconn = get_dbconn('asos')
 cursor = pgconn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 
@@ -73,7 +73,7 @@ def main():
                 "ArrA_Metar_station,ArrA_Metar_valid,ArrA_tmpf,ArrA_drct,ArrA_sknt,ArrA_gust,ArrA_vsby,ArrA_skyc1,ArrA_skyc2,ArrA_skyc3,ArrA_skyc4,ArrA_skyl1,ArrA_skyl2,ArrA_skyl3,ArrA_skyl4,ArrA_p01i,ArrA_presentwx,ArrA_Metar,\n") % (line.strip(),))
             continue
         if linenum % 1000 == 0:
-            print 'Processed %8s/%s lines...' % (linenum, 20683126)
+            print('Processed %8s/%s lines...' % (linenum, 20683126))
         tokens = line.split(",")
         deptime = datetime.datetime.strptime(tokens[5][:19], '%Y-%m-%d %H:%M:%S')
         deptime = deptime.replace(tzinfo=pytz.timezone("UTC"))
@@ -93,6 +93,7 @@ def main():
                                    ))
 
     o.close()
+
 
 if __name__ == '__main__':
     main()

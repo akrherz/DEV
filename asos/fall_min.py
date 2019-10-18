@@ -1,16 +1,15 @@
 """Minimum Fall Temperature"""
 from __future__ import print_function
 import datetime
-import psycopg2
 
-from pandas.io.sql import read_sql
 from pyiem.plot import MapPlot
+from pyiem.util import get_dbconn
+from pandas.io.sql import read_sql
 
 
 def main():
     """Go"""
-    pgconn = psycopg2.connect(database='iem', host='localhost', port=5555,
-                              user='nobody')
+    pgconn = get_dbconn('iem')
 
     df = read_sql("""
         SELECT id, network, ST_x(geom) as lon,

@@ -1,5 +1,7 @@
+"""General consec analysis."""
 from __future__ import print_function
 import sys
+
 from pyiem.util import get_dbconn
 
 site = sys.argv[1]

@@ -1,15 +1,14 @@
 """What was the hour of the first fall temp min"""
 from __future__ import print_function
 
-import psycopg2
-import matplotlib.pyplot as plt
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 from pandas.io.sql import read_sql
 
 
 def main():
     """Go"""
-    pgconn = psycopg2.connect(database='asos', host='localhost', port=5555,
-                              user='nobody')
+    pgconn = get_dbconn('asos')
     df = read_sql("""
     WITH mins as (
         SELECT extract(year from valid) as year, min(tmpf) from

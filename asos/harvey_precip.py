@@ -2,15 +2,13 @@
 from __future__ import print_function
 import datetime
 
-import psycopg2
 import pytz
 import numpy as np
 from pyiem.network import Table as NetworkTable
+from pyiem.util import get_dbconn
 NT = NetworkTable("TX_ASOS")
-ASOSDB = psycopg2.connect(database='asos', host='localhost', port=5555,
-                          user='nobody')
-IEMDB = psycopg2.connect(database='iem', host='localhost', port=5555,
-                         user='nobody')
+ASOSDB = get_dbconn('asos')
+IEMDB = get_dbconn('iem')
 BASETIME = datetime.datetime(2017, 8, 25, 12)
 BASETIME = BASETIME.replace(tzinfo=pytz.timezone("America/Chicago"))
 BASETIME = BASETIME.replace(hour=1)

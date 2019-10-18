@@ -1,9 +1,9 @@
-from pandas.io.sql import read_sql
-import psycopg2
+from pyiem.util import get_dbconn
 from pyiem.datatypes import temperature, speed, distance
 from pyiem.meteorology import relh
+from pandas.io.sql import read_sql
 
-pgconn = psycopg2.connect(database='asos', host='iemdb', user='nobody')
+pgconn = get_dbconn('asos')
 
 # air temperature, RH, Radiation, WS, and precipitation
 df = read_sql("""SELECT valid, tmpf, dwpf, sknt, p01i,
@@ -20,7 +20,7 @@ df['relh'] = relh(temperature(df['tmpf'], 'F'),
 
 gdf = df.groupby(by=['month', 'day', 'hour']).mean()
 
-pgconn = psycopg2.connect(database='isuag', host='iemdb', user='nobody')
+pgconn = get_dbconn('isuag')
 
 # air temperature, RH, Radiation, WS, and precipitation
 df2 = read_sql("""SELECT

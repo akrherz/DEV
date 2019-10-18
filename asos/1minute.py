@@ -5,11 +5,11 @@ import numpy as np
 import pytz
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import pandas as pd
 from pandas.io.sql import read_sql
 from pyiem.network import Table as NetworkTable
 from pyiem.util import get_dbconn
 from pyiem.datatypes import speed, pressure
+import pandas as pd
 
 
 def main():
@@ -36,7 +36,7 @@ def main():
     ax.plot(df.index.values, df['dwpf'], label='Dew Point')
     ax.legend()
     ax.grid(True)
-    ax.set_ylabel("Temperature $^\circ$F")
+    ax.set_ylabel(r"Temperature $^\circ$F")
     ax.set_xticks(xticks)
     ax.set_xticklabels(xticklabels)
     ax.set_title(("Philip, SD (KPHP) ASOS 1 Minute Interval Data for 14 Jun 2018\n"
