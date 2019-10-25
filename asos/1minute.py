@@ -2,14 +2,11 @@
 import datetime
 
 import numpy as np
-import pytz
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from pandas.io.sql import read_sql
-from pyiem.network import Table as NetworkTable
+from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn
 from pyiem.datatypes import speed, pressure
 import pandas as pd
+from pandas.io.sql import read_sql
 
 
 def main():
@@ -39,8 +36,9 @@ def main():
     ax.set_ylabel(r"Temperature $^\circ$F")
     ax.set_xticks(xticks)
     ax.set_xticklabels(xticklabels)
-    ax.set_title(("Philip, SD (KPHP) ASOS 1 Minute Interval Data for 14 Jun 2018\n"
-                  "Heat Burst Event, data missing in NCEI files 8:02 to 8:10 AM"))
+    ax.set_title((
+        "Philip, SD (KPHP) ASOS 1 Minute Interval Data for 14 Jun 2018\n"
+        "Heat Burst Event, data missing in NCEI files 8:02 to 8:10 AM"))
 
     ax = fig.add_axes([0.1, 0.08, 0.75, 0.35])
 
