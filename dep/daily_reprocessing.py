@@ -18,9 +18,7 @@ def env2database():
     for line in open(SAVEFILE):
         cmd += " --date %s " % (line.strip(),)
     LOG.debug(cmd)
-    subprocess.call(
-        cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-    )
+    subprocess.call(cmd, shell=True)
 
 
 def edit_clifiles():
@@ -55,9 +53,7 @@ def edit_clifiles():
     for day in days:
         cmd = "python proctor_tile_edit.py 0 %s" % (day.strftime("%Y %m %d"),)
         LOG.debug(cmd)
-        subprocess.call(
-            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
+        subprocess.call(cmd, shell=True)
 
 
 def main():
