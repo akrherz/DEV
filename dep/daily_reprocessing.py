@@ -29,9 +29,9 @@ def edit_clifiles():
     cursor.execute(
         """
         select huc_12, valid, qc_precip, avg_precip, max_precip,
-        max_precip - qc_precip as diff from results_by_huc12
-        where scenario = 0 and qc_precip > max_precip
-        ORDER by diff ASC LIMIT 10
+        avg_precip - qc_precip as diff from results_by_huc12
+        where scenario = 0 and avg_precip > qc_precip
+        ORDER by diff DESC LIMIT 100
     """
     )
     for row in cursor:
@@ -43,6 +43,9 @@ def edit_clifiles():
                 row[4],
             )
             days.append(row[1])
+        if len(days) >= 10:
+            break
+    pgconn.close()
     # write a log file for what work we did
     with open(SAVEFILE, "w") as fh:
         for day in days:
