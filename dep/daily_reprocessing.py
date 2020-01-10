@@ -29,9 +29,9 @@ def edit_clifiles():
     cursor.execute(
         """
         select huc_12, valid, qc_precip, avg_precip, max_precip,
-        avg_precip - qc_precip as diff from results_by_huc12
-        where scenario = 0 and avg_precip > qc_precip
-        ORDER by diff DESC LIMIT 100
+        max_precip - qc_precip as diff from results_by_huc12
+        where scenario = 0 and qc_precip > max_precip
+        ORDER by diff ASC LIMIT 100
     """
     )
     for row in cursor:
