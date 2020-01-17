@@ -13,17 +13,33 @@ def main():
     pcursor = pgconn.cursor()
 
     opts = {
-        "subtitle": "In Tornado Warning",
+        "subtitle": "In Severe Thunderstorm Warning",
         "sdate": datetime.date(1994, 1, 1),
         "edate": datetime.date(2020, 1, 1),
-        "normalized": True,
-        "dbcols": ("TO",),
+        "normalized": False,
+        "dbcols": ("SV",),
     }
     opts["title"] = "Yearly Average Minutes"
     opts["years"] = float(opts["edate"].year - opts["sdate"].year)
     opts["units"] = "minutes per year"
-    bins = [1, 2, 5, 10, 15, 20, 30, 45, 60, 75, 90, 120, 150, 180, 240]
-    # bins = [1, 10, 30, 45, 60, 90, 120, 180, 240, 300, 360, 480, 600, 720, 840]
+    # bins = [1, 2, 5, 10, 15, 20, 30, 45, 60, 75, 90, 120, 150, 180, 240]
+    bins = [
+        1,
+        10,
+        30,
+        45,
+        60,
+        90,
+        120,
+        240,
+        300,
+        480,
+        720,
+        840,
+        1080,
+        1320,
+        1540,
+    ]
     # bins = [1, 30, 60, 120, 240, 360, 480, 600, 840, 1080, 1320, 1540, 1760]
     # bins = [0.01,0.1,0.25,0.5,0.75,1,2,3,4,5,7,10,15]
     # bins = [0.1,1,2,5,7,10,15,20,25,30,40,50,60,70,80]
@@ -31,21 +47,7 @@ def main():
     if opts["normalized"]:
         opts["title"] += " (Normalized by County Size)"
         opts["units"] += " / sq km"
-        bins = [
-            0.0001,
-            0.0005,
-            0.001,
-            0.002,
-            0.006,
-            0.01,
-            0.015,
-            0.02,
-            0.04,
-            0.06,
-            0.08,
-            0.1,
-        ]
-        # bins = [0.001, 0.003, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8]
+        bins = [0.0001, 0.01, 0.03, 0.07, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
 
     fn = "%s_%s_%s_%s.png" % (
         opts["sdate"].year,
