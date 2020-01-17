@@ -4,13 +4,15 @@ https://tgftp.nws.noaa.gov/SL.us008001/ST.opnl/DF.gr2/DC.ndfd/AR.conus/VP.001-00
 """
 import datetime
 
+import numpy as np
+from pyiem.plot.use_agg import plt
 from pyiem.plot import MapPlot, nwssnow
 import pygrib
 
 
 def main():
     """Go Main"""
-    grbs = pygrib.open("ds.snow.bin")
+    grbs = pygrib.open("ds.iceaccum.bin")
     # skip 1-off first field
     total = None
     lats = lons = None
@@ -20,33 +22,36 @@ def main():
             total = grb["values"]
             continue
         total += grb["values"]
+        print(np.max(total))
         print(grb.validDate)
     # TODO tz-hack here
     analtime = grb.analDate - datetime.timedelta(hours=6)
 
     mp = MapPlot(
-        sector="custom",
+        sector="iowa",
         west=-100,
         east=-88,
-        north=46,
-        south=40,
+        north=45,
+        south=38,
         axisbg="tan",
-        title=(
-            "NWS Forecasted Accumulated Snowfall "
-            "thru 12 PM 27 November 2019"
-        ),
+        title=("NWS Forecast Accumulated Ice " "thru 12 AM 20 January 2020"),
         subtitle="NDFD Forecast Issued %s"
         % (analtime.strftime("%-I %p %-d %B %Y"),),
     )
-    cmap = nwssnow()
-    cmap.set_bad("tan")
+    cmap = plt.get_cmap("tab20c_r")
+    cmap.set_under("white")
+    cmap.set_over("red")
+    bins = np.arange(0, 0.21, 0.04)
+    bins[0] = 0.01
     mp.pcolormesh(
         lons,
         lats,
-        total * 39.3701,
-        [0.01, 1, 2, 3, 4, 6, 8, 12, 18, 24, 30, 36],
+        total / 25.4,
+        bins,
+        spacing="proportional",
         cmap=cmap,
         units="inch",
+        clip_on=False,
     )
 
     mp.drawcounties()
