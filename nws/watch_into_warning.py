@@ -1,21 +1,20 @@
-"""Some stats based on distance from issuance time to issue
-
-"""
+"""Some stats based on distance from issuance time to issue."""
 import sys
-import psycopg2
+
 from tqdm import tqdm
-import pandas as pd
-from pandas.io.sql import read_sql
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot
+from pyiem.util import get_dbconn
+import pandas as pd
+from pandas.io.sql import read_sql
 import matplotlib.pyplot as plt
 
 
 def workflow(wfo, phenomena):
     """do work"""
-    pgconn = psycopg2.connect(database='postgis', user='nobody', port=5555,
-                              host='localhost')
-    df = read_sql("""
+    pgconn = get_dbconn("postgis")
+    df = read_sql(
+        """
     WITH mywatches as (
         SELECT product_issue, eventid, wfo, ugc, issue,
         greatest(expire, init_expire) as expire
@@ -49,13 +48,20 @@ def workflow(wfo, phenomena):
     count(*) as watch_zones,
     sum(case when warning_issue is not null then 1 else 0 end) as warn_counties
     from agg2 GROUP by wfo, yr, eventid ORDER by yr ASC, eventid ASC
-    """, pgconn, params=(phenomena, wfo, phenomena, wfo), index_col=None)
+    """,
+        pgconn,
+        params=(phenomena, wfo, phenomena, wfo),
+        index_col=None,
+    )
     if len(df.index) == 0:
         return None
-    eff = len(df[df['warn_counties'] > 0].index) / float(len(df.index)) * 100.
-    overall = df['warn_counties'].sum() / float(df['watch_zones'].sum()) * 100.
+    eff = len(df[df["warn_counties"] > 0].index) / float(len(df.index)) * 100.0
+    overall = (
+        df["warn_counties"].sum() / float(df["watch_zones"].sum()) * 100.0
+    )
     print("WFO: %s Efficiency: %.1f  Overall: %.1f" % (wfo, eff, overall))
     return eff
+
 
 def main():
     """Go Main"""
@@ -64,25 +70,32 @@ def main():
     for wfo in tqdm(nt.sts.keys()):
         rows.append(dict(wfo=wfo, freq=workflow(wfo)))
     df = pd.DataFrame(rows)
-    df.to_csv('wfo.csv')
+    df.to_csv("wfo.csv")
 
 
 def plot():
     """Make a pretty plot"""
-    df = pd.read_csv('wfo.csv')
-    df.set_index('wfo', inplace=True)
-    m = MapPlot(sector='conus',
-                title="Percentage of Flash Flood Watches receiving 1+ FFW",
-                subtitle='PRELIMINARY PLOT! Please do not share :)')
-    cmap = plt.get_cmap('jet')
-    df2 = df[df['freq'].notnull()]
-    m.fill_cwas(df2['freq'].to_dict(), cmap=cmap, units='%',
-                lblformat='%.0f', ilabel=True)
-    m.postprocess(filename='test.png')
+    df = pd.read_csv("wfo.csv")
+    df.set_index("wfo", inplace=True)
+    m = MapPlot(
+        sector="conus",
+        title="Percentage of Flash Flood Watches receiving 1+ FFW",
+        subtitle="PRELIMINARY PLOT! Please do not share :)",
+    )
+    cmap = plt.get_cmap("jet")
+    df2 = df[df["freq"].notnull()]
+    m.fill_cwas(
+        df2["freq"].to_dict(),
+        cmap=cmap,
+        units="%",
+        lblformat="%.0f",
+        ilabel=True,
+    )
+    m.postprocess(filename="test.png")
     m.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # main()
     # plot()
     workflow(sys.argv[1], sys.argv[2])

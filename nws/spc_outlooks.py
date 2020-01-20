@@ -1,13 +1,17 @@
+"""May be useful."""
+import calendar
 
-import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
-POSTGIS = get_dbconn('postgis')
-pcursor = POSTGIS.cursor()
+import matplotlib.pyplot as plt
+
+pgconn = get_dbconn("postgis")
+pcursor = pgconn.cursor()
 pcursor.execute("""SET TIME ZONE 'UTC'""")
 
 
 def getdata(year):
-    pcursor.execute("""
+    pcursor.execute(
+        """
     select s.valid, extract(doy from s.valid), ST_Area( ST_Transform(
     ST_Intersection(s.geom, t.the_geom),26915) ) / 1000000. / 145693.8
     from spc_outlooks s, states t
@@ -16,7 +20,9 @@ def getdata(year):
     and s.valid > %s and s.valid < %s and day = 1
     and extract(hour from s.valid) = 13
     ORDER by valid ASC
-    """, ("%s-01-01" % (year,), "%s-01-01" % (year + 1, )))
+    """,
+        ("%s-01-01" % (year,), "%s-01-01" % (year + 1,)),
+    )
 
     doy = []
     ratio = []
@@ -33,25 +39,25 @@ doy2010, ratio2010 = getdata(2010)
 fig = plt.figure()
 ax = fig.add_subplot(211)
 
-ax.bar( doy2009, ratio2009, edgecolor='r', facecolor='r', label='2009')
-ax.set_xlim(0,366)
-ax.set_ylim(0,100)
-ax.set_ylabel('Iowa Areal Coverage [%]')
-ax.set_xticks( (1,32,60,91,121,152,182,213,244,274,305,335,365) )
-ax.set_xticklabels( ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec') )
+ax.bar(doy2009, ratio2009, edgecolor="r", facecolor="r", label="2009")
+ax.set_xlim(0, 366)
+ax.set_ylim(0, 100)
+ax.set_ylabel("Iowa Areal Coverage [%]")
+ax.set_xticks((1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 365))
+ax.set_xticklabels(calendar.month_abbr[1:])
 ax.grid(True)
 ax.legend(loc=2)
-ax.set_title('SPC Day 1 Convective Slight Risk\n13 UTC Morning Issuance')
+ax.set_title("SPC Day 1 Convective Slight Risk\n13 UTC Morning Issuance")
 
 ax = fig.add_subplot(212)
 
-ax.bar( doy2010, ratio2010, edgecolor='r', facecolor='r', label='2010')
-ax.set_xlim(0,366)
-ax.set_ylim(0,100)
-ax.set_ylabel('Iowa Areal Coverage [%]')
-ax.set_xticks( (1,32,60,91,121,152,182,213,244,274,305,335,365) )
-ax.set_xticklabels( ('Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec') )
-ax.set_xlabel('*2010 Data Valid Thru 24 October')
+ax.bar(doy2010, ratio2010, edgecolor="r", facecolor="r", label="2010")
+ax.set_xlim(0, 366)
+ax.set_ylim(0, 100)
+ax.set_ylabel("Iowa Areal Coverage [%]")
+ax.set_xticks((1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 365))
+ax.set_xticklabels(calendar.month_abbr[1:])
+ax.set_xlabel("*2010 Data Valid Thru 24 October")
 ax.grid(True)
 ax.legend(loc=2)
-fig.savefig('test.png')
+fig.savefig("test.png")

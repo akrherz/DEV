@@ -1,24 +1,25 @@
 """Tool shared with NWS to flip CCW polygons"""
 import re
 import sys
+
 from shapely.geometry import Polygon
-LAT_LON = re.compile("([0-9]{4,8})\s+")
+
+LAT_LON = re.compile(r"([0-9]{4,8})\s+")
 
 FILENAME = sys.argv[1]
 
 
 def checker(lon, lat, strdata):
-    # make sure our values are within physical bounds
+    """make sure our values are within physical bounds"""
     if lat >= 90 or lat <= -90:
-        raise Exception("invalid latitude %s from %s" % (
-                                                lat, strdata))
+        raise Exception("invalid latitude %s from %s" % (lat, strdata))
     if lon > 180 or lon < -180:
-        raise Exception("invalid longitude %s from %s" % (
-                                                lon, strdata))
+        raise Exception("invalid longitude %s from %s" % (lon, strdata))
     return (lon, lat)
 
 
 def str2polygon(strdata):
+    """Borrowed from pyiem."""
     pts = []
     partial = None
 
@@ -30,7 +31,7 @@ def str2polygon(strdata):
             lat = float(val[:4]) / 100.00
             lon = float(val[4:]) / 100.00
             if lon < 40:
-                lon += 100.
+                lon += 100.0
             lon = 0 - lon
             pts.append(checker(lon, lat, strdata))
         else:
@@ -40,7 +41,7 @@ def str2polygon(strdata):
                 continue
             # we have a lon
             if s < 40:
-                s += 100.
+                s += 100.0
             s = 0 - s
             pts.append(checker(s, partial, strdata))
             partial = None
@@ -51,19 +52,28 @@ def str2polygon(strdata):
         pts.append(pts[0])
     return Polygon(pts)
 
-for line in open(FILENAME):
-    tokens = line.replace("||", "").replace('"', "").split(";")
-    if len(tokens) != 2:
-        continue
-    (nwsli, pairs) = tokens
-    pairs = " ".join(pairs.split())
-    poly = str2polygon(pairs)
-    if poly is None:
-        continue
-    if poly.exterior.is_ccw:
-        tokens = pairs.strip().split()
-        grouped = []
-        for i in range(0, len(tokens), 2):
-            grouped.append("%s %s" % (tokens[i], tokens[i+1]))
-        print(("\nNWSLI: %s should be flipped!\nOLD: %s\nNEW: %s\n"
-               ) % (nwsli, pairs, " ".join(grouped[::-1])))
+
+def main():
+    """Go Main Go."""
+    for line in open(FILENAME):
+        tokens = line.replace("||", "").replace('"', "").split(";")
+        if len(tokens) != 2:
+            continue
+        (nwsli, pairs) = tokens
+        pairs = " ".join(pairs.split())
+        poly = str2polygon(pairs)
+        if poly is None:
+            continue
+        if poly.exterior.is_ccw:
+            tokens = pairs.strip().split()
+            grouped = []
+            for i in range(0, len(tokens), 2):
+                grouped.append("%s %s" % (tokens[i], tokens[i + 1]))
+            print(
+                ("\nNWSLI: %s should be flipped!\nOLD: %s\nNEW: %s\n")
+                % (nwsli, pairs, " ".join(grouped[::-1]))
+            )
+
+
+if __name__ == "__main__":
+    main()

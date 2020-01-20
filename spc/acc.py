@@ -1,5 +1,6 @@
+"""Unsure of origin."""
 import pandas as pd
-from StringIO import StringIO
+from io import StringIO
 import matplotlib.pyplot as plt
 
 data = """num | cnt
@@ -97,34 +98,44 @@ data = """num | cnt
  112 |     1
  118 |     1
  122 |     1"""
-df = pd.read_csv(StringIO(data.replace(" ", "")), sep="|", index_col='num')
+df = pd.read_csv(StringIO(data.replace(" ", "")), sep="|", index_col="num")
 df.index -= 1
 
-df['cs'] = df['cnt'].cumsum()
-total = float(df['cnt'].sum())
+df["cs"] = df["cnt"].cumsum()
+total = float(df["cnt"].sum())
 
 (fig, ax) = plt.subplots(1, 1)
-ax.bar(df.index.values, df['cnt'], fc='tan', ec='tan')
+ax.bar(df.index.values, df["cnt"], fc="tan", ec="tan")
 ax.grid(True)
 ax.set_yticks([0, 75, 150, 225, 300])
 ax.set_xlabel("Number of Severe T'Storm and Tornado Warnings in Watch")
 ax.set_ylabel("Frequency [# of watches]")
-ax.set_title(("Number of Severe T'Storm + Tornado Warnings per Severe T'Storm Watch\n"
-              "2005-2016, number of distinct storm based warnings issued during watch"),
-             fontsize=12)
+ax.set_title(
+    (
+        "Number of Severe T'Storm + Tornado Warnings per Severe T'Storm Watch\n"
+        "2005-2016, number of distinct storm based warnings issued during watch"
+    ),
+    fontsize=12,
+)
 ax2 = ax.twinx()
-ax2.plot(df.index.values, df['cs'] / total * 100, lw=2)
+ax2.plot(df.index.values, df["cs"] / total * 100, lw=2)
 ax2.set_ylim(0, 100)
 ax2.set_yticks([0, 25, 50, 75, 100])
-ax2.set_ylabel("Accumulated Frequency [%]", color='b')
+ax2.set_ylabel("Accumulated Frequency [%]", color="b")
 
-ax.text(0.35, 0.5,
-        ("%% of watches with no warnings: %.2f%%\n"
-         "Most Warnings: 2015 Watch #5 had 121\n"
-         "Largest Frequency at 6 Warnings"
-         ) % (df.at[0, 'cnt'] / total * 100.,),
-        va='center', bbox=dict(color='white'),
-        transform=ax.transAxes)
+ax.text(
+    0.35,
+    0.5,
+    (
+        "%% of watches with no warnings: %.2f%%\n"
+        "Most Warnings: 2015 Watch #5 had 121\n"
+        "Largest Frequency at 6 Warnings"
+    )
+    % (df.at[0, "cnt"] / total * 100.0,),
+    va="center",
+    bbox=dict(color="white"),
+    transform=ax.transAxes,
+)
 fig.text(0.005, 0.01, "@akrherz\n7 July 2016", fontsize=10)
 
-fig.savefig('test.png')
+fig.savefig("test.png")
