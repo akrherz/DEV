@@ -1,10 +1,13 @@
 """Add warning information to a CSV file."""
 import datetime
 
-import numpy as np
-from pyiem.util import get_dbconn
+import requests
 import pandas as pd
-from pandas.io.sql import read_sql
+
+IEM_WEB = (
+    "https://mesonet.agron.iastate.edu/json/sbw_by_point.py?lon=%s&"
+    "lat=%s&valid=%s"
+)
 
 
 def main():
@@ -21,25 +24,16 @@ def main():
         "first_torwarn_link",
     ]:
         df[colname] = None
-    # Get a database connection
-    dbconn = get_dbconn("postgis")
     # Loop over the tors
     for idx, row in df.iterrows():
-        dt = row["timestampUTC"].strftime("%Y-%m-%d %H:%M+00")
-        # Find the TORs that intersect in space and time
-        sbws = read_sql(
-            """
-            SELECT wfo, eventid, issue, expire, phenomena, status,
-            tml_direction, tml_sknt from sbw
-            WHERE ST_Contains(geom, ST_GeomFromEWKT('SRID=4326;POINT(%s %s)'))
-            and issue <= %s and expire > %s
-            and phenomena in ('TO', 'SV') ORDER by issue ASC
-        """,
-            dbconn,
-            params=(row["slon"], row["slat"], dt, dt),
-        )
+        dt = row["timestampUTC"].strftime("%Y-%m-%dT%H:%MZ")
+        # Go find storm based warnings via IEM web service
+        req = requests.get(IEM_WEB % (row["slon"], row["slat"], dt))
+        # create dataframe from the result
+        sbws = pd.DataFrame(req.json()["sbws"])
         if sbws.empty:
             continue
+        sbws["issue"] = pd.to_datetime(sbws["issue"])
         torwarns = sbws[sbws["phenomena"] == "TO"]
         if not torwarns.empty:
             trow = torwarns.iloc[0]
