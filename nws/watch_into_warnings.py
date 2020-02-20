@@ -1,5 +1,8 @@
 """Conversion of Watches into Warnings"""
+import datetime
+
 from tqdm import tqdm
+from pyiem.nws.vtec import VTEC_PHENOMENA
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn
 
@@ -10,14 +13,17 @@ def main():
     cursor = pgconn.cursor()
     cursor2 = pgconn.cursor()
 
-    phenomena = "WS"
+    phenomena = "SV"
+    startdate = datetime.date(2005, 10, 1)
+    enddate = datetime.date(2020, 2, 19)
 
     cursor.execute(
         """
     SELECT ugc, issue, init_expire, wfo from warnings where phenomena = %s and
-    significance = 'A' and issue > '2005-10-01' ORDER by issue ASC
+    significance = 'A' and issue > %s and issue < %s
+    ORDER by issue ASC
     """,
-        (phenomena,),
+        (phenomena, startdate, enddate),
     )
     total = cursor.rowcount
     print("Events is %s" % (total,))
@@ -63,18 +69,20 @@ def main():
         sector="nws",
         axisbg="white",
         title=(
-            "Conversion [%] of Winter Storm Watch "
-            "Counties/Parishes into Winter Storm Warnings"
-        ),
+            "Conversion [%%] of %s Watch " "Counties/Parishes into %s Warnings"
+        )
+        % (VTEC_PHENOMENA[phenomena], VTEC_PHENOMENA[phenomena]),
         titlefontsize=14,
-        subtitle=("1 Oct 2005 - 29 Mar 2018, Overall %s/%s %.1f%%")
+        subtitle=("%s - %s, Overall %s/%s %.1f%%")
         % (
+            startdate.strftime("%-d %b %Y"),
+            enddate.strftime("%-d %b %Y"),
             hits2["%s.W" % (phenomena,)],
             total,
             hits2["%s.W" % (phenomena,)] / float(total) * 100.0,
         ),
     )
-    mp.fill_cwas(data, ilabel=True, lblformat="%.0f")
+    mp.fill_cwas(data, ilabel=True, lblformat="%.0f", extend="neither")
     mp.postprocess(filename="test.png")
 
     print("Misses %s %.1f%%" % (misses, misses / float(total) * 100.0))
