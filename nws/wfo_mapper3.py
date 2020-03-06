@@ -9,133 +9,126 @@ from pyiem.util import get_dbconn, drct2text
 import numpy as np
 from pandas.io.sql import read_sql
 
-data = """ KABQ   | 12768 |  5433
- KABR   |  2848 |  4757
- KAKQ   | 27284 |  3733
- KALY   |  9476 |  2944
- KAMA   | 10154 |  5306
- KAPX   |  2200 |  1604
- KARX   |  6226 |  2778
- KBGM   |  8019 |  3399
- KBIS   |  7249 |  6108
- KBMX   | 15974 |  7248
- KBOI   |  1659 |   688
- KBOU   |  3564 |  4417
- KBOX   |  9146 |  2481
- KBRO   |  4874 |  1426
- KBTV   |  4930 |  1368
- KBUF   |  7099 |  2100
- KBYZ   |  4973 |  3151
- KCAE   |  6252 |  4375
- KCAR   |  4648 |  1267
- KCHS   | 12973 |  3858
- KCLE   |  3205 |  4797
- KCRP   |  6215 |  1947
- KCTP   | 12435 |  4501
- KCYS   | 10741 |  3792
- KDDC   |  5918 |  7105
- KDLH   | 10119 |  3568
- KDMX   |  5906 |  7070
- KDTX   |  7365 |  2433
- KDVN   |  8142 |  3725
- KEAX   |  8914 |  5343
- KEKA   |  1333 |   115
- KEPZ   |  6263 |  1857
- KEWX   |  7345 |  4368
- KEYW   |   765 |    31
- KFFC   | 33854 |  9030
- KFGF   |  2804 |  4631
- KFGZ   |  1951 |  2331
- KFSD   |  1596 |  6552
- KFWD   | 15344 |  8345
- KGGW   |  2301 |  2836
- KGID   |  8289 |  6888
- KGJT   |  2555 |   679
- KGLD   |  8676 |  7040
- KGRB   |  8294 |  2254
- KGRR   |  4629 |  2476
- KGSP   | 20249 |  8349
- KGTF   |   154 |     3
- KGYX   |  7450 |  2392
- KHGX   |  4671 |  3815
- KHNX   |  4211 |   352
- KHUN   | 12906 |  3699
- KICT   | 11424 |  7745
- KILM   |  7691 |  2394
- KILN   | 10969 |  5566
- KILX   |  2742 |  4970
- KIND   |  5074 |  4089
- KIWX   |  7462 |  3644
- KJAN   | 17183 | 13681
- KJAX   | 30132 |  5486
- KJKL   |  8929 |  4240
- KKEY   |  2291 |    47
- KLBF   |  7066 |  7799
- KLCH   |  6158 |  3077
- KLIX   | 12349 |  4101
- KLKN   |  4222 |   743
- KLMK   | 16904 |  7249
- KLOT   |  5196 |  3623
- KLOX   |  2342 |   160
- KLSX   |  4965 |  7033
- KLUB   |  6709 |  5373
- KLWX   |  9209 |  6236
- KLZK   |  8852 | 10546
- KMAF   | 11307 |  6587
- KMEG   | 10731 |  8409
- KMFL   | 13652 |  1889
- KMFR   |  1751 |   359
- KMHX   |  9232 |  1898
- KMKX   |  6018 |  2368
- KMLB   | 10553 |  2182
- KMOB   | 10410 |  4922
- KMPX   |  5485 |  5594
- KMQT   |  4239 |  1494
- KMRX   |  8707 |  6116
- KMSO   |  2223 |   862
- KMTR   |   930 |    66
- KOAX   |  7145 |  7684
- KOHX   |  8648 |  7065
- KOKX   |  9066 |  1774
- KOMA   |   511 |     1
- KOTX   |   762 |   516
- KOUN   | 27778 | 16029
- KPAH   |  7053 |  6327
- KPBZ   | 12612 |  5284
- KPDT   |  1699 |   654
- KPHI   | 13743 |  4786
- KPIH   |  4804 |  1175
- KPQR   |  4315 |   226
- KPSR   |  4072 |  2301
- KPUB   |  9789 |  4466
- KRAH   | 16253 |  5655
- KREV   |  4435 |   575
- KRIW   | 17065 |  1450
- KRLX   | 10803 |  3819
- KRNK   | 18787 |  6009
- KSEW   |  1463 |    44
- KSGF   |  8054 |  8615
- KSGX   |  2063 |   405
- KSHV   |  8030 |  7193
- KSJT   |  9884 |  6022
- KSLC   |  2347 |  1595
- KSPI   |  2241 |     2
- KSTO   |  4534 |   472
- KTAE   | 10513 |  5170
- KTBW   | 10414 |  1924
- KTFX   |  5007 |  2108
- KTOP   |  6379 |  5167
- KTSA   | 15617 |  8816
- KTWC   |  2844 |  2344
- KUNR   |  6263 |  7166
- KVEF   |   427 |  1278
- PAFC   |  1315 |    54
- PAFG   |  1904 |    60
- PAJK   |  1042 |     8
- PAJN   |    36 |     1
- PGUM   |  1527 |     5
- PHFO   |   438 |    74
- TJSJ   |  3082 |   160"""
+data = """ KABQ   | 12768 |  367
+ KABR   |  2848 |  474
+ KAKQ   | 27284 |  886
+ KALY   |  9476 |  102
+ KAMA   | 10154 |  675
+ KAPX   |  2200 |  108
+ KARX   |  6226 |  437
+ KBGM   |  8019 |  220
+ KBIS   |  7249 |  836
+ KBMX   | 15974 | 2419
+ KBOI   |  1659 |   14
+ KBOU   |  3564 | 1099
+ KBOX   |  9146 |  101
+ KBRO   |  4874 |  298
+ KBTV   |  4930 |   34
+ KBUF   |  7099 |   80
+ KBYZ   |  4973 |  162
+ KCAE   |  6252 |  437
+ KCAR   |  4648 |   52
+ KCHS   | 12973 |  577
+ KCLE   |  3205 |  504
+ KCRP   |  6215 |  505
+ KCTP   | 12435 |  348
+ KCYS   | 10741 |  487
+ KDDC   |  5918 |  998
+ KDLH   | 10119 |  369
+ KDMX   |  5906 | 1201
+ KDTX   |  7365 |  280
+ KDVN   |  8142 |  763
+ KEAX   |  8914 |  821
+ KEKA   |  1333 |    2
+ KEPZ   |  6263 |   54
+ KEWX   |  7345 |  686
+ KEYW   |   765 |   34
+ KFFC   | 33854 | 1254
+ KFGF   |  2804 | 1055
+ KFGZ   |  1951 |  115
+ KFSD   |  1596 | 1021
+ KFWD   | 15344 |  984
+ KGGW   |  2301 |  187
+ KGID   |  8289 |  999
+ KGJT   |  2555 |   16
+ KGLD   |  8676 | 1093
+ KGRB   |  8294 |  268
+ KGRR   |  4629 |  284
+ KGSP   | 20249 |  547
+ KGYX   |  7450 |   57
+ KHGX   |  4671 | 1192
+ KHNX   |  4211 |   34
+ KHUN   | 12906 |  877
+ KICT   | 11424 | 1033
+ KILM   |  7691 |  400
+ KILN   | 10969 |  652
+ KILX   |  2742 | 1283
+ KIND   |  5074 |  966
+ KIWX   |  7462 |  563
+ KJAN   | 17183 | 3466
+ KJAX   | 30132 |  932
+ KJKL   |  8929 |  477
+ KKEY   |  2291 |   67
+ KLBF   |  7066 | 1093
+ KLCH   |  6158 | 1010
+ KLIX   | 12349 | 1952
+ KLKN   |  4222 |   17
+ KLMK   | 16904 | 1034
+ KLOT   |  5196 |  670
+ KLOX   |  2342 |   21
+ KLSX   |  4965 | 1327
+ KLUB   |  6709 |  489
+ KLWX   |  9209 |  680
+ KLZK   |  8852 | 1386
+ KMAF   | 11307 |  568
+ KMEG   | 10731 | 1866
+ KMFL   | 13652 |  522
+ KMFR   |  1751 |    3
+ KMHX   |  9232 |  547
+ KMKX   |  6018 |  423
+ KMLB   | 10553 |  598
+ KMOB   | 10410 | 1518
+ KMPX   |  5485 | 1077
+ KMQT   |  4239 |   71
+ KMRX   |  8707 |  556
+ KMSO   |  2223 |    5
+ KMTR   |   930 |    4
+ KOAX   |  7145 |  911
+ KOHX   |  8648 | 1349
+ KOKX   |  9066 |   97
+ KOTX   |   762 |   11
+ KOUN   | 27778 | 1702
+ KPAH   |  7053 | 1672
+ KPBZ   | 12612 |  253
+ KPDT   |  1699 |   15
+ KPHI   | 13743 |  264
+ KPIH   |  4804 |  105
+ KPQR   |  4315 |   24
+ KPSR   |  4072 |   26
+ KPUB   |  9789 |  481
+ KRAH   | 16253 |  631
+ KREV   |  4435 |   19
+ KRIW   | 17065 |  152
+ KRLX   | 10803 |  174
+ KRNK   | 18787 |  381
+ KSEW   |  1463 |    7
+ KSGF   |  8054 | 1575
+ KSGX   |  2063 |   26
+ KSHV   |  8030 | 1330
+ KSJT   |  9884 |  979
+ KSLC   |  2347 |   32
+ KSTO   |  4534 |   95
+ KTAE   | 10513 | 1411
+ KTBW   | 10414 |  554
+ KTFX   |  5007 |   89
+ KTOP   |  6379 |  660
+ KTSA   | 15617 | 1321
+ KTWC   |  2844 |    8
+ KUNR   |  6263 |  431
+ KVEF   |   427 |   17
+ PAJK   |  1042 |    2
+ PHFO   |   438 |    3
+ TJSJ   |  3082 |   13"""
 
 
 def main():
@@ -147,27 +140,28 @@ def main():
         wfo = wfo[1:]
         if wfo == "JSJ":
             wfo = "SJU"
-        vals[wfo] = float(sps) / float(svr)
-    # bins = [1, 25, 100, 250, 500, 750, 1000, 1500, 2000]
+        vals[wfo] = float(sps) / 19.0
+    bins = [1, 25, 100, 250, 500, 750, 1000, 1500, 2000]
     # bins = np.arange(2011, 2021, 1)
-    bins = [0, 0.1, 0.2, 0.5, 0.75, 1, 2, 5, 10]
+    # bins = [0, 0.1, 0.2, 0.5, 0.75, 1, 2, 5, 10]
+    # bins = [1, 5, 10, 25, 50, 75, 100, 300]
     cmap = plt.get_cmap("hot")
     mp = MapPlot(
         sector="nws",
         continentalcolor="white",
         figsize=(12.0, 9.0),
         title=(
-            "2001-2019 NWS Ratio of SPS to SVR Text Products by Forecast Office"
+            "2001-2019 NWS SPS Text Products Issued per Year by Forecast Office"
         ),
         subtitle=("based on IEM archives"),
     )
     mp.fill_cwas(
         vals,
         bins=bins,
-        lblformat="%.2f",  # , labels=labels,
+        lblformat="%.0f",  # , labels=labels,
         cmap=cmap,
         ilabel=True,  # clevlabels=clevlabels,
-        units="SPS / SVR",
+        units="count",
         spacing="proportional",
     )
 
