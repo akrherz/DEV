@@ -32,8 +32,8 @@ def main(argv):
         )
         res["delivery"] = res["sed_del"] / row["st_length"]
         df2 = res[(res["date"] > sts) & (res["date"] < ets)]
-        df.at[fpath, "delivery"] = df2["delivery"].sum() * 4.163
-        df.at[fpath, "loss"] = df2["av_det"].sum() * 4.163
+        df.at[fpath, "delivery"] = df2["delivery"].sum() * 4.463
+        df.at[fpath, "loss"] = df2["av_det"].sum() * 4.463
         df.at[fpath, "events"] = df2["delivery"].count()
         df.at[fpath, "precip"] = df2["precip"].sum() / 25.4
     print(df)

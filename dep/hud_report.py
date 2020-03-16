@@ -36,7 +36,7 @@ def main():
         sum(avg_loss) as "Detachment (kg/m^2)",
         sum(avg_delivery) as "Hillslope Soil Loss (kg/m^2)"
         from results_by_huc12 WHERE scenario = 0 and
-        valid >= '2019-10-01' and valid < '2019-12-14'
+        valid >= '2020-01-01' and valid < '2020-03-15'
         GROUP by huc_12
     """,
         pgconn,
@@ -44,9 +44,9 @@ def main():
     )
     df["Precipitation (in)"] = df["Precipitation (mm)"] / 25.4
     df["Runoff (in)"] = df["Runoff (mm)"] / 25.4
-    df["Detachment (ton/acre)"] = df["Detachment (kg/m^2)"] * 4.163
+    df["Detachment (ton/acre)"] = df["Detachment (kg/m^2)"] * 4.463
     df["Hillslope Soil Loss (ton/acre)"] = (
-        df["Hillslope Soil Loss (kg/m^2)"] * 4.163
+        df["Hillslope Soil Loss (kg/m^2)"] * 4.463
     )
     hucs = []
     for (name, huc12) in VALS:

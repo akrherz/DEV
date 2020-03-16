@@ -15,7 +15,7 @@ pgconn = get_dbconn("idep")
 df = read_postgis(
     """
 WITH data as (
-SELECT huc_12, avg_delivery * 4.163 as delivery,
+SELECT huc_12, avg_delivery * 4.463 as delivery,
 qc_precip / 25.4 as precip from results_by_huc12
 WHERE scenario = 0 and valid = '2019-5-24')
 
