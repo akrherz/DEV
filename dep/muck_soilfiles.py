@@ -11,7 +11,7 @@ def main():
         for huc812 in glob.glob("*"):
             os.chdir(huc812)
             for fn in glob.glob("*.sol"):
-                with open(fn+".tmp", 'w') as fh:
+                with open(fn + ".tmp", "w") as fh:
                     for linenum, line in enumerate(open(fn)):
                         tokens = line.strip().split()
                         if len(tokens) != 9:
@@ -22,10 +22,10 @@ def main():
                         print("%s %s->%s" % (linenum, tokens[6], newval))
                         tokens[6] = newval
                         fh.write(" ".join(tokens) + "\n")
-                os.rename(fn+".tmp", fn)
+                os.rename(fn + ".tmp", fn)
             os.chdir("..")
         os.chdir("..")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

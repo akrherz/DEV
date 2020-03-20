@@ -8,9 +8,10 @@ import matplotlib.colorbar as mpcolorbar  # NOPEP8
 import matplotlib.patheffects as PathEffects  # NOPEP8
 from matplotlib.mlab import griddata
 
-pgconn = psycopg2.connect(database='scada')
+pgconn = psycopg2.connect(database="scada")
 
-df = read_sql("""
+df = read_sql(
+    """
     WITH wfavg as (
         SELECT valid, avg(windspeed) as ws from data GROUP by valid),
     obs as (
@@ -21,11 +22,14 @@ df = read_sql("""
 
     SELECT ws2::int as ws, yaw2::int as yaw, avg(power) as p
     from obs GROUP by ws, yaw
-    """, pgconn, index_col=None)
+    """,
+    pgconn,
+    index_col=None,
+)
 
-cmap = plt.cm.get_cmap('jet')
-cmap.set_under('white')
-cmap.set_over('k')
+cmap = plt.cm.get_cmap("jet")
+cmap.set_under("white")
+cmap.set_over("k")
 clevs = np.arange(0, 1500.1, 150)
 norm = mpcolors.BoundaryNorm(clevs, cmap.N)
 
@@ -36,13 +40,13 @@ ax.set_title(("Variance in Turbine Reported Power"))
 xi = np.linspace(0, 360, 360)
 yi = np.linspace(0, 12, 12)
 # grid the data.
-zi = griddata(df['yaw'], df['ws'], df['p'], xi, yi, interp='linear')
+zi = griddata(df["yaw"], df["ws"], df["p"], xi, yi, interp="linear")
 res = ax.contourf(xi, yi, zi, len(clevs), norm=norm, cmap=cmap)
-fig.colorbar(res, extend='both')
+fig.colorbar(res, extend="both")
 ax.set_xticks([0, 45, 90, 135, 180, 225, 270, 315, 360])
-ax.set_xticklabels(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N'])
+ax.set_xticklabels(["N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"])
 ax.grid(True)
 ax.set_ylabel("Farm Ave Wind Speed [mps]")
 ax.set_xlabel("Turbine Yaw Direction [deg N]")
 
-fig.savefig('test.png')
+fig.savefig("test.png")

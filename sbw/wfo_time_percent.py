@@ -6,7 +6,7 @@ from pyiem.network import Table as NetworkTable
 
 nt = NetworkTable("WFO")
 
-POSTGIS = psycopg2.connect(database='postgis', host='iemdb', user='nobody')
+POSTGIS = psycopg2.connect(database="postgis", host="iemdb", user="nobody")
 pcursor = POSTGIS.cursor()
 pcursor.execute("SET TIME ZONE 'GMT'")
 
@@ -21,15 +21,18 @@ totalbins = (ets - sts).days * 780
 
 for wfo in nt.sts.keys():
     wfo = wfo[-3:]
-    counts = np.zeros((int(bins)), 'f')
+    counts = np.zeros((int(bins)), "f")
 
-    pcursor.execute("""
+    pcursor.execute(
+        """
         select distinct begints, endts, endts - begints as diff from
         vtec_events e JOIN vtec_ugc_log l on (l.vtec_event = e.id)
         WHERE e.center = 'K%s' and endts > begints and
         begints > '2009-01-01 00:00+00' and significance = 'Y'
         and phenomena in ('WI', 'FG', 'FL')
-    """ % (wfo,))
+    """
+        % (wfo,)
+    )
 
     maxduration = 0
     for row in pcursor:
@@ -45,7 +48,7 @@ for wfo in nt.sts.keys():
     # 9z each day to 22z (60*13 bins)
     running = 0
     for i in range(540, bins, 1440):
-        running += np.sum(counts[i:i+780])
+        running += np.sum(counts[i : i + 780])
 
     # totalbins = 0
     # running = 0
@@ -63,13 +66,19 @@ for wfo in nt.sts.keys():
     #    if numpy.sum(counts[i:i+1440]) == 0:
     #        ratio += 1.0
 
-    ratio = running / float(totalbins) * 100.
-    print ("%s,%.4f,%.4f,%.1f,%s"
-           "") % (wfo, ratio, float(np.sum(counts)) / float(bins) * 100.0,
-                  maxduration / 1440.0,  pcursor.rowcount)
+    ratio = running / float(totalbins) * 100.0
+    print("%s,%.4f,%.4f,%.1f,%s" "") % (
+        wfo,
+        ratio,
+        float(np.sum(counts)) / float(bins) * 100.0,
+        maxduration / 1440.0,
+        pcursor.rowcount,
+    )
 
-    pcursor.execute("""INSERT into ferree3(wfo, percentage) values (%s,%s)""",
-                    (wfo, float(ratio)))
+    pcursor.execute(
+        """INSERT into ferree3(wfo, percentage) values (%s,%s)""",
+        (wfo, float(ratio)),
+    )
     POSTGIS.commit()
 
 pcursor.close()

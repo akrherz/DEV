@@ -19,10 +19,13 @@ def repair(pgconn, df):
     cursor = pgconn.cursor()
     count = 0
     for _, row in tqdm(df.iterrows()):
-        cursor.execute("""
+        cursor.execute(
+            """
             UPDATE current_log
             SET feel = %s where iemid = %s and valid = %s
-        """, (row['calc_heat'], row['iemid'], row['valid']))
+        """,
+            (row["calc_heat"], row["iemid"], row["valid"]),
+        )
         count += 1
     cursor.close()
     pgconn.commit()
@@ -31,17 +34,21 @@ def repair(pgconn, df):
 
 def main(argv):
     """Go Main Go."""
-    pgconn = get_dbconn('iem')
-    df = read_sql("""
+    pgconn = get_dbconn("iem")
+    df = read_sql(
+        """
             SELECT valid, iemid, tmpf, relh, feel from current_log
             WHERE tmpf > 70
             and relh is not null
-        """, pgconn)
-    df['calc_heat'] = heat_index(
-            df['tmpf'].values * units.degF, df['relh'].values * units.percent)
-    df2 = df[(df['calc_heat'] - df['feel']).abs() > 1]
+        """,
+        pgconn,
+    )
+    df["calc_heat"] = heat_index(
+        df["tmpf"].values * units.degF, df["relh"].values * units.percent
+    )
+    df2 = df[(df["calc_heat"] - df["feel"]).abs() > 1]
     print(repair(pgconn, df2))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)

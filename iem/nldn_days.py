@@ -3,7 +3,8 @@ from __future__ import print_function
 import datetime
 
 import matplotlib
-matplotlib.use('agg')
+
+matplotlib.use("agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from pyiem.util import get_dbconn
@@ -15,7 +16,7 @@ GX = 0.05
 
 def main():
     """Go Main Go"""
-    pgconn = get_dbconn('postgis')
+    pgconn = get_dbconn("postgis")
     cursor = pgconn.cursor()
     sts = datetime.date(2018, 1, 24)
     ets = datetime.date(2017, 8, 1)
@@ -44,14 +45,13 @@ def main():
 
     np.save('days', days)
     """
-    days = np.load('days.npy')
+    days = np.load("days.npy")
     mp = MapPlot()
     ramp = [1, 24, 55, 85, 116, 146, 177]
-    mp.pcolormesh(xaxis, yaxis, days, ramp,
-                  cmap=plt.get_cmap('afmhot_r'))
-    mp.postprocess(filename='test.png')
+    mp.pcolormesh(xaxis, yaxis, days, ramp, cmap=plt.get_cmap("afmhot_r"))
+    mp.postprocess(filename="test.png")
     mp.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

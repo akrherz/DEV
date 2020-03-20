@@ -5,10 +5,10 @@ from pyiem.util import get_dbconn
 
 def main():
     """Go Main Go."""
-    pgconn = get_dbconn('idep')
+    pgconn = get_dbconn("idep")
     cursor = pgconn.cursor()
     updated = 0
-    for linenum, line in enumerate(open('/tmp/points_v2_SOL.csv')):
+    for linenum, line in enumerate(open("/tmp/points_v2_SOL.csv")):
         if linenum == 0:
             continue
         tokens = line.split(",")
@@ -17,13 +17,16 @@ def main():
         newsurgo = tokens[7]
         if oldsurgo == newsurgo:
             continue
-        cursor.execute("""
+        cursor.execute(
+            """
             UPDATE flowpath_points SET surgo = %s where oid = %s
-        """, (newsurgo, oid))
+        """,
+            (newsurgo, oid),
+        )
         updated += 1
     print("updated %s/%s rows" % (updated, linenum))
     pgconn.commit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

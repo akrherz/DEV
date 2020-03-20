@@ -4,14 +4,16 @@ import fiona
 import geopandas as gpd
 from geopandas import read_postgis
 from pyiem.util import get_dbconn
-gpd.io.file.fiona.drvsupport.supported_drivers['LIBKML'] = 'rw'
-gpd.io.file.fiona.drvsupport.supported_drivers['libkml'] = 'rw'
+
+gpd.io.file.fiona.drvsupport.supported_drivers["LIBKML"] = "rw"
+gpd.io.file.fiona.drvsupport.supported_drivers["libkml"] = "rw"
 
 
 def main():
     """Go Main Go."""
-    pgconn = get_dbconn('postgis')
-    df = read_postgis("""
+    pgconn = get_dbconn("postgis")
+    df = read_postgis(
+        """
     with tors as (
         SELECT issue, expire, s.geom from sbw s, ugcs u WHERE s.wfo = 'DMX' and
         phenomena = 'TO' and status = 'NEW' and ST_Intersects(s.geom, u.geom)
@@ -33,10 +35,13 @@ def main():
 
     select to_char(issue, 'YYYY-mm-dd HH24:MI') as issue,
     to_char(expire, 'YYYY-mm-dd HH24:MI') as expire, type, geom from agg
-    """, pgconn, geom_col='geom')
+    """,
+        pgconn,
+        geom_col="geom",
+    )
     with fiona.Env():
-        df.to_file('wdsm.kml')
+        df.to_file("wdsm.kml")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

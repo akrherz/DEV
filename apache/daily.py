@@ -8,10 +8,11 @@ from pyiem.plot.use_agg import plt
 def main():
     """Plot"""
     hits = {}
-    for line in open('KBRO.log'):
+    for line in open("KBRO.log"):
         tokens = line.split()
-        ts = datetime.datetime.strptime(tokens[3].split()[0],
-                                        "[%d/%b/%Y:%H:%M:%S")
+        ts = datetime.datetime.strptime(
+            tokens[3].split()[0], "[%d/%b/%Y:%H:%M:%S"
+        )
         yyyymmdd = ts.strftime("%Y%m%d")
         if yyyymmdd not in hits:
             hits[yyyymmdd] = 0
@@ -22,9 +23,9 @@ def main():
     xs = []
     ys = []
     for yyyymmdd in keys:
-        if yyyymmdd == '20170825':
+        if yyyymmdd == "20170825":
             continue
-        date = datetime.datetime.strptime(yyyymmdd, '%Y%m%d')
+        date = datetime.datetime.strptime(yyyymmdd, "%Y%m%d")
         xs.append(date)
         ys.append(hits[yyyymmdd])
 
@@ -32,15 +33,18 @@ def main():
     ax.bar(xs, ys)
     ax.grid(True)
     ax.set_ylabel("Website Requests")
-    ax.set_xlim(datetime.datetime(2017, 7, 23, 12),
-                datetime.datetime(2017, 8, 25))
+    ax.set_xlim(
+        datetime.datetime(2017, 7, 23, 12), datetime.datetime(2017, 8, 25)
+    )
     ax.set_title(
-        ("IEM NEXRAD Level II Download Website (24 Jul - 24 Aug 2017)\n"
-         "Daily Requests for KBRO Brownsville Level II Data")
+        (
+            "IEM NEXRAD Level II Download Website (24 Jul - 24 Aug 2017)\n"
+            "Daily Requests for KBRO Brownsville Level II Data"
+        )
     )
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%-d\n%b"))
-    fig.savefig('test.png')
+    fig.savefig("test.png")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

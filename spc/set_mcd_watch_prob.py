@@ -7,29 +7,35 @@ from pyiem.util import get_dbconn, noaaport_text
 
 def main(argv):
     """Go Main Go."""
-    pgconn = get_dbconn('postgis')
+    pgconn = get_dbconn("postgis")
     cursor = pgconn.cursor()
     cursor2 = pgconn.cursor()
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT product_id, product, num from mcd
         where watch_confidence is null and year = %s
         ORDER by num ASC
-    """, (int(argv[1]), ))
+    """,
+        (int(argv[1]),),
+    )
     for row in cursor:
         try:
             prod = mcd.parser(noaaport_text(row[1]))
         except:
-            print("%s fail" % (row[2], ))
+            print("%s fail" % (row[2],))
             continue
         val = prod.find_watch_probability()
-        cursor2.execute("""
+        cursor2.execute(
+            """
             UPDATE mcd SET watch_confidence = %s where
             product_id = %s
-        """, (val, row[0]))
+        """,
+            (val, row[0]),
+        )
 
     cursor2.close()
     pgconn.commit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)

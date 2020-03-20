@@ -8,9 +8,9 @@ def main():
     """Go Main"""
     xs = []
     ys = []
-    for line in open('hits.txt'):
+    for line in open("hits.txt"):
         tokens = line.split(":")
-        ts = datetime.datetime.strptime(tokens[0], '%d %b %Y')
+        ts = datetime.datetime.strptime(tokens[0], "%d %b %Y")
         xs.append(ts)
         ys.append(int(tokens[1]))
 
@@ -38,8 +38,8 @@ def main():
     ax.grid(True)
     plt.setp(ax.get_yticklabels(), fontsize=20)
     fig.tight_layout()
-    fig.savefig('test.png')
+    fig.savefig("test.png")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -8,7 +8,8 @@ import pytz
 from pyiem import iemre, plot
 from pyiem.util import ncopen
 from pyiem.datatypes import distance
-THRESHOLD = distance(0.25, 'in').value('mm')
+
+THRESHOLD = distance(0.25, "in").value("mm")
 
 
 def main():
@@ -19,16 +20,16 @@ def main():
     ets = ets.replace(tzinfo=pytz.utc)
 
     nc = ncopen(iemre.get_hourly_ncname(sts.year))
-    lons = nc.variables['lon'][:]
-    lats = nc.variables['lat'][:]
-    running = np.zeros((len(nc.dimensions['lat']), len(nc.dimensions['lon'])))
-    maxval = np.zeros((len(nc.dimensions['lat']), len(nc.dimensions['lon'])))
+    lons = nc.variables["lon"][:]
+    lats = nc.variables["lat"][:]
+    running = np.zeros((len(nc.dimensions["lat"]), len(nc.dimensions["lon"])))
+    maxval = np.zeros((len(nc.dimensions["lat"]), len(nc.dimensions["lon"])))
     interval = datetime.timedelta(hours=1)
     now = sts
     i, j = iemre.find_ij(-93.61, 41.99)
     while now < ets:
         offset = iemre.hourly_offset(now)
-        p01m = np.sum(nc.variables['p01m'][offset - 24:offset], axis=0)
+        p01m = np.sum(nc.variables["p01m"][offset - 24 : offset], axis=0)
         # 0.05in is 1.27 mm
         this = np.where(p01m > THRESHOLD, 1, 0)
         running = np.where(this == 1, 0, running + 1)
@@ -39,11 +40,13 @@ def main():
 
     # maxval = numpy.where(domain == 1, maxval, 1.e20)
 
-    m = plot.MapPlot(sector='midwest',
-                     title=('Max Period '
-                            'between 24 Hour 0.25+ inch Total Precipitation'),
-                     subtitle=('Period of 20 Apr - 11 May 2018, '
-                               'based on NCEP Stage IV data'))
+    m = plot.MapPlot(
+        sector="midwest",
+        title=("Max Period " "between 24 Hour 0.25+ inch Total Precipitation"),
+        subtitle=(
+            "Period of 20 Apr - 11 May 2018, " "based on NCEP Stage IV data"
+        ),
+    )
 
     extra = lons[-1] + (lons[-1] - lons[-2])
     lons[-1] = extra
@@ -55,12 +58,19 @@ def main():
 
     lons, lats = np.meshgrid(lons, lats)
     # m.pcolormesh(x, y, maxval / 24.0, numpy.arange(0,25,1), units='days')
-    maxval = np.where(maxval > 800, 73., maxval)
-    cmap = plt.get_cmap('terrain')
-    m.contourf(lons, lats, maxval / 24.0, np.arange(1, 11.1, 1), cmap=cmap,
-               units='days', clip_on=False)
-    m.postprocess(filename='test.png')
+    maxval = np.where(maxval > 800, 73.0, maxval)
+    cmap = plt.get_cmap("terrain")
+    m.contourf(
+        lons,
+        lats,
+        maxval / 24.0,
+        np.arange(1, 11.1, 1),
+        cmap=cmap,
+        units="days",
+        clip_on=False,
+    )
+    m.postprocess(filename="test.png")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -11,13 +11,17 @@ WIND_RE = re.compile(r" [0-9]{3}(\d+)G(\d+)KT ")
 def main(argv):
     """Go Main Go."""
     year = argv[1]
-    pgconn = get_dbconn('asos')
+    pgconn = get_dbconn("asos")
     cursor = pgconn.cursor()
     cursor2 = pgconn.cursor()
-    cursor.execute("""
-        SELECT station, valid, sknt, gust, metar from t"""+year+"""
+    cursor.execute(
+        """
+        SELECT station, valid, sknt, gust, metar from t"""
+        + year
+        + """
         WHERE round(gust::numeric, 2) != gust::int
-    """)
+    """
+    )
     hits = 0
     for row in cursor:
         m = WIND_RE.findall(row[4])
@@ -33,16 +37,21 @@ def main(argv):
             dirty = True
         if not dirty:
             continue
-        cursor2.execute("""
-            UPDATE t"""+year+""" SET sknt = %s, gust = %s WHERE
+        cursor2.execute(
+            """
+            UPDATE t"""
+            + year
+            + """ SET sknt = %s, gust = %s WHERE
             station = %s and valid = %s
-        """, (sknt, gust, row[0], row[1]))
+        """,
+            (sknt, gust, row[0], row[1]),
+        )
         hits += 1
     print("%s %s/%s rows updated" % (year, hits, cursor.rowcount))
     cursor2.close()
     pgconn.commit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     for _year in range(1929, 1990):
         main([None, str(_year)])

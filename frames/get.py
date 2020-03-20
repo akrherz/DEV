@@ -11,19 +11,20 @@ def main():
     ets = datetime.datetime(2019, 6, 24, 0, 0)
     interval = datetime.timedelta(minutes=1440)
 
-
     stepi = 0
     while now < ets:
-        uri = now.strftime((
-            "http://mtarchive.geol.iastate.edu/%Y/%m/%d/cod/sat/goes16/"
-            "global/fulldiskeast/abi08/000index.txt"
-        ))
+        uri = now.strftime(
+            (
+                "http://mtarchive.geol.iastate.edu/%Y/%m/%d/cod/sat/goes16/"
+                "global/fulldiskeast/abi08/000index.txt"
+            )
+        )
         req = requests.get(uri)
         if req.status_code != 200:
             print(uri)
             continue
-        fns = [None]*24
-        for line in req.content.decode('ascii').split("\n"):
+        fns = [None] * 24
+        for line in req.content.decode("ascii").split("\n"):
             tokens = line.split("_")
             if len(tokens) != 3:
                 continue
@@ -33,12 +34,14 @@ def main():
         for fn in fns:
             if fn is None:
                 continue
-            uri = now.strftime((
-                "http://mtarchive.geol.iastate.edu/%Y/%m/%d/cod/sat/goes16/"
-                "global/fulldiskeast/abi08/" + fn
-            ))
+            uri = now.strftime(
+                (
+                    "http://mtarchive.geol.iastate.edu/%Y/%m/%d/cod/sat/goes16/"
+                    "global/fulldiskeast/abi08/" + fn
+                )
+            )
             req = requests.get(uri)
-            fp = open('images/%05i.jpg' % (stepi, ), 'wb')
+            fp = open("images/%05i.jpg" % (stepi,), "wb")
             fp.write(req.content)
             fp.close()
             stepi += 1
@@ -46,5 +49,5 @@ def main():
         now += interval
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

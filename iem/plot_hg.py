@@ -4,17 +4,20 @@ from pyiem.util import get_dbconn
 import pandas as pd
 import matplotlib.pyplot as plt
 
-pgconn = get_dbconn('hads')
+pgconn = get_dbconn("hads")
 cursor = pgconn.cursor()
 
 
 def get_station(station):
     """Get the data."""
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT distinct valid, value from raw2015_07 where
         station = %s and valid > '2015-07-06' and key = 'HGIRGZ'
         ORDER by valid ASC
-    """, (station, ))
+    """,
+        (station,),
+    )
     rows = []
     for row in cursor:
         rows.append(dict(valid=row[0], value=row[1]))
@@ -24,9 +27,9 @@ def get_station(station):
 
 (fig, ax) = plt.subplots(1, 1)
 
-for station in ['MIWI4', 'TMAI4', 'TAMI4', 'BPLI4', 'MROI4']:
+for station in ["MIWI4", "TMAI4", "TAMI4", "BPLI4", "MROI4"]:
     df = get_station(station)
-    ax.plot(df['valid'], df['value'], label=station)
+    ax.plot(df["valid"], df["value"], label=station)
 
-ax.legend(loc='best')
-fig.savefig('test.png')
+ax.legend(loc="best")
+fig.savefig("test.png")

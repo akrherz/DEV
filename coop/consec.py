@@ -6,15 +6,17 @@ from pyiem.util import get_dbconn
 
 def main():
     """Go Main Go"""
-    pgconn = get_dbconn('coop', user='nobody')
+    pgconn = get_dbconn("coop", user="nobody")
     cursor = pgconn.cursor()
-    cursor.execute("""
+    cursor.execute(
+        """
     WITH climo as (
         select sday, avg(high) from alldata_ia where station = 'IA2203'
         GROUP by sday)
     select day, high, c.avg from alldata_ia a JOIN climo c on (a.sday = c.sday)
     WHERE a.station = 'IA2203' and month = 8 ORDER by day ASC
-    """)
+    """
+    )
 
     running = 0
     maxrunning = 0
@@ -30,5 +32,5 @@ def main():
             running = 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

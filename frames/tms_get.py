@@ -12,8 +12,10 @@ def main():
     ets = datetime.datetime(2017, 5, 23, 0, 0)
     interval = datetime.timedelta(minutes=5)
 
-    uri = ("http://mesonet.agron.iastate.edu/"
-           "c/tile.py/1.0.0/Ridge::USCOMP-N0R-%Y%m%d%H%M/4/3/6.png")
+    uri = (
+        "http://mesonet.agron.iastate.edu/"
+        "c/tile.py/1.0.0/Ridge::USCOMP-N0R-%Y%m%d%H%M/4/3/6.png"
+    )
 
     # Change into a frames folder
     os.chdir("frames")
@@ -22,13 +24,20 @@ def main():
     while now < ets:
         url = now.strftime(uri)
         sz = []
-        for x in ['', '_2', '_3']:
+        for x in ["", "_2", "_3"]:
             req = requests.get(url)
-            print("%s %s %s %s %.3f" % (stepi, now.strftime("%d%H%M"),
-                                     req.headers['X-IEM-ServerID'], len(req.content),
-                                     (datetime.datetime.now() - timer).total_seconds()))
+            print(
+                "%s %s %s %s %.3f"
+                % (
+                    stepi,
+                    now.strftime("%d%H%M"),
+                    req.headers["X-IEM-ServerID"],
+                    len(req.content),
+                    (datetime.datetime.now() - timer).total_seconds(),
+                )
+            )
             timer = datetime.datetime.now()
-            fp = open("%05d%s.png" % (stepi, x), 'wb')
+            fp = open("%05d%s.png" % (stepi, x), "wb")
             fp.write(req.content)
             fp.close()
             sz.append(len(req.content))
@@ -41,5 +50,5 @@ def main():
     os.system("ffmpeg -i %05d.png -qscale 0 out.mp4")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

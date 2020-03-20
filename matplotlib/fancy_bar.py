@@ -26,40 +26,55 @@ YTD = """ 2013 |   0.12781954887218
  2017 | 0.073"""
 YEARS = range(2002, 2019)
 VALS = [float(line.split("|")[1].strip()) for line in YEAR.split("\n")]
-VALS2 = [float(line.split("|")[1].strip()) * 100. for line in YTD.split("\n")]
+VALS2 = [float(line.split("|")[1].strip()) * 100.0 for line in YTD.split("\n")]
 
 FONT = FontProperties()
-FONT.set_weight('bold')
+FONT.set_weight("bold")
 
 
 def main():
     """Go"""
-    plt.style.use('ggplot')
+    plt.style.use("ggplot")
     ax = plt.axes([0.1, 0.15, 0.87, 0.7])
-    ax.bar(YEARS, VALS, width=0.4, align='center',
-           label='Full Year')
-    #ax.bar(YEARS, VALS2, width=-0.4, align='edge',
+    ax.bar(YEARS, VALS, width=0.4, align="center", label="Full Year")
+    # ax.bar(YEARS, VALS2, width=-0.4, align='edge',
     #       label='YTD to 24 May')
     for x, y in zip(YEARS, VALS):
-        ax.text(x, y + 0.5, "%.1f" % (y, ), ha='center',
-                color='k', fontproperties=FONT)
-    #for x, y in zip(YEARS, VALS2):
+        ax.text(
+            x,
+            y + 0.5,
+            "%.1f" % (y,),
+            ha="center",
+            color="k",
+            fontproperties=FONT,
+        )
+    # for x, y in zip(YEARS, VALS2):
     #    ax.text(x - 0.25, y + 0.5, "%.1f%%" % (y, ), ha='center',
     #            color='k', fontproperties=FONT)
     ax.set_ylim(0, 10)
     ax.set_xticks(YEARS[::2])
     # ax.legend(loc=(0.0, -0.15), ncol=2)
-    plt.gcf().text(0.5, 0.93,
-                   ("NWS Severe TStorm + Tornado Warning Polygon\n"
-                    "average number of polygon vertices per warning by year\n"
-                    "polygons prior to October 2007 were unofficial"
-                    ), fontsize=14, ha='center', va='center')
-    plt.gcf().text(0.5, 0.01,
-                   "* based on unofficial IEM data, 15 Mar 2019, @akrherz",
-                   ha='center')
+    plt.gcf().text(
+        0.5,
+        0.93,
+        (
+            "NWS Severe TStorm + Tornado Warning Polygon\n"
+            "average number of polygon vertices per warning by year\n"
+            "polygons prior to October 2007 were unofficial"
+        ),
+        fontsize=14,
+        ha="center",
+        va="center",
+    )
+    plt.gcf().text(
+        0.5,
+        0.01,
+        "* based on unofficial IEM data, 15 Mar 2019, @akrherz",
+        ha="center",
+    )
     ax.set_ylabel("Average Number of Polygon Vertices")
-    plt.gcf().savefig('test.png')
+    plt.gcf().savefig("test.png")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

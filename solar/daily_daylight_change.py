@@ -10,7 +10,7 @@ nt = NetworkTable(("IA_ASOS", "AK_ASOS", "MI_ASOS", "FL_ASOS"))
 
 
 def do(lon, lat):
-    ''' Compute the daily daylight change '''
+    """ Compute the daily daylight change """
     loc = ephem.Observer()
     loc.lat = str(lat)
     loc.long = str(lon)
@@ -31,24 +31,23 @@ def do(lon, lat):
         days.append(now)
     return days, np.array(delta)
 
-days, dsmdelta = do(nt.sts['DSM']['lon'], nt.sts['DSM']['lat'])
-days, pancdelta = do(nt.sts['PANC']['lon'], nt.sts['PANC']['lat'])
-days, miadelta = do(nt.sts['MIA']['lon'], nt.sts['MIA']['lat'])
+
+days, dsmdelta = do(nt.sts["DSM"]["lon"], nt.sts["DSM"]["lat"])
+days, pancdelta = do(nt.sts["PANC"]["lon"], nt.sts["PANC"]["lat"])
+days, miadelta = do(nt.sts["MIA"]["lon"], nt.sts["MIA"]["lat"])
 
 (fig, ax) = plt.subplots(2, 1, sharex=True)
 
-ax[0].plot(days, dsmdelta, label='Des Moines')
-ax[0].plot(days, miadelta, label='Miami')
-ax[0].plot(days, pancdelta, label='Anchorage')
+ax[0].plot(days, dsmdelta, label="Des Moines")
+ax[0].plot(days, miadelta, label="Miami")
+ax[0].plot(days, pancdelta, label="Anchorage")
 ax[0].grid(True)
 ax[0].set_ylabel("Daylight Hours")
-ax[0].set_yticks(np.arange(6, 21, 2)*3600.0)
+ax[0].set_yticks(np.arange(6, 21, 2) * 3600.0)
 ax[0].set_yticklabels(np.arange(6, 21, 2))
-ax[0].set_ylim(5*3600.0, 19.5*3600.)
-ax[0].xaxis.set_major_locator(
-                               mdates.MonthLocator(interval=1)
-                               )
-ax[0].xaxis.set_major_formatter(mdates.DateFormatter('%b'))
+ax[0].set_ylim(5 * 3600.0, 19.5 * 3600.0)
+ax[0].xaxis.set_major_locator(mdates.MonthLocator(interval=1))
+ax[0].xaxis.set_major_formatter(mdates.DateFormatter("%b"))
 ax[0].legend(loc=1, fontsize=10)
 ax[0].set_title("Daylight Time")
 
@@ -61,4 +60,4 @@ ax[1].set_yticks(range(-360, 361, 60))
 ax[1].set_yticklabels(range(-6, 7, 1))
 ax[1].set_ylabel("Daily Daylight Change [minutes]", fontsize=10)
 
-fig.savefig('test.png')
+fig.savefig("test.png")

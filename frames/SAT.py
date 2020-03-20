@@ -13,11 +13,9 @@ stepi = 0
 while sts < ets:
     print sts, stepi
     uri = baseuri + sts.strftime("%Y%m%d%H%M")
-    res = urllib2.urlopen( uri )
-    image = open('images/%05i.png' % (
-                       stepi), 'w')
-    image.write( res.read() )
+    res = urllib2.urlopen(uri)
+    image = open("images/%05i.png" % (stepi), "w")
+    image.write(res.read())
     image.close()
     stepi += 1
     sts += interval
-

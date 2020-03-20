@@ -8,12 +8,16 @@ def runtype(name):
     """Run for a given filetime."""
     os.chdir("/mnt/home/loggernet")
     cols = {}
-    for fn in glob.glob("*%s.dat" % (name, )):
+    for fn in glob.glob("*%s.dat" % (name,)):
         station = fn.split("_")[0]
-        for linenum, line in enumerate(open(fn, 'rb').readlines()):
+        for linenum, line in enumerate(open(fn, "rb").readlines()):
             if linenum == 1:
-                for token in line.decode(
-                        'ascii', 'ignore').strip().replace('"', "").split(","):
+                for token in (
+                    line.decode("ascii", "ignore")
+                    .strip()
+                    .replace('"', "")
+                    .split(",")
+                ):
                     d = cols.setdefault(token, [])
                     d.append(station)
             if linenum > 1:
@@ -30,5 +34,5 @@ def main(argv):
     runtype(argv[1])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)

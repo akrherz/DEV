@@ -15,11 +15,13 @@ def main():
 
     data = np.ma.ones((datetime.date.today().year - 1990 + 1, 53), "f") * -99.0
     data.mask = np.where(data < 0, True, False)
-    cursor.execute("""
+    cursor.execute(
+        """
       SELECT extract(year from valid)::int as yr,
       extract(week from valid)::int as week,
       avg(cfs) from real_flow GROUP by yr, week
-    """)
+    """
+    )
 
     for row in cursor:
         data[row[0] - 1990, row[1] - 1] = row[2]
@@ -43,12 +45,20 @@ def main():
     ax.set_xticks(np.arange(1, 56, 7))
     ax.set_xlim(1, 53)
     ax.set_xticklabels(
-        ("Jan 1", "Feb 19", "Apr 8", "May 27", "Jul 15", "Sep 2", "Oct 21",
-         "Dec 9")
+        (
+            "Jan 1",
+            "Feb 19",
+            "Apr 8",
+            "May 27",
+            "Jul 15",
+            "Sep 2",
+            "Oct 21",
+            "Dec 9",
+        )
     )
     ax.grid()
     ax.set_title(
-      "Squaw Creek @ Lincoln Way in Ames\nWeekly Average Streamflow"
+        "Squaw Creek @ Lincoln Way in Ames\nWeekly Average Streamflow"
     )
     ax.set_ylabel("Year")
     ax.set_xlabel("Day of Year")

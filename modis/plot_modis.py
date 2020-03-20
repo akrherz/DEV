@@ -1,5 +1,6 @@
 import matplotlib
-matplotlib.use('agg')
+
+matplotlib.use("agg")
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from pyiem.plot import MapPlot
@@ -7,23 +8,34 @@ from shapely.wkb import loads
 import psycopg2
 import numpy as np
 import cartopy.crs as ccrs
+
 """
 xDBCONN = psycopg2.connect(database='postgis', host='iemdb', user='nobody')
 cursor = DBCONN.cursor()
 (fig, ax) = plt.subplots(1,1)
 """
 
-mp = MapPlot(title="21 November 2017 :: Aqua MODIS True Color",
-             subtitle=('The whites and blues over '
-                       'the eastern portion are clouds'),
-             sector='custom', west=-98.40, east=-89.132, south=38.775,
-             north=45.15, projection=ccrs.PlateCarree())
+mp = MapPlot(
+    title="21 November 2017 :: Aqua MODIS True Color",
+    subtitle=("The whites and blues over " "the eastern portion are clouds"),
+    sector="custom",
+    west=-98.40,
+    east=-89.132,
+    south=38.775,
+    north=45.15,
+    projection=ccrs.PlateCarree(),
+)
 
-img = plt.imread('AERONET_Ames.jpg')
-mp.ax.imshow(img, extent=(-99.40, -88.132, 38.775, 45.25), origin='upper',
-             transform=ccrs.PlateCarree(), zorder=1)
+img = plt.imread("AERONET_Ames.jpg")
+mp.ax.imshow(
+    img,
+    extent=(-99.40, -88.132, 38.775, 45.25),
+    origin="upper",
+    transform=ccrs.PlateCarree(),
+    zorder=1,
+)
 
-mp.postprocess(filename='test.png')
+mp.postprocess(filename="test.png")
 
 """
 cursor.execute('''select ST_asEWKB(ST_Transform(simple_geom,4326)) from roads_base
@@ -72,4 +84,3 @@ m2.drawstates(linewidth=2.5)
 plt.savefig('test.png')
 
 """
-

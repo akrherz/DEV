@@ -8,12 +8,14 @@ from pyiem.util import get_dbconn
 
 def load_stations():
     """Get xref"""
-    pgconn = get_dbconn('mesosite')
+    pgconn = get_dbconn("mesosite")
     cursor = pgconn.cursor()
-    cursor.execute("""
+    cursor.execute(
+        """
     SELECT id, tzname from stations where network ~* 'ASOS' or network = 'AWOS'
     and tzname is not null
-    """)
+    """
+    )
     res = {}
     for row in cursor:
         station = row[0] if len(row[0]) == 4 else "K" + row[0]
@@ -21,9 +23,9 @@ def load_stations():
         try:
             res[station] = pytz.timezone(tzname)
         except Exception as exp:
-            print("pytz does not like %s" % (exp, ))
+            print("pytz does not like %s" % (exp,))
             res[station] = pytz.UTC
-    print("loaded %s stations" % (len(res), ))
+    print("loaded %s stations" % (len(res),))
     return res
 
 
@@ -31,15 +33,19 @@ def main(argv):
     """Go Main Go."""
     afostable = argv[1]
     stations = load_stations()
-    iem_pgconn = get_dbconn('iem')
+    iem_pgconn = get_dbconn("iem")
     icursor = iem_pgconn.cursor()
-    pgconn = get_dbconn('afos')
+    pgconn = get_dbconn("afos")
     cursor = pgconn.cursor()
-    cursor.execute("""
-        SELECT entered, data from """ + afostable + """
+    cursor.execute(
+        """
+        SELECT entered, data from """
+        + afostable
+        + """
         WHERE substr(pil, 1, 3) = 'DSM'
         ORDER by entered
-    """)
+    """
+    )
     updates = 0
     for row in cursor:
         if row[1].startswith("\001"):
@@ -77,5 +83,5 @@ def main(argv):
     iem_pgconn.commit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)

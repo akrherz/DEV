@@ -40,7 +40,7 @@ import sys
 import requests
 import psycopg2
 
-APIKEY = open('APIKEY.txt', 'r').read().strip()
+APIKEY = open("APIKEY.txt", "r").read().strip()
 DIS = "https://discourse.igniterealtime.org"
 JIVEUSER = "akrherz"
 JIVEPASS = sys.argv[1]
@@ -48,12 +48,14 @@ JIVEPASS = sys.argv[1]
 
 def build_xref():
     """Cross reference"""
-    pgconn = psycopg2.connect(database='discourse')
+    pgconn = psycopg2.connect(database="discourse")
     cursor = pgconn.cursor()
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT distinct post_id, value from post_custom_fields
         WHERE name = 'import_id'
-    """)
+    """
+    )
     xref = {}
     for row in cursor:
         xref[row[1]] = row[0]
@@ -67,80 +69,100 @@ def main():
     files.sort()
     for fn in files:
         item = json.load(open(fn))
-        key = ("%s_%s" % (item['type'], item['id'])
-               if item['type'] in ['discussion', 'post', 'document']
-               else item['id'])
+        key = (
+            "%s_%s" % (item["type"], item["id"])
+            if item["type"] in ["discussion", "post", "document"]
+            else item["id"]
+        )
         if xref.get(key) is None:
             print("failed to xref fn: %s key: %s" % (fn, key))
             continue
         post_id = xref[key]
         print("fn: %s has post_id: %s" % (fn, post_id))
-        res = requests.get(("%s/posts/%s.json?api_key=%s&api_username=admin"
-                            ) % (DIS, post_id, APIKEY))
+        res = requests.get(
+            ("%s/posts/%s.json?api_key=%s&api_username=admin")
+            % (DIS, post_id, APIKEY)
+        )
         if res.status_code != 200:
             print(res.status_code)
             print(res.content)
         post = res.json()
-        raw = post['raw']
+        raw = post["raw"]
         if len(raw) > 60000:
             print("post is too long!")
             continue
-        for attachment in item['attachments']:
-            req = requests.get(attachment['url'], auth=(JIVEUSER, JIVEPASS))
+        for attachment in item["attachments"]:
+            req = requests.get(attachment["url"], auth=(JIVEUSER, JIVEPASS))
             if req.status_code != 200:
-                print("Download attachment failed with code: %s" % (
-                    req.status_code,))
+                print(
+                    "Download attachment failed with code: %s"
+                    % (req.status_code,)
+                )
                 print(req.content)
                 continue
-            tmpfn = '%s.bin' % (post_id, )
-            fp = open(tmpfn, 'wb')
+            tmpfn = "%s.bin" % (post_id,)
+            fp = open(tmpfn, "wb")
             fp.write(req.content)
             fp.close()
 
             try:
-                attachfilename = attachment['name'].decode(
-                    'utf-8').encode('ascii', 'ignore')
+                attachfilename = (
+                    attachment["name"]
+                    .decode("utf-8")
+                    .encode("ascii", "ignore")
+                )
             except Exception as exp:
-                attachfilename = 'unknown'
-            files = {'file': (attachfilename,
-                              open(tmpfn, 'rb'),
-                              attachment['contentType'],
-                              {'Expires': '0'})}
-            data = {'type': 'composer', 'synchronous': True,
-                    'user_id': post['user_id'],
-                    'api_username': post['username'],
-                    'api_key': APIKEY}
-            print("uploading: %s" % (attachment['name'], ))
-            req = requests.post("%s/uploads.json" % (DIS, ),
-                                data=data,
-                                files=files)
+                attachfilename = "unknown"
+            files = {
+                "file": (
+                    attachfilename,
+                    open(tmpfn, "rb"),
+                    attachment["contentType"],
+                    {"Expires": "0"},
+                )
+            }
+            data = {
+                "type": "composer",
+                "synchronous": True,
+                "user_id": post["user_id"],
+                "api_username": post["username"],
+                "api_key": APIKEY,
+            }
+            print("uploading: %s" % (attachment["name"],))
+            req = requests.post(
+                "%s/uploads.json" % (DIS,), data=data, files=files
+            )
             if req.status_code != 200:
-                print("status code is %s" % (res.status_code, ))
+                print("status code is %s" % (res.status_code,))
                 print(res.content)
             res = req.json()
 
-            if attachment['contentType'].startswith("image"):
-                raw += ("\n<img src=\"%s\" "
-                        "width=\"%s\" height=\"%s\">"
-                        ) % (res['url'], res['width'],
-                             res['height'])
+            if attachment["contentType"].startswith("image"):
+                raw += ('\n<img src="%s" ' 'width="%s" height="%s">') % (
+                    res["url"],
+                    res["width"],
+                    res["height"],
+                )
             else:
-                raw += ("\n<a class=\"attachment\" "
-                        "href=\"%s\">%s</a> (%s Bytes)"
-                        ) % (res['url'], attachment['name'],
-                             attachment['size'])
-            data = {'post[raw]': raw, 'api_key': APIKEY,
-                    'api_username': 'admin'}
-            res = requests.put("%s/posts/%s.json" % (DIS, post_id),
-                               data=data)
+                raw += (
+                    '\n<a class="attachment" ' 'href="%s">%s</a> (%s Bytes)'
+                ) % (res["url"], attachment["name"], attachment["size"])
+            data = {
+                "post[raw]": raw,
+                "api_key": APIKEY,
+                "api_username": "admin",
+            }
+            res = requests.put("%s/posts/%s.json" % (DIS, post_id), data=data)
             if res.status_code != 200:
                 print(res.status_code)
                 print(res.content)
-            print("%s -> %s" % (attachment['name'],
-                                res.json()['post']['updated_at']))
+            print(
+                "%s -> %s"
+                % (attachment["name"], res.json()["post"]["updated_at"])
+            )
             os.unlink(tmpfn)
-        os.rename(fn, fn+".done")
+        os.rename(fn, fn + ".done")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

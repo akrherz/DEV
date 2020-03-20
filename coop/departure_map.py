@@ -1,4 +1,3 @@
-
 import datetime
 
 import numpy as np
@@ -13,7 +12,8 @@ from pyiem.util import get_dbconn
 def get_data():
     """Go data."""
     pgconn = get_dbconn("coop")
-    df = read_sql("""
+    df = read_sql(
+        """
     with data as (
         select station, year,
         sum(case when high >= 80 then 1 else 0 end) as events from alldata
@@ -30,30 +30,41 @@ def get_data():
     a.e as climo_days, a.events as d2019
     from agg a JOIN stations t on (a.station = t.id)
     WHERE t.network ~* 'CLIMATE'
-    """, pgconn)
-    df.to_csv('data.csv', index=False)
+    """,
+        pgconn,
+    )
+    df.to_csv("data.csv", index=False)
 
 
 def plot():
     """Go Plot"""
-    df = pd.read_csv('data.csv')
-    df['diff'] = df['d2019'] - df['climo_days']
-    print(df['diff'].describe())
+    df = pd.read_csv("data.csv")
+    df["diff"] = df["d2019"] - df["climo_days"]
+    print(df["diff"].describe())
 
     m = MapPlot(
-        sector='conus', axisbg='white',
+        sector="conus",
+        axisbg="white",
         title=(
-            r'2019 Departure of Days with a High Temperature of 80+$^\circ$F'),
+            r"2019 Departure of Days with a High Temperature of 80+$^\circ$F"
+        ),
         subtitle=(
-            '1 January thru 20 June 2019, based on 1951-2018 climatology of '
-            'IEM tracked long term climate sites'))
-    cmap = plt.get_cmap('Spectral_r')
+            "1 January thru 20 June 2019, based on 1951-2018 climatology of "
+            "IEM tracked long term climate sites"
+        ),
+    )
+    cmap = plt.get_cmap("Spectral_r")
     m.contourf(
-        df['lon'].values, df['lat'].values, df['diff'].values,
-        np.arange(-16, 17, 4), cmap=cmap, units='days')
-    m.postprocess(filename='190621.png')
+        df["lon"].values,
+        df["lat"].values,
+        df["diff"].values,
+        np.arange(-16, 17, 4),
+        cmap=cmap,
+        units="days",
+    )
+    m.postprocess(filename="190621.png")
     m.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     plot()

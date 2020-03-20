@@ -5,7 +5,8 @@ import numpy
 import ephem
 import mx.DateTime
 import matplotlib
-matplotlib.use('agg')
+
+matplotlib.use("agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.font_manager
@@ -24,13 +25,17 @@ def compute_sunrise(lat, long):
     doy = []
     returnD = 0
     ames.date = now.strftime("%Y/%m/%d")
-    rise = mx.DateTime.strptime(str(ames.next_rising(sun)), "%Y/%m/%d %H:%M:%S")
+    rise = mx.DateTime.strptime(
+        str(ames.next_rising(sun)), "%Y/%m/%d %H:%M:%S"
+    )
     rise = rise.localtime()
     delta = rise.hour * 60 + rise.minute
     now += interval
     while True:
         ames.date = now.strftime("%Y/%m/%d")
-        rise2 = mx.DateTime.strptime(str(ames.next_rising(sun)), "%Y/%m/%d %H:%M:%S")
+        rise2 = mx.DateTime.strptime(
+            str(ames.next_rising(sun)), "%Y/%m/%d %H:%M:%S"
+        )
         rise2 = rise2.localtime()
         delta2 = rise2.hour * 60 + rise2.minute
         if delta2 < delta:
@@ -50,9 +55,13 @@ for lon in tqdm.tqdm(range(-130, -60, 2)):
         lons.append(lon)
         vals.append(compute_sunrise(str(lat), str(lon)))
 
-m = MapPlot(sector='conus',
-            title='Days to Recover Morning Hour after Spring Saving Time Change',
-            subtitle=('days until local time of sunrise is earlier '
-                      'than on 10 March, local DST rules ignored for plot'))
-m.contourf(lons, lats, vals, range(27, 78, 3), units='days')
-m.postprocess(filename='180313.png')
+m = MapPlot(
+    sector="conus",
+    title="Days to Recover Morning Hour after Spring Saving Time Change",
+    subtitle=(
+        "days until local time of sunrise is earlier "
+        "than on 10 March, local DST rules ignored for plot"
+    ),
+)
+m.contourf(lons, lats, vals, range(27, 78, 3), units="days")
+m.postprocess(filename="180313.png")

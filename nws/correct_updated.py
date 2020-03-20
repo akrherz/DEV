@@ -7,16 +7,20 @@ from pyiem.nws.products.vtec import parser
 
 def main(argv):
     """Go Main Go."""
-    pgconn = get_dbconn('postgis')
-    cursor = pgconn.cursor('streamer')
+    pgconn = get_dbconn("postgis")
+    cursor = pgconn.cursor("streamer")
     cursor2 = pgconn.cursor()
 
     table = "warnings_%s" % (argv[1],)
 
-    cursor.execute("""
-        SELECT oid, report, svs, updated from """+table+"""
+    cursor.execute(
+        """
+        SELECT oid, report, svs, updated from """
+        + table
+        + """
         WHERE svs is not null ORDER by issue
-    """)
+    """
+    )
     considered = 0
     updated = 0
     for row in cursor:
@@ -26,7 +30,7 @@ def main(argv):
         svss = row[2]
         baseupdated = row[3]
         for svs in svss.split("__")[::-1]:
-            if svs.strip() == '':
+            if svs.strip() == "":
                 continue
             try:
                 prod = parser(noaaport_text(svs))
@@ -36,9 +40,14 @@ def main(argv):
             if prod.valid != baseupdated:
                 print("old: %s new: %s" % (baseupdated, prod.valid))
                 updated += 1
-                cursor2.execute("""
-                    UPDATE """ + table + """ SET updated = %s WHERE oid = %s
-                """, (prod.valid, oid))
+                cursor2.execute(
+                    """
+                    UPDATE """
+                    + table
+                    + """ SET updated = %s WHERE oid = %s
+                """,
+                    (prod.valid, oid),
+                )
             break
     print("done updated %s rows of %s candidates" % (updated, considered))
     cursor2.close()
@@ -46,5 +55,5 @@ def main(argv):
     pgconn.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)

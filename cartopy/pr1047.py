@@ -3,7 +3,8 @@ from scipy.interpolate import NearestNDInterpolator
 from scipy.signal import convolve2d
 
 import matplotlib
-matplotlib.use('agg')
+
+matplotlib.use("agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -23,16 +24,17 @@ def contourf(ax, lons, lats, vals, clevs):
     lons = xi
     lats = yi
     window = np.ones((6, 6))
-    vals = convolve2d(vals, window / window.sum(), mode='same',
-                      boundary='symm')
-    ax.contourf(lons, lats, vals, clevs,
-                transform=ccrs.PlateCarree())
+    vals = convolve2d(
+        vals, window / window.sum(), mode="same", boundary="symm"
+    )
+    ax.contourf(lons, lats, vals, clevs, transform=ccrs.PlateCarree())
 
 
-
-ax = plt.axes([0.01, 0.05, 0.898, 0.85], projection=ccrs.Mercator(),
-              aspect='equal')
+ax = plt.axes(
+    [0.01, 0.05, 0.898, 0.85], projection=ccrs.Mercator(), aspect="equal"
+)
 ax.set_extent([-99.6, -89.0, 39.8, 45.5])
-contourf(ax, np.arange(-94, -85), np.arange(36, 45), np.arange(9),
-         np.arange(9))
-plt.savefig('test.png')
+contourf(
+    ax, np.arange(-94, -85), np.arange(36, 45), np.arange(9), np.arange(9)
+)
+plt.savefig("test.png")

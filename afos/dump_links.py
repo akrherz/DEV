@@ -10,15 +10,17 @@ PATTERN = re.compile(r"AT\s+THE\s+REQUEST\s+OF\s+(.*?)\.", re.M | re.S)
 
 def main():
     """Go Main Go."""
-    AFOS = get_dbconn('afos')
-    acursor = AFOS.cursor('streamer')
+    AFOS = get_dbconn("afos")
+    acursor = AFOS.cursor("streamer")
 
-    output = open('listing.txt', 'w')
-    acursor.execute("""
+    output = open("listing.txt", "w")
+    acursor.execute(
+        """
         select source, wmo, entered at time zone 'UTC', data, pil from cem
         where substr(pil, 1, 3) = 'CEM'
         ORDER by entered ASC
-    """)
+    """
+    )
     for row in acursor:
         text = noaaport_text(row[3])
         try:
@@ -43,13 +45,18 @@ def main():
             res = tokens[0].replace("\n", " ")
         # print(res)
         prod.valid = entered
-        output.write((
-            '%s,%s,%s,%s,https://mesonet.agron.iastate.edu/p.php?pid=%s\n'
-            ) % (prod.source, res, entered.strftime("%Y-%m-%dT%H:%MZ"),
-                 " ".join([str(s) for s in prod.segments[0].ugcs]),
-                 prod.get_product_id()))
+        output.write(
+            ("%s,%s,%s,%s,https://mesonet.agron.iastate.edu/p.php?pid=%s\n")
+            % (
+                prod.source,
+                res,
+                entered.strftime("%Y-%m-%dT%H:%MZ"),
+                " ".join([str(s) for s in prod.segments[0].ugcs]),
+                prod.get_product_id(),
+            )
+        )
     output.close()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

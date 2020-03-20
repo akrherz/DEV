@@ -8,22 +8,23 @@ baseuri = "http://mesonet.agron.iastate.edu/GIS/radmap.php?layers[]=sbw&layers[]
 
 base = datetime.datetime(2015, 7, 24, 13)
 stepi = 0
-for day in range(24,25):
-  sts = datetime.datetime(2015,7,day,0,0)
-  ets = sts + datetime.timedelta(days=1)
-  wsurl = "http://mesonet.agron.iastate.edu/json/radar?operation=list&radar=DMX&product=N0Q&start=%s&end=%s" % (sts.strftime("%Y-%m-%dT%H:%MZ"), ets.strftime("%Y-%m-%dT%H:%MZ"))
-  res = urllib2.urlopen(wsurl)
-  j = json.loads( res.read() )
-  for scan in j['scans']:
-    valid = datetime.datetime.strptime(scan['ts'], '%Y-%m-%dT%H:%MZ')
-    if valid < base:
-      continue
-    print valid, stepi
-    uri = baseuri + valid.strftime("%Y%m%d%H%M")
-    res = urllib2.urlopen( uri )
-    image = open('images/%05i.png' % (
-                       stepi), 'w')
-    image.write( res.read() )
-    image.close()
-    stepi += 1
-
+for day in range(24, 25):
+    sts = datetime.datetime(2015, 7, day, 0, 0)
+    ets = sts + datetime.timedelta(days=1)
+    wsurl = (
+        "http://mesonet.agron.iastate.edu/json/radar?operation=list&radar=DMX&product=N0Q&start=%s&end=%s"
+        % (sts.strftime("%Y-%m-%dT%H:%MZ"), ets.strftime("%Y-%m-%dT%H:%MZ"))
+    )
+    res = urllib2.urlopen(wsurl)
+    j = json.loads(res.read())
+    for scan in j["scans"]:
+        valid = datetime.datetime.strptime(scan["ts"], "%Y-%m-%dT%H:%MZ")
+        if valid < base:
+            continue
+        print valid, stepi
+        uri = baseuri + valid.strftime("%Y%m%d%H%M")
+        res = urllib2.urlopen(uri)
+        image = open("images/%05i.png" % (stepi), "w")
+        image.write(res.read())
+        image.close()
+        stepi += 1

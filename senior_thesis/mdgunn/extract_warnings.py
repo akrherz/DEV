@@ -3,9 +3,11 @@
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
 
+
 def get_misses(pgconn):
     """Our orig dataset."""
-    return read_sql("""
+    return read_sql(
+        """
         with tornadowarnings as (
             SELECT wfo, eventid, geom, issue, expire from sbw
             WHERE phenomena = 'TO'
@@ -19,12 +21,16 @@ def get_misses(pgconn):
             ORDER by w.wfo, w.issue)
         select wfo, extract(year from issue) as year, count(*) from agg
         WHERE valid is null GROUP by wfo, year ORDER by wfo, year
-    """, pgconn, index_col=None)
+    """,
+        pgconn,
+        index_col=None,
+    )
 
 
 def get_hits(pgconn):
     """Our orig dataset."""
-    return read_sql("""
+    return read_sql(
+        """
         with tornadowarnings as (
             SELECT wfo, eventid, geom, issue, expire from sbw
             WHERE phenomena = 'TO'
@@ -43,15 +49,18 @@ def get_hits(pgconn):
         select *, extract(year from issue) as year
         from agg where (first - issue) >= '30 minutes'::interval
         ORDER by issue
-    """, pgconn, index_col=None)
+    """,
+        pgconn,
+        index_col=None,
+    )
 
 
 def main():
     """Go Main Go"""
-    pgconn = get_dbconn('postgis')
+    pgconn = get_dbconn("postgis")
     df = get_misses(pgconn)
-    df.to_csv('misses.csv')
+    df.to_csv("misses.csv")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

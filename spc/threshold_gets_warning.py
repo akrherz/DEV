@@ -59,7 +59,8 @@ DATA20 = """
 """
 
 FONT = FontProperties()
-FONT.set_weight('bold')
+FONT.set_weight("bold")
+
 
 def gett(data):
     labels = []
@@ -72,43 +73,96 @@ def gett(data):
         vals.append(float(tokens[2]))
     return labels, vals
 
+
 def main():
     """Go"""
     labels, vals = gett(DATA)
     labels16, vals16 = gett(DATA16)
     labels20, vals20 = gett(DATA20)
-    plt.style.use('ggplot')
+    plt.style.use("ggplot")
     ax = plt.axes([0.15, 0.11, 0.8, 0.76])
     plt.gcf().set_size_inches(8, 6)
-    ax.bar(np.arange(len(vals)) - 0.25, vals, width=0.25, align='center', label='12 UTC')
-    ax.bar(np.arange(len(vals16)), vals16, width=0.25, align='center', label='16 UTC')
-    ax.bar(np.arange(len(vals20)) + 0.25, vals20, width=0.25, align='center', label='20 UTC')
+    ax.bar(
+        np.arange(len(vals)) - 0.25,
+        vals,
+        width=0.25,
+        align="center",
+        label="12 UTC",
+    )
+    ax.bar(
+        np.arange(len(vals16)),
+        vals16,
+        width=0.25,
+        align="center",
+        label="16 UTC",
+    )
+    ax.bar(
+        np.arange(len(vals20)) + 0.25,
+        vals20,
+        width=0.25,
+        align="center",
+        label="20 UTC",
+    )
     for x, y in enumerate(vals):
-        ax.text(x - 0.3, y + 0.1, "%.1f%%" % (y, ), va='bottom', ha='center',
-                color='k', fontproperties=FONT, rotation=45)
+        ax.text(
+            x - 0.3,
+            y + 0.1,
+            "%.1f%%" % (y,),
+            va="bottom",
+            ha="center",
+            color="k",
+            fontproperties=FONT,
+            rotation=45,
+        )
     for x, y in enumerate(vals16):
-        ax.text(x, y + 0.1, "%.1f%%" % (y, ), va='bottom', ha='center',
-                color='k', fontproperties=FONT, rotation=45)
+        ax.text(
+            x,
+            y + 0.1,
+            "%.1f%%" % (y,),
+            va="bottom",
+            ha="center",
+            color="k",
+            fontproperties=FONT,
+            rotation=45,
+        )
     for x, y in enumerate(vals20):
-        ax.text(x + 0.3, y + 0.1, "%.1f%%" % (y, ), va='bottom', ha='center',
-                color='k', fontproperties=FONT, rotation=45)
+        ax.text(
+            x + 0.3,
+            y + 0.1,
+            "%.1f%%" % (y,),
+            va="bottom",
+            ha="center",
+            color="k",
+            fontproperties=FONT,
+            rotation=45,
+        )
     ax.set_ylim(0, 15)
-    #ax.set_xticks(range(0, 101, 25))
+    # ax.set_xticks(range(0, 101, 25))
     ax.legend(loc=2, ncol=3)
-    plt.gcf().text(0.5, 0.93,
-                   ("NWS Storm Prediction Center 2007-2017\n"
-                    "Percentage of Tornado Day 1 Outlook Area receiving 1+ Tor Warn Polygon\n"
-                    "Daily events are weighted equally while averaging"
-                    ), fontsize=14, ha='center', va='center')
-    plt.gcf().text(0.5, 0.01,
-                   "* based on unofficial archives maintained by the IEM, 18 May 2017",
-                   ha='center')
+    plt.gcf().text(
+        0.5,
+        0.93,
+        (
+            "NWS Storm Prediction Center 2007-2017\n"
+            "Percentage of Tornado Day 1 Outlook Area receiving 1+ Tor Warn Polygon\n"
+            "Daily events are weighted equally while averaging"
+        ),
+        fontsize=14,
+        ha="center",
+        va="center",
+    )
+    plt.gcf().text(
+        0.5,
+        0.01,
+        "* based on unofficial archives maintained by the IEM, 18 May 2017",
+        ha="center",
+    )
     ax.set_xticks(range(len(vals)))
     ax.set_xticklabels(labels)
     ax.set_xlabel("Tornado Outlook Threshold")
     ax.set_ylabel("Average Areal Coverage by Tor Warn [%]")
-    plt.gcf().savefig('test.png')
+    plt.gcf().savefig("test.png")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -2,13 +2,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# import psycopg2
-
 
 def main():
     """Go Main Go"""
-    # DBCONN = psycopg2.connect(database='mesosite', host='iemdb', user='nobody')
-    # cursor = DBCONN.cursor()
 
     cnts = [
         188994,
@@ -41,14 +37,26 @@ def main():
         aspect="auto",
     )
     ax.text(
-        2005., 13.5, "Jefferson 22 Jul 2003", color="white", fontsize=14, ha="center"
+        2005.0,
+        13.5,
+        "Jefferson 22 Jul 2003",
+        color="white",
+        fontsize=14,
+        ha="center",
     )
     ax.imshow(
         plt.imread("KCCI-001_201307221435.jpg"),
         extent=(2003, 2007, 4, 8.9),
         aspect="auto",
     )
-    ax.text(2005., 8, "Jefferson 22 Jul 2013", color="white", fontsize=14, ha="center")
+    ax.text(
+        2005.0,
+        8,
+        "Jefferson 22 Jul 2013",
+        color="white",
+        fontsize=14,
+        ha="center",
+    )
     ax.bar(np.arange(2003, 2014) - 0.4, cnts, width=0.8)
     ax.text(2003, 1, "KCCI-TV", ha="center", fontsize=10)
     ax.text(2008, 4.1, "KELO-TV\nKCRG-TV", ha="center", fontsize=10)

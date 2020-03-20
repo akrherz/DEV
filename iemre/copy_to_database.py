@@ -12,16 +12,17 @@ def main(argv):
     """Go Main Go."""
     table = argv[1]
     valid = utc(int(argv[2]), int(argv[3]), int(argv[4]), int(argv[5]))
-    if table == 'daily':
+    if table == "daily":
         valid = valid.date()
         tidx = iemre.daily_offset(valid)
     else:
         tidx = iemre.hourly_offset(valid)
     ncvars = {}
     with ncopen(
-            "/mesonet/data/iemre/%s_iemre_%s.nc" % (valid.year, table)) as nc:
+        "/mesonet/data/iemre/%s_iemre_%s.nc" % (valid.year, table)
+    ) as nc:
         for vname in nc.variables.keys():
-            if vname in ['lat', 'lon', 'time', 'hasdata']:
+            if vname in ["lat", "lon", "time", "hasdata"]:
                 continue
             ncvars[vname] = nc.variables[vname][tidx, :, :]
 
@@ -31,5 +32,5 @@ def main(argv):
     iemre.set_grids(valid, ds)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)

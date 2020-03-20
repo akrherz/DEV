@@ -11,11 +11,11 @@ ax = fig.add_subplot(111)
 
 x = numpy.arange(5000, 20000, 100)
 y = 14669 + (-0.5713329 * x) + (0.0001632 * x * x)
-ax.plot(x, y, label='1 inch')
+ax.plot(x, y, label="1 inch")
 
 x = numpy.arange(5000, 20000, 100)
 y = 10809 + (-0.1286213 * x) + (0.00014275 * x * x)
-ax.plot(x, y, label='0.75 inch')
+ax.plot(x, y, label="0.75 inch")
 
 ax.set_title("Donavon Hail Chart")
 ax.set_xlabel("Freezing Level [ft AGL]")
@@ -24,4 +24,4 @@ ax.grid(True)
 ax.set_xlim(5000, 20000)
 ax.legend(loc=2)
 
-fig.savefig('test.png')
+fig.savefig("test.png")

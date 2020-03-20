@@ -8,8 +8,9 @@ from pandas.io.sql import read_sql
 
 def main():
     """Go"""
-    pgconn = get_dbconn('asos')
-    df = read_sql("""
+    pgconn = get_dbconn("asos")
+    df = read_sql(
+        """
     WITH mins as (
         SELECT extract(year from valid) as year, min(tmpf) from
         alldata where station = 'DSM' and extract(month from valid) in (8, 9)
@@ -27,20 +28,27 @@ def main():
     select valid, year,
     extract(hour from valid + '10 minutes'::interval) as hr,
     t2 from agg2 WHERE row_number = 1
-    """, pgconn, index_col=None)
+    """,
+        pgconn,
+        index_col=None,
+    )
 
     (fig, ax) = plt.subplots(1, 1)
-    ax.scatter(df['hr'], df['t2'])
+    ax.scatter(df["hr"], df["t2"])
     ax.grid(True)
     ax.set_ylabel(r"New Fall Minimum Temperature [$^\circ$F]")
-    ax.set_title(("October Hour that new Fall Minimum Temperature was Set\n"
-                  "(DSM) Des Moines Airport (%i-%i)"
-                  ) % (df['year'].min(), df['year'].max()))
+    ax.set_title(
+        (
+            "October Hour that new Fall Minimum Temperature was Set\n"
+            "(DSM) Des Moines Airport (%i-%i)"
+        )
+        % (df["year"].min(), df["year"].max())
+    )
     ax.set_xticks(range(0, 25, 4))
     ax.set_xticklabels(["Mid", "4 AM", "8 AM", "Noon", "4 PM", "8 PM", "Mid"])
     ax.set_xlabel("Central Standard or Daylight Time")
-    fig.savefig('test.png')
+    fig.savefig("test.png")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

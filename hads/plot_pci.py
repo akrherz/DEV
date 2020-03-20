@@ -7,11 +7,13 @@ from pyiem.util import get_dbconn
 
 def main():
     """Plot"""
-    pgconn = get_dbconn('hads')
+    pgconn = get_dbconn("hads")
     cursor = pgconn.cursor()
-    cursor.execute("""SELECT valid, value from raw2017_08 where
+    cursor.execute(
+        """SELECT valid, value from raw2017_08 where
     station = 'CFMT2' and valid > '2017-08-25' and key = 'PCIRZZ'
-    ORDER by valid ASC""")
+    ORDER by valid ASC"""
+    )
     times = []
     accum = []
     for row in cursor:
@@ -20,8 +22,8 @@ def main():
     print(accum)
     (fig, ax) = plt.subplots(1, 1)
     ax.plot(times, accum)
-    fig.savefig('test.png')
+    fig.savefig("test.png")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -21,23 +21,35 @@ def save(prod, cursor):
         return
     utcnow = prod.valid.astimezone(pytz.UTC)
     table = "products_%s_%s" % (
-        utcnow.year, "0106" if utcnow.month < 7 else "0712")
+        utcnow.year,
+        "0106" if utcnow.month < 7 else "0712",
+    )
     wmo = prod.wmo
     if len(wmo) == 5:
         wmo = "%s0%s" % (wmo[:4], wmo[4])
-    cursor.execute("""
-        INSERT into """ + table + """ (data, pil, entered, source, wmo)
+    cursor.execute(
+        """
+        INSERT into """
+        + table
+        + """ (data, pil, entered, source, wmo)
         VALUES (%s, %s, %s, %s, %s)
-    """, (prod.text, prod.afos, prod.valid,
-          XREF_SOURCE.get(prod.source, prod.source), wmo))
+    """,
+        (
+            prod.text,
+            prod.afos,
+            prod.valid,
+            XREF_SOURCE.get(prod.source, prod.source),
+            wmo,
+        ),
+    )
 
 
 def splitter(fn):
     """Generate products."""
-    data = open(fn, 'rb').read().decode('ascii', 'ignore')
+    data = open(fn, "rb").read().decode("ascii", "ignore")
     tokens = re.split("[0-9]{3} \r\r\n", data)
     for token in tokens:
-        product = "000 \r\r\n%s" % (token, )
+        product = "000 \r\r\n%s" % (token,)
         product = product.split("\003")[0]
         product = noaaport_text(product).replace("\000", "")
         yield product
@@ -46,7 +58,7 @@ def splitter(fn):
 def main():
     """Go Main Go."""
     os.chdir("/mesonet/tmp/poker")
-    dbconn = get_dbconn('afos')
+    dbconn = get_dbconn("afos")
     for dirpath, _dirnames, filenames in tqdm(os.walk(".")):
         cursor = dbconn.cursor()
         for fn in filenames:
@@ -57,7 +69,8 @@ def main():
             for product in splitter(dirpath + "/" + fn):
                 try:
                     prod = TextProduct(
-                        product, utcnow=utcnow, parse_segments=False)
+                        product, utcnow=utcnow, parse_segments=False
+                    )
                     save(prod, cursor)
                 except Exception as _exp:
                     continue
@@ -67,9 +80,9 @@ def main():
 
 def test_splitter():
     """Can we make things happen."""
-    tokens = list(splitter('/tmp/1113.gdbm'))
+    tokens = list(splitter("/tmp/1113.gdbm"))
     assert len(tokens) == 16
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

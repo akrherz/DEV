@@ -1,13 +1,16 @@
 import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
-COOP = get_dbconn('coop')
+
+COOP = get_dbconn("coop")
 ccursor = COOP.cursor()
 
-ccursor.execute("""
+ccursor.execute(
+    """
  SELECT low, sum(case when snowd > 0 then 1 else 0 end) / count(*):: numeric,
  count(*) from alldata_ia where station = 'IA2203' and low < 32
  and year > 1899 and snowd >= 0 and year < 2012 GROUP by low ORDER by low DESC
-""")
+"""
+)
 lows = []
 freq = []
 count = []
@@ -18,17 +21,17 @@ for row in ccursor:
 
 (fig, ax) = plt.subplots(1, 1)
 
-ax.plot(lows, freq, color='b')
+ax.plot(lows, freq, color="b")
 
 ax2 = ax.twinx()
 
-ax2.plot(lows, count, color='r')
+ax2.plot(lows, count, color="r")
 
 ax.set_xlim(32, -30)
 ax.set_title("1900-2011 Des Moines Daily Low Temperature + Snow Cover")
-ax.set_ylabel("Frequency of Snow Cover [%]", color='b')
-ax2.set_ylabel("Frequency of Low Temp per Year", color='r')
+ax.set_ylabel("Frequency of Snow Cover [%]", color="b")
+ax2.set_ylabel("Frequency of Low Temp per Year", color="r")
 ax.set_xlabel("Daily Low Temperature $^{\circ}\mathrm{F}$")
 ax.grid(True)
 
-fig.savefig('test.png')
+fig.savefig("test.png")

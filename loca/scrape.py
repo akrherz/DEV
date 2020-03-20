@@ -104,17 +104,19 @@ bcc-csm1-1-m_r1i1p1_historical"""
 
 def downloader(varname, model, syear, eyear, dirname):
     """Go Main Go"""
-    url = ("https://cida.usgs.gov/thredds/ncss/loca_"+dirname+"?"
-           "var="+varname+"_"+model+"&north=44&west=-98.1&"
-           "east=-90.0&south=41.0&disableProjSubset=on&horizStride=1"
-           "&time_start="+str(syear)+"-01-01T12%3A00%3A00Z&"
-           "time_end="+str(eyear)+"-01-01T12%3A00%3A00Z&"
-           "timeStride=1&addLatLon=true")
+    url = (
+        "https://cida.usgs.gov/thredds/ncss/loca_" + dirname + "?"
+        "var=" + varname + "_" + model + "&north=44&west=-98.1&"
+        "east=-90.0&south=41.0&disableProjSubset=on&horizStride=1"
+        "&time_start=" + str(syear) + "-01-01T12%3A00%3A00Z&"
+        "time_end=" + str(eyear) + "-01-01T12%3A00%3A00Z&"
+        "timeStride=1&addLatLon=true"
+    )
     filename = "%s_%s.nc" % (varname, model)
     if os.path.isfile(filename):
         return
     req = requests.get(url, stream=True)
-    with open(filename, 'wb') as fh:
+    with open(filename, "wb") as fh:
         for chunk in req.iter_content(chunk_size=1024):
             if chunk:
                 fh.write(chunk)
@@ -122,14 +124,14 @@ def downloader(varname, model, syear, eyear, dirname):
 
 def main():
     """Go Main Go"""
-    for varname in ['pr', 'tasmin', 'tasmax']:
+    for varname in ["pr", "tasmin", "tasmax"]:
         for line in tqdm.tqdm(HIST.split("\n")):
             model = line.strip()
-            downloader(varname, model, 1970, 2006, 'historical')
+            downloader(varname, model, 1970, 2006, "historical")
         for line in tqdm.tqdm(FUTURE.split("\n")):
             model = line.strip()
-            downloader(varname, model, 2006, 2071, 'future')
+            downloader(varname, model, 2006, 2071, "future")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

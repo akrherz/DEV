@@ -19,14 +19,23 @@ def send2ldm(fn):
     # MZZU_20160304_2352_1_I
     tokens = fn.split("_")
     if len(tokens) != 5:
-        print("Invalid filename for send2ldm: '%s'" % (fn, ))
+        print("Invalid filename for send2ldm: '%s'" % (fn,))
         return
-    product_name = ("L2-BZIP2/%s/%s%s00/000/%s/%s/V06/0"
-                    ) % (tokens[0], tokens[1], tokens[2], tokens[3],
-                         tokens[4])
-    cmd = ("%s -p '%s' -f NEXRAD2 -i -v -q %s %s"
-           ) % (PQINSERT, product_name, LDMQUEUE, fn)
+    product_name = ("L2-BZIP2/%s/%s%s00/000/%s/%s/V06/0") % (
+        tokens[0],
+        tokens[1],
+        tokens[2],
+        tokens[3],
+        tokens[4],
+    )
+    cmd = ("%s -p '%s' -f NEXRAD2 -i -v -q %s %s") % (
+        PQINSERT,
+        product_name,
+        LDMQUEUE,
+        fn,
+    )
     subprocess.call(cmd, shell=True)
+
 
 def main(argv):
     """ code entry """
@@ -37,5 +46,6 @@ def main(argv):
     files.sort(key=lambda x: os.path.getctime(x))
     map(send2ldm, files)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main(sys.argv)

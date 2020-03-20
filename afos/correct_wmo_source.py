@@ -29,6 +29,7 @@ import json
 from pandas.io.sql import read_sql
 from pyiem.network import Table as NetworkTable
 from pyiem.util import get_dbconn
+
 XREF = {
     "KDSM": "KDMX",
     "KOKC": "KOUN",
@@ -108,62 +109,231 @@ XREF = {
     "KSMX": "KLOX",
 }
 UNKNOWN = [
-    'KABE', 'KABI', 'KACT', 'KACY', 'KADG', 'KAGS',
-    'KAPN', 'KARB', 'KAVL', 'KBDL', 'KBDR',
-    'KBIX', 'KBKW', 'KBLU', 'KBNO', 'KBTM', 'KBTR', 'KBWI', 'KBZN',
-    'KCMH', 'KCNK', 'KCNU', 'KCON', 'KCOU',
-    'KCRW', 'KCVG', 'KDAY', 'KDMO', 'KDRT', 'KEAT',
-    'KEKN', 'KELY', 'KEVV', 'KEWR', 'KFAR', 'KFMY', 'KFNT',
-    'KFOK', 'KFSM', 'KFTW', 'KFWA', 'KGCN', 'KGEG', 'KGLS', 'KGRI', 'KGSO',
-    'KGTF', 'KHAF', 'KHFD', 'KHMS', 'KHON', 'KHTS', 'KHUF', 'KHVR',
-    'KIAD', 'KILG', 'KINL', 'KINW', 'KIPT', 'KISN', 'KLAF', 'KLEX', 'KLGB',
-    'KLMT', 'KLNK', 'KLWS', 'KLYH', 'KMCN', 'KMEI', 'KMGM',
-    'KMGW', 'KMHK', 'KMKC', 'KMKE', 'KMKG', 'KMLS', 'KMOD', 'KMRY', 'KMSN',
-    'KMYR', 'KNBC', 'KOAK', 'KOFK', 'KOLM', 'KORF', 'KPGA',
-    'KPHL', 'KPIA', 'KPVD', 'KPWM', 'KRBL', 'KRDD', 'KRFD', 'KRIC',
-    'KRNO', 'KROA', 'KROC', 'KRST', 'KSAV', 'KSBN', 'KSCK', 'KSDF', 'KSEA',
-    'KSEZ', 'KSHR', 'KSLE', 'KSMP', 'KSNS', 'KSPI', 'KSPS', 'KSTC', 'KSTJ',
-    'KSUX', 'KSXT', 'KTRM', 'KTUP', 'KTYS', 'KUIL',
-    'KUKI', 'KVCT', 'KVTN', 'KWAL', 'KXMR', 'KYKM', 'KYUM',
-    'PAFA', 'PHLI', 'PHNL', 'PHTO', 'PTKK', 'PTPN', 'PTRO', 'PTYA', 'KCEC',
-    'KMHS', 'KRDM', 'KSJC', 'KSMX', 'PADK', 'KAUO', 'KAWO', 'KVBG', 'KEDW',
-    'KPRC', 'KVPS', 'KAPG', 'KGBN', 'KNGU', 'PAJN', 'KCQC', 'KGDP', 'KGNT',
-    'KGUY', 'KMWT', 'KNMT', 'KOQT', 'KRAM', 'KROW', 'KRTN', 'PKMJ',
-    'PKWA', 'PWAK', 'PAVD', 'PGSN', 'KASD', 'KBUO', 'KCHO', 'KCZK', 'KGFL',
-    'KHMM', 'KJNW', 'KLVM', 'KMLD', 'KMRB', 'KSJX', 'KSOW', 'PKMR']
+    "KABE",
+    "KABI",
+    "KACT",
+    "KACY",
+    "KADG",
+    "KAGS",
+    "KAPN",
+    "KARB",
+    "KAVL",
+    "KBDL",
+    "KBDR",
+    "KBIX",
+    "KBKW",
+    "KBLU",
+    "KBNO",
+    "KBTM",
+    "KBTR",
+    "KBWI",
+    "KBZN",
+    "KCMH",
+    "KCNK",
+    "KCNU",
+    "KCON",
+    "KCOU",
+    "KCRW",
+    "KCVG",
+    "KDAY",
+    "KDMO",
+    "KDRT",
+    "KEAT",
+    "KEKN",
+    "KELY",
+    "KEVV",
+    "KEWR",
+    "KFAR",
+    "KFMY",
+    "KFNT",
+    "KFOK",
+    "KFSM",
+    "KFTW",
+    "KFWA",
+    "KGCN",
+    "KGEG",
+    "KGLS",
+    "KGRI",
+    "KGSO",
+    "KGTF",
+    "KHAF",
+    "KHFD",
+    "KHMS",
+    "KHON",
+    "KHTS",
+    "KHUF",
+    "KHVR",
+    "KIAD",
+    "KILG",
+    "KINL",
+    "KINW",
+    "KIPT",
+    "KISN",
+    "KLAF",
+    "KLEX",
+    "KLGB",
+    "KLMT",
+    "KLNK",
+    "KLWS",
+    "KLYH",
+    "KMCN",
+    "KMEI",
+    "KMGM",
+    "KMGW",
+    "KMHK",
+    "KMKC",
+    "KMKE",
+    "KMKG",
+    "KMLS",
+    "KMOD",
+    "KMRY",
+    "KMSN",
+    "KMYR",
+    "KNBC",
+    "KOAK",
+    "KOFK",
+    "KOLM",
+    "KORF",
+    "KPGA",
+    "KPHL",
+    "KPIA",
+    "KPVD",
+    "KPWM",
+    "KRBL",
+    "KRDD",
+    "KRFD",
+    "KRIC",
+    "KRNO",
+    "KROA",
+    "KROC",
+    "KRST",
+    "KSAV",
+    "KSBN",
+    "KSCK",
+    "KSDF",
+    "KSEA",
+    "KSEZ",
+    "KSHR",
+    "KSLE",
+    "KSMP",
+    "KSNS",
+    "KSPI",
+    "KSPS",
+    "KSTC",
+    "KSTJ",
+    "KSUX",
+    "KSXT",
+    "KTRM",
+    "KTUP",
+    "KTYS",
+    "KUIL",
+    "KUKI",
+    "KVCT",
+    "KVTN",
+    "KWAL",
+    "KXMR",
+    "KYKM",
+    "KYUM",
+    "PAFA",
+    "PHLI",
+    "PHNL",
+    "PHTO",
+    "PTKK",
+    "PTPN",
+    "PTRO",
+    "PTYA",
+    "KCEC",
+    "KMHS",
+    "KRDM",
+    "KSJC",
+    "KSMX",
+    "PADK",
+    "KAUO",
+    "KAWO",
+    "KVBG",
+    "KEDW",
+    "KPRC",
+    "KVPS",
+    "KAPG",
+    "KGBN",
+    "KNGU",
+    "PAJN",
+    "KCQC",
+    "KGDP",
+    "KGNT",
+    "KGUY",
+    "KMWT",
+    "KNMT",
+    "KOQT",
+    "KRAM",
+    "KROW",
+    "KRTN",
+    "PKMJ",
+    "PKWA",
+    "PWAK",
+    "PAVD",
+    "PGSN",
+    "KASD",
+    "KBUO",
+    "KCHO",
+    "KCZK",
+    "KGFL",
+    "KHMM",
+    "KJNW",
+    "KLVM",
+    "KMLD",
+    "KMRB",
+    "KSJX",
+    "KSOW",
+    "PKMR",
+]
 
 
 def main(argv):
     """Go Main Go."""
     table = argv[1]
     nt = NetworkTable(["WFO", "RFC", "NWS", "NCEP", "CWSU", "WSO"])
-    pgconn = get_dbconn('afos', user='mesonet')
-    mpgconn = get_dbconn('mesosite')
+    pgconn = get_dbconn("afos", user="mesonet")
+    mpgconn = get_dbconn("mesosite")
     cursor = pgconn.cursor()
     mcursor = mpgconn.cursor()
-    df = read_sql("""
-        SELECT source, count(*) from """ + table + """
+    df = read_sql(
+        """
+        SELECT source, count(*) from """
+        + table
+        + """
         WHERE source is not null GROUP by source ORDER by source
-    """, pgconn, index_col='source')
+    """,
+        pgconn,
+        index_col="source",
+    )
     for source, row in df.iterrows():
-        if source[0] not in ['K', 'P']:
+        if source[0] not in ["K", "P"]:
             continue
         if source in UNKNOWN:
             continue
-        iemsource = source[1:] if source[0] == 'K' else source
+        iemsource = source[1:] if source[0] == "K" else source
         if iemsource in nt.sts:
             continue
         if source in XREF:
-            cursor.execute("""
-                UPDATE """ + table + """ SET source = %s WHERE source = %s
-            """, (XREF[source], source))
-            print(("Correcting %s -> %s, %s rows"
-                   ) % (source, XREF[source], cursor.rowcount))
+            cursor.execute(
+                """
+                UPDATE """
+                + table
+                + """ SET source = %s WHERE source = %s
+            """,
+                (XREF[source], source),
+            )
+            print(
+                ("Correcting %s -> %s, %s rows")
+                % (source, XREF[source], cursor.rowcount)
+            )
         else:
-            if row['count'] < 10:
-                print("skipping %s as row count is low" % (source, ))
+            if row["count"] < 10:
+                print("skipping %s as row count is low" % (source,))
                 continue
-            mcursor.execute("""
+            mcursor.execute(
+                """
                 WITH centers as (
                     select id, geom::geography from stations where network in
                     ('WFO', 'RFC', 'NWS', 'NCEP', 'CWSU', 'WSO')
@@ -173,17 +343,20 @@ def main(argv):
                 )
                 SELECT c.id as center, st_distance(c.geom, a.geom)
                 from centers c, asos a ORDER by st_distance ASC
-            """, (iemsource, ))
+            """,
+                (iemsource,),
+            )
             if mcursor.rowcount < 5:
-                print("Source: %s is double unknown" % (source, ))
+                print("Source: %s is double unknown" % (source,))
                 continue
             for i, row2 in enumerate(mcursor):
                 print("%s %s %.2f" % (source, row2[0], row2[1]))
                 if i > 4:
                     break
             newval = input(
-                "What do you want to do with %s (count:%s)? " % (
-                    source, row['count']))
+                "What do you want to do with %s (count:%s)? "
+                % (source, row["count"])
+            )
             if len(newval) == 4:
                 XREF[source] = newval
             else:
@@ -195,5 +368,5 @@ def main(argv):
     pgconn.commit()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)

@@ -118,19 +118,30 @@ import pandas as pd
 import StringIO
 import matplotlib.pyplot as plt
 
-df = pd.read_csv(StringIO.StringIO(txt.replace(" ", "")), sep='|')
-df.columns = ['states', 'date']
-df2 = df.groupby('states').count()
+df = pd.read_csv(StringIO.StringIO(txt.replace(" ", "")), sep="|")
+df.columns = ["states", "date"]
+df2 = df.groupby("states").count()
 data = {}
 for i, row in df2.iterrows():
-  data[i] = row['date']
+    data[i] = row["date"]
 print data
 
-m = MapPlot(sector='conus', title='Days with Tornado *Watch* & Winter Storm or Blizzard Warning', subtitle='1 Oct 2005 - 24 Mar 2016 :: # of Dates with both alerts active within the same state at the same time', axisbg='white')
+m = MapPlot(
+    sector="conus",
+    title="Days with Tornado *Watch* & Winter Storm or Blizzard Warning",
+    subtitle="1 Oct 2005 - 24 Mar 2016 :: # of Dates with both alerts active within the same state at the same time",
+    axisbg="white",
+)
 
-cmap = plt.get_cmap('jet')
-cmap.set_over('black')
-cmap.set_under('white')
-m.fill_states(data, bins=[0, 1, 2, 3, 4, 5, 6, 7, 10, 15, 20], units='count', ilabel=True, cmap=cmap)
+cmap = plt.get_cmap("jet")
+cmap.set_over("black")
+cmap.set_under("white")
+m.fill_states(
+    data,
+    bins=[0, 1, 2, 3, 4, 5, 6, 7, 10, 15, 20],
+    units="count",
+    ilabel=True,
+    cmap=cmap,
+)
 
-m.postprocess(filename='states.png')
+m.postprocess(filename="states.png")

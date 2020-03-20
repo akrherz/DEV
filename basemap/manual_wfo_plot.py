@@ -1,4 +1,5 @@
 from pyiem.plot import MapPlot, james
+
 """
  select substr(roomname, 1, 3) as wfo, count(*) / 91. as cnt from chatroomlog
  where ts > '2015-10-21' and sender != 'nwsbot@nwschat.weather.gov/twisted_words'
@@ -156,10 +157,19 @@ for line in data.split("\n"):
     tokens = line.split()
     d[tokens[0].upper()] = float(tokens[1])
 
-m = MapPlot(sector='nws', axisbg='white', nologo=True,
-            subtitle='Main NWS WFO Rooms Only, NWSBot messages not included', caption='@akrherz',
-            title='22 Oct 2015 - 21 Jan 2016 NWSChat Avg Number of Room Messages per Day')
-m.fill_cwas(d, lblformat='%.1f', ilabel=True, cmap=james(),
-            bins=[0, 0.5, 1, 1.5, 2, 3, 4, 5, 10, 15, 20, 40])
-m.postprocess(filename='test.png')
-
+m = MapPlot(
+    sector="nws",
+    axisbg="white",
+    nologo=True,
+    subtitle="Main NWS WFO Rooms Only, NWSBot messages not included",
+    caption="@akrherz",
+    title="22 Oct 2015 - 21 Jan 2016 NWSChat Avg Number of Room Messages per Day",
+)
+m.fill_cwas(
+    d,
+    lblformat="%.1f",
+    ilabel=True,
+    cmap=james(),
+    bins=[0, 0.5, 1, 1.5, 2, 3, 4, 5, 10, 15, 20, 40],
+)
+m.postprocess(filename="test.png")

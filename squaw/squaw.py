@@ -32,8 +32,20 @@ ax.set_title("Ames Squaw Creek at Lincoln Way (1991-2012)")
 ax.set_ylabel("Water Flow [cfs], log scale")
 ax.set_xticks((1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 365))
 ax.set_xticklabels(
-    ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
-     "Nov", "Dec")
+    (
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+    )
 )
 ax.set_xlim(0, 366)
 ax.set_yscale("log")

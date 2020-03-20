@@ -10,26 +10,27 @@ from pyiem.meteorology import dewpoint
 from pyiem.datatypes import temperature, humidity
 
 txt2drct = {
-    'N': '360',
-    'North': '360',
-    'NNE': '25',
-    'NE': '45',
-    'ENE': '70',
-    'E': '90',
-    'East': '90',
-    'ESE': '115',
-    'SE': '135',
-    'SSE': '155',
-    'S': '180',
-    'South': '180',
-    'SSW': '205',
-    'SW': '225',
-    'WSW': '250',
-    'W': '270',
-    'West': '270',
-    'WNW': '295',
-    'NW': '315',
-    'NNW': '335'}
+    "N": "360",
+    "North": "360",
+    "NNE": "25",
+    "NE": "45",
+    "ENE": "70",
+    "E": "90",
+    "East": "90",
+    "ESE": "115",
+    "SE": "135",
+    "SSE": "155",
+    "S": "180",
+    "South": "180",
+    "SSW": "205",
+    "SW": "225",
+    "WSW": "250",
+    "W": "270",
+    "West": "270",
+    "WNW": "295",
+    "NW": "315",
+    "NNW": "335",
+}
 
 
 def main():
@@ -44,10 +45,10 @@ def main():
     lines = []
     now = datetime.datetime(2018, 4, 13, 0, 0)
 
-    for line in open('jefferson.txt'):
+    for line in open("jefferson.txt"):
         if line.find("Min") > 0 or line.find("Max") > 0:
             continue
-        ts = datetime.datetime.strptime(line[7:21], '%H:%M %m/%d/%y')
+        ts = datetime.datetime.strptime(line[7:21], "%H:%M %m/%d/%y")
         if len(lines) == 0:
             now = ts
         if ts == now:
@@ -61,8 +62,9 @@ def main():
             t = float(line[42:45])
             rhval = float(line[47:50])
             tmpf.append(t)
-            dwpf.append(dewpoint(temperature(t, 'F'),
-                                 humidity(rhval, '%')).value("F"))
+            dwpf.append(
+                dewpoint(temperature(t, "F"), humidity(rhval, "%")).value("F")
+            )
             pres.append(float(line[52:57]) * 33.86375)
             sped.append(float(line[26:28]))
             pday.append(float(line[59:64]))
@@ -96,20 +98,20 @@ def main():
             zorder=1)
     ax[0].add_patch( fancybox)
     """
-    ax[0].plot(valid, np.array(tmpf), label='Air')
+    ax[0].plot(valid, np.array(tmpf), label="Air")
     # print("%s %s" % (tmpf, max(tmpf)))
-    ax[0].plot(valid, np.array(dwpf), color='g', label='Dew Point')
+    ax[0].plot(valid, np.array(dwpf), color="g", label="Dew Point")
     # ax[0].set_ylim(40, 92)
     ax[1].scatter(valid, drct, zorder=2)
     ax2 = ax[1].twinx()
-    ax2.plot(valid, sped, 'r')
+    ax2.plot(valid, sped, "r")
     ax2.set_ylabel("Wind Speed [mph]")
 
-    ax[2].plot(valid, pres, 'b', label="Pressure [mb]")
+    ax[2].plot(valid, pres, "b", label="Pressure [mb]")
     ax[2].set_ylim(1006, 1014)
-    #ax3 = ax[2].twinx()
-    #ax3.plot(valid, pday, 'r')
-    #ax3.set_ylabel("Daily Precip [inch]")
+    # ax3 = ax[2].twinx()
+    # ax3.plot(valid, pday, 'r')
+    # ax3.set_ylabel("Daily Precip [inch]")
 
     ax[0].set_xticks(xticks)
     ax[0].set_xticklabels(xticklabels)
@@ -123,25 +125,25 @@ def main():
     ax[2].grid(True)
     ax[0].set_title("Jefferson SchoolNet8 Site (~ $\Delta$6 second data)")
     ax[2].set_xlabel("Afternoon of 13 Apr 2018")
-    #ax[2].set_ylabel("Pressure [mb]")
-    #[t.set_color('red') for t in ax3.yaxis.get_ticklines()]
-    #[t.set_color('red') for t in ax3.yaxis.get_ticklabels()]
-    [t.set_color('red') for t in ax2.yaxis.get_ticklines()]
-    [t.set_color('red') for t in ax2.yaxis.get_ticklabels()]
-    [t.set_color('b') for t in ax[2].yaxis.get_ticklines()]
-    [t.set_color('b') for t in ax[2].yaxis.get_ticklabels()]
-    #[t.set_color('b') for t in ax[0].yaxis.get_ticklines()]
-    #[t.set_color('b') for t in ax[0].yaxis.get_ticklabels()]
-    [t.set_color('b') for t in ax[1].yaxis.get_ticklines()]
-    [t.set_color('b') for t in ax[1].yaxis.get_ticklabels()]
+    # ax[2].set_ylabel("Pressure [mb]")
+    # [t.set_color('red') for t in ax3.yaxis.get_ticklines()]
+    # [t.set_color('red') for t in ax3.yaxis.get_ticklabels()]
+    [t.set_color("red") for t in ax2.yaxis.get_ticklines()]
+    [t.set_color("red") for t in ax2.yaxis.get_ticklabels()]
+    [t.set_color("b") for t in ax[2].yaxis.get_ticklines()]
+    [t.set_color("b") for t in ax[2].yaxis.get_ticklabels()]
+    # [t.set_color('b') for t in ax[0].yaxis.get_ticklines()]
+    # [t.set_color('b') for t in ax[0].yaxis.get_ticklabels()]
+    [t.set_color("b") for t in ax[1].yaxis.get_ticklines()]
+    [t.set_color("b") for t in ax[1].yaxis.get_ticklabels()]
     ax[1].set_ylabel("Wind Direction")
     ax[0].set_ylabel("Temperature $^{\circ}\mathrm{F}$")
     ax[1].set_yticks(np.arange(0, 361, 90))
     ax[1].set_ylim(0, 361)
-    ax[1].set_yticklabels(['N', 'E', 'S', 'W', 'N'])
+    ax[1].set_yticklabels(["N", "E", "S", "W", "N"])
     ax[2].set_ylim(min(pres) - 2, max(pres) + 4)
-    fig.savefig('test.png')
+    fig.savefig("test.png")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

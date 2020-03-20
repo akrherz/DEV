@@ -15,7 +15,7 @@ def main():
     )
     reg = requests.get(url)
     jsobj = reg.json()
-    for name in ['events', 'stormreports']:
+    for name in ["events", "stormreports"]:
         # This feels hacky, but I did not find another means yet to do it
         buf = BytesIO()
         buf.write(json.dumps(jsobj[name]).encode("ASCII"))
@@ -24,5 +24,5 @@ def main():
         events.to_file(name + ".shp")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -14,15 +14,16 @@ def main():
     while now < ets:
         print(now)
         mp = MapPlot(
-            sector='conus',
-            continentalcolor='white',
-            title='%s US Drought Monitor' % (now.strftime("%b %d %Y")))
+            sector="conus",
+            continentalcolor="white",
+            title="%s US Drought Monitor" % (now.strftime("%b %d %Y")),
+        )
         mp.draw_usdm(now)
-        mp.postprocess(filename="images/%05d.png" % (frame, ))
+        mp.postprocess(filename="images/%05d.png" % (frame,))
         mp.close()
         frame += 1
         now += interval
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

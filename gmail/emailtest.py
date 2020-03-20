@@ -7,14 +7,14 @@ import datetime
 
 def monthly_emails():
     """sent-mail totals."""
-    obj = imaplib.IMAP4_SSL('imap.gmail.com', 993)
-    obj.login('akrherz', input("Password is:"))
+    obj = imaplib.IMAP4_SSL("imap.gmail.com", 993)
+    obj.login("akrherz", input("Password is:"))
 
     now = datetime.datetime(2016, 9, 1)
     ets = datetime.datetime(2018, 9, 1)
 
     while now < ets:
-        fname = now.strftime('sent-mail-%b-%Y').lower()
+        fname = now.strftime("sent-mail-%b-%Y").lower()
         res, num = obj.select(fname)
         if num[0].find(b"NON") > 0:
             fname = "oldsent/%s" % (fname,)
@@ -39,25 +39,28 @@ def compute(to, cc):
                 res.append(base.strip())
     return res
 
+
 def blah():
     """Go."""
     obj.select("[Gmail]/All Mail")
-    typ, data = obj.search(None, '(to "ucar.edu") (from "akrherz@iastate.edu")')
+    typ, data = obj.search(
+        None, '(to "ucar.edu") (from "akrherz@iastate.edu")'
+    )
     counts = dict()
     for num in data[0].split():
-        typ, data = obj.fetch(num, '(RFC822)')
+        typ, data = obj.fetch(num, "(RFC822)")
         msg = email.message_from_string(data[0][1])
-        if msg['From'].find('akrherz@iastate.edu') == -1:
+        if msg["From"].find("akrherz@iastate.edu") == -1:
             # print msg['From']
             continue
-        for myto in compute(msg['To'], msg['Cc']):
+        for myto in compute(msg["To"], msg["Cc"]):
             if myto not in counts:
                 counts[myto] = 0
             counts[myto] += 1
-            print(num, myto, counts[myto], msg['Cc'])
+            print(num, myto, counts[myto], msg["Cc"])
 
     print(counts)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     monthly_emails()

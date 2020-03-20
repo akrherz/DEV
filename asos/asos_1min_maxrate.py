@@ -6,15 +6,15 @@ from numpy.lib import stride_tricks
 import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
 
-pgconn = get_dbconn('asos')
+pgconn = get_dbconn("asos")
 cursor = pgconn.cursor()
 
 basets = datetime.datetime(1999, 1, 1)
 basets = basets.replace(tzinfo=pytz.timezone("UTC"))
 
-#data = np.zeros((17*365*24*60), 'f')
+# data = np.zeros((17*365*24*60), 'f')
 #
-#cursor.execute("""SELECT valid at time zone 'UTC', precip from alldata_1minute
+# cursor.execute("""SELECT valid at time zone 'UTC', precip from alldata_1minute
 # WHERE station = 'MCW' and precip > 0""")
 """
 for row in cursor:
@@ -42,16 +42,16 @@ for i in x:
 
 np.savetxt('mcw.npyb', y)
 """
-xcid = range(1, 3*60+1)
-ycid = np.loadtxt('cid.npyb')
-xalo = range(1, 3*60+1)
-yalo = np.loadtxt('alo.npyb')
-xsux = range(1, 3*60+1)
-ysux = np.loadtxt('sux.npyb')
-xmcw = range(1, 3*60+1)
-ymcw = np.loadtxt('mcw.npyb')
-xdsm = range(1, 6*60+1)
-ydsm = np.loadtxt('dsm.npyb')
+xcid = range(1, 3 * 60 + 1)
+ycid = np.loadtxt("cid.npyb")
+xalo = range(1, 3 * 60 + 1)
+yalo = np.loadtxt("alo.npyb")
+xsux = range(1, 3 * 60 + 1)
+ysux = np.loadtxt("sux.npyb")
+xmcw = range(1, 3 * 60 + 1)
+ymcw = np.loadtxt("mcw.npyb")
+xdsm = range(1, 6 * 60 + 1)
+ydsm = np.loadtxt("dsm.npyb")
 
 
 (fig, ax) = plt.subplots(1, 1)
@@ -65,8 +65,10 @@ ax.set_xlim(0, 180)
 ax.legend(loc=4, ncol=2)
 ax.set_xticks(range(0, 181, 15))
 ax.grid(True)
-ax.set_title("2000-2015 Iowa Airport ASOS 1 Minute Precip\nPeak Accumulations over Window of Time")
+ax.set_title(
+    "2000-2015 Iowa Airport ASOS 1 Minute Precip\nPeak Accumulations over Window of Time"
+)
 ax.set_xlabel("Time Window in Minutes")
 ax.set_ylabel("Largest Accumulation [inch]")
 
-fig.savefig('test.png')
+fig.savefig("test.png")

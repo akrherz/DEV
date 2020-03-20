@@ -61,18 +61,26 @@ for line in data.split("\n"):
 
 (fig, ax) = plt.subplots(1, 1)
 
-ax.bar(x, y, align='center', fc='yellow')
+ax.bar(x, y, align="center", fc="yellow")
 for x0, y0 in zip(x, y):
-    ax.text(x0, y0 + 3, "%.0f%%" % (y0,), ha='center')
+    ax.text(x0, y0 + 3, "%.0f%%" % (y0,), ha="center")
 ax.set_xlim(0.5, 12.5)
 ax.grid(True)
 ax.set_xticks(x)
 ax.set_yticks([0, 5, 10, 25, 50, 75, 90, 95, 100])
 ax.set_xticklabels(calendar.month_abbr[1:])
-ax.set_title(("Percentage of County Based Severe T'Storm Warnings within\n"
-              "a SPC Severe T'storm or Tornado Watch (Oct 2005-Aug 2016)"))
+ax.set_title(
+    (
+        "Percentage of County Based Severe T'Storm Warnings within\n"
+        "a SPC Severe T'storm or Tornado Watch (Oct 2005-Aug 2016)"
+    )
+)
 
-fig.text(0.02, 0.02, "@akrherz Iowa Environmental Mesonet 11 August 2016",
-         fontsize=10)
+fig.text(
+    0.02,
+    0.02,
+    "@akrherz Iowa Environmental Mesonet 11 August 2016",
+    fontsize=10,
+)
 
-fig.savefig('test.png')
+fig.savefig("test.png")

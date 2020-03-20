@@ -4,15 +4,17 @@ import netCDF4
 from pyiem.util import get_dbconn
 from pyiem.plot import MapPlot
 
-COOP = get_dbconn('coop')
+COOP = get_dbconn("coop")
 cursor = COOP.cursor()
 
 total = None
 lats = None
 lons = None
 
-cursor.execute("""SELECT day, day + '1 day'::interval, high from alldata_ia where station = 'IA2203'
- and high > 99 and month = 8 and day > '1979-01-01' ORDER by day""")
+cursor.execute(
+    """SELECT day, day + '1 day'::interval, high from alldata_ia where station = 'IA2203'
+ and high > 99 and month = 8 and day > '1979-01-01' ORDER by day"""
+)
 xs = []
 ys = []
 xx = []
@@ -31,32 +33,43 @@ for row in cursor:
     o.close()
     """
 
-    nc = netCDF4.Dataset("data/hght12_%s.nc" % (row[0].strftime("%Y%m%d"),), 'r')
-    idx = np.digitize([500.0], nc.variables['isobaric'][:])[0]
-    mslp = nc.variables['Geopotential_height'][0,idx,:,:]
-    mx = np.max(mslp[mslp >0])
+    nc = netCDF4.Dataset(
+        "data/hght12_%s.nc" % (row[0].strftime("%Y%m%d"),), "r"
+    )
+    idx = np.digitize([500.0], nc.variables["isobaric"][:])[0]
+    mslp = nc.variables["Geopotential_height"][0, idx, :, :]
+    mx = np.max(mslp[mslp > 0])
     if total is None:
         total = mslp
-        lats = nc.variables['lat'][:]
-        lons = nc.variables['lon'][:]
+        lats = nc.variables["lat"][:]
+        lons = nc.variables["lon"][:]
     else:
         total += mslp
-    mlons = lons[mslp==mx]
-    mlats = lats[mslp==mx]
+    mlons = lons[mslp == mx]
+    mlats = lats[mslp == mx]
     if np.max(mlons) - np.min(mlons) < 10 and np.min(lats) - np.max(lats) < 10:
-        xs.append( np.average(mlons) )
-        ys.append( np.average(mlats) )
-        xx.append('X')
+        xs.append(np.average(mlons))
+        ys.append(np.average(mlats))
+        xx.append("X")
     else:
         print mlons, mlats
         print np.max(mlons) - np.min(mlons), np.min(lats) - np.max(lats)
     nc.close()
 
-m = MapPlot('conus', title='1979-2012 NCEP NARR Composite 500 hPa Geopotential Heights',
-            subtitle='12 UTC analysis for %s days in August where Des Moines hit 100+$^\circ$F High' % (cursor.rowcount,))
-m.pcolormesh(lons, lats, total / float(cursor.rowcount), np.arange(5650,5951,20),
-             units='meters')
-#x,y = m.map(xs,ys)
-#print xx
-m.plot_values(xs, ys, xx, '%s', textsize=16)
-m.postprocess(filename='test.png')
+m = MapPlot(
+    "conus",
+    title="1979-2012 NCEP NARR Composite 500 hPa Geopotential Heights",
+    subtitle="12 UTC analysis for %s days in August where Des Moines hit 100+$^\circ$F High"
+    % (cursor.rowcount,),
+)
+m.pcolormesh(
+    lons,
+    lats,
+    total / float(cursor.rowcount),
+    np.arange(5650, 5951, 20),
+    units="meters",
+)
+# x,y = m.map(xs,ys)
+# print xx
+m.plot_values(xs, ys, xx, "%s", textsize=16)
+m.postprocess(filename="test.png")

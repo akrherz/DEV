@@ -1,7 +1,8 @@
 import pytz
 import datetime
 from pyiem.util import get_dbconn
-pgconn = get_dbconn('mec', user='mesonet')
+
+pgconn = get_dbconn("mec", user="mesonet")
 cursor = pgconn.cursor()
 
 dates = """06-02-2008 00z - 06-07-2008 06z
@@ -21,32 +22,50 @@ dates = """06-14-2008 00z - 06-17-2008 00z
 dates = """08-25-2008 00z - 08-29-2008 00z
 03-03-2009 00z - 03-07-2009 00z"""
 
+
 def c(val):
     if val is None:
-        return 'M'
+        return "M"
     return val
+
 
 for line in dates.split("\n"):
     tokens = line.split(" - ")
-    sts = datetime.datetime.strptime(tokens[0][:12], '%m-%d-%Y %H')
+    sts = datetime.datetime.strptime(tokens[0][:12], "%m-%d-%Y %H")
     sts = sts.replace(tzinfo=pytz.timezone("UTC"))
-    ets = datetime.datetime.strptime(tokens[1][:12], '%m-%d-%Y %H')
+    ets = datetime.datetime.strptime(tokens[1][:12], "%m-%d-%Y %H")
     ets = ets.replace(tzinfo=pytz.timezone("UTC"))
-    output = open('extract/%s-%s.txt' % (sts.strftime("%Y%m%d%H%M"),
-                                         ets.strftime("%Y%m%d%H%M")), 'w')
-    output.write("utcvalid,avg_power,avg_windspeed,stddev_windspeed,count,avg_yaw\n")
-    cursor.execute("""
+    output = open(
+        "extract/%s-%s.txt"
+        % (sts.strftime("%Y%m%d%H%M"), ets.strftime("%Y%m%d%H%M")),
+        "w",
+    )
+    output.write(
+        "utcvalid,avg_power,avg_windspeed,stddev_windspeed,count,avg_yaw\n"
+    )
+    cursor.execute(
+        """
       select valid, avg(power), avg(windspeed), stddev(windspeed),
       count(*), avg(yaw2) from sampled_data 
       WHERE valid >= %s and valid < %s 
       and extract(minute from valid)::int %% 10 = 0 and power is not null
       and windspeed is not null GROUP by valid ORDER by valid ASC
-    """, (sts, ets))
+    """,
+        (sts, ets),
+    )
     print sts, ets, cursor.rowcount
     for row in cursor:
         ts = row[0].astimezone(pytz.timezone("UTC"))
-        output.write("%s,%s,%s,%s,%s,%s\n"  % ( 
-           ts.strftime("%Y-%m-%d %H:%M:%S"), 
-           c(row[1]), c(row[2]), c(row[3]), row[4], c(row[5]) ))
+        output.write(
+            "%s,%s,%s,%s,%s,%s\n"
+            % (
+                ts.strftime("%Y-%m-%d %H:%M:%S"),
+                c(row[1]),
+                c(row[2]),
+                c(row[3]),
+                row[4],
+                c(row[5]),
+            )
+        )
 
     output.close()

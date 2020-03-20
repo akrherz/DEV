@@ -6,7 +6,7 @@ for root, dirs, files in os.walk("."):
         lastline = ""
         dofile = False
         for line in open(localfn):
-            if line.strip() == '*' and lastline.strip() == '/**':
+            if line.strip() == "*" and lastline.strip() == "/**":
                 # if line.strip() == '-->' and lastline.strip() == '<!--':
                 # print localfn, line, lastline
                 dofile = True
@@ -14,9 +14,9 @@ for root, dirs, files in os.walk("."):
         if not dofile:
             continue
         lines = open(localfn).readlines()
-        o = open(localfn, 'w')
+        o = open(localfn, "w")
         for line in lines:
-            if line.strip() == '*' and lastline.strip() == '/**':
+            if line.strip() == "*" and lastline.strip() == "/**":
                 pass
             else:
                 o.write(line)
