@@ -16,10 +16,9 @@ from pyiem.plot.geoplot import MapPlot
 from pyiem.util import get_autoplot_context, get_dbconn
 
 
-
 def do_polygon(ctx):
     """polygon workflow"""
-    pgconn = get_dbconn('postgis')
+    pgconn = get_dbconn("postgis")
     griddelta = 0.02
     west = -134
     north = 49.5
@@ -30,10 +29,11 @@ def do_polygon(ctx):
     YSZ = len(lats)
     XSZ = len(lons)
     lons, lats = np.meshgrid(lons, lats)
-    affine = Affine(griddelta, 0., west, 0., 0 - griddelta, north)
+    affine = Affine(griddelta, 0.0, west, 0.0, 0 - griddelta, north)
     ones = np.ones((int(YSZ), int(XSZ)))
     counts = np.zeros((int(YSZ), int(XSZ)))
-    df = read_postgis("""
+    df = read_postgis(
+        """
     WITH data as (
         SELECT ST_Forcerhr(ST_Buffer(geom, 0.0005)) as geom,
         rank() OVER (
@@ -41,15 +41,25 @@ def do_polygon(ctx):
             ORDER by updated)
         from sbw where phenomena = 'FF' and is_emergency
     ) select * from data where rank = 1
-    """, pgconn, geom_col='geom', index_col=None)
+    """,
+        pgconn,
+        geom_col="geom",
+        index_col=None,
+    )
     # print df, sts, ets, west, east, south, north
-    zs = zonal_stats(df['geom'], ones, affine=affine, nodata=-1,
-                     all_touched=True, raster_out=True)
+    zs = zonal_stats(
+        df["geom"],
+        ones,
+        affine=affine,
+        nodata=-1,
+        all_touched=True,
+        raster_out=True,
+    )
     for i, z in enumerate(zs):
-        aff = z['mini_raster_affine']
+        aff = z["mini_raster_affine"]
         mywest = aff.c
         mynorth = aff.f
-        raster = np.flipud(z['mini_raster_array'])
+        raster = np.flipud(z["mini_raster_array"])
         x0 = int((mywest - west) / griddelta)
         y1 = int((mynorth - south) / griddelta)
         dy, dx = np.shape(raster)
@@ -64,11 +74,11 @@ def do_polygon(ctx):
     if maxv < 8:
         bins = np.arange(1, 8, 1)
     else:
-        bins = np.linspace(1, maxv + 3, 10, dtype='i')
-    ctx['bins'] = bins
-    ctx['data'] = counts
-    ctx['lats'] = lats
-    ctx['lons'] = lons
+        bins = np.linspace(1, maxv + 3, 10, dtype="i")
+    ctx["bins"] = bins
+    ctx["data"] = counts
+    ctx["lats"] = lats
+    ctx["lons"] = lons
 
 
 def plotter(ctx):
@@ -77,23 +87,44 @@ def plotter(ctx):
     do_polygon(ctx)
 
     m = MapPlot(
-        title='2009-2018 Flash Flood Emergency Polygon Heatmap',
-        sector='custom', axisbg='white',
-        # west=-107, south=25.5, east=-88, north=41,
+        title="2009-2019 Flash Flood Emergency Polygon Heatmap",
+        sector="custom",
+        axisbg="white",
+        west=-107,
+        south=25.5,
+        east=-88,
+        north=41,
         # west=-82, south=36., east=-68, north=48,
-        west=-85, south=31.8, north=45.2, east=-69,
-        subtitle='based on unofficial IEM Archives', nocaption=True)
-    cmap = plt.get_cmap('jet')
-    cmap.set_under('white')
-    cmap.set_over('black')
-    res = m.pcolormesh(ctx['lons'], ctx['lats'], ctx['data'],
-                       ctx['bins'], cmap=cmap, units='count')
+        # west=-85, south=31.8, north=45.2, east=-69,
+        subtitle="based on unofficial IEM Archives",
+        nocaption=True,
+    )
+    cmap = plt.get_cmap("jet")
+    cmap.set_under("white")
+    cmap.set_over("black")
+    res = m.pcolormesh(
+        ctx["lons"],
+        ctx["lats"],
+        ctx["data"],
+        ctx["bins"],
+        cmap=cmap,
+        units="count",
+    )
     # Cut down on SVG et al size
     res.set_rasterized(True)
 
-    m.postprocess(filename='test.png')
+    m.postprocess(filename="test.png")
 
 
-if __name__ == '__main__':
-    plotter(dict(geo='polygon', state='NM', phenomena='SV',
-                 significance='W', v='lastyear', year=1986, year2=2017))
+if __name__ == "__main__":
+    plotter(
+        dict(
+            geo="polygon",
+            state="NM",
+            phenomena="SV",
+            significance="W",
+            v="lastyear",
+            year=1986,
+            year2=2017,
+        )
+    )

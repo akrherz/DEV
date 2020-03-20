@@ -35,8 +35,7 @@ def main():
         figsize=(12.0, 9.0),
         title=("2003-2019 Flash Flood Emergency Events"),
         subtitle=(
-            "based on unofficial IEM archives, searching "
-            '"FFS", "FLW", "FFS".'
+            "based on unofficial IEM archives, searching " '"FFS", "FFS".'
         ),
     )
     mp.fill_cwas(
