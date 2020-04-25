@@ -32,7 +32,12 @@ def do(valid):
         if req.status_code != 200:
             print(f"missing {row[1]}")
             continue
-        cli = parser(noaaport_text(req.content.decode("ascii", "ignore")))
+        try:
+            cli = parser(noaaport_text(req.content.decode("ascii", "ignore")))
+        except Exception:
+            continue
+        if not cli.data:
+            continue
         hasdata = False
         vals = []
         for col in COLS:
