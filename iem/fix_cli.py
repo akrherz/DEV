@@ -5,6 +5,16 @@ import requests
 from pyiem.util import get_dbconn, noaaport_text
 from pyiem.nws.products.cli import parser
 
+COLS = [
+    "resultant_wind_speed",
+    "resultant_wind_direction",
+    "highest_wind_speed",
+    "highest_wind_direction",
+    "highest_gust_speed",
+    "highest_gust_direction",
+    "average_wind_speed",
+]
+
 
 def do(valid):
     """Process."""
@@ -13,24 +23,33 @@ def do(valid):
     cursor2 = dbconn.cursor()
     cursor.execute(
         "select station, product from cli_data WHERE valid = %s "
-        "and average_sky_cover is null",
+        "and average_wind_speed is null",
         (valid,),
     )
     for row in cursor:
         uri = f"http://iem.local/api/1/nwstext/{row[1]}"
         req = requests.get(uri)
-        if req.status_code == 404:
+        if req.status_code != 200:
             print(f"missing {row[1]}")
             continue
         cli = parser(noaaport_text(req.content.decode("ascii", "ignore")))
-        val = cli.data[0]["data"].get("average_sky_cover")
-        if val is None:
+        hasdata = False
+        vals = []
+        for col in COLS:
+            val = cli.data[0]["data"].get(col)
+            if val is not None:
+                hasdata = True
+            vals.append(val)
+        if not hasdata:
             continue
-        print(f"{row[0]} {valid} {val}")
+        print(f"{row[0]} {valid} {vals}")
         cursor2.execute(
-            "UPDATE cli_data SET average_sky_cover = %s WHERE "
+            "UPDATE cli_data SET resultant_wind_speed = %s, "
+            "resultant_wind_direction = %s, highest_wind_speed = %s, "
+            "highest_wind_direction = %s, highest_gust_speed = %s, "
+            "highest_gust_direction = %s, average_wind_speed = %s  WHERE "
             "station = %s and valid = %s",
-            (val, row[0], valid),
+            (*vals, row[0], valid),
         )
 
     cursor2.close()
