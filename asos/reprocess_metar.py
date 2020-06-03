@@ -5,12 +5,16 @@ from __future__ import print_function
 import datetime
 
 from metar.Metar import Metar
-from pyiem.util import get_dbconn, utc
+from pyiem.reference import TRACE_VALUE
+from pyiem.util import get_dbconn, utc, logger
+
+LOG = logger()
 
 
 def trace(val):
+    """Special METAR logic for trace."""
     if val.value("IN") == 0:
-        return 0.0001
+        return TRACE_VALUE
     return val.value("IN")
 
 
@@ -20,53 +24,44 @@ def main():
     icursor = pgconn.cursor()
     icursor2 = pgconn.cursor()
 
-    sts = utc(2019, 1, 18)
-    ets = utc(2019, 1, 21)
+    sts = utc(2006, 1, 1)
+    ets = utc(2007, 1, 1)
     interval = datetime.timedelta(days=1)
     now = sts
+    total = 0
     while now < ets:
         icursor.execute(
-            """
-      select valid, station, metar from t"""
-            + str(now.year)
-            + """
-      where metar is not null and valid >= %s and valid < %s
-      and metar ~* ' I[0-9]{4}'
-        """,
+            f"select valid, station, metar from t{now.year} "
+            "where metar is not null and valid >= %s and valid < %s "
+            "and station = 'MSP' and wxcodes is null",
             (now, now + interval),
         )
-        total = 0
         for row in icursor:
             try:
                 mtr = Metar(row[2], row[0].month, row[0].year)
-            except Exception as _exp:
+            except Exception as exp:
+                LOG.exception(exp)
                 continue
-            sql = "update t%s SET " % (now.year,)
-            if mtr.ice_accretion_1hr:
-                sql += "ice_accretion_1hr = %s," % (
-                    trace(mtr.ice_accretion_1hr),
-                )
-            if mtr.ice_accretion_3hr:
-                sql += "ice_accretion_3hr = %s," % (
-                    trace(mtr.ice_accretion_3hr),
-                )
-            if mtr.ice_accretion_6hr:
-                sql += "ice_accretion_6hr = %s," % (
-                    trace(mtr.ice_accretion_6hr),
-                )
-            if sql == "update t%s SET " % (now.year,):
+            if not mtr.weather:
                 continue
-            sql = "%s WHERE station = '%s' and valid = '%s'" % (
-                sql[:-1],
-                row[1],
-                row[0],
+            pwx = []
+            for wx in mtr.weather:
+                val = "".join([a for a in wx if a is not None])
+                if val in ["", len(val) * "/"]:
+                    continue
+                pwx.append(val)
+
+            # LOG.info("%s %s -> %s", row[0], row[1], pwx)
+            icursor2.execute(
+                f"update t{now.year} SET wxcodes = %s WHERE station = %s "
+                "and valid = %s",
+                (pwx, row[1], row[0]),
             )
-            print(sql)
-            icursor2.execute(sql)
             total += 1
             if total % 100 == 0:
-                print("Done total: %s now: %s" % (total, now))
+                LOG.info("Done total: %s now: %s", total, now)
                 pgconn.commit()
+                icursor2 = pgconn.cursor()
         now += interval
     icursor2.close()
     pgconn.commit()
