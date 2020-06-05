@@ -49,7 +49,7 @@ def main():
                 val = "".join([a for a in wx if a is not None])
                 if val in ["", len(val) * "/"]:
                     continue
-                pwx.append(val)
+                pwx.append(val[:12])
 
             # LOG.info("%s %s -> %s", row[0], row[1], pwx)
             icursor2.execute(
