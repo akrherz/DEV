@@ -16,7 +16,7 @@ def main():
     for linenum, line in enumerate(open("isd-history.txt")):
         if linenum < 24:
             continue
-        if line[91:95] != "2020":
+        if line[91:93] != "20":
             continue
         name = line[13:43].strip().replace("'", "")
         icao = line[51:55].strip()
