@@ -27,6 +27,8 @@ def compute_valid(utcnow, ddhhmm):
     """Figure out the time, sigh."""
     wmo_day = int(ddhhmm[:2])
     wmo_hour = int(ddhhmm[2:4])
+    if wmo_hour > 23:
+        wmo_hour = 0
     wmo_minute = int(ddhhmm[4:])
     res = utcnow.replace(hour=wmo_hour, minute=wmo_minute)
     if wmo_day == utcnow.day:
