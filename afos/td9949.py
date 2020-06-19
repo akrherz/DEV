@@ -56,8 +56,9 @@ def persist(cursor, record, utcnow):
     if len(record["text"]) < 20:
         print("LEN OF TEXT FAILED")
         return
+    text = record["text"].replace("\x00", "")
     # Check 1 we must match the WMO header
-    m = WMO_RE.match(record["text"])
+    m = WMO_RE.match(text)
     if not m:
         print(
             f"WMO_RE FAILED! {ord(record['text'][0])} "
@@ -78,7 +79,7 @@ def persist(cursor, record, utcnow):
         "INSERT into products (data, pil, entered, source, wmo) VALUES "
         "(%s, %s, %s, %s, %s)",
         (
-            noaaport_text(record["text"]),
+            noaaport_text(text),
             record["cccnnnxxx"][3:].strip(),
             valid,
             cccc,
@@ -98,7 +99,8 @@ def compute_utcnow(fn):
 def main(argv):
     """Go Main Go."""
     fn = argv[1]
-    utcnow = compute_utcnow(fn)
+    # utcnow = compute_utcnow(fn)
+    utcnow = utc(1983, 11, 8)
     dbconn = get_dbconn("afos")
     cursor = dbconn.cursor()
     fd = open(fn, "rb")
@@ -110,17 +112,10 @@ def main(argv):
             break
         # Ignore LTH and LAF
         record.read(29)
-
-        meat = (
-            record.read(284 - 29)
-            .decode("ascii", "replace")
-            .replace("\x00", "")
-        )
-        if len(meat) == 0:
-            continue
-        # If ETX is present, this terminates the ongoing product
-        etx = ord(meat[-1]) == 65533
-        meat = meat.replace("�", "")
+        meat = record.read(284 - 29)
+        # print([chr(a) for a in meat])
+        etx = b"\x83" in meat
+        # print(etx)
         # Attempt to compute a CCCNNNXXX, maybe unused for some
         cccnnnxxx = (
             b"".join(struct.unpack("9c", record.getvalue()[35:44]))
@@ -131,16 +126,16 @@ def main(argv):
             print("Found A")
             current = {
                 "cccnnnxxx": cccnnnxxx,
-                "text": meat[20:],  # -2 byte variance from docs
+                "text": meat[24:].decode("ascii", "ignore"),  # +2 ?
             }
         # Record type B (intermediate)
         elif not etx and current:
             print("Found B")
-            current["text"] += meat[2:]  # -1 byte variance from docs
+            current["text"] += meat[3:].decode("ascii", "ignore")
         # Record type C (last block)
         elif etx and current:
             print("Found C")
-            current["text"] += meat[2:-1]
+            current["text"] += meat[2:-1].decode("ascii", "ignore")
             persist(cursor, current, utcnow)
             current = {}
         # Record type D (single block)
@@ -148,7 +143,7 @@ def main(argv):
             print("Found D")
             current = {
                 "cccnnnxxx": cccnnnxxx,
-                "text": meat[20:-1],  # -2 byte variance from docs
+                "text": meat[22:-1].decode("ascii", "ignore"),  # 0
             }
             persist(cursor, current, utcnow)
             current = {}
