@@ -99,8 +99,8 @@ def compute_utcnow(fn):
 def main(argv):
     """Go Main Go."""
     fn = argv[1]
-    # utcnow = compute_utcnow(fn)
-    utcnow = utc(1983, 11, 8)
+    utcnow = compute_utcnow(fn)
+    # utcnow = utc(1983, 11, 8)
     dbconn = get_dbconn("afos")
     cursor = dbconn.cursor()
     fd = open(fn, "rb")
