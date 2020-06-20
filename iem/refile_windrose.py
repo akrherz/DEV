@@ -14,9 +14,8 @@ def main():
     pgconn = get_dbconn("mesosite")
     cursor = pgconn.cursor()
     cursor.execute(
-        """
-        SELECT id, network from stations where network ~* 'ASOS' or
-        network = 'AWOS' or network ~* 'DCP' ORDER by id ASC"""
+        "SELECT id, network from stations where network ~* 'ASOS' or "
+        "network = 'AWOS' or network ~* 'DCP' ORDER by id ASC"
     )
     for row in tqdm(cursor, total=cursor.rowcount):
         testfn = "%s/yearly/%s_yearly.png" % (OLDDIR, row[0])

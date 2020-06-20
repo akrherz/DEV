@@ -14,18 +14,17 @@ def main():
 
     # Get white christmases
     ccursor.execute(
-        """SELECT year from alldata_ia where sday = '1225' and
-    snowd >= 1 and station = 'IA2203' and year > 1894"""
+        "SELECT year from alldata_ia where sday = '1225' and "
+        "snowd >= 1 and station = 'IA2203' and year > 1894"
     )
 
     counts = np.zeros((60,), "f")
 
     for row in ccursor:
         ccursor2.execute(
-            """SELECT day, snowd from alldata_ia where
-        station = 'IA2203' and sday < '1225' and year = %s
-        and snowd is not null ORDER by day DESC
-        LIMIT 60""",
+            "SELECT day, snowd from alldata_ia where station = 'IA2203' and "
+            "sday < '1225' and year = %s and snowd is not null "
+            "ORDER by day DESC LIMIT 60",
             (row[0],),
         )
         idx = -2
@@ -66,7 +65,8 @@ def main():
     ax.grid(True)
     ax.set_ylabel("Frequency [%]")
     ax.set_title(
-        "Des Moines 1895-2018 White Christmas\nDate which snow cover (1+ inch) arrived"
+        "Des Moines 1895-2018 White Christmas\nDate which snow cover "
+        "(1+ inch) arrived"
     )
     ax.legend(loc=2)
 
