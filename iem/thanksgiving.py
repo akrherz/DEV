@@ -3,6 +3,8 @@ import sys
 
 import mx.DateTime
 from pyiem.util import get_dbconn
+import matplotlib.pyplot as plt
+import numpy
 
 COOP = get_dbconn("coop")
 ccursor = COOP.cursor()
@@ -18,9 +20,11 @@ for yr in range(1880, 2013):
     turkey = nov1 + mx.DateTime.RelativeDateTime(
         weekday=(mx.DateTime.Thursday, 4)
     )
-    sql = """SELECT avg((high+low)/2.0), avg(high) from alldata_ia 
-      WHERE station = '%s' and day <= '%s' and day >= '%s'::date - '%s days'::interval  
-      and year = %s """ % (
+    sql = """
+        SELECT avg((high+low)/2.0), avg(high) from alldata_ia
+        WHERE station = '%s' and day <= '%s' and
+        day >= '%s'::date - '%s days'::interval
+        and year = %s """ % (
         "IA2203",
         turkey,
         turkey,
@@ -30,9 +34,6 @@ for yr in range(1880, 2013):
     ccursor.execute(sql)
     row = ccursor.fetchone()
     days.append(row[1])
-
-import matplotlib.pyplot as plt
-import numpy
 
 days = numpy.array(days)
 
@@ -48,7 +49,7 @@ for rect in rects:
         rect.set_facecolor("r")
 ax.set_xlim(1879.5, 2012.5)
 ax.set_ylim(20, 70)
-ax.set_ylabel("Average High Temperature $^{\circ}\mathrm{F}$")
+ax.set_ylabel(r"Average High Temperature $^{\circ}\mathrm{F}$")
 ax.set_title(
     "Des Moines [1880-2012] Average High Temperature \n for week before Thanksgiving (inclusive)"
 )

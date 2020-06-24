@@ -44,8 +44,6 @@ for yr in range(1900, 2014):
         continue
     years.append(yr)
     lts2 = lts
-    print yr,
-    print lts,
     while (
         data["%s%02i%02i" % (lts2.year, lts2.month, lts2.day)]
         < climate51["%02i%02i" % (lts2.month, lts2.day)]
@@ -53,7 +51,6 @@ for yr in range(1900, 2014):
         lts2 -= datetime.timedelta(days=1)
     start.append(int((lts2 + datetime.timedelta(days=1)).strftime("%j")))
 
-    print lts2,
     lts2 = lts
     while (
         data["%s%02i%02i" % (lts2.year, lts2.month, lts2.day)]
@@ -61,7 +58,6 @@ for yr in range(1900, 2014):
     ):
         lts2 += datetime.timedelta(days=1)
     end.append(int((lts2).strftime("%j")))
-    print lts2
 
 start = numpy.array(start)
 end = numpy.array(end)

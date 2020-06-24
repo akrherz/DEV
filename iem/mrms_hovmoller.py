@@ -48,7 +48,6 @@ if not os.path.isfile("res.npy"):
         mm = np.where(np.logical_and(p1h >= 0, p1h < 100), p1h * 0.25, mm)
         res[i, :] = np.average(mm, 0)
         total += mm
-        print now, np.max(total), np.max(mm)
         now += interval
         i += 1
     np.save("res.npy", res)
@@ -128,7 +127,7 @@ ax[1].set_yticklabels(yticklabels, fontsize=10)
 ax[1].grid(True)
 ax[1].set_title("Hovmoller Diagram [inch/hr]")
 ax[1].set_xlabel(
-    ("Longitude [$^\circ$E] " "vertical lines are Iowa's east/west extent")
+    r"Longitude [$^\circ$E] vertical lines are Iowa's east/west extent"
 )
 
 fig.savefig("test.png")

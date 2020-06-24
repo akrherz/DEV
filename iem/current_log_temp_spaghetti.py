@@ -1,9 +1,9 @@
 import matplotlib.pyplot as plt
 import matplotlib.font_manager
 import numpy
-import psycopg2
+from pyiem.util import get_dbconn
 
-pgconn = psycopg2.connect(database="iem", host="iemdb", user="nobody")
+pgconn = get_dbconn("iem")
 cursor = pgconn.cursor()
 prop = matplotlib.font_manager.FontProperties(size=10)
 
@@ -83,7 +83,7 @@ for sid, color in zip(["ADU", "DSM", "MIW"], ["b", "r", "g"]):
     axes[1].plot(times, tmpf - dwpf, color=color, label="%s" % (names[sid],))
 ax.grid(True)
 axes[1].grid(True)
-axes[1].set_ylabel("Dew Point Depression $^{\circ}\mathrm{F}$")
+axes[1].set_ylabel(r"Dew Point Depression $^{\circ}\mathrm{F}$")
 ax.legend(loc=2, ncol=3, prop=prop)
 
 fig.savefig("test.png")

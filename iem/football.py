@@ -36,7 +36,6 @@ for line in data.split("\n"):
         (station, sts, ets),
     )
     row = cursor.fetchone()
-    print ts, station, row
     years.append(ts.year)
     tmpf.append(row[0])
     sknt.append(row[1] * 1.15)

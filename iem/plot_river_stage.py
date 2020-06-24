@@ -214,7 +214,6 @@ for ts, s, du, dv in zip(valid2["USIRGZ"], values2["USIRGZ"], u2, v2):
         + (ts - valid2["USIRGZ"][0]).seconds
     ) / dt
     if skip % 3 == 0:
-        print x, du, dv
         ax3.arrow(
             x,
             0.2,

@@ -1,10 +1,10 @@
-import mx.DateTime
-import iemdb
 import math
-import numpy
-from pyIEM import mesonet
 
-ASOS = iemdb.connect("asos", bypass=True)
+import mx.DateTime
+import numpy
+from pyiem.util import get_dbconn
+
+ASOS = get_dbconn("asos")
 acursor = ASOS.cursor()
 
 
@@ -91,13 +91,16 @@ for sdate, edate in DATES:
             ucnt += 1
         tot += h
         cnt += 1
-    print "%s %3s %4.1f %4.1f %4.1f %4.1f" % (
-        sdate.year,
-        cnt,
-        ttot / float(cnt),
-        tot / float(cnt),
-        utot / float(ucnt),
-        vtot / float(ucnt),
+    print(
+        "%s %3s %4.1f %4.1f %4.1f %4.1f"
+        % (
+            sdate.year,
+            cnt,
+            ttot / float(cnt),
+            tot / float(cnt),
+            utot / float(ucnt),
+            vtot / float(ucnt),
+        )
     )
     uwnd[sdate.year - 1973] = utot / float(ucnt) * 1.15
     hindex[sdate.year - 1973] = tot / float(cnt)

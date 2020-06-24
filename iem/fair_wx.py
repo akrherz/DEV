@@ -1,17 +1,14 @@
 """State Fair Wx"""
-from __future__ import print_function
 
 import mx.DateTime
-import psycopg2
 import numpy
 import numpy.ma
 import matplotlib.pyplot as plt
 import pandas as pd
+from pyiem.util import get_dbconn
 
-COOP = psycopg2.connect(database="coop", host="iemdb", user="nobody")
-ASOS = psycopg2.connect(
-    database="asos", host="localhost", port=5555, user="nobody"
-)
+COOP = get_dbconn("coop")
+ASOS = get_dbconn("asos")
 
 FAIRS = [
     [mx.DateTime.DateTime(1880, 9, 6), mx.DateTime.DateTime(1880, 9, 10)],
@@ -162,9 +159,7 @@ def main():
             """
             WITH hourly as (
                 SELECT date_trunc('hour', valid) as hr, max(tmpf) from
-                t"""
-            + str(sts.year)
-            + """ WHERE station = 'DSM' and
+                alldata WHERE station = 'DSM' and
                 valid between '%s 00:00' and '%s 00:00' and
                 extract(hour from valid) between 6 and 20
                 and dwpf is not null GROUP by hr
@@ -200,32 +195,47 @@ def main():
     fig.savefig("test.png")
 
 
+def main2():
+    """Legacy"""
+    (fig, ax) = plt.subplots(2, 1, sharex=True)
+    bars = ax[0].bar(
+        numpy.arange(1880, 2016) - 0.4, avgH, edgecolor="r", facecolor="r"
+    )
+    for bar in bars:
+        if bar.get_height() < avgHH:
+            bar.set_facecolor("b")
+            bar.set_edgecolor("b")
+    ax[0].bar(
+        numpy.arange(1942, 1946),
+        [110, 110, 110, 110],
+        fc="#EEEEEE",
+        ec="#EEEEEE",
+    )
+    ax[0].set_xlim(1879.5, 2015.5)
+    ax[0].set_ylim(70, 100)
+    ax[0].grid(True)
+    ax[0].set_title("Iowa State Fair Average Daily Temps (Des Moines wx site)")
+    ax[0].set_ylabel("High Temperature $^{\circ}\mathrm{F}$")
+
+    bars = ax[1].bar(
+        numpy.arange(1880, 2016) - 0.4, avgL, edgecolor="r", facecolor="r"
+    )
+    for bar in bars:
+        if bar.get_height() < avgLL:
+            bar.set_facecolor("b")
+            bar.set_edgecolor("b")
+    ax[1].bar(
+        numpy.arange(1942, 1946),
+        [110, 110, 110, 110],
+        fc="#EEEEEE",
+        ec="#EEEEEE",
+    )
+    ax[1].set_ylim(50, 75)
+    ax[1].grid(True)
+    ax[1].set_ylabel("Low Temperature $^{\circ}\mathrm{F}$")
+
+    fig.savefig("test.png")
+
+
 if __name__ == "__main__":
     main()
-
-"""
-(fig, ax) = plt.subplots(2,1, sharex=True)
-bars = ax[0].bar(numpy.arange(1880,2016)-0.4, avgH, edgecolor='r', facecolor='r')
-for bar in bars:
-    if bar.get_height() < avgHH:
-        bar.set_facecolor('b')
-        bar.set_edgecolor('b')
-ax[0].bar(numpy.arange(1942,1946), [110,110,110,110], fc='#EEEEEE', ec='#EEEEEE')
-ax[0].set_xlim(1879.5,2015.5)
-ax[0].set_ylim(70,100)
-ax[0].grid(True)
-ax[0].set_title("Iowa State Fair Average Daily Temps (Des Moines wx site)")
-ax[0].set_ylabel("High Temperature $^{\circ}\mathrm{F}$")
-
-bars = ax[1].bar(numpy.arange(1880,2016)-0.4, avgL, edgecolor='r', facecolor='r')
-for bar in bars:
-    if bar.get_height() < avgLL:
-        bar.set_facecolor('b')
-        bar.set_edgecolor('b')
-ax[1].bar(numpy.arange(1942,1946), [110,110,110,110], fc='#EEEEEE', ec='#EEEEEE')
-ax[1].set_ylim(50,75)
-ax[1].grid(True)
-ax[1].set_ylabel("Low Temperature $^{\circ}\mathrm{F}$")
-
-fig.savefig('test.png')
-"""

@@ -1,9 +1,11 @@
 # Compute mean depatures at or around a holiday
 
 import mx.DateTime
-import iemdb
+from pyiem.util import get_dbconn
+import matplotlib.pyplot as plt
+import numpy
 
-COOP = iemdb.connect("coop", bypass=True)
+COOP = get_dbconn("coop")
 ccursor = COOP.cursor()
 
 # climate = {}
@@ -33,8 +35,6 @@ for yr in range(1978, 2010):
 highs.append(25)
 lows.append(18)
 
-import matplotlib.pyplot as plt
-import numpy
 
 h = numpy.array(highs)
 l = numpy.array(lows)
@@ -54,11 +54,8 @@ mod_rects(rects)
 ax.set_xlim(1977.5, 2010.5)
 ax.set_xlabel("Year, * 2010 Data Forecasted")
 ax.set_title("Des Moines Thanksgiving High & Low Temperature")
-ax.set_ylabel("Temperature $^{\circ}\mathrm{F}$")
+ax.set_ylabel(r"Temperature $^{\circ}\mathrm{F}$")
 # ax.set_xticks( numpy.arange(1895,2015,5) )
 ax.grid(True)
 
 fig.savefig("test.png")
-
-# for i in range(7):
-#  print i, total_error[i] / 117.0, total_rain[i] / 117.0, total_snow[i] / 117.0

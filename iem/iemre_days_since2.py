@@ -19,9 +19,7 @@ m = MapPlot(
     subtitle="valid 4 July 2016: based on per calendar day estimated preciptation, GaugeCorr and RadarOnly products",
 )
 lon = np.append(nc.variables["lon"][:], [-80.5])
-print lon
 lat = np.append(nc.variables["lat"][:], [49.0])
-print lat
 x, y = np.meshgrid(lon, lat)
 cmap = nwsprecip()
 m.pcolormesh(x, y, grid, np.arange(0, 53, 7), cmap=cmap, units="days")

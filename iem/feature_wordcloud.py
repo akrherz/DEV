@@ -1,14 +1,12 @@
 """Word Cloud of IEM Features"""
-import psycopg2
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn
 
 
 def main():
     """Go!"""
-    pgconn = psycopg2.connect(
-        database="mesosite", host="iemdb", user="nobody", port=5555
-    )
+    pgconn = get_dbconn("mesosite")
     cursor = pgconn.cursor()
     data = ""
     cursor.execute("""SELECT story from feature""")

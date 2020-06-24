@@ -12,7 +12,6 @@ for yr in range(1971, 2011):
     labor = sep1 + mx.DateTime.RelativeDateTime(
         weekday=(mx.DateTime.Monday, 1)
     )
-    print labor
     acursor.execute(
         """
     SELECT avg(sknt), max(tmpf) from t%s WHERE station = 'DSM' and valid BETWEEN '%s 00:00' and '%s 00:00'
@@ -30,7 +29,6 @@ for yr in range(1971, 2011):
     years.append(yr)
     wind.append(row[0])
     highs.append(row[1])
-    print yr, row
 highs.append(73)
 wind.append(8)
 years.append(2011)

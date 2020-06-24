@@ -1,5 +1,4 @@
 import numpy
-import psycopg2
 from pyiem.util import get_dbconn
 
 COOP = get_dbconn("coop")
@@ -124,19 +123,15 @@ def runner(a, b):
         return
     # if numpy.min(us_table) > 3 and numpy.min(ia_table) > 3:
     #    return
-    print "_____________ %s %s ____________________" % (a, b)
-    print "IA  ABOVE  BELOW    US   ABOVE  BELOW"
-    print "D   %5.0f  %5.0f    D   %5.0f %5.0f" % (
-        ia_table[0, 0],
-        ia_table[0, 1],
-        us_table[0, 0],
-        us_table[0, 1],
+    print("_____________ %s %s ____________________" % (a, b))
+    print("IA  ABOVE  BELOW    US   ABOVE  BELOW")
+    print(
+        "D   %5.0f  %5.0f    D   %5.0f %5.0f"
+        % (ia_table[0, 0], ia_table[0, 1], us_table[0, 0], us_table[0, 1])
     )
-    print "R   %5.0f  %5.0f    R   %5.0f %5.0f" % (
-        ia_table[1, 0],
-        ia_table[1, 1],
-        us_table[1, 0],
-        us_table[1, 1],
+    print(
+        "R   %5.0f  %5.0f    R   %5.0f %5.0f"
+        % (ia_table[1, 0], ia_table[1, 1], us_table[1, 0], us_table[1, 1])
     )
 
 

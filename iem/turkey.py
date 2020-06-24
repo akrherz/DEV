@@ -17,26 +17,24 @@ EKDI4
 GRBI4
 
 """
-import pytz
-from pyiem.datatypes import distance
-import pyproj
 import datetime
+
+import pytz
+import pyproj
 from PIL import Image
 import numpy as np
-import psycopg2
-import matplotlib
-
-matplotlib.use("agg")
-import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn
+from pyiem.datatypes import distance
+from pyiem.plot.use_agg import plt
 from pyiem.plot import MapPlot, nwsprecip
-from pandas.io.sql import read_sql
 from pyiem.network import Table as NetworkTable
+from pandas.io.sql import read_sql
 
 p26915 = pyproj.Proj(init="EPSG:26915")
 central = pytz.timezone("America/Chicago")
 nt = NetworkTable("IA_DCP")
 
-pgconn = psycopg2.connect(database="hads", host="iemdb-hads", user="nobody")
+pgconn = get_dbconn("hads")
 
 df = read_sql(
     """
@@ -108,7 +106,6 @@ for station, name in zip(stations, names):
         slope = 0
     else:
         slope = drop / distance(dist, "MI").value("M") * 100
-    print station, drop, dist, slope, elev
     label = "%s %s %.1fh %.1fmph" % (station, name, offset, speed)
     ln = ax.plot(df2["valid"].values, df2["value"].values, lw=2, label=label)
     colors.append(plt.getp(ln[0], "c"))
