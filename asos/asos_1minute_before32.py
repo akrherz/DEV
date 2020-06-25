@@ -1,9 +1,9 @@
-import psycopg2
+"""Unsure."""
 import numpy
 import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
 
-ASOS = get_dbconn("asos")
+ASOS = get_dbconn("asos1min")
 acursor = ASOS.cursor()
 acursor2 = ASOS.cursor()
 
@@ -15,8 +15,13 @@ def do(station):
     tot_cnt = numpy.zeros((12 * 60), "f")
 
     acursor.execute(
-        """select date from (select date(valid), min(tmpf), max(tmpf) from alldata_1minute where station = '%s' and extract(month from valid) in (3,4) and tmpf BETWEEN -30 and 60 and extract(hour from valid) between 0 and 6 GROUP by date) as foo where min <= 32 and max > 32 """
-        % (station,)
+        "select date from (select date(valid), min(tmpf), max(tmpf) from "
+        "alldata_1minute where station = %s and "
+        "extract(month from valid) in (3,4) and "
+        "tmpf BETWEEN -30 and 60 and "
+        "extract(hour from valid) between 0 and 6 GROUP by date) as foo "
+        "where min <= 32 and max > 32",
+        (station,),
     )
 
     for row in acursor:
@@ -24,9 +29,10 @@ def do(station):
         sknt = numpy.zeros((12 * 60), "f")
         cnt = numpy.zeros((12 * 60), "f")
         acursor2.execute(
-            """SELECT valid + '3 hours'::interval, tmpf, sknt from t%s_1minute where
-  station = '%s' and valid + '3 hours'::interval BETWEEN '%s 00:00' and '%s 11:59' and tmpf between 10 and 89 ORDER by
-  valid ASC"""
+            "SELECT valid + '3 hours'::interval, tmpf, sknt from "
+            "t%s_1minute where station = '%s' and "
+            "valid + '3 hours'::interval BETWEEN '%s 00:00' and '%s 11:59' "
+            "and tmpf between 10 and 89 ORDER by valid ASC"
             % (
                 row[0].year,
                 station,
@@ -50,9 +56,6 @@ def do(station):
         )
         tot_sknt[-pos:] += sknt[:pos]
         tot_cnt[-pos:] += cnt[:pos]
-        print pos, tmpf[pos - 1], cnt[pos - 1], numpy.min(
-            tmpf[: (pos - 1)]
-        ), tmpf[(pos - 5) : pos], sknt[(pos - 5) : pos]
 
     return max_tmpf, tot_tmpf, tot_sknt, tot_cnt
 
@@ -71,7 +74,9 @@ ax.plot(
 # ax.plot( [0,720], [32,32], color='k')
 ax.set_ylabel("Mean Temperature $^{\circ}\mathrm{F}$")
 ax.set_title(
-    "March/April Radiational Cooling Events [2001-2011]\ntemp reaches 32$^{\circ}\mathrm{F}$ between 3-6 AM with winds below 5 knots"
+    "March/April Radiational Cooling Events [2001-2011]\n"
+    "temp reaches 32$^{\circ}\mathrm{F}$ between 3-6 AM "
+    "with winds below 5 knots"
 )
 ax.set_xlabel("Time before observation of 32$^{\circ}\mathrm{F}$")
 max_tmpf, tot_tmpf, tot_sknt, tot_cnt = do("ALO")

@@ -45,7 +45,8 @@ def main():
     ax.set_xlabel("Month of Year")
     ax.axhline(12 * 60, lw=1.5, color="k")
     ax.set_title(
-        "Time with Temperature above Daily Average (high+low)/2\nbased on 1 minute data for Des Moines 2000-2010"
+        "Time with Temperature above Daily Average (high+low)/2\n"
+        "based on 1 minute data for Des Moines 2000-2010"
     )
     ax.set_xticks(range(0, 12))
     ax.set_xticklabels(calendar.month_abbr[1:])

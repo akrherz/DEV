@@ -1,53 +1,51 @@
-import psycopg2
+"""Plot."""
 import datetime
+
+from pyiem.util import get_dbconn
 import numpy as np
 import matplotlib.pyplot as plt
-from pyiem.util import get_dbconn
 
-ASOS = get_dbconn("asos")
+ASOS = get_dbconn("asos1min")
 cursor = ASOS.cursor()
 
 
 def smooth(x, window_len=11, window="hanning"):
     if x.ndim != 1:
-        raise ValueError, "smooth only accepts 1 dimension arrays."
+        raise ValueError("smooth only accepts 1 dimension arrays.")
     if x.size < window_len:
-        raise ValueError, "Input vector needs to be bigger than window size."
+        raise ValueError("Input vector needs to be bigger than window size.")
     if window_len < 3:
         return x
-    if not window in ["flat", "hanning", "hamming", "bartlett", "blackman"]:
-        raise ValueError, "Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'"
+    if window not in ["flat", "hanning", "hamming", "bartlett", "blackman"]:
+        raise ValueError(
+            "Window not 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'"
+        )
     s = np.r_[
-        2 * x[0] - x[window_len - 1 :: -1], x, 2 * x[-1] - x[-1:-window_len:-1]
+        2 * x[0] - x[(window_len - 1) :: -1],
+        x,
+        2 * x[-1] - x[-1:-window_len:-1],
     ]
     if window == "flat":  # moving average
         w = np.ones(window_len, "d")
     else:
         w = eval("np." + window + "(window_len)")
     y = np.convolve(w / w.sum(), s, mode="same")
-    return y[window_len : -window_len + 1]
+    return y[window_len : (-window_len + 1)]
 
 
 def get_day(ts):
 
     cursor.execute(
-        """SELECT 
-    extract(hour from valid) * 60.0 +
-    extract(minute from valid), tmpf, valid from t"""
-        + str(ts.year)
-        + """_1minute
+        f"""SELECT extract(hour from valid) * 60.0 +
+    extract(minute from valid), tmpf, valid from t{ts.year}_1minute
     where station = 'DSM' and date(valid) = %s ORDER by valid ASC
     """,
         (ts,),
     )
     if cursor.rowcount < 60:
-        print ts
         cursor.execute(
-            """SELECT 
-    extract(hour from valid) * 60.0 +
-    extract(minute from valid), tmpf, valid from t"""
-            + str(ts.year)
-            + """
+            f"""SELECT extract(hour from valid) * 60.0 +
+    extract(minute from valid), tmpf, valid from t{ts.year}
     where station = 'DSM' and date(valid) = %s ORDER by valid ASC
     """,
             (ts,),
@@ -56,8 +54,6 @@ def get_day(ts):
     d = []
     t = []
     for row in cursor:
-        if row[1] > 99:
-            print row
         d.append(row[0])
         t.append(row[1])
 
@@ -85,7 +81,7 @@ ax.set_xticklabels(
 )
 ax.set_xlim(0, 1441)
 ax.set_title("Des Moines 26-28 August 2013 Temperature Timeseries")
-ax.set_ylabel("Temperature $^\circ$F")
+ax.set_ylabel(r"Temperature $^\circ$F")
 ax.set_xlabel("* Smooth applied to one minute time-series")
 
 fig.savefig("test.png")

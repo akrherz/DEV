@@ -1,10 +1,10 @@
 """
 Compute the amount of precipitation that falls during a SVR,TOR warning
 """
-import psycopg2
+
+from pyiem.util import get_dbconn
 import numpy
 import matplotlib.pyplot as plt
-from pyiem.util import get_dbconn
 
 POSTGIS = get_dbconn("postgis")
 pcursor = POSTGIS.cursor()
@@ -21,8 +21,8 @@ for year in range(2002, 2015):
     around = []
     pcursor.execute(
         """
-     select generate_series(issue, expire, '1 minute'::interval) from sbw_%s 
-     where wfo = 'DMX' and phenomena in ('SV','TO') and significance = 'W' 
+     select generate_series(issue, expire, '1 minute'::interval) from sbw_%s
+     where wfo = 'DMX' and phenomena in ('SV','TO') and significance = 'W'
      and status = 'NEW'
      and ST_Contains(geom, GeomFromEWKT('SRID=4326;POINT(-93.66308 41.53397)'))
     """
@@ -34,9 +34,9 @@ for year in range(2002, 2015):
 
     pcursor.execute(
         """
-     select generate_series(issue - '1 hour'::interval, 
-         expire + '1 hour'::interval, '1 minute'::interval) from sbw_%s 
-     where wfo = 'DMX' and phenomena in ('SV','TO') and significance = 'W' 
+     select generate_series(issue - '1 hour'::interval,
+         expire + '1 hour'::interval, '1 minute'::interval) from sbw_%s
+     where wfo = 'DMX' and phenomena in ('SV','TO') and significance = 'W'
      and status = 'NEW'
      and ST_Contains(geom, GeomFromEWKT('SRID=4326;POINT(-93.66308 41.53397)'))
     """
@@ -54,7 +54,6 @@ for year in range(2002, 2015):
         % (year,)
     )
 
-    print year, acursor.rowcount, len(warntimes), len(around)
     for row in acursor:
         if row[0] in warntimes:
             total_in[row[0].year - 2002] += row[1]
@@ -62,10 +61,6 @@ for year in range(2002, 2015):
             total_arr[row[0].year - 2002] += row[1]
         else:
             total_out[row[0].year - 2002] += row[1]
-
-print total_in
-print total_arr
-print total_out
 
 
 fig, ax = plt.subplots(2, 1, sharex=True)

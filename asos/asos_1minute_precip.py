@@ -10,7 +10,7 @@ from pyiem.util import utc, get_dbconn
 
 def main():
     """Go Main Go"""
-    pgconn = get_dbconn("asos")
+    pgconn = get_dbconn("asos1min")
     acursor = pgconn.cursor()
 
     sts = utc(2018, 7, 17, 18, 0)
@@ -85,14 +85,12 @@ def main():
         label="Hourly Rate over 1min",
         zorder=1,
     )
-    """
-    ax2 = ax.twinx()
-    ax2.set_ylabel("Precipitation Accumulation [inch]")
-    ax2.plot(np.arange(sz), prec, color='k', label="Accumulation", lw=2,
-             zorder=2)
-    ax2.set_ylim(0, 16)
-    ax2.set_yticks(range(0, 17, 2))
-    """
+    # ax2 = ax.twinx()
+    # ax2.set_ylabel("Precipitation Accumulation [inch]")
+    # ax2.plot(np.arange(sz), prec, color='k', label="Accumulation", lw=2,
+    #         zorder=2)
+    # ax2.set_ylim(0, 16)
+    # ax2.set_yticks(range(0, 17, 2))
     ax.plot(
         np.arange(sz),
         rate15,
