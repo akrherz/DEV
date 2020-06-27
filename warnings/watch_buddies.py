@@ -9,6 +9,7 @@ from pandas.io.sql import read_sql
 def main(argv):
     """Go Main Go."""
     wfo = argv[1]
+    name = argv[2]
     dbconn = get_dbconn("postgis")
     df = read_sql(
         "with dmx as ("
@@ -17,7 +18,7 @@ def main(argv):
         "and wfo = %s), "
         "other as (select distinct extract(year from expire) as year, eventid, "
         "wfo from warnings where phenomena = 'SV' and significance = 'A' "
-        "and wfo != 'HFO' and wfo != 'PDT') "
+        "and wfo != 'HFO') "
         "select d.wfo, count(*) from dmx x JOIN other d "
         "on (x.eventid = d.eventid and x.year = d.year) GROUP by d.wfo",
         dbconn,
@@ -29,7 +30,7 @@ def main(argv):
     mp = MapPlot(
         sector="nws",
         title=(
-            "NWS Huntsville shared Severe Thunderstorm Watch Events, "
+            f"NWS {name} shared Severe Thunderstorm Watch Events, "
             f"{selftotal} total"
         ),
         subtitle=(
