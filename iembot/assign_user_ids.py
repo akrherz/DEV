@@ -1,6 +1,6 @@
 """Update the database with the user's user_id."""
-import twitter
 from pyiem.util import get_dbconn, get_properties
+import twitter
 
 
 def main():
@@ -17,14 +17,12 @@ def main():
     cursor = pgconn.cursor()
     cursor2 = pgconn.cursor()
     cursor.execute(
-        """
-    SELECT screen_name from iembot_twitter_oauth where user_id is null
-    """
+        "SELECT screen_name from iembot_twitter_oauth where user_id is null"
     )
     for row in cursor:
         try:
             user_id = api.UsersLookup(screen_name=row[0])[0].id
-        except Exception as _exp:
+        except Exception:
             print("FAIL %s" % (row[0],))
             continue
         print("%s -> %s" % (row[0], user_id))

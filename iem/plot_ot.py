@@ -1,8 +1,7 @@
 """Generate a plot of an OT station for feature purposes"""
-from __future__ import print_function
 
+from pyiem.util import get_dbconn
 import numpy as np
-import psycopg2
 import pytz
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -11,9 +10,7 @@ from pandas.io.sql import read_sql
 
 def main():
     """Go Main Go"""
-    pgconn = psycopg2.connect(
-        database="other", host="localhost", user="nobody", port=5555
-    )
+    pgconn = get_dbconn("other")
     df = read_sql(
         """
     select valid, tmpf, sknt,

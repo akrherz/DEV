@@ -1,5 +1,4 @@
 """Create a plot of the X Hour interval precipitation"""
-from __future__ import print_function
 import os
 import sys
 import datetime
@@ -12,6 +11,7 @@ import pygrib
 from pyiem.datatypes import distance
 import pyiem.mrms as mrms
 from pyiem.plot import MapPlot, nwsprecip
+from pyiem.util import utc
 
 TMP = "/mesonet/tmp"
 DATES = """2015-06-03
@@ -97,9 +97,7 @@ def doit(ts, hours):
     subtitle = "Total up to %s" % (lts.strftime("%d %B %Y %I:%M %p %Z"),)
     mp = MapPlot(
         sector="midwest",
-        title=(
-            "NCEP MRMS Q3 (RADAR+GaugeCorr) %s Hour " "Precipitation [inch]"
-        )
+        title=("NCEP MRMS Q3 (RADAR+GaugeCorr) %s Hour Precipitation [inch]")
         % (hours,),
         subtitle=subtitle,
     )
@@ -122,7 +120,7 @@ def main2():
     """Hack from above"""
     for date in DATES.split("\n"):
         ts = datetime.datetime.strptime(date, "%Y-%m-%d")
-        ts = ts.replace(tzinfo=pytz.utc)
+        ts = ts.replace(tzinfo=pytz.UTC)
         for hr in [0, 3, 6, 9]:
             ts = ts.replace(hour=hr)
             doit(ts, 3)
@@ -131,18 +129,16 @@ def main2():
 def main():
     """Go main"""
     if len(sys.argv) == 7:
-        ts = datetime.datetime(
+        ts = utc(
             int(sys.argv[1]),
             int(sys.argv[2]),
             int(sys.argv[3]),
             int(sys.argv[4]),
             int(sys.argv[5]),
         )
-        ts = ts.replace(tzinfo=pytz.timezone("UTC"))
         doit(ts, int(sys.argv[6]))
     else:
-        ts = datetime.datetime.utcnow()
-        ts = ts.replace(tzinfo=pytz.timezone("UTC"))
+        ts = utc()
         doit(ts, int(sys.argv[1]))
 
 

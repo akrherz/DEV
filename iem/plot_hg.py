@@ -25,11 +25,17 @@ def get_station(station):
     return pd.DataFrame(rows)
 
 
-(fig, ax) = plt.subplots(1, 1)
+def main():
+    """Go Main Go."""
+    (fig, ax) = plt.subplots(1, 1)
 
-for station in ["MIWI4", "TMAI4", "TAMI4", "BPLI4", "MROI4"]:
-    df = get_station(station)
-    ax.plot(df["valid"], df["value"], label=station)
+    for station in ["MIWI4", "TMAI4", "TAMI4", "BPLI4", "MROI4"]:
+        df = get_station(station)
+        ax.plot(df["valid"], df["value"], label=station)
 
-ax.legend(loc="best")
-fig.savefig("test.png")
+    ax.legend(loc="best")
+    fig.savefig("test.png")
+
+
+if __name__ == "__main__":
+    main()

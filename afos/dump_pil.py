@@ -17,13 +17,8 @@ def main(argv):
             table = "products_%s_%s" % (year, seg)
             cursor = pgconn.cursor("streamer")
             cursor.execute(
-                """
-                SELECT data, entered at time zone 'UTC', source, pil
-                from """
-                + table
-                + """
-                WHERE substr(pil, 1, 3) in ('FFS', 'FFW')
-            """
+                "SELECT data, entered at time zone 'UTC', source, pil "
+                f"from {table} WHERE substr(pil, 1, 3) in ('FFS', 'FFW')"
             )
             for row in cursor:
                 mydir = "FFW_FFS/%s/%02i/%02i" % (

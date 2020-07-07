@@ -3,17 +3,17 @@
 """
 import sys
 
-import psycopg2
+from pyiem.util import get_dbconn
 
 
 def main(argv):
     """Do Stuff!"""
     awipsid = argv[1]
-    pgconn = psycopg2.connect(database="mesosite", host="iemdb")
+    pgconn = get_dbconn("mesosite")
     cursor = pgconn.cursor()
 
     # figure out our base XXX channels
-    cursor.execute("""SELECT id from iembot_channels where length(id) = 3""")
+    cursor.execute("SELECT id from iembot_channels where length(id) = 3")
     add_channels = []
     for row in cursor:
         add_channels.append("%s%s" % (awipsid, row[0]))
