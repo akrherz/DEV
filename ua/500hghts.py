@@ -5,27 +5,25 @@ import datetime
 
 import numpy as np
 from pyiem.plot.use_agg import plt
-from pyiem.datatypes import temperature
 from pyiem.util import get_dbconn
-
-ASOS = get_dbconn("asos")
-acursor = ASOS.cursor()
-
-POSTGIS = get_dbconn("postgis")
-pcursor = POSTGIS.cursor()
-
-rain500 = []
-raintmpf = []
-snow500 = []
-snowtmpf = []
 
 
 def run():
+    """Run()."""
+    ASOS = get_dbconn("asos")
+    acursor = ASOS.cursor()
+
+    POSTGIS = get_dbconn("postgis")
+    pcursor = POSTGIS.cursor()
+
     pcursor.execute(
         """
- select valid, max(case when p.pressure = 500 then height else 0 end) - min(case when p.pressure = 1000 then height else 9999 end) from raob_profile p JOIN raob_flights f on 
- (p.fid = f.fid) where f.station in ('KOAX', 'KOVN', 'KOMA')  and 
- p.pressure in (1000,500) and extract(hour from valid at time zone 'UTC') in (0,12)
+ select valid, max(case when p.pressure = 500 then height else 0 end) -
+ min(case when p.pressure = 1000 then height else 9999 end) from
+ raob_profile p JOIN raob_flights f on 
+ (p.fid = f.fid) where f.station in ('KOAX', 'KOVN', 'KOMA') and
+ p.pressure in (1000,500)
+ and extract(hour from valid at time zone 'UTC') in (0,12)
  GROUP by valid ORDER by valid ASC 
     """
     )
@@ -35,7 +33,8 @@ def run():
             """SELECT tmpf, p01i, presentwx from t"""
             + str(valid.year)
             + """
-        WHERE station = 'OMA' and valid BETWEEN %s and %s and presentwx is not null
+            WHERE station = 'OMA' and valid BETWEEN %s and %s
+            and presentwx is not null
         """,
             (
                 valid - datetime.timedelta(minutes=70),
@@ -68,36 +67,54 @@ def run():
     np.save("rain500", rain500)
 
 
-snowtmpf = np.load("snowtmpf.npy")
-snow500 = np.load("snow500.npy")
-rain500 = np.load("rain500.npy")
-raintmpf = np.load("raintmpf.npy")
+def main():
+    """Go Main Go."""
+
+    rain500 = []
+    raintmpf = []
+    snow500 = []
+    snowtmpf = []
+    snowtmpf = np.load("snowtmpf.npy")
+    snow500 = np.load("snow500.npy")
+    rain500 = np.load("rain500.npy")
+    raintmpf = np.load("raintmpf.npy")
+
+    (fig, ax) = plt.subplots(2, 1, sharex=True)
+
+    ax[0].scatter(
+        snowtmpf, snow500, marker="*", color="b", label="Snow", zorder=1
+    )
+    ax[0].set_title(
+        "1961-2013 Omaha 1000-500 hPa Thickness and 2m Temps\n"
+        "When Rain/Snow is reported within 1 Hour of sounding"
+    )
+    ax[0].set_ylim(4900, 6000)
+    ax[0].set_ylabel("1000-500 hPa Thickness [m]")
+    ax[0].axhline(5400, c="k")
+    ax[0].axvline(32, c="k")
+    ax[0].grid(True)
+    ax[0].legend(loc=2)
+    ax[0].text(33, 5050, r"32$^\circ$F")
+
+    ax[1].scatter(
+        raintmpf,
+        rain500,
+        facecolor="none",
+        edgecolor="g",
+        label="Rain",
+        zorder=2,
+    )
+    ax[1].set_ylim(4900, 6000)
+    ax[1].legend(loc=2)
+    ax[1].grid(True)
+    ax[1].set_xlabel("2 meter Air Temperature $^\circ$F")
+    ax[1].set_ylabel("1000-500 hPa Thickness [m]")
+    ax[1].axhline(5400, c="k")
+    ax[1].axvline(32, c="k")
+    ax[1].text(33, 5050, r"32$^\circ$F")
+
+    fig.savefig("test.png")
 
 
-(fig, ax) = plt.subplots(2, 1, sharex=True)
-
-ax[0].scatter(snowtmpf, snow500, marker="*", color="b", label="Snow", zorder=1)
-ax[0].set_title(
-    "1961-2013 Omaha 1000-500 hPa Thickness and 2m Temps\nWhen Rain/Snow is reported within 1 Hour of sounding"
-)
-ax[0].set_ylim(4900, 6000)
-ax[0].set_ylabel("1000-500 hPa Thickness [m]")
-ax[0].axhline(5400, c="k")
-ax[0].axvline(32, c="k")
-ax[0].grid(True)
-ax[0].legend(loc=2)
-ax[0].text(33, 5050, "32$^\circ$F")
-
-ax[1].scatter(
-    raintmpf, rain500, facecolor="none", edgecolor="g", label="Rain", zorder=2
-)
-ax[1].set_ylim(4900, 6000)
-ax[1].legend(loc=2)
-ax[1].grid(True)
-ax[1].set_xlabel("2 meter Air Temperature $^\circ$F")
-ax[1].set_ylabel("1000-500 hPa Thickness [m]")
-ax[1].axhline(5400, c="k")
-ax[1].axvline(32, c="k")
-ax[1].text(33, 5050, "32$^\circ$F")
-
-fig.savefig("test.png")
+if __name__ == "__main__":
+    main()
