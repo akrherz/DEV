@@ -1,15 +1,15 @@
 """Look into day to day changes in soil temperature"""
-from __future__ import print_function
-from pandas.io.sql import read_sql
+
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 import numpy as np
 from scipy import stats
-import matplotlib.pyplot as plt
-from pyiem.util import get_dbconn
+from pandas.io.sql import read_sql
 
 
 def magic(ax, xvals, yvals):
     """You can do magic"""
-    slope, intercept, r_value, p_value, std_err = stats.linregress(
+    slope, intercept, r_value, _p_value, _std_err = stats.linregress(
         xvals, yvals
     )
     ax.scatter(xvals, yvals)

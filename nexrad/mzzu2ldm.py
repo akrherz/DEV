@@ -37,7 +37,7 @@ def send2ldm(fn):
     subprocess.call(cmd, shell=True)
 
 
-def main(argv):
+def main(_argv):
     """ code entry """
     os.chdir(DIRNAME)
     # Get all files with name starting with MZZU

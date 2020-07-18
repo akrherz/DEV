@@ -1,27 +1,28 @@
 """
 Plot a comparison of MERRA Cloudiness Factor
 """
-import psycopg2
-import numpy
 import datetime
-import matplotlib.pyplot as plt
+
+from pyiem.network import Table as NetworkTable
+from pyiem.util import get_dbconn
+from pyiem.plot.use_agg import plt
+import numpy
 from scipy import stats
 
-ISUAG = psycopg2.connect(databse="isuag", host="iemdb")
+ISUAG = get_dbconn("isuag")
 icursor = ISUAG.cursor()
-COOP = psycopg2.connect(database="coop", host="iemdb")
+COOP = get_dbconn("coop")
 ccursor = COOP.cursor()
-from pyiem.network import Table as NetworkTable
 
 nt = NetworkTable("ISUAG")
 
 
 def do(station):
+    """Do."""
     csite = nt.sts[station]["climate_site"]
     data = {}
     icursor.execute(
-        """SELECT valid, c80 from daily where c80 > 0
-     and station = %s""",
+        "SELECT valid, c80 from daily where c80 > 0 and station = %s",
         (station,),
     )
     for row in icursor:
@@ -33,13 +34,13 @@ def do(station):
     minvalid = datetime.date(2013, 3, 1)
     maxvalid = datetime.date(1980, 1, 1)
     ccursor.execute(
-        """SELECT day, merra_srad, merra_srad_cs from 
-      alldata_ia where merra_srad_cs > 0 and merra_srad > 0 
+        """SELECT day, merra_srad, merra_srad_cs from
+      alldata_ia where merra_srad_cs > 0 and merra_srad > 0
       and station = %s """,
         (csite,),
     )
     for row in ccursor:
-        if data.has_key(row[0]):
+        if row[0] in data:
             cs = float(row[2])
             obs.append((cs - data[row[0]]) / cs)
             model.append((cs - float(row[1])) / cs)
@@ -55,7 +56,7 @@ def do(station):
 
     (fig, ax) = plt.subplots(1, 1)
     bias = numpy.average((model - obs))
-    h_slope, intercept, h_r_value, p_value, std_err = stats.linregress(
+    h_slope, intercept, h_r_value, _p_value, _std_err = stats.linregress(
         model, obs
     )
     ax.scatter(model, obs, color="tan", edgecolor="None")
@@ -70,7 +71,8 @@ def do(station):
         )
     )
     ax.plot([0, 1], [0, 1], lw=3, color="r", zorder=2, label="1to1")
-    # ax.plot([0,800], [0-bias,800-bias], lw=3,color='k', zorder=2, label='model bias = %.1f' % (bias,))
+    # ax.plot([0,800], [0-bias,800-bias], lw=3,color='k', zorder=2,
+    # label='model bias = %.1f' % (bias,))
     ax.plot(
         [0, 1],
         [intercept, intercept + 1.0 * h_slope],
@@ -87,7 +89,7 @@ def do(station):
         "/tmp/merra/%s.png" % (nt.sts[station]["name"].replace(" ", "_"),)
     )
     del fig
-    print "%-20s %.2f %.2f" % (nt.sts[station]["name"], bias, h_r_value ** 2)
+    print("%-20s %.2f %.2f" % (nt.sts[station]["name"], bias, h_r_value ** 2))
 
 
 for sid in nt.sts.keys():

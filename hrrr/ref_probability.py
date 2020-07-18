@@ -2,12 +2,12 @@
 import datetime
 import os
 
+from pyiem.plot import MapPlot
+from pyiem.util import utc
 import requests
 import pytz
 import pygrib
 import numpy as np
-from pyiem.plot import MapPlot
-from pyiem.util import utc
 
 
 def dl(valid):
@@ -18,10 +18,8 @@ def dl(valid):
         if os.path.isfile(fn):
             continue
         uri = ts.strftime(
-            (
-                "http://mesonet.agron.iastate.edu/archive/data/"
-                "%Y/%m/%d/model/hrrr/%H/hrrr.t%Hz.refd.grib2"
-            )
+            "http://mesonet.agron.iastate.edu/archive/data/"
+            "%Y/%m/%d/model/hrrr/%H/hrrr.t%Hz.refd.grib2"
         )
         try:
             with open(fn, "wb") as fh:

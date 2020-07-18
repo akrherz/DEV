@@ -1,27 +1,28 @@
 """
 Plot a comparison of NARR solar rad vs ISUAG
 """
-import psycopg2
-import numpy
 import datetime
-import matplotlib.pyplot as plt
+
+from pyiem.util import get_dbconn
+from pyiem.network import Table as NetworkTable
+from pyiem.plot.use_agg import plt
+import numpy
 from scipy import stats
 
-ISUAG = psycopg2.connect(databse="isuag", host="iemdb")
+ISUAG = get_dbconn("isuag")
 icursor = ISUAG.cursor()
-COOP = psycopg2.connect(database="coop", host="iemdb")
+COOP = get_dbconn("coop")
 ccursor = COOP.cursor()
-from pyiem.network import Table as NetworkTable
 
 nt = NetworkTable("ISUAG")
 
 
 def do(station):
+    """Do as I Say."""
     csite = nt.sts[station]["climate_site"]
     data = {}
     icursor.execute(
-        """SELECT valid, c80 from daily where c80 > 0
-     and station = %s""",
+        "SELECT valid, c80 from daily where c80 > 0 and station = %s",
         (station,),
     )
     for row in icursor:
@@ -87,7 +88,7 @@ def do(station):
 
     fig.savefig("%s.png" % (nt.sts[station]["name"].replace(" ", "_"),))
     del fig
-    print "%-20s %.1f %.2f" % (nt.sts[station]["name"], bias, h_r_value ** 2)
+    print("%-20s %.1f %.2f" % (nt.sts[station]["name"], bias, h_r_value ** 2))
 
 
 for sid in nt.sts.keys():

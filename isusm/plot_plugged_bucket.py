@@ -1,19 +1,18 @@
 """Illustration of plugged Tipping Bucket."""
 
-from pandas.io.sql import read_sql
-from matplotlib.dates import DateFormatter, DayLocator
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn
+from pandas.io.sql import read_sql
+from matplotlib.dates import DateFormatter, DayLocator
 
 
 def main():
     """Go Main Go."""
     pgconn = get_dbconn("isuag")
     df = read_sql(
-        """
-        SELECT valid, rain_mm_tot, rain_mm_tot_qc from sm_hourly WHERE
-        station = 'CIRI4' and valid > '2019-03-29' and valid < '2019-04-30' ORDER by valid ASC
-    """,
+        "SELECT valid, rain_mm_tot, rain_mm_tot_qc from sm_hourly WHERE "
+        "station = 'CIRI4' and valid > '2019-03-29' and "
+        "valid < '2019-04-30' ORDER by valid ASC",
         pgconn,
         index_col="valid",
     )

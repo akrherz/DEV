@@ -1,15 +1,13 @@
 """Histogram"""
-from __future__ import print_function
-import psycopg2
+
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 from pandas.io.sql import read_sql
-import matplotlib.pyplot as plt
 
 
 def main():
     """Do great things"""
-    pgconn = psycopg2.connect(
-        database="postgis", host="iemdb", user="nobody", port=5555
-    )
+    pgconn = get_dbconn("postgis")
     alldf = read_sql(
         """
     select drct / 15 as bindrct, count(*) from nexrad_attributes_log

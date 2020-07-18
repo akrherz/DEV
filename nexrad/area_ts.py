@@ -36,38 +36,50 @@ while (now < ets):
 
 
 """
+import datetime
+
+import pytz
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import datetime
-import pytz
 
-x = []
-y = []
-for line in open("area.txt"):
-    tokens = line.split(",")
-    ts = datetime.datetime.strptime(tokens[0], "%Y%m%d%H%M")
-    ts = ts.replace(tzinfo=pytz.timezone("UTC"))
-    x.append(ts)
-    y.append(float(tokens[1]))
 
-(fig, ax) = plt.subplots(1, 1)
+def main():
+    """Go Main Go."""
+    x = []
+    y = []
+    for line in open("area.txt"):
+        tokens = line.split(",")
+        ts = datetime.datetime.strptime(tokens[0], "%Y%m%d%H%M")
+        ts = ts.replace(tzinfo=pytz.UTC)
+        x.append(ts)
+        y.append(float(tokens[1]))
 
-ax.plot(x, y)
-ax.set_ylabel("Percent Coverage over Iowa [%]")
-ax.set_title("7 April 2014 - Iowa Areal Coverage of 10+ dBZ Reflectivity")
-ax.xaxis.set_major_formatter(
-    mdates.DateFormatter("%-I:%M\n%p", tz=pytz.timezone("America/Chicago"))
-)
-ax.grid(True)
-ax.text(
-    0.2, 0.15, "Morning Storm\nShowers", transform=ax.transAxes, ha="center"
-)
-ax.text(
-    0.75,
-    0.15,
-    "Afternoon Instability\nShowers",
-    transform=ax.transAxes,
-    ha="center",
-)
+    (fig, ax) = plt.subplots(1, 1)
 
-fig.savefig("test.png")
+    ax.plot(x, y)
+    ax.set_ylabel("Percent Coverage over Iowa [%]")
+    ax.set_title("7 April 2014 - Iowa Areal Coverage of 10+ dBZ Reflectivity")
+    ax.xaxis.set_major_formatter(
+        mdates.DateFormatter("%-I:%M\n%p", tz=pytz.timezone("America/Chicago"))
+    )
+    ax.grid(True)
+    ax.text(
+        0.2,
+        0.15,
+        "Morning Storm\nShowers",
+        transform=ax.transAxes,
+        ha="center",
+    )
+    ax.text(
+        0.75,
+        0.15,
+        "Afternoon Instability\nShowers",
+        transform=ax.transAxes,
+        ha="center",
+    )
+
+    fig.savefig("test.png")
+
+
+if __name__ == "__main__":
+    main()

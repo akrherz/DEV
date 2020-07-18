@@ -1,13 +1,22 @@
 """
-with data as (select distinct substr(ugc, 1, 2) as state, 
+with data as (select distinct substr(ugc, 1, 2) as state,
   generate_series(issue, expire, '1 minute'::interval) as ts from warnings
-  where phenomena = 'TO' and significance = 'A' and (expire - issue) < '1 days'::interval),
+  where phenomena = 'TO' and significance = 'A' and
+  (expire - issue) < '1 days'::interval),
 data2 as (select distinct substr(ugc, 1, 2) as state,
   generate_series(issue, expire, '1 minute'::interval) as ts from warnings
-  where phenomena in('BZ', 'WS') and significance = 'W' and (expire - issue) < '3 days'::interval),
+  where phenomena in('BZ', 'WS') and significance = 'W' and
+  (expire - issue) < '3 days'::interval),
 data3 as (SELECT o.state, o.ts from data2 o JOIN data t on (o.state = t.state
   and o.ts = t.ts))
-select distinct state, date(ts) from data3 ORDER by date ASC;"""
+select distinct state, date(ts) from data3 ORDER by date ASC;
+"""
+from io import StringIO
+
+from pyiem.plot import MapPlot
+from pyiem.plot.use_agg import plt
+import pandas as pd
+
 
 txt = """ MI    | 2005-11-15
  KS    | 2005-11-27
@@ -113,35 +122,40 @@ txt = """ MI    | 2005-11-15
  NE    | 2016-03-23
  IA    | 2016-03-23
  KS    | 2016-03-23"""
-from pyiem.plot import MapPlot
-import pandas as pd
-import StringIO
-import matplotlib.pyplot as plt
 
-df = pd.read_csv(StringIO.StringIO(txt.replace(" ", "")), sep="|")
-df.columns = ["states", "date"]
-df2 = df.groupby("states").count()
-data = {}
-for i, row in df2.iterrows():
-    data[i] = row["date"]
-print data
 
-m = MapPlot(
-    sector="conus",
-    title="Days with Tornado *Watch* & Winter Storm or Blizzard Warning",
-    subtitle="1 Oct 2005 - 24 Mar 2016 :: # of Dates with both alerts active within the same state at the same time",
-    axisbg="white",
-)
+def main():
+    """Go Main Go."""
+    df = pd.read_csv(StringIO(txt.replace(" ", "")), sep="|")
+    df.columns = ["states", "date"]
+    df2 = df.groupby("states").count()
+    data = {}
+    for i, row in df2.iterrows():
+        data[i] = row["date"]
 
-cmap = plt.get_cmap("jet")
-cmap.set_over("black")
-cmap.set_under("white")
-m.fill_states(
-    data,
-    bins=[0, 1, 2, 3, 4, 5, 6, 7, 10, 15, 20],
-    units="count",
-    ilabel=True,
-    cmap=cmap,
-)
+    m = MapPlot(
+        sector="conus",
+        title="Days with Tornado *Watch* & Winter Storm or Blizzard Warning",
+        subtitle=(
+            "1 Oct 2005 - 24 Mar 2016 :: # of Dates with both alerts "
+            "active within the same state at the same time"
+        ),
+        axisbg="white",
+    )
 
-m.postprocess(filename="states.png")
+    cmap = plt.get_cmap("jet")
+    cmap.set_over("black")
+    cmap.set_under("white")
+    m.fill_states(
+        data,
+        bins=[0, 1, 2, 3, 4, 5, 6, 7, 10, 15, 20],
+        units="count",
+        ilabel=True,
+        cmap=cmap,
+    )
+
+    m.postprocess(filename="states.png")
+
+
+if __name__ == "__main__":
+    main()

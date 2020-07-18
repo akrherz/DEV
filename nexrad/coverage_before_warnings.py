@@ -1,16 +1,19 @@
-import psycopg2
+"""An old plot."""
 import datetime
-import osgeo.gdal as gdal
 import os
-from pyiem import reference
-import numpy as np
+import calendar
 import subprocess
+
+from pyiem.util import get_dbconn
+from pyiem import reference
+import osgeo.gdal as gdal
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mpcolors
-import calendar
 
 
 def lalo2pt(lon, lat):
+    """Simple."""
     x = int((-126.0 - lon) / -0.01)
     y = int((50.0 - lat) / 0.01)
     return x, y
@@ -31,7 +34,7 @@ def get_nexrad(date):
     i = 0
     while now < ets:
         fn = now.strftime(
-            ("/mesonet/ARCHIVE/data/%Y/%m/%d/" "GIS/uscomp/n0r_%Y%m%d%H%M.png")
+            ("/mesonet/ARCHIVE/data/%Y/%m/%d/GIS/uscomp/n0r_%Y%m%d%H%M.png")
         )
         if not os.path.isfile(fn):
             now += interval
@@ -50,7 +53,8 @@ def get_nexrad(date):
 
 
 def find_events():
-    pgconn = psycopg2.connect(database="postgis", host="iemdb", user="nobody")
+    """Do as I say."""
+    pgconn = get_dbconn("postgis")
     cursor = pgconn.cursor()
     cursor.execute(
         """WITH obs as (
@@ -71,6 +75,7 @@ def find_events():
 
 
 def fetch(event):
+    """Get data."""
     mydir = event.strftime("/mesonet/ARCHIVE/data/%Y/%m/%d/GIS/uscomp")
     # likely already done
     if os.path.isdir(mydir):
@@ -84,6 +89,7 @@ def fetch(event):
 
 
 def run():
+    """Go run go."""
     if os.path.isfile("hits.npy"):
         hits = np.loadtxt("hits.npy")
         dry = np.loadtxt("dry.npy")

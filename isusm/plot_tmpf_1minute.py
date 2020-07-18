@@ -1,8 +1,8 @@
 """Generate a plot of 1minute srad."""
 
-from metpy.units import units
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn
+from metpy.units import units
 from pandas.io.sql import read_sql
 
 

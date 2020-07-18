@@ -66,9 +66,8 @@ def main():
                         token[3],
                         nids,
                     )
-                    fp = open(ridgefn, "wb")
-                    fp.write(req.content)
-                    fp.close()
+                    with open(ridgefn, "wb") as fp:
+                        fp.write(req.content)
 
             os.chdir("..")
         os.chdir("..")

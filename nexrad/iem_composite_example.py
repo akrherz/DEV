@@ -1,12 +1,13 @@
 """Plot an IEM NEXRAD Composite RASTER on a cartopy map"""
-from __future__ import print_function
 
 import matplotlib.pyplot as plt
 from matplotlib.image import imread
 import cartopy.crs as ccrs
 
-# wget https://mesonet.agron.iastate.edu/archive/data/2017/08/19/GIS/uscomp/n0q_201708190300.png
-# wget https://mesonet.agron.iastate.edu/archive/data/2017/08/19/GIS/uscomp/n0q_201708190300.wld
+# wget https://mesonet.agron.iastate.edu/
+# archive/data/2017/08/19/GIS/uscomp/n0q_201708190300.png
+# wget https://mesonet.agron.iastate.edu/
+# archive/data/2017/08/19/GIS/uscomp/n0q_201708190300.wld
 
 
 def main():

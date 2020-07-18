@@ -6,7 +6,6 @@ import pygrib
 import numpy as np
 from pyiem.plot.use_agg import plt
 from pyiem.plot import MapPlot
-from pyiem import reference
 from pyiem.util import logger
 
 LOG = logger()
@@ -22,10 +21,7 @@ def main():
     count = 1
     while now > ets:
         fn = now.strftime(
-            (
-                "/mesonet/ARCHIVE/data/%Y/%m/%d/model/wpc"
-                "/p168m_%Y%m%d00f168.grb"
-            )
+            "/mesonet/ARCHIVE/data/%Y/%m/%d/model/wpc/p168m_%Y%m%d00f168.grb"
         )
         if not os.path.isfile(fn):
             LOG.info("Missing %s", fn)
@@ -49,7 +45,10 @@ def main():
             "15 Sep - 2 Dec 2019 WPC "
             "Percent of 7 Day Precip Forecasts < 0.05 inch"
         ),
-        subtitle="Based on daily 0z Weather Prediction Center (WPC) forecasts each out seven days.",
+        subtitle=(
+            "Based on daily 0z Weather Prediction Center (WPC) "
+            "forecasts each out seven days."
+        ),
     )
     cmap = plt.get_cmap("terrain")
     # cmap.set_under('white')

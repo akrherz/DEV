@@ -11,18 +11,13 @@ LOG = logger()
 def workflow(pgconn, cursor, station):
     """Do Work."""
     cursor.execute(
-        """
-        SELECT min(valid) from sm_minute where station = %s
-    """,
-        (station,),
+        "SELECT min(valid) from sm_minute where station = %s", (station,)
     )
     minvalid = cursor.fetchone()[0]
 
     # Fetch me all the sm_15minute data for this site
     df = read_sql(
-        """
-        SELECT * from sm_15minute where station = %s and valid < %s
-    """,
+        "SELECT * from sm_15minute where station = %s and valid < %s",
         pgconn,
         params=(station, minvalid),
     )
@@ -138,7 +133,7 @@ def main():
     pgconn = get_dbconn("isuag")
     cursor = pgconn.cursor()
     stations = []
-    cursor.execute("""SELECT distinct station from sm_15minute""")
+    cursor.execute("SELECT distinct station from sm_15minute")
     for row in cursor:
         stations.append(row[0])
     cursor.close()
