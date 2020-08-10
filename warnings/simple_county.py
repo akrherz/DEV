@@ -3,7 +3,8 @@
 import numpy as np
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn
-import matplotlib.colors as mpcolors
+
+# import matplotlib.colors as mpcolors
 import matplotlib.cm as cm
 
 
@@ -26,7 +27,7 @@ def main():
     )
 
     bins = np.arange(12, 25, 1)
-    norm = mpcolors.BoundaryNorm(bins, cmap.N)
+    # norm = mpcolors.BoundaryNorm(bins, cmap.N)
 
     pcursor.execute(
         """

@@ -10,11 +10,9 @@ def dotable(table):
     pgconn = get_dbconn("afos")
     cursor = pgconn.cursor()
     df = read_sql(
-        """
+        f"""
         WITH data as (
-            SELECT entered, pil, wmo, source, count(*) from """
-        + table
-        + """
+            SELECT entered, pil, wmo, source, count(*) from {table}
             WHERE source is not null and wmo is not null and pil is not null
             and entered is not null
             GROUP by entered, pil, wmo, source)
@@ -29,10 +27,8 @@ def dotable(table):
     ):
         # get text
         cursor.execute(
-            """
-            SELECT data from """
-            + table
-            + """
+            f"""
+            SELECT data from {table}
             WHERE source = %s and entered = %s and pil = %s and wmo = %s
             ORDER by length(data) DESC
         """,
@@ -48,20 +44,16 @@ def dotable(table):
             hits += 1
             # delete old entries
             cursor.execute(
-                """
-            DELETE from """
-                + table
-                + """
+                f"""
+            DELETE from {table}
             WHERE source = %s and entered = %s and pil = %s and wmo = %s
             """,
                 (row["source"], row["entered"], row["pil"], row["wmo"]),
             )
             # insert without trailing ^C
             cursor.execute(
-                """
-            INSERT into """
-                + table
-                + """ (data, pil, entered, source, wmo)
+                f"""
+            INSERT into {table} (data, pil, entered, source, wmo)
             VALUES (%s, %s, %s, %s, %s)
             """,
                 (

@@ -1,8 +1,8 @@
-"""Reprocess junky data"""
+"""Run a diagnostic as per bureau request."""
 
-import pandas as pd
 from pyiem.util import noaaport_text, get_dbconn
 from pyiem.nws.products.vtec import parser
+import pandas as pd
 
 ISO9660 = "%Y-%m-%d %H:%M"
 
@@ -13,11 +13,8 @@ def main():
     cursor = pgconn.cursor()
 
     cursor.execute(
-        """
-        SELECT report, issue, wfo, eventid
-        from sbw_2019 where
-        status = 'NEW' and phenomena = 'SQ' and significance = 'W'
-    """
+        "SELECT report, issue, wfo, eventid from sbw_2019 where "
+        "status = 'NEW' and phenomena = 'SQ' and significance = 'W'"
     )
 
     print("Found %s entries to process..." % (cursor.rowcount,))

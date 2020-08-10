@@ -26,8 +26,8 @@ for row in cursor:
     issue = row[3]
     try:
         prod = parser(report)
-    except Exception, exp:
-        print "ERROR, oid: %s exp: %s" % (oid, exp)
+    except Exception as exp:
+        print("ERROR, oid: %s exp: %s" % (oid, exp))
         continue
     for seg in prod.segments:
         found = False
@@ -38,7 +38,7 @@ for row in cursor:
             continue
         for vtec in seg.vtec:
             if vtec.phenomena == row[4]:
-                print "HERE!", vtec, vtec.endts
+                print("HERE!", vtec, vtec.endts)
                 if vtec.endts is None:
                     if vtec.begints is None:
                         vtec.endts = prod.valid + datetime.timedelta(days=1)
@@ -53,7 +53,7 @@ for row in cursor:
                 )
 
 
-print "%s Processed %s rows" % (sys.argv[1], cursor.rowcount)
+print("%s Processed %s rows" % (sys.argv[1], cursor.rowcount))
 
 cursor2.close()
 POSTGIS.commit()

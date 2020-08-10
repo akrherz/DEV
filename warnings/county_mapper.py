@@ -56,7 +56,7 @@ def main():
         "normalized" if opts["normalized"] else "count",
     )
 
-    # bins = [0.001, 0.003, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8]
+    # bins = [0.001, 0.003, 0.005, 0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5,0.6,0.8]
     # bins = [1,2,3,4,5,6,7,8,9,10,15,20,30,50,100,125]
     # bins = [0.02,0.5, 1, 2, 4, 5, 6, 7, 8, 9, 10, 13, 16, 20, 24, 30]
     # bins = [1,2,5,10,15,20,25,30,45,60,75,90,120,150,180,240]
@@ -81,18 +81,16 @@ def main():
 
     # norm = mpcolors.BoundaryNorm(bins, cmap.N)
 
-    """
-    WITH data as (
-    SELECT ugc, count(*) / %s  as data from warnings
-    WHERE ugc is not null and
-    significance = 'W' and phenomena in %s and issue > %s and issue < %s
-    GROUP by ugc),
-    u as (SELECT ugc, ST_Area(ST_Transform(geom, 2163)) / 1000000. as area
-    from ugcs where substr(ugc,3,1) = 'C' and end_ts is null)
+    # WITH data as (
+    # SELECT ugc, count(*) / %s  as data from warnings
+    # WHERE ugc is not null and
+    # significance = 'W' and phenomena in %s and issue > %s and issue < %s
+    # GROUP by ugc),
+    # u as (SELECT ugc, ST_Area(ST_Transform(geom, 2163)) / 1000000. as area
+    # from ugcs where substr(ugc,3,1) = 'C' and end_ts is null)
 
-    SELECT data.ugc, data.data, data.data / u.area
-    from data JOIN u on (u.ugc = data.ugc)
-    """
+    # SELECT data.ugc, data.data, data.data / u.area
+    # from data JOIN u on (u.ugc = data.ugc)
 
     pcursor.execute(
         """

@@ -29,7 +29,7 @@ def do(turbine):
     data = {}
     fn = "original_zips/PomeroyTurbine%s.csv" % (turbine,)
     if not os.path.isfile(fn):
-        print "Could not find %s, skipping" % (fn,)
+        print("Could not find %s, skipping" % (fn,))
         return
     turbineid = xref["%s" % (turbine,)]
     for i, line in enumerate(open(fn)):
@@ -41,18 +41,18 @@ def do(turbine):
             if len(tokens[1]) < 12:
                 fmt = " %m/%d/%Y"
             ts = datetime.datetime.strptime(tokens[1], fmt)
-            if not data.has_key(ts):
+            if ts not in data:
                 data[ts] = {}
             data[ts][cols.get(tokens[0])] = float(tokens[2])
-        except Exception, exp:
-            print "%s linenum %s fails %s %s!" % (fn, i, line.strip(), exp)
+        except Exception as exp:
+            print("%s linenum %s fails %s %s!" % (fn, i, line.strip(), exp))
 
-    print "%s (%s) had %s lines of data" % (fn, turbineid, i)
+    print("%s (%s) had %s lines of data" % (fn, turbineid, i))
 
     o = open("insert.sql", "w")
     o.write("COPY turbine_data_%s FROM STDIN WITH null 'null';\n" % (turbine,))
 
-    for ts in data.keys():
+    for ts in data:
         o.write(
             "\t".join(
                 [

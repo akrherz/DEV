@@ -29,13 +29,6 @@ def main():
             print(exp)
             continue
         entered = row[2].replace(tzinfo=pytz.UTC)
-        # if entered != prod.valid:
-        #    sql = (
-        #        "UPDATE products_%s_%s SET entered = %s WHERE "
-        #        "source = %s and wmo = %s and entered = %s and pil = %s;"
-        #    ) % (entered.year, "0712" if entered.month > 6 else "0106",
-        #         prod.valid, row[0], row[1], entered, row[4])
-        #    print(sql)
         tokens = PATTERN.findall(prod.unixtext)
         if not tokens:
             if prod.unixtext.find(" FIRE") < 0:
@@ -43,7 +36,6 @@ def main():
             res = ""
         else:
             res = tokens[0].replace("\n", " ")
-        # print(res)
         prod.valid = entered
         output.write(
             ("%s,%s,%s,%s,https://mesonet.agron.iastate.edu/p.php?pid=%s\n")

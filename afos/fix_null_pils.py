@@ -12,24 +12,16 @@ def main(argv):
     cursor3 = pgconn.cursor()
     table = argv[1]
     cursor.execute(
-        """
-        SELECT distinct source from """
-        + table
-        + """
-        WHERE substr(source, 1, 1) in ('K', 'P') ORDER by source DESC
-    """
+        f"SELECT distinct source from {table} "
+        "WHERE substr(source, 1, 1) in ('K', 'P') ORDER by source DESC"
     )
     for row in cursor:
         source = row[0]
         print("Processing %s" % (source,))
         # Find wmos with null pils
         cursor2.execute(
-            """
-            SELECT distinct wmo from """
-            + table
-            + """ WHERE
-            source = %s and pil is null
-        """,
+            f"SELECT distinct wmo from {table} WHERE "
+            "source = %s and pil is null",
             (source,),
         )
         for row2 in cursor2:

@@ -1,7 +1,7 @@
 """Request for maps and data of products without SVS updates."""
 
 from pyiem.util import get_dbconn
-from pyiem.plot.use_agg import plt
+from pyiem.plot import get_cmap
 from pyiem.plot.geoplot import MapPlot
 from pandas.io.sql import read_sql
 
@@ -14,7 +14,7 @@ def main():
     WITH data as (
         SELECT wfo, eventid, extract(year from issue) as year,
         max(case when svs is not null then 1 else 0 end) as hit from
-        warnings where product_issue > '2008-01-01' and
+        warnings where product_issue > '2010-01-01' and
         product_issue < '2020-01-01' and phenomena = 'FF'
         and significance = 'W' GROUP by wfo, eventid, year
     )
@@ -37,10 +37,10 @@ def main():
         sector="nws",
         title="Percentage of Flash Flood Warnings without a FFS Update Issued",
         subtitle=(
-            "1 Jan 2008 - 31 December 2019" ", based on unofficial data"
+            "1 Jan 2010 - 31 December 2019, based on unofficial IEM data"
         ),
     )
-    cmap = plt.get_cmap("copper_r")
+    cmap = get_cmap("copper_r")
     cmap.set_under("white")
     cmap.set_over("black")
     ramp = range(0, 101, 5)
@@ -52,7 +52,7 @@ def main():
         ilabel=True,
         lblformat="%.1f",
     )
-    mp.postprocess(filename="080101_191231_ffw_nosvs.png")
+    mp.postprocess(filename="100101_191231_ffw_nosvs.png")
 
 
 if __name__ == "__main__":

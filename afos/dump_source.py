@@ -18,12 +18,9 @@ def main():
     )
     for row in acursor:
         fn = "TJSJ/%s_%s.txt" % (row[0].strip(), row[1].strftime("%Y%m%d%H%M"))
-        o = open(fn, "a")
-        o.write(noaaport_text(row[4]))
-        o.write("\r\r\n\003")
-        o.close()
-
-    o.close()
+        with open(fn, "a") as fp:
+            fp.write(noaaport_text(row[4]))
+            fp.write("\r\r\n\003")
 
 
 if __name__ == "__main__":

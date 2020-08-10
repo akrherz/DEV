@@ -1,8 +1,8 @@
 """did the UGC have a warning on most active days."""
 
-import numpy as np
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn
+import numpy as np
 import matplotlib.cm as cm
 
 
@@ -18,7 +18,9 @@ def main():
     m = MapPlot(
         sector="nws",
         axisbg="#EEEEEE",
-        title="1+ Tornado Warn. for 100 most active Tornado Warn. days 1986-2019",
+        title=(
+            "1+ Tornado Warn. for 100 most active Tornado Warn. days 1986-2019"
+        ),
         subtitle=(
             "A day is defined as 12 to 12 UTC period, did the "
             "county get 1+ warning during those 100 events?"

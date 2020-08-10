@@ -1,15 +1,14 @@
 """Reprocess junky data"""
-from __future__ import print_function
 import sys
 import datetime
 
 import pytz
-import psycopg2
-from pyiem.util import noaaport_text
+from pyiem.util import noaaport_text, get_dbconn
 from pyiem.nws.products.vtec import parser
 
 
 def p(ts):
+    """Helper."""
     if ts is None:
         return "(NONE)"
     return ts.strftime("%Y-%m-%d %H:%M")
@@ -17,21 +16,19 @@ def p(ts):
 
 def main(argv):
     """go"""
-    pgconn = psycopg2.connect(database="postgis", host="localhost", port=5555)
+    pgconn = get_dbconn("postgis")
     cursor = pgconn.cursor()
     cursor2 = pgconn.cursor()
 
     table = "warnings_%s" % (argv[1],)
 
     cursor.execute(
-        """
+        f"""
      SELECT oid, ugc, issue at time zone 'UTC',
      expire at time zone 'UTC',
      init_expire at time zone 'UTC', report, svs, phenomena,
      eventid, significance
-     from """
-        + table
-        + """ where
+     from {table} where
     issue is null ORDER by oid ASC
     """
     )
@@ -49,19 +46,13 @@ def main(argv):
         eventid = row[8]
         significance = row[9]
         issue0 = (
-            row[2].replace(tzinfo=pytz.timezone("UTC"))
-            if row[2] is not None
-            else None
+            row[2].replace(tzinfo=pytz.UTC) if row[2] is not None else None
         )
         expire0 = (
-            row[3].replace(tzinfo=pytz.timezone("UTC"))
-            if row[3] is not None
-            else None
+            row[3].replace(tzinfo=pytz.UTC) if row[3] is not None else None
         )
         init_expire0 = (
-            row[4].replace(tzinfo=pytz.timezone("UTC"))
-            if row[4] is not None
-            else None
+            row[4].replace(tzinfo=pytz.UTC) if row[4] is not None else None
         )
         svss.insert(0, report)
 
@@ -75,7 +66,7 @@ def main(argv):
                 continue
             try:
                 prod = parser(noaaport_text(svs))
-            except Exception, exp:
+            except Exception as exp:
                 print("%s %s" % (oid, exp))
                 if i == 0:
                     print("FATAL ABORT as first product failed")
@@ -149,11 +140,7 @@ def main(argv):
                 % (ugc, phenomena, significance, eventid, p(issue0), p(issue1))
             )
             cursor2.execute(
-                """UPDATE """
-                + table
-                + """ SET issue = %s WHERE oid = %s
-            """,
-                (issue1, oid),
+                f"UPDATE {table} SET issue = %s WHERE oid = %s", (issue1, oid)
             )
         if expire0 != expire1:
             print(
@@ -168,10 +155,7 @@ def main(argv):
                 )
             )
             cursor2.execute(
-                """UPDATE """
-                + table
-                + """ SET expire = %s WHERE oid = %s
-            """,
+                f"UPDATE {table} SET expire = %s WHERE oid = %s",
                 (expire1, oid),
             )
         if init_expire0 != init_expire1:
@@ -187,11 +171,7 @@ def main(argv):
                 )
             )
             cursor2.execute(
-                """
-            UPDATE """
-                + table
-                + """ SET init_expire = %s WHERE oid = %s
-            """,
+                f"UPDATE {table} SET init_expire = %s WHERE oid = %s",
                 (init_expire1, oid),
             )
 
