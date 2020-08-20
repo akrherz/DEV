@@ -13,15 +13,13 @@ def main(argv):
     cursor2 = pgconn.cursor()
 
     table = "sbw_%s" % (argv[1],)
+    table2 = "warnings_%s" % (argv[1],)
 
     cursor.execute(
-        """
+        f"""
         SELECT report, status, wfo, eventid, significance, phenomena,
-        updated, polygon_begin from """
-        + table
-        + """
-        WHERE phenomena in ('FA', 'FF', 'FL', 'HY', 'IJ') and
-        (length(hvtec_nwsli) != 5 or hvtec_nwsli is null)
+        updated, polygon_begin from {table}
+        WHERE phenomena in ('FA', 'FF', 'FL', 'HY', 'IJ')
         ORDER by polygon_begin ASC
     """
     )
@@ -46,16 +44,17 @@ def main(argv):
                 and v.etn == row[3]
             ):
                 cursor2.execute(
-                    """
-                    UPDATE """
-                    + table
-                    + """ SET hvtec_nwsli = %s
+                    f"""
+                    UPDATE {table} SET hvtec_severity = %s, hvtec_cause= %s,
+                    hvtec_record = %s
                     WHERE wfo = %s and phenomena = %s and significance = %s
                     and status = %s and eventid = %s and updated = %s
                     and polygon_begin = %s
                 """,
                     (
-                        seg.get_hvtec_nwsli(),
+                        seg.get_hvtec_severity(),
+                        seg.get_hvtec_cause(),
+                        seg.get_hvtec_record(),
                         row[2],
                         row[5],
                         row[4],
@@ -66,6 +65,30 @@ def main(argv):
                     ),
                 )
                 found = True
+                if cursor2.rowcount == 0:
+                    print(prod)
+                    print(row)
+                    print(cursor2.rowcount)
+                    sys.exit()
+                if v.action != "NEW":
+                    continue
+                cursor2.execute(
+                    f"""
+                    UPDATE {table2} SET hvtec_severity = %s, hvtec_cause= %s,
+                    hvtec_record = %s
+                    WHERE wfo = %s and phenomena = %s and significance = %s
+                    and eventid = %s
+                """,
+                    (
+                        seg.get_hvtec_severity(),
+                        seg.get_hvtec_cause(),
+                        seg.get_hvtec_record(),
+                        row[2],
+                        row[5],
+                        row[4],
+                        row[3],
+                    ),
+                )
                 if cursor2.rowcount == 0:
                     print(prod)
                     print(row)
