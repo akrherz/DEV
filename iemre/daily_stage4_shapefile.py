@@ -68,6 +68,7 @@ def main():
         df[(now - datetime.timedelta(days=1)).strftime("%b%d")] = distance(
             np.ravel(total), "MM"
         ).value("IN")
+    nc.close()
     df.to_file("combined.shp")
 
 
