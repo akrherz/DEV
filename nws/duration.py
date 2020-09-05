@@ -1,3 +1,4 @@
+"""Warning duration plot."""
 import numpy as np
 import matplotlib.pyplot as plt
 from pandas.io.sql import read_sql

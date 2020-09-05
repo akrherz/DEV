@@ -21,7 +21,7 @@ def main(argv):
     for row in cursor:
         try:
             prod = mcd.parser(noaaport_text(row[1]))
-        except:
+        except Exception:
             print("%s fail" % (row[2],))
             continue
         val = prod.find_watch_probability()

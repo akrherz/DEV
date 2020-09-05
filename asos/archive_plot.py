@@ -1,7 +1,6 @@
-"""Plot of 1minute ASOS data"""
+"""Plot of archived data."""
 import datetime
 
-import numpy as np
 import pytz
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -16,12 +15,9 @@ def main():
     """Go Main"""
     pgconn = get_dbconn("asos")
     df = read_sql(
-        """
-        SELECT valid, drct, sknt, gust, alti, tmpf, dwpf
-        from t2019
-        where station = %s and valid >= '2019-06-28 08:30' and
-        valid <= '2019-06-28 13:15' ORDER by valid ASC
-    """,
+        "SELECT valid, drct, sknt, gust, alti, tmpf, dwpf from t2019 "
+        "where station = %s and valid >= '2019-06-28 08:30' and "
+        "valid <= '2019-06-28 13:15' ORDER by valid ASC",
         pgconn,
         params=("MXO",),
         index_col="valid",
@@ -40,7 +36,7 @@ def main():
     ax1.plot(df.index.values, df["dwpf"], label="Dew Point")
     ax1.legend()
     ax1.grid(True)
-    ax1.set_ylabel("Temperature $^\circ$F")
+    ax1.set_ylabel(r"Temperature $^\circ$F")
     ax1.set_xticks(xticks)
     ax1.set_xticklabels(xticklabels)
     ax1.set_title(

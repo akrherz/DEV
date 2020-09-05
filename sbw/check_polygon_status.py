@@ -4,28 +4,23 @@ see akrherz/pyIEM#207
 """
 import sys
 
-from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
+from pandas.io.sql import read_sql
 
 
 def main(argv):
     """check things out."""
     year = argv[1]
     pgconn = get_dbconn("postgis")
-    cursor = pgconn.cursor()
     df = read_sql(
-        """
+        f"""
         with ugc_based as (
             SELECT distinct wfo, eventid, updated
-            from warnings_"""
-        + year
-        + """
+            from warnings_{year}
             WHERE phenomena = 'FL' and significance = 'W'
             and status = 'CAN'),
         sbw_based as (
-            select distinct wfo, eventid from sbw_"""
-        + year
-        + """
+            select distinct wfo, eventid from sbw_{year}
             WHERE phenomena = 'FL' and significance = 'W'
             and status = 'CAN'
         )

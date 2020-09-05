@@ -1,15 +1,14 @@
 """Make a spatial histogram of SBWs"""
-from __future__ import print_function
 
+from pyiem.util import get_dbconn
 import numpy as np
 import matplotlib.pyplot as plt
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
 
 
 def main():
     """Go Main Go"""
-    pgconn = get_dbconn("postgis", user="nobody")
+    pgconn = get_dbconn("postgis")
     df = read_sql(
         """
     WITH wlocs as (
@@ -22,8 +21,8 @@ def main():
         and phenomena = 'FF' and significance = 'W')
 
     SELECT ST_x(c.geo) - w.x as x, ST_y(c.geo) - w.y as y
-    from centroids c JOIN wlocs w ON (c.wfo = w.id) 
-    
+    from centroids c JOIN wlocs w ON (c.wfo = w.id)
+
     """,
         pgconn,
         index_col=None,

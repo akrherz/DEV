@@ -10,9 +10,7 @@ def main():
     """Go Main"""
     pgconn = get_dbconn("postgis")
     df = read_postgis(
-        """
-    select geom, issue from bot_warnings where wfo = 'DMX'
-    """,
+        "select geom, issue from bot_warnings where wfo = 'DMX'",
         pgconn,
         geom_col="geom",
         crs={"init": "epsg:4326", "no_defs": True},

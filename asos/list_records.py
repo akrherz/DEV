@@ -1,7 +1,8 @@
-import urllib2
+"""List out things."""
 import datetime
-import cStringIO
+from io import StringIO
 
+import requests
 import pandas as pd
 from pyiem.datatypes import pressure, temperature
 from pyiem.network import Table as NetworkTable
@@ -10,6 +11,7 @@ from pyiem.util import get_dbconn
 
 
 def two():
+    """Two."""
     nt = NetworkTable(["IA_ASOS"])
     sids = nt.sts.keys()
     sids.sort()
@@ -25,10 +27,10 @@ def two():
                 "zstation:%s::network:IA_ASOS::month:9::dir:above::"
                 "threshold:70::hours:%s::dpi:100.csv"
             ) % (sid, hrs)
-            data = urllib2.urlopen(uri).read()
+            data = requests.get(uri).content
             if data.strip() == "":
                 continue
-            cdata = cStringIO.StringIO()
+            cdata = StringIO()
             cdata.write(data)
             cdata.seek(0)
             df = pd.DataFrame.from_csv(cdata, index_col=False)
@@ -89,6 +91,7 @@ def two():
 
 
 def one():
+    """One."""
     pgconn = get_dbconn("asos")
     cursor = pgconn.cursor()
     nt = NetworkTable(["IA_ASOS", "AWOS"])

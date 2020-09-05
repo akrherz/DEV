@@ -1,13 +1,9 @@
 """SBW Intersection"""
-from __future__ import print_function
 
 import tqdm
 import pandas as pd
-import matplotlib
-
-matplotlib.use("agg")
-import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
+from pyiem.plot.use_agg import plt
 from pyiem.plot import MapPlot
 from pyiem.network import Table as NetworkTable
 
@@ -80,15 +76,12 @@ def main():
     rows = []
     for wfo in tqdm.tqdm(nt.sts):
         for year in range(2008, 2018):
-            table = "sbw_%s" % (year,)
+            table = f"sbw_{year}"
             cursor.execute(
-                """
+                f"""
             WITH dumps as (
                 select (st_dumppoints(ST_Transform(geom, 2163))).* from
-                """
-                + table
-                + """
-                where wfo = %(wfo)s
+                {table} where wfo = %(wfo)s
                 and phenomena in ('SV', 'TO')
                 and status = 'NEW' and issue > '2007-10-01'),
             points as (

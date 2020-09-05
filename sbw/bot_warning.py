@@ -33,12 +33,7 @@ def main(argv):
     pcursor = postgis.cursor(cursor_factory=psycopg2.extras.DictCursor)
     pcursor2 = postgis.cursor()
 
-    pcursor2.execute(
-        """
-        DELETE from bot_warnings where wfo = %s
-    """,
-        (argv[1],),
-    )
+    pcursor2.execute("DELETE from bot_warnings where wfo = %s", (argv[1],))
     print(
         ("Removed %s rows for WFO: %s in bot_warnings")
         % (pcursor2.rowcount, argv[1])

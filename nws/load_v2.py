@@ -1,11 +1,9 @@
 """Warning load by minute"""
-from __future__ import print_function
-import datetime
 
 import pytz
+from pyiem.util import get_dbconn
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from pyiem.util import get_dbconn
 
 TZ = pytz.timezone("America/Chicago")
 PGCONN = get_dbconn("postgis")
@@ -74,10 +72,5 @@ def main():
     plt.close()
 
 
-def work():
-    """Our workflow"""
-    main()
-
-
 if __name__ == "__main__":
-    work()
+    main()

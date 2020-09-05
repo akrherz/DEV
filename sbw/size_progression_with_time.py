@@ -1,5 +1,4 @@
 """How are the sizes of the polygons changing with time"""
-from __future__ import print_function
 from itertools import cycle
 
 from psycopg2.extras import DictCursor
@@ -16,19 +15,15 @@ def do_year(pgconn, year):
     sums = np.zeros((120), np.float)
     counts = np.zeros((120), np.float)
     cursor.execute(
-        """
+        f"""
     WITH issuance as (
         SELECT wfo, eventid, polygon_begin, phenomena, significance,
-        ST_Area(ST_Transform(geom, 2163)) as area from """
-        + sbwtable
-        + """
+        ST_Area(ST_Transform(geom, 2163)) as area from {sbwtable}
         WHERE status = 'NEW' and phenomena = 'TO' and significance = 'W')
 
     SELECT i.polygon_begin, s.polygon_begin as s_pb, s.polygon_end as s_pe,
     i.area as i_area, ST_Area(ST_Transform(s.geom, 2163)) as s_area from
-    """
-        + sbwtable
-        + """ s JOIN issuance i on (s.wfo = i.wfo and
+    {sbwtable} s JOIN issuance i on (s.wfo = i.wfo and
     s.eventid = i.eventid and s.phenomena = i.phenomena and
     s.significance = i.significance) WHERE status != 'CAN'
     ORDER by s.issue ASC

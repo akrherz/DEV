@@ -6,12 +6,11 @@ import twitter
 def main():
     """Go Main Go."""
     config = get_properties()
-    access_token = "..."
     api = twitter.Api(
         consumer_key=config["bot.twitter.consumerkey"],
         consumer_secret=config["bot.twitter.consumersecret"],
-        access_token_key=access_token,
-        access_token_secret="...",
+        access_token_key="",
+        access_token_secret="",
     )
     pgconn = get_dbconn("mesosite")
     cursor = pgconn.cursor()
@@ -27,9 +26,8 @@ def main():
             continue
         print("%s -> %s" % (row[0], user_id))
         cursor2.execute(
-            """
-        UPDATE iembot_twitter_oauth SET user_id = %s where screen_name = %s
-        """,
+            "UPDATE iembot_twitter_oauth SET user_id = %s "
+            "where screen_name = %s",
             (user_id, row[0]),
         )
     cursor2.close()
