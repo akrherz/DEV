@@ -26,7 +26,7 @@ def plotter():
             "WFO WCN Issuance"
         ),
         subtitle=(
-            "2006-2020, based on unofficial IEM archives with WFO having at "
+            "2015-2020, based on unofficial IEM archives with WFO having at "
             "least 5 watches."
         ),
     )
@@ -48,7 +48,7 @@ def dump_data():
     cursor = afosdb.cursor()
     cursor.execute(
         "SELECT data from products where source = 'KWNS' and "
-        "entered > '2006-01-01' and substr(pil, 1, 3) = 'WOU' and "
+        "entered > '2015-01-01' and substr(pil, 1, 3) = 'WOU' and "
         "data ~* '.NEW.' ORDER by entered ASC"
     )
     dfs = []
@@ -67,13 +67,14 @@ def dump_data():
                 continue
             ugcs.extend([str(x) for x in segment.ugcs])
             etn = segment.vtec[0].etn
-            wou_issue = segment.vtec[0].begints
+            wou_issue = segment.vtec[0].begints.replace(tzinfo=None)
             phenomena = segment.vtec[0].phenomena
         if etn is None:
             continue
         # Go find in the database
         df = read_sql(
-            f"SELECT wfo, min(issue) as wcn from warnings_{wou_issue.year} "
+            "SELECT wfo, min(issue at time zone 'UTC') as wcn "
+            f"from warnings_{wou_issue.year} "
             "where ugc in %s and phenomena = %s and significance = 'A' and "
             "eventid = %s GROUP by wfo ORDER by wcn ASC",
             postgisdb,
@@ -85,6 +86,7 @@ def dump_data():
         dfs.append(df)
 
     df = pd.concat(dfs, ignore_index=True)
+    df["minutes"] = (df["wcn"] - df["wou"]).dt.total_seconds()
     df.to_csv("timing.csv", index=False)
     print(df)
 
