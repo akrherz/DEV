@@ -13,7 +13,8 @@ def plotter():
     df = pd.read_csv("timing.csv")
     for col in ["wcn", "wou"]:
         df[col] = pd.to_datetime(df[col])
-    df["delta"] = (df["wcn"] - df["wou"]).dt.total_seconds() / 60.0
+    print(df.groupby("year").mean())
+    df["delta"] = df["wmo_seconds"] / 60.0
     df = df[df["delta"] > -5]
     df = df[df["delta"] < 30]
     gdf = df[["wfo", "delta"]].groupby("wfo").describe()
@@ -26,7 +27,7 @@ def plotter():
             "WFO WCN Issuance"
         ),
         subtitle=(
-            "2015-2020, based on unofficial IEM archives with WFO having at "
+            "2006-2020, based on unofficial IEM archives with WFO having at "
             "least 5 watches."
         ),
     )
@@ -48,7 +49,7 @@ def dump_data():
     cursor = afosdb.cursor()
     cursor.execute(
         "SELECT data from products where source = 'KWNS' and "
-        "entered > '2015-01-01' and substr(pil, 1, 3) = 'WOU' and "
+        "entered > '2006-01-01' and substr(pil, 1, 3) = 'WOU' and "
         "data ~* '.NEW.' ORDER by entered ASC"
     )
     dfs = []
@@ -81,12 +82,14 @@ def dump_data():
             params=(tuple(ugcs), phenomena, etn),
         )
         df["wou"] = wou_issue
+        df["wou_header_time"] = prod.wmo_valid.replace(tzinfo=None)
         df["eventid"] = etn
         df["year"] = wou_issue.year
         dfs.append(df)
 
     df = pd.concat(dfs, ignore_index=True)
-    df["minutes"] = (df["wcn"] - df["wou"]).dt.total_seconds()
+    df["vtec_seconds"] = (df["wcn"] - df["wou"]).dt.total_seconds()
+    df["wmo_seconds"] = (df["wcn"] - df["wou_header_time"]).dt.total_seconds()
     df.to_csv("timing.csv", index=False)
     print(df)
 
