@@ -20,6 +20,11 @@ WMO_RE = re.compile(
     r"(?P<ddhhmm>[0-3][0-9][0-2][0-9][0-5][0-9])",
     re.M,
 )
+WMO_EXT_RE = re.compile(
+    r"^:.*?:(?P<ttaaii>[A-Z0-9]{4,6})\s+(?P<cccc>[A-Z]{4})\s+"
+    r"(?P<ddhhmm>[0-3][0-9][0-2][0-9][0-5][0-9])",
+    re.M,
+)
 AFOS_RE = re.compile(r"^[A-Z0-9]{7,9}\s*$")
 
 
@@ -57,14 +62,31 @@ def persist(cursor, record, utcnow):
         print("LEN OF TEXT FAILED")
         return
     text = record["text"].replace("\x00", "")
+    if len(text) < 20:
+        print("EMPTY PRODUCT")
+        return
     # Check 1 we must match the WMO header
     m = WMO_RE.match(text)
+    # ingest = False
     if not m:
-        print(
-            f"WMO_RE FAILED! {ord(record['text'][0])} "
-            f"{ord(record['text'][1])}"
-        )
-        return
+        # Check for the strange prefixed products of :blah:WMO
+        if text[0] == ":":
+            print("Working around :stuff: in WMO header")
+            m = WMO_EXT_RE.match(text)
+            if not m:
+                print("Double failure")
+                print(text)
+                return
+            # ingest = True
+        else:
+            print(
+                f"WMO_RE FAILED! {ord(record['text'][0])} "
+                f"{ord(record['text'][1])}"
+            )
+            return
+    # if not ingest:
+    #    print("SKIPPING AS WE LIKELY ALREADY HAVE THIS PRODUCT.")
+    #    return
     wmo = m.groupdict()
     # Check 2 we have a good AFOS
     m = AFOS_RE.match(record["cccnnnxxx"])
