@@ -1,12 +1,10 @@
 """simple map with counties filled"""
 
-from pandas.io.sql import read_sql
-import matplotlib
-
-matplotlib.use("agg")
-import matplotlib.pyplot as plt
+import cartopy.feature as cfeature
+from pyiem.plot import get_cmap, maue, Z_POLITICAL
 from pyiem.util import get_dbconn
 from pyiem.plot import MapPlot
+from pandas.io.sql import read_sql
 
 
 def main():
@@ -14,8 +12,8 @@ def main():
     pgconn = get_dbconn("postgis")
     df = read_sql(
         """
-        SELECT ugc, count(*) from warnings_2011 where phenomena = 'TO'
-        and significance = 'A' and issue < '2011-05-18'
+        SELECT ugc, count(*) from warnings where phenomena = 'BZ'
+        and significance = 'W' and issue < '2020-07-01'
         GROUP by ugc ORDER by count DESC
     """,
         pgconn,
@@ -24,8 +22,8 @@ def main():
     mp = MapPlot(
         sector="nws",
         title=(
-            "1 Jan - 17 May 2011 Number of Storm Prediction Center"
-            " Tornado Watches by County"
+            "12 Nov 2005 - 1 Jul 2020 Number of NWS Issued Blizzard "
+            "Warnings"
         ),
         subtitle=(
             "count by county, "
@@ -33,14 +31,21 @@ def main():
             "IEM"
         ),
     )
-    bins = list(range(0, 19, 2))
-    bins[0] = 1
+    mp.ax.add_feature(cfeature.STATES, lw=1.0, zorder=Z_POLITICAL)
+
+    bins = [1, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100]
     print(df["count"].max())
-    cmap = plt.get_cmap("plasma")
+    cmap = maue()
     cmap.set_under("white")
     cmap.set_over("black")
-    mp.fill_ugcs(df["count"].to_dict(), bins, cmap=cmap)
-    mp.postprocess(filename="test.png")
+    mp.fill_ugcs(
+        df["count"].to_dict(),
+        bins,
+        cmap=cmap,
+        spacing="proportional",
+        plotmissing=False,
+    )
+    mp.fig.savefig("test.pdf")
 
 
 if __name__ == "__main__":

@@ -36,7 +36,7 @@ def main():
         sum(avg_loss) as "Detachment (kg/m^2)",
         sum(avg_delivery) as "Hillslope Soil Loss (kg/m^2)"
         from results_by_huc12 WHERE scenario = 0 and
-        valid >= '2020-01-01' and valid < '2020-03-15'
+        valid >= '2020-07-01' and valid < '2020-09-17'
         GROUP by huc_12
     """,
         pgconn,
