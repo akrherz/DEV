@@ -1,5 +1,4 @@
 """Minimum Fall Temperature"""
-from __future__ import print_function
 import datetime
 
 from pyiem.plot import MapPlot
@@ -15,9 +14,9 @@ def main():
         """
         SELECT id, network, ST_x(geom) as lon,
         ST_y(geom) as lat, min(min_tmpf)
-        from summary_2017 s JOIN stations t on (t.iemid = s.iemid)
+        from summary_2020 s JOIN stations t on (t.iemid = s.iemid)
         WHERE network IN ('IA_ASOS','AWOS') and min_tmpf > -50 and
-        day > '2017-08-01' and id not in ('XXX')
+        day > '2020-08-01' and id not in ('XXX')
         GROUP by id, network, lon, lat ORDER by min ASC
     """,
         pgconn,
@@ -25,10 +24,10 @@ def main():
     )
 
     mp = MapPlot(
-        title=r"2017 Fall Season Minimum Temperature $^\circ$F",
+        title=r"2020 Fall Season Minimum Temperature $^\circ$F",
         axisbg="white",
         subtitle=(
-            "Automated Weather Stations ASOS/AWOS, " "Valid Fall 2017 thru %s"
+            "Automated Weather Stations ASOS/AWOS, Valid Fall 2020 thru %s"
         )
         % (datetime.datetime.now().strftime("%d %b %Y"),),
     )
