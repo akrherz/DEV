@@ -1,10 +1,11 @@
 """Request for maps and data of products without SVS updates."""
 import calendar
 
-from pandas.io.sql import read_sql
-import seaborn as sns
 from pyiem.util import get_dbconn
+from pyiem.plot import get_cmap
 from pyiem.plot.use_agg import plt
+import seaborn as sns
+from pandas.io.sql import read_sql
 
 
 def main():
@@ -17,7 +18,7 @@ def main():
         extract(month from issue) as month, phenomena,
         max(case when svs is not null then 1 else 0 end) as hit from
         warnings where issue > '2008-01-01' and
-        issue < '2019-01-01' and phenomena in ('SV', 'TO', 'FF')
+        issue < '2021-01-01' and phenomena in ('SV', 'TO', 'FF')
         and significance = 'W' GROUP by wfo, eventid, year, month, phenomena
     )
     SELECT year, month, sum(hit) as got_update, count(*) as total_events
@@ -28,23 +29,32 @@ def main():
     df["no_update_percent"] = (
         100.0 - df["got_update"] / df["total_events"] * 100.0
     )
+    overall = 100.0 - df["got_update"].sum() / df["total_events"].sum() * 100.0
     df = df.pivot("year", "month", "no_update_percent")
     # sns.jointplot(
     #    df['total_events'], df['no_update_percent'], kind="hex",
     #    color="#4CB391")
     fig, ax = plt.subplots(figsize=(9, 6))
-    sns.heatmap(df, annot=True, fmt=".1f", linewidths=0.5, ax=ax)
+    sns.heatmap(
+        df,
+        annot=True,
+        fmt=".1f",
+        linewidths=0.5,
+        ax=ax,
+        cmap=get_cmap("terrain_r"),
+    )
     ax.set_xticklabels(calendar.month_abbr[1:])
     ax.set_title(
         (
-            "2008-2018 Percentage of SVR+TOR+FFW Warnings by Year/Month\n"
-            "without receiving a single SVS/FFS Update"
+            "2008-2020 Percentage of NWS SVR+TOR+FFW Warnings by Year/Month\n"
+            "without receiving a single SVS/FFS Update, "
+            f"overall: {overall:.2f}%"
         )
     )
-    ax.set_xlabel("Generated 22 Feb 2019 by @akrherz with unofficial data")
+    ax.set_xlabel("Generated 24 Sep 2020 by @akrherz with unofficial data")
     for tick in ax.get_yticklabels():
         tick.set_rotation(0)
-    plt.gcf().savefig("test.png")
+    fig.savefig("test.png")
 
 
 if __name__ == "__main__":
