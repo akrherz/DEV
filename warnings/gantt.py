@@ -13,8 +13,9 @@ def main():
     MOS = get_dbconn("mos")
     mcursor = MOS.cursor()
     mcursor.execute(
-        """SELECT ftime, tmp from t2013 where station = 'KCID'
-    and model = 'GFS' and runtime = '2013-01-29 18:00' ORDER by ftime ASC"""
+        "SELECT ftime, tmp from t2013 where station = 'KCID' "
+        "and model = 'GFS' and runtime = '2013-01-29 18:00' "
+        "ORDER by ftime ASC"
     )
     mvalid = []
     mtmpf = []

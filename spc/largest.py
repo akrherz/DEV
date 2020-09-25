@@ -1,12 +1,12 @@
 """Print out the largest outlooks"""
-from __future__ import print_function
-import psycopg2
+
+from pyiem.util import get_dbconn
 from pandas.io.sql import read_sql
 
 
 def main():
     """Go Please"""
-    pgconn = psycopg2.connect(database="postgis")
+    pgconn = get_dbconn("postgis")
     df = read_sql(
         """WITH data as (
         SELECT category, threshold,

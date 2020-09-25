@@ -3,8 +3,8 @@
 Dedup some duplicated FFWs in the warnings table."""
 import sys
 
-from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
+from pandas.io.sql import read_sql
 
 
 def main(argv):
@@ -18,11 +18,9 @@ def main(argv):
     # matching issue times
     # matching geom areas (slight hack)
     df = read_sql(
-        """
+        f"""
         SELECT wfo, eventid, max(oid) as max_oid,
-        count(*) from """
-        + table
-        + """ WHERE
+        count(*) from {table} WHERE
         phenomena = 'FF' and significance = 'W' and status = 'NEW'
         GROUP by wfo, eventid HAVING count(*) > 1 and
         min(issue) = max(issue) and max(st_area(geom)) = min(st_area(geom))
@@ -34,19 +32,12 @@ def main(argv):
     for _, row in df.iterrows():
         print("  %s %03i is a dup" % (row["wfo"], row["eventid"]))
         cursor.execute(
-            """
-            DELETE from """
-            + table
-            + """ WHERE oid = %s
-        """,
-            (row["max_oid"],),
+            f"DELETE from {table} WHERE oid = %s", (row["max_oid"],)
         )
         print("    - removed %s rows from %s" % (cursor.rowcount, table))
         df2 = read_sql(
-            """
-            SELECT ugc, max(oid) as max_oid from """
-            + wtable
-            + """
+            f"""
+            SELECT ugc, max(oid) as max_oid from {wtable}
             WHERE wfo = %s and phenomena = 'FF' and significance = 'W'
             and eventid = %s GROUP by ugc HAVING count(*) > 1
         """,
@@ -55,12 +46,7 @@ def main(argv):
         )
         for __, row2 in df2.iterrows():
             cursor.execute(
-                """
-                DELETE from """
-                + wtable
-                + """ WHERE oid = %s
-            """,
-                (row2["max_oid"],),
+                f"DELETE from {wtable} WHERE oid = %s", (row2["max_oid"],)
             )
             print(
                 "    - removed %s rows for %s in %s"
