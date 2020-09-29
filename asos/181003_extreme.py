@@ -1,8 +1,8 @@
 """A table of comparables to extremes of 3 Oct 2018."""
 
-from pandas.io.sql import read_sql
 from pyiem.network import Table as NetworkTable
 from pyiem.util import get_dbconn
+from pandas.io.sql import read_sql
 
 
 def main():

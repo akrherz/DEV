@@ -1,6 +1,10 @@
-import numpy
-import psycopg2
+"""daily frequency.
+
+TODO: can use feel column.
+"""
 import math
+
+import numpy as np
 import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
 
@@ -23,9 +27,9 @@ def rect(v):
 
 
 def get_station(station):
-    counts = numpy.zeros((732,), "f")
+    counts = np.zeros((732,), "f")
     acursor.execute(
-        """SELECT valid, 
+        """SELECT valid,
       tmpf, sknt from alldata where station = %s and tmpf < 40 and
       sknt >= 0 and tmpf > -60
       and valid BETWEEN '1973-01-01' and '2014-01-01' ORDER by valid ASC""",
@@ -42,32 +46,38 @@ def get_station(station):
     return counts
 
 
-counts = get_station("MCW")
-counts[365] = counts[364]
-counts2 = get_station("DSM")
-counts2[365] = counts2[364]
-counts3 = get_station("FSD")
-counts3[365] = counts3[364]
-print counts2[360:370]
+def main():
+    """Go Main Go."""
+    counts = get_station("MCW")
+    counts[365] = counts[364]
+    counts2 = get_station("DSM")
+    counts2[365] = counts2[364]
+    counts3 = get_station("FSD")
+    counts3[365] = counts3[364]
+    print(counts2[360:370])
+
+    (fig, ax) = plt.subplots(1, 1)
+
+    ax.plot(np.arange(1, 733), counts / 41.0 * 100.0, label="Mason City")
+    ax.plot(np.arange(1, 733), counts2 / 41.0 * 100.0, label="Des Moines")
+    ax.plot(np.arange(1, 733), counts3 / 41.0 * 100.0, label="Sioux Falls, SD")
+    ax.set_xticks((305, 335, 365, 365 + 32, 365 + 60, 365 + 91, 365 + 121))
+    ax.set_xticklabels(
+        ("Nov 1", "Dec 1", "Jan 1", "Feb 1", "Mar 1", "Apr 1", "May 1")
+    )
+
+    ax.set_xlim(290, 470)
+    ax.set_ylim(0, 100)
+    ax.set_ylabel("Percentage of Years [%]")
+    ax.grid(True)
+    ax.set_title(
+        "1973-2013 Daily Frequency of 1+ Sub-Zero "
+        "$^{\circ}\mathrm{F}$ Wind Chill Ob"
+    )
+    ax.legend()
+
+    fig.savefig("test.png")
 
 
-(fig, ax) = plt.subplots(1, 1)
-
-ax.plot(numpy.arange(1, 733), counts / 41.0 * 100.0, label="Mason City")
-ax.plot(numpy.arange(1, 733), counts2 / 41.0 * 100.0, label="Des Moines")
-ax.plot(numpy.arange(1, 733), counts3 / 41.0 * 100.0, label="Sioux Falls, SD")
-ax.set_xticks((305, 335, 365, 365 + 32, 365 + 60, 365 + 91, 365 + 121))
-ax.set_xticklabels(
-    ("Nov 1", "Dec 1", "Jan 1", "Feb 1", "Mar 1", "Apr 1", "May 1")
-)
-
-ax.set_xlim(290, 470)
-ax.set_ylim(0, 100)
-ax.set_ylabel("Percentage of Years [%]")
-ax.grid(True)
-ax.set_title(
-    "1973-2013 Daily Frequency of 1+ Sub-Zero $^{\circ}\mathrm{F}$ Wind Chill Ob"
-)
-ax.legend()
-
-fig.savefig("test.png")
+if __name__ == "__main__":
+    main()

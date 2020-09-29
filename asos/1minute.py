@@ -1,4 +1,7 @@
-"""Plot of 1minute ASOS data"""
+"""Plot of 1minute ASOS data.
+
+TODO: roll this visualization into autoplot 211
+"""
 import datetime
 
 import numpy as np

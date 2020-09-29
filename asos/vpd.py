@@ -1,5 +1,4 @@
 """VPD"""
-from __future__ import print_function
 import datetime
 
 from pyiem.util import get_dbconn
@@ -13,7 +12,7 @@ from pandas.io.sql import read_sql
 
 def main():
     """Go Main Go"""
-    pgconn = get_dbconn("asos", user="nobody")
+    pgconn = get_dbconn("asos")
     daily = read_sql(
         """
         SELECT date(valid), max(tmpf) as high, min(tmpf) as low from alldata
