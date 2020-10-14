@@ -1,8 +1,8 @@
 """We were ingesting the RWIS using UTC days as local day high / lows"""
-from __future__ import print_function
-import psycopg2
-from pandas.io.sql import read_sql
+
 from pyiem.network import Table as NetworkTable
+from pyiem.util import get_dbconn
+from pandas.io.sql import read_sql
 
 NETWORK = NetworkTable(
     [
@@ -38,12 +38,8 @@ NETWORK = NetworkTable(
 
 def main():
     """Do Some workflow"""
-    iemaccess = psycopg2.connect(
-        database="iem", host="localhost", port=5555, user="mesonet"
-    )
-    rwis = psycopg2.connect(
-        database="rwis", host="localhost", port=5555, user="nobody"
-    )
+    iemaccess = get_dbconn("iem")
+    rwis = get_dbconn("rwis")
     for sid in NETWORK.sts:
         obs = read_sql(
             """
@@ -74,10 +70,8 @@ def main():
             #        ) % (date, row['max_tmpf'], row['max'],
             #             row['min_tmpf'], row['min']))
             icursor.execute(
-                """
-            UPDATE """
-                + table
-                + """ SET max_tmpf = %s, min_tmpf = %s
+                f"""
+            UPDATE {table} SET max_tmpf = %s, min_tmpf = %s
             WHERE iemid = %s and day = %s
             """,
                 (row["max"], row["min"], NETWORK.sts[sid]["iemid"], date),

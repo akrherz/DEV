@@ -1,21 +1,22 @@
 """Plot the time we are robbed of."""
+import datetime
+
 import numpy
 import ephem
-import mx.DateTime
 import matplotlib.pyplot as plt
-import numpy as np
 import matplotlib.font_manager
 
 
 def compute_sunrise(lat, long):
+    """Go."""
     arr = []
     sun = ephem.Sun()
     ames = ephem.Observer()
     ames.lat = lat
     ames.long = long
-    sts = mx.DateTime.DateTime(2012, 1, 1)
-    ets = mx.DateTime.DateTime(2013, 1, 1)
-    interval = mx.DateTime.RelativeDateTime(days=1)
+    sts = datetime.datetime(2012, 1, 1)
+    ets = datetime.datetime(2013, 1, 1)
+    interval = datetime.timedelta(days=1)
     now = sts
     doy = []
     i = 1
@@ -23,11 +24,11 @@ def compute_sunrise(lat, long):
     findT = 0
     while now < ets:
         ames.date = now.strftime("%Y/%m/%d")
-        rise = mx.DateTime.strptime(
+        rise = datetime.datetime.strptime(
             str(ames.next_rising(sun)), "%Y/%m/%d %H:%M:%S"
         )
         rise = rise.localtime()
-        set = mx.DateTime.strptime(
+        _sunset = datetime.datetime.strptime(
             str(ames.next_setting(sun)), "%Y/%m/%d %H:%M:%S"
         )
         # if set < rise:
@@ -53,7 +54,7 @@ def compute_sunrise(lat, long):
 
 
 def smooth(x, window_len=11, window="hanning"):
-
+    """Smooth things."""
     if x.ndim != 1:
         raise ValueError("smooth only accepts 1 dimension arrays.")
 
@@ -79,42 +80,47 @@ def smooth(x, window_len=11, window="hanning"):
     return y
 
 
-doy, ames, rames = compute_sunrise("41.99206", "-93.62183")
-doy, stl, rstl = compute_sunrise("38.75245", "-90.3734")
-doy, msp, rmsp = compute_sunrise("44.88537", "-93.23131")
+def main():
+    """Go Main Go."""
+    doy, ames, rames = compute_sunrise("41.99206", "-93.62183")
+    doy, stl, rstl = compute_sunrise("38.75245", "-90.3734")
+    doy, msp, rmsp = compute_sunrise("44.88537", "-93.23131")
+
+    prop = matplotlib.font_manager.FontProperties(size=12)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+
+    xticks = []
+    xticklabels = []
+    sts = datetime.datetime(2012, 1, 1)
+    ets = datetime.datetime(2013, 1, 1)
+    interval = datetime.timedelta(months=1)
+    now = sts
+    while now < ets:
+        xticks.append((now - datetime.datetime(2012, 1, 1)).days)
+        xticklabels.append(now.strftime("%b"))
+        now += interval
+
+    ax.plot(doy, ames, color="k", label="Ames - %s days" % (rames - 71,))
+    ax.plot([71, rames], [ames[69], ames[rames]], color="k", linestyle="--")
+    ax.plot(doy, msp, color="b", label="Minneapolis - %s days" % (rmsp - 71,))
+    ax.plot([71, rmsp], [msp[69], msp[rmsp]], color="b", linestyle="--")
+    ax.plot(doy, stl, color="r", label="Saint Louis - %s days" % (rstl - 71,))
+    ax.plot([71, rstl], [stl[69], stl[rstl]], color="r", linestyle="--")
+    ax.set_xticks(xticks)
+    ax.set_xticklabels(xticklabels)
+    ax.set_xlim(min(xticks) - 1, max(xticks) + 32)
+    ax.set_ylabel("Local Sunrise Time (CST or CDT)")
+    ax.set_yticks(numpy.arange(300, 510, 30))
+    ax.set_yticklabels(
+        ("5 AM", "5:30", "6 AM", "6:30", "7 AM", "7:30", "8 AM", "8:30")
+    )
+    # ax.set_xlabel("1 Jan - 26 May 2011")
+    ax.set_title("Number of Days to retrieve our stolen morning daylight hour")
+    ax.grid(True)
+    ax.legend(loc=4, prop=prop)
+    fig.savefig("test.png")
 
 
-prop = matplotlib.font_manager.FontProperties(size=12)
-fig = plt.figure()
-ax = fig.add_subplot(111)
-
-xticks = []
-xticklabels = []
-sts = mx.DateTime.DateTime(2012, 1, 1)
-ets = mx.DateTime.DateTime(2013, 1, 1)
-interval = mx.DateTime.RelativeDateTime(months=1)
-now = sts
-while now < ets:
-    xticks.append((now - mx.DateTime.DateTime(2012, 1, 1)).days)
-    xticklabels.append(now.strftime("%b"))
-    now += interval
-
-ax.plot(doy, ames, color="k", label="Ames - %s days" % (rames - 71,))
-ax.plot([71, rames], [ames[69], ames[rames]], color="k", linestyle="--")
-ax.plot(doy, msp, color="b", label="Minneapolis - %s days" % (rmsp - 71,))
-ax.plot([71, rmsp], [msp[69], msp[rmsp]], color="b", linestyle="--")
-ax.plot(doy, stl, color="r", label="Saint Louis - %s days" % (rstl - 71,))
-ax.plot([71, rstl], [stl[69], stl[rstl]], color="r", linestyle="--")
-ax.set_xticks(xticks)
-ax.set_xticklabels(xticklabels)
-ax.set_xlim(min(xticks) - 1, max(xticks) + 32)
-ax.set_ylabel("Local Sunrise Time (CST or CDT)")
-ax.set_yticks(numpy.arange(300, 510, 30))
-ax.set_yticklabels(
-    ("5 AM", "5:30", "6 AM", "6:30", "7 AM", "7:30", "8 AM", "8:30")
-)
-# ax.set_xlabel("1 Jan - 26 May 2011")
-ax.set_title("Number of Days to retrieve our stolen morning daylight hour")
-ax.grid(True)
-ax.legend(loc=4, prop=prop)
-fig.savefig("test.png")
+if __name__ == "__main__":
+    main()

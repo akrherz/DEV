@@ -1,10 +1,9 @@
 """we get an excel file with station locations, so we merge"""
-from __future__ import print_function
 
-from metpy.units import units as mpunits
-import pandas as pd
 from pyiem.util import get_dbconn
 from pyiem.network import Table as NetworkTable
+from metpy.units import units as mpunits
+import pandas as pd
 
 
 def main():

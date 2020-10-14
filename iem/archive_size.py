@@ -1,4 +1,6 @@
+"""Plot archive sizes."""
 import datetime
+
 import matplotlib.pyplot as plt
 
 data = """250528    2000/02/01
@@ -202,108 +204,115 @@ data = """250528    2000/02/01
 22299404    2016/08/01
 26626264    2016/09/01"""
 
-dates = [datetime.date(2000, 1, 1)]
-szs = [0.2]
-accum = [0.0002 * 30.0]
-for line in data.split("\n"):
-    tokens = line.strip().split()
-    sz = float(tokens[0]) / 1000000.0
-    szs.append(sz)
-    accum.append(accum[-1] + 30.0 * sz / 1000.0)
-    dates.append(datetime.datetime.strptime(tokens[1], "%Y/%m/%d"))
 
-(fig, ax) = plt.subplots(1, 1)
+def main():
+    """Go Main Go."""
+    dates = [datetime.date(2000, 1, 1)]
+    szs = [0.2]
+    accum = [0.0002 * 30.0]
+    for line in data.split("\n"):
+        tokens = line.strip().split()
+        sz = float(tokens[0]) / 1000000.0
+        szs.append(sz)
+        accum.append(accum[-1] + 30.0 * sz / 1000.0)
+        dates.append(datetime.datetime.strptime(tokens[1], "%Y/%m/%d"))
 
-ax.bar(dates, szs, width=30, fc="b", ec="b")
-ax2 = ax.twinx()
-ax2.plot(dates, accum, lw=2, c="r")
-ax2.set_ylabel("Total Archive Volume [TB]", color="r")
-ax.set_ylabel("Daily Archive Volume [GB]")
-ax.grid(True)
-ax.set_title("IEM File-based Archive Storage (2000 - September 2016)")
+    (fig, ax) = plt.subplots(1, 1)
 
-ax.annotate(
-    "Add Iowa RWIS webcams",
-    xy=(datetime.datetime(2009, 12, 1), 1.0),
-    xycoords="data",
-    xytext=(-150, 30),
-    textcoords="offset points",
-    bbox=dict(boxstyle="round", fc="0.8"),
-    arrowprops=dict(
-        arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
-    ),
-)
+    ax.bar(dates, szs, width=30, fc="b", ec="b")
+    ax2 = ax.twinx()
+    ax2.plot(dates, accum, lw=2, c="r")
+    ax2.set_ylabel("Total Archive Volume [TB]", color="r")
+    ax.set_ylabel("Daily Archive Volume [GB]")
+    ax.grid(True)
+    ax.set_title("IEM File-based Archive Storage (2000 - September 2016)")
 
-ax.annotate(
-    "Add High-res NEXRAD composites",
-    xy=(datetime.datetime(2010, 12, 1), 2.25),
-    xycoords="data",
-    xytext=(-200, 50),
-    textcoords="offset points",
-    bbox=dict(boxstyle="round", fc="0.8"),
-    arrowprops=dict(
-        arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
-    ),
-)
+    ax.annotate(
+        "Add Iowa RWIS webcams",
+        xy=(datetime.datetime(2009, 12, 1), 1.0),
+        xycoords="data",
+        xytext=(-150, 30),
+        textcoords="offset points",
+        bbox=dict(boxstyle="round", fc="0.8"),
+        arrowprops=dict(
+            arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
+        ),
+    )
 
-ax.annotate(
-    "Add GIS GINI Satellite Images",
-    xy=(datetime.datetime(2011, 12, 1), 6),
-    xycoords="data",
-    xytext=(-200, 50),
-    textcoords="offset points",
-    bbox=dict(boxstyle="round", fc="0.8"),
-    arrowprops=dict(
-        arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
-    ),
-)
+    ax.annotate(
+        "Add High-res NEXRAD composites",
+        xy=(datetime.datetime(2010, 12, 1), 2.25),
+        xycoords="data",
+        xytext=(-200, 50),
+        textcoords="offset points",
+        bbox=dict(boxstyle="round", fc="0.8"),
+        arrowprops=dict(
+            arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
+        ),
+    )
 
-ax.annotate(
-    "Add Individual NEXRAD Images",
-    xy=(datetime.datetime(2012, 2, 1), 9.5),
-    xycoords="data",
-    xytext=(-200, 50),
-    textcoords="offset points",
-    bbox=dict(boxstyle="round", fc="0.8"),
-    arrowprops=dict(
-        arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
-    ),
-)
+    ax.annotate(
+        "Add GIS GINI Satellite Images",
+        xy=(datetime.datetime(2011, 12, 1), 6),
+        xycoords="data",
+        xytext=(-200, 50),
+        textcoords="offset points",
+        bbox=dict(boxstyle="round", fc="0.8"),
+        arrowprops=dict(
+            arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
+        ),
+    )
 
-ax.annotate(
-    "Add Some Model Surface Analysis",
-    xy=(datetime.datetime(2013, 4, 1), 13.5),
-    xycoords="data",
-    xytext=(-300, 30),
-    textcoords="offset points",
-    bbox=dict(boxstyle="round", fc="0.8"),
-    arrowprops=dict(
-        arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
-    ),
-)
+    ax.annotate(
+        "Add Individual NEXRAD Images",
+        xy=(datetime.datetime(2012, 2, 1), 9.5),
+        xycoords="data",
+        xytext=(-200, 50),
+        textcoords="offset points",
+        bbox=dict(boxstyle="round", fc="0.8"),
+        arrowprops=dict(
+            arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
+        ),
+    )
 
-ax.annotate(
-    "Add MRMS Products",
-    xy=(datetime.datetime(2014, 6, 1), 17.5),
-    xycoords="data",
-    xytext=(-300, 30),
-    textcoords="offset points",
-    bbox=dict(boxstyle="round", fc="0.8"),
-    arrowprops=dict(
-        arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
-    ),
-)
+    ax.annotate(
+        "Add Some Model Surface Analysis",
+        xy=(datetime.datetime(2013, 4, 1), 13.5),
+        xycoords="data",
+        xytext=(-300, 30),
+        textcoords="offset points",
+        bbox=dict(boxstyle="round", fc="0.8"),
+        arrowprops=dict(
+            arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
+        ),
+    )
 
-ax.annotate(
-    "Increased Size of Individual NEXRADs due to SAILS",
-    xy=(datetime.datetime(2016, 5, 1), 24.5),
-    xycoords="data",
-    xytext=(-400, 30),
-    textcoords="offset points",
-    bbox=dict(boxstyle="round", fc="0.8"),
-    arrowprops=dict(
-        arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
-    ),
-)
+    ax.annotate(
+        "Add MRMS Products",
+        xy=(datetime.datetime(2014, 6, 1), 17.5),
+        xycoords="data",
+        xytext=(-300, 30),
+        textcoords="offset points",
+        bbox=dict(boxstyle="round", fc="0.8"),
+        arrowprops=dict(
+            arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
+        ),
+    )
 
-fig.savefig("test.png")
+    ax.annotate(
+        "Increased Size of Individual NEXRADs due to SAILS",
+        xy=(datetime.datetime(2016, 5, 1), 24.5),
+        xycoords="data",
+        xytext=(-400, 30),
+        textcoords="offset points",
+        bbox=dict(boxstyle="round", fc="0.8"),
+        arrowprops=dict(
+            arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
+        ),
+    )
+
+    fig.savefig("test.png")
+
+
+if __name__ == "__main__":
+    main()

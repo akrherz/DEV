@@ -2,8 +2,8 @@
 import datetime
 import calendar
 
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
     x = []
     y = []
     months = []
-    for i in range(12):
+    for _i in range(12):
         months.append([])
     for line in open("vibe.csv"):
         tokens = line.split(",")
@@ -61,7 +61,7 @@ def main():
     )
     y2 = ax.twinx()
     y2.plot(range(1, 13), climo, color="purple", lw=2)
-    y2.set_ylabel("Average Monthly Temperature $^\circ$F", color="purple")
+    y2.set_ylabel(r"Average Monthly Temperature $^\circ$F", color="purple")
     y2.set_ylim(-10, 90)
     ax.set_ylim(22, 38)
     ax.set_xticklabels(calendar.month_abbr[1:])

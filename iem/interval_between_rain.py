@@ -1,13 +1,12 @@
 """Period between rainfalls"""
-from __future__ import print_function
 import datetime
 
-import numpy as np
-import matplotlib.pyplot as plt
-import pytz
 from pyiem import iemre, plot
 from pyiem.util import ncopen
 from pyiem.datatypes import distance
+import numpy as np
+import pytz
+import matplotlib.pyplot as plt
 
 THRESHOLD = distance(0.25, "in").value("mm")
 
@@ -42,9 +41,9 @@ def main():
 
     m = plot.MapPlot(
         sector="midwest",
-        title=("Max Period " "between 24 Hour 0.25+ inch Total Precipitation"),
+        title="Max Period between 24 Hour 0.25+ inch Total Precipitation",
         subtitle=(
-            "Period of 20 Apr - 11 May 2018, " "based on NCEP Stage IV data"
+            "Period of 20 Apr - 11 May 2018, based on NCEP Stage IV data"
         ),
     )
 

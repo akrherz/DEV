@@ -1,9 +1,8 @@
 """Map cli_data"""
-from __future__ import print_function
 
-from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
 from pyiem.plot import MapPlot
+from pandas.io.sql import read_sql
 
 
 def main():
@@ -30,7 +29,7 @@ def main():
     mp = MapPlot(
         sector="midwest",
         axisbg="white",
-        title=("2018-2019 Snowfall Total Departure " "from Average [inches]"),
+        title="2018-2019 Snowfall Total Departure from Average [inches]",
         subtitle="18 Feb 2019 Based on NWS CLI Reporting Sites",
     )
     mp.plot_values(

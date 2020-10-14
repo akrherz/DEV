@@ -1,9 +1,9 @@
 """Feature analysis."""
+
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn
-from pandas.io.sql import read_sql
 import numpy as np
-from scipy import stats
+from pandas.io.sql import read_sql
 
 
 def main():
@@ -14,8 +14,7 @@ def main():
         """
         SELECT valid, good, bad, abstain,
         extract(hour from valid) as hour,
-        extract(minute from valid) as minute from feature
-        ORDER by valid
+        extract(minute from valid) as minute from feature ORDER by valid
     """,
         pgconn,
         index_col="valid",
@@ -49,7 +48,8 @@ def main():
     ax[1].set_xlim(df.index.values[0], df.index.values[-1])
     ax[1].set_xlabel(
         (
-            "Total Votes; Good: %s (%.1f%%) Bad: %s (%.1f%%) Abstain: %s (%.1f%%)"
+            "Total Votes; Good: %s (%.1f%%) "
+            "Bad: %s (%.1f%%) Abstain: %s (%.1f%%)"
         )
         % (
             df["good"].sum(),

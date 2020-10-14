@@ -19,8 +19,8 @@ def main():
     )
     df["est_rh"] = (
         relative_humidity_from_dewpoint(
-            df["max_tmpf"].values * units.degF,
-            df["min_tmpf"].values * units.degF,
+            units.degF * df["max_tmpf"].values,
+            units.degF * df["min_tmpf"].values,
         )
         .to(units.percent)
         .m

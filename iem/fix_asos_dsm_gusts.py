@@ -38,10 +38,8 @@ def main(argv):
     pgconn = get_dbconn("afos")
     cursor = pgconn.cursor()
     cursor.execute(
-        """
-        SELECT entered, data from """
-        + afostable
-        + """
+        f"""
+        SELECT entered, data from {afostable}
         WHERE substr(pil, 1, 3) = 'DSM'
         ORDER by entered
     """
