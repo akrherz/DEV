@@ -39,7 +39,7 @@ def main():
 
     mp = MapPlot(
         title="Largest Positive Change in Month to Month Average Temperature",
-        subtitle=("values in red set record for April to May 2018"),
+        subtitle="values in red set record for April to May 2018",
         sector="state",
         state="IA",
         drawstates=True,

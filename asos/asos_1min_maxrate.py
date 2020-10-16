@@ -1,6 +1,6 @@
 """Plot peaks."""
-import psycopg2
 import datetime
+
 import pytz
 import numpy as np
 from numpy.lib import stride_tricks
@@ -25,7 +25,6 @@ def main():
         delta = (ts - basets)
         offset = int(delta.days * 1440 + delta.seconds / 60.)
         if row[1] > 0.35:
-            print 'DELETE', row
             continue
         data[offset] = row[1]
 
@@ -41,7 +40,6 @@ def main():
         Z = rolling(data, i)
         sums = np.sum(Z, 1)
         y.append(np.max(sums))
-        print i, y[-1]
 
     np.savetxt('mcw.npyb', y)
     """

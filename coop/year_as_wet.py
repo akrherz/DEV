@@ -40,7 +40,9 @@ def main():
     mp = MapPlot(
         sector="iailin",
         continentalcolor="white",
-        subtitle='Locations with blue "R" had the largest accumulation for period',
+        subtitle=(
+            'Locations with blue "R" had the largest accumulation for period'
+        ),
         title="Previous year wetter than 1 Oct 2018 - 31 May 2019",
     )
     mp.plot_values(lons, lats, vals, textsize=12, labelbuffer=1, color=colors)

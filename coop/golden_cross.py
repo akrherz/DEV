@@ -70,11 +70,9 @@ def main():
         if above and ma50[i] < ma200[i] and dates[i].month > 6:
             above = False
             death.append(int(dates[i].strftime("%j")))
-            # print 'Death', dates[i]
         elif not above and ma50[i] > ma200[i] and dates[i].month < 6:
             above = True
             golden.append(int(dates[i].strftime("%j")))
-            # print 'Golden', dates[i]
 
     (fig, ax) = plt.subplots(3, 1, figsize=(10, 10))
 

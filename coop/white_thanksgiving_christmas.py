@@ -70,7 +70,7 @@ def main():
     ax.grid(True)
     ax.set_ylabel("Frequency [%]")
     ax.set_ylim(0, 50)
-    fig.savefig("test.pdf", dpi=300)
+    fig.savefig("test.png")
 
 
 if __name__ == "__main__":

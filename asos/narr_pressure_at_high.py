@@ -90,7 +90,6 @@ def main():
     )
 
     # x,y = m.map(xs,ys)
-    # print xx
     mp.plot_values(xs, ys, xx, "%s", textsize=16, labelbuffer=0)
     mp.postprocess(filename="test.png")
 

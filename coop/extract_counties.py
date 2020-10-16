@@ -12,7 +12,7 @@ def dump(pgconn, sid, ncdc81, fips):
     """Go for this sid!"""
     table = "alldata_%s" % (sid[:2],)
     df = read_sql(
-        """
+        f"""
         WITH avgs as (
             select to_char(valid, 'mmdd') as sday, high, low, precip
             from ncdc_climate81 where station = %s
@@ -22,9 +22,7 @@ def dump(pgconn, sid, ncdc81, fips):
         (case when o.precip < 0.009 then 0 else o.precip end) as obs_precip_mm,
         c.high as climo_high_c, c.low as climo_low_c,
         c.precip as climo_precip_mm
-        from """
-        + table
-        + """ o JOIN avgs c on (o.sday = c.sday)
+        from {table} o JOIN avgs c on (o.sday = c.sday)
         WHERE o.station = %s and o.year >= 2006 and o.year < 2020
         ORDER by day ASC 
         """,
