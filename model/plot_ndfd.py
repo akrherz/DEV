@@ -6,7 +6,7 @@ import datetime
 
 import numpy as np
 from pyiem.plot.use_agg import plt
-from pyiem.plot import MapPlot, nwssnow
+from pyiem.plot import MapPlot
 import pygrib
 
 
@@ -34,7 +34,7 @@ def main():
         north=45,
         south=38,
         axisbg="tan",
-        title=("NWS Forecast Accumulated Ice " "thru 12 AM 20 January 2020"),
+        title="NWS Forecast Accumulated Ice thru 12 AM 20 January 2020",
         subtitle="NDFD Forecast Issued %s"
         % (analtime.strftime("%-I %p %-d %B %Y"),),
     )
@@ -57,7 +57,6 @@ def main():
     mp.drawcounties()
     mp.drawcities()
     mp.postprocess(filename="test.png")
-    mp.close()
 
 
 if __name__ == "__main__":

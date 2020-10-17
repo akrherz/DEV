@@ -1,13 +1,12 @@
 """Figure out the grid max/min values"""
-from __future__ import print_function
 import os
 import datetime
 
-from metpy.units import units
 import numpy as np
 import pygrib
 from pyiem.plot.use_agg import plt
 from pyiem.plot import MapPlot
+from metpy.units import units
 
 
 def plot():

@@ -3,19 +3,16 @@
 See: https://mesonet.agron.iastate.edu/onsite/news.phtml?id=1366
 
 """
-from __future__ import print_function
-from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
+from pandas.io.sql import read_sql
 
 
 def workflow(cursor, wfo, phenomena, significance):
     """Attempt to find dups"""
     # 1. Get the max eventid, which will we use to 'create' new ones
     cursor.execute(
-        """
-        SELECT max(eventid) from warnings_2017 where
-        wfo = %s and phenomena = %s and significance = %s
-    """,
+        "SELECT max(eventid) from warnings_2017 where "
+        "wfo = %s and phenomena = %s and significance = %s",
         (wfo, phenomena, significance),
     )
     maxetn = cursor.fetchone()[0]
@@ -39,7 +36,7 @@ def workflow(cursor, wfo, phenomena, significance):
         if cursor.rowcount > 1:
             print("  FIXME! %s %s %s %s" % (wfo, phenomena, significance, etn))
             continue
-        elif cursor.rowcount == 0:
+        if cursor.rowcount == 0:
             continue
         if firsthit and etn != 1:
             print("would skip this!")
@@ -73,16 +70,14 @@ def main():
     """Go Main Go"""
     pgconn = get_dbconn("postgis")
     df = read_sql(
-        """
-    SELECT distinct wfo, phenomena, significance from warnings_2017
-    ORDER by wfo ASC
-    """,
+        "SELECT distinct wfo, phenomena, significance from warnings_2017 "
+        "ORDER by wfo ASC",
         pgconn,
         index_col=None,
     )
     for _, row in df.iterrows():
         cursor = pgconn.cursor()
-        cursor.execute("""SET TIME ZONE 'UTC'""")
+        cursor.execute("SET TIME ZONE 'UTC'")
         workflow(cursor, row["wfo"], row["phenomena"], row["significance"])
         cursor.close()
         pgconn.commit()

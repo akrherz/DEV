@@ -50,7 +50,6 @@ def main():
     mp.drawcounties()
     mp.drawcities()
     mp.postprocess(filename="200205.png")
-    mp.close()
 
 
 if __name__ == "__main__":

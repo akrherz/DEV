@@ -1,15 +1,14 @@
 """Figure out the grid max/min values"""
-from __future__ import print_function
 import os
 import datetime
 
 import numpy as np
-from metpy.units import units
-from metpy.calc import windchill
-from matplotlib.colors import ListedColormap
 import pygrib
 from pyiem.plot.use_agg import plt
 from pyiem.plot import MapPlot
+from metpy.units import units
+from metpy.calc import windchill
+from matplotlib.colors import ListedColormap
 
 
 def plot():
@@ -78,7 +77,7 @@ def process():
                 t2 = grbs.select(shortName="2t")[0].values
                 u10 = grbs.select(shortName="10u")[0].values
                 v10 = grbs.select(shortName="10v")[0].values
-            except:
+            except Exception:
                 print("FAIL!")
                 now += interval
                 continue

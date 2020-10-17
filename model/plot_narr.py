@@ -1,3 +1,4 @@
+"""Plot NARR."""
 import numpy as np
 from pyiem.plot import MapPlot
 from pyiem.datatypes import distance

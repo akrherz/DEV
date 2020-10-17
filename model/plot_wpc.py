@@ -1,16 +1,11 @@
 """Plot WPC"""
-from __future__ import print_function
 import glob
 
 import pygrib
 import numpy as np
-import matplotlib
-
-matplotlib.use("agg")
-import matplotlib.pyplot as plt
+from pyiem.plot.use_agg import plt
 from pyiem.plot import MapPlot
 from pyiem import reference
-from pyiem.datatypes import distance
 
 
 def main():
