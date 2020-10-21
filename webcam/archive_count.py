@@ -25,9 +25,7 @@ def main():
     #    valid between '%s-01-01' and '%s-01-01'""" % (year, year+1))
     #    row = cursor.fetchone()
     #    cnts.append( row[0] )
-    #    print year, row[0]
     #
-    # print cnts
 
     (fig, ax) = plt.subplots(1, 1)
 
