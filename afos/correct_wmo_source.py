@@ -24,9 +24,7 @@ with data as (
  FROM present p WHERE t.source is null and t.pil = p.pil;
 """
 import sys
-import json
 
-from pyiem.network import Table as NetworkTable
 from pyiem.util import get_dbconn
 from pandas.io.sql import read_sql
 
@@ -41,55 +39,33 @@ def fixer(pgconn, oldval, newval):
     cursor.execute(
         "UPDATE products SET source = %s WHERE source = %s", (newval, oldval)
     )
-    print(("Correcting %s -> %s, %s rows") % (oldval, newval, cursor.rowcount))
+    print(f"Correcting {oldval} -> {newval}, {cursor.rowcount} rows")
     cursor.close()
     pgconn.commit()
 
 
-def main(argv):
+def do_table(pgconn, table):
     """Go Main Go."""
-    table = argv[1]
-    nt = NetworkTable(["WFO", "RFC", "NWS", "NCEP", "CWSU", "WSO"])
-    pgconn = get_dbconn("afos")
-    mpgconn = get_dbconn("mesosite")
-    mcursor = mpgconn.cursor()
     df = read_sql(
         f"SELECT source, count(*) from {table} "
         "WHERE source is not null GROUP by source ORDER by source",
         pgconn,
         index_col="source",
     )
-    updated = False
-    for source, row in df.iterrows():
-        if source[0] not in ["K", "P"]:
+    for source in df.index.values:
+        newsource = XREF_SOURCE.get(source, source)
+        if newsource == source:
             continue
-        iemsource = source[1:] if source[0] == "K" else source
-        if iemsource in nt.sts:
-            continue
-        if source in XREF_SOURCE:
-            fixer(pgconn, source, XREF_SOURCE[source])
-            continue
-        if row["count"] < 10:
-            print("skipping %s as row count is low" % (source,))
-            continue
-        mcursor.execute(
-            "SELECT wfo from stations where id = %s and network ~* 'ASOS' "
-            "and wfo is not null",
-            (iemsource,),
-        )
-        if mcursor.rowcount == 0:
-            print("Source: %s is double unknown" % (source,))
-            continue
-        newval = mcursor.fetchone()[0]
-        newval = f"P{newval}" if source[0] == "P" else f"K{newval}"
-        print("would assign %s to %s" % (source, newval))
-        XREF_SOURCE[source] = newval
-        fixer(pgconn, source, XREF_SOURCE[source])
-        updated = True
+        fixer(pgconn, source, newsource)
 
-    if updated:
-        print(json.dumps(XREF_SOURCE, indent=4, sort_keys=True))
+
+def main():
+    """Go Main Go."""
+    pgconn = get_dbconn("afos")
+    for year in range(1983, 2021):
+        for suffix in ["0106", "0712"]:
+            do_table(pgconn, f"products_{year}_{suffix}")
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()
