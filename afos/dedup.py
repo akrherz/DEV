@@ -36,35 +36,39 @@ def dotable(table):
         )
         data = []
         for row2 in cursor:
-            data.append(noaaport_text(row2[0]))
-        if len(data) == 2 and (
-            data[0][11:] == data[1][11:]
-            or (abs(len(data[0]) - len(data[1])) < 6)
-        ):
-            hits += 1
-            # delete old entries
-            cursor.execute(
-                f"""
-            DELETE from {table}
-            WHERE source = %s and entered = %s and pil = %s and wmo = %s
-            """,
-                (row["source"], row["entered"], row["pil"], row["wmo"]),
-            )
-            # insert without trailing ^C
-            cursor.execute(
-                f"""
-            INSERT into {table} (data, pil, entered, source, wmo)
-            VALUES (%s, %s, %s, %s, %s)
-            """,
-                (
-                    data[0][:-1],
-                    row["pil"],
-                    row["entered"],
-                    row["source"],
-                    row["wmo"],
-                ),
-            )
+            text = noaaport_text(row2[0])
+            data.append(text)
+        if len(data) < 2:
+            # Unsure how we got here, but alas.
             continue
+        # Our rectified products should match after the first 11 bytes (LDM)
+        comp = [x[11:] for x in data]
+        if comp.count(comp[0]) != len(comp):
+            continue
+        hits += 1
+        # delete old entries
+        cursor.execute(
+            f"""
+        DELETE from {table}
+        WHERE source = %s and entered = %s and pil = %s and wmo = %s
+        """,
+            (row["source"], row["entered"], row["pil"], row["wmo"]),
+        )
+        # insert without trailing ^C
+        cursor.execute(
+            f"""
+        INSERT into {table} (data, pil, entered, source, wmo)
+        VALUES (%s, %s, %s, %s, %s)
+        """,
+            (
+                data[0][:-1],
+                row["pil"],
+                row["entered"],
+                row["source"],
+                row["wmo"],
+            ),
+        )
+
     print("%s rows were updated..." % (hits,))
     cursor.close()
     pgconn.commit()
@@ -73,7 +77,7 @@ def dotable(table):
 
 def main():
     """Do Main"""
-    for year in range(2009, 2010):
+    for year in range(2003, 2004):
         for col in ["0106", "0712"]:
             table = "products_%s_%s" % (year, col)
             dotable(table)
