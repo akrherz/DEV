@@ -22,7 +22,9 @@ def dotable(table):
         pgconn,
         index_col=None,
     )
-    hits = 0
+    inserts = 0
+    deletes = 0
+    considered = 0
     for _, row in tqdm(
         df.iterrows(), total=len(df.index), desc=table, disable=False
     ):
@@ -45,10 +47,18 @@ def dotable(table):
         # Our rectified products should match after the first 11 bytes (LDM)
         # and further yet ignore the WMO header (6+1+4+1+6).
         comp = [x[29:] for x in data]
-        if comp.count(comp[0]) != len(comp):
+        # Compute the number of unique products in this comp
+        done = []
+        take = []
+        for index, x in enumerate(data):
+            if comp[index] not in done:
+                done.append(comp[index])
+                take.append(x)
+        # Unique entries matches, nothing to dedup!
+        if len(take) == len(data):
             continue
-        hits += 1
-        # delete old entries
+        considered += 1
+        # Delete old entries
         cursor.execute(
             f"""
         DELETE from {table}
@@ -56,22 +66,25 @@ def dotable(table):
         """,
             (row["source"], row["entered"], row["pil"], row["wmo"]),
         )
-        # insert without trailing ^C
-        cursor.execute(
-            f"""
-        INSERT into {table} (data, pil, entered, source, wmo)
-        VALUES (%s, %s, %s, %s, %s)
-        """,
-            (
-                data[0][:-1],
-                row["pil"],
-                row["entered"],
-                row["source"],
-                row["wmo"],
-            ),
-        )
+        deletes += cursor.rowcount
+        for x in take:
+            # insert without trailing ^C
+            cursor.execute(
+                f"""
+            INSERT into {table} (data, pil, entered, source, wmo)
+            VALUES (%s, %s, %s, %s, %s)
+            """,
+                (
+                    x[:-1],
+                    row["pil"],
+                    row["entered"],
+                    row["source"],
+                    row["wmo"],
+                ),
+            )
+            inserts += 1
 
-    print("%s rows were updated..." % (hits,))
+    print(f"Deleted {deletes} Inserted {inserts} Considered {considered}")
     cursor.close()
     pgconn.commit()
     pgconn.close()
