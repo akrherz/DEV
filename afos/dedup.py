@@ -1,4 +1,5 @@
 """Deduplicate."""
+import sys
 
 from tqdm import tqdm
 from pyiem.util import noaaport_text, get_dbconn
@@ -42,7 +43,8 @@ def dotable(table):
             # Unsure how we got here, but alas.
             continue
         # Our rectified products should match after the first 11 bytes (LDM)
-        comp = [x[11:] for x in data]
+        # and further yet ignore the WMO header (6+1+4+1+6).
+        comp = [x[29:] for x in data]
         if comp.count(comp[0]) != len(comp):
             continue
         hits += 1
@@ -75,13 +77,13 @@ def dotable(table):
     pgconn.close()
 
 
-def main():
+def main(argv):
     """Do Main"""
-    for year in range(2003, 2004):
+    for year in range(int(argv[1]), int(argv[2])):
         for col in ["0106", "0712"]:
             table = "products_%s_%s" % (year, col)
             dotable(table)
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv)
