@@ -1,5 +1,5 @@
 """Find afos database entries that have null PIL values"""
-from __future__ import print_function
+
 from pyiem.util import noaaport_text, get_dbconn
 from pyiem.nws.product import TextProduct
 
@@ -10,10 +10,7 @@ def dotable(table):
     cursor = pgconn.cursor()
     cursor2 = pgconn.cursor()
     cursor.execute(
-        """SELECT entered, data, source, wmo from """
-        + table
-        + """
-    WHERE pil is null"""
+        f"SELECT entered, data, source, wmo from {table} WHERE pil is null"
     )
     failures = 0
     updated = 0
@@ -31,12 +28,9 @@ def dotable(table):
             failures += 1
             continue
         cursor2.execute(
-            """UPDATE """
-            + table
-            + """
-        SET data = %s, pil = %s WHERE pil is null and entered = %s and
-        source = %s and wmo = %s
-        """,
+            f"UPDATE {table} "
+            "SET data = %s, pil = %s WHERE pil is null and entered = %s and "
+            "source = %s and wmo = %s",
             (product, tp.afos, row[0], row[2], row[3]),
         )
         if cursor2.rowcount == 0:

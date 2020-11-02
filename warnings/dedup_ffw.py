@@ -1,61 +1,72 @@
 """see akrherz/iem#191
 
 Dedup some duplicated FFWs in the warnings table."""
+from datetime import timezone
 import sys
 
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconn, noaaport_text
+from pyiem.nws.product import TextProduct
 from pandas.io.sql import read_sql
+
+
+def dedup(pgconn, cursor, row):
+    """Figure out if we can eliminate the bad entry :/"""
+    # Compute which events are at play.
+    df = read_sql(
+        f"SELECT issue, expire, report, ctid from warnings_{row['year']} "
+        "WHERE phenomena = %s and significance = %s and expire = %s and "
+        "ugc = %s",
+        pgconn,
+        params=(
+            row["phenomena"],
+            row["significance"],
+            row["expire"],
+            row["ugc"],
+        ),
+    )
+    for i, row2 in df.iterrows():
+        utcnow = row2["issue"].astimezone(timezone.utc)
+        tp = TextProduct(row2["report"], utcnow=utcnow)
+        delta = (tp.valid - utcnow).total_seconds()
+        if delta > 1800:
+            print("NOOP")
+            continue
+        print(f"{row2['ctid']} {utcnow} -> {tp.valid}")
 
 
 def main(argv):
     """Go for this year."""
     year = int(argv[1])
+    phenomena = argv[2]
+    significance = argv[3]
     pgconn = get_dbconn("postgis")
     cursor = pgconn.cursor()
-    table = "sbw_%s" % (year,)
-    wtable = "warnings_%s" % (year,)
-    # Candidates should have more than one database entry
-    # matching issue times
-    # matching geom areas (slight hack)
+    # Candidates have duplicated expire times and issue timestamps that are
+    # slightly off due to changes in how I assign product valid timestamps.
     df = read_sql(
-        f"""
-        SELECT wfo, eventid, max(oid) as max_oid,
-        count(*) from {table} WHERE
-        phenomena = 'FF' and significance = 'W' and status = 'NEW'
-        GROUP by wfo, eventid HAVING count(*) > 1 and
-        min(issue) = max(issue) and max(st_area(geom)) = min(st_area(geom))
-    """,
+        "SELECT ugc, expire, min(issue) as min_issue, "
+        f"max(issue) as max_issue, count(*) from warnings_{year} WHERE "
+        "phenomena = %s and significance = %s "
+        "GROUP by ugc, expire HAVING count(*) > 1",
         pgconn,
         index_col=None,
+        params=(phenomena, significance),
     )
-    print("%s entries for dedup found for %s" % (len(df.index), table))
+    df["year"] = year
+    df["phenomena"] = phenomena
+    df["significance"] = significance
+    print("%s entries for dedup found" % (len(df.index),))
     for _, row in df.iterrows():
-        print("  %s %03i is a dup" % (row["wfo"], row["eventid"]))
-        cursor.execute(
-            f"DELETE from {table} WHERE oid = %s", (row["max_oid"],)
+        delta = (row["max_issue"] - row["min_issue"]).total_seconds()
+        if abs(delta) > 1800:
+            print(f"skipping {row}")
+            continue
+        print(
+            "  %s %s %s is a dup"
+            % (row["ugc"], row["min_issue"], row["max_issue"])
         )
-        print("    - removed %s rows from %s" % (cursor.rowcount, table))
-        df2 = read_sql(
-            f"""
-            SELECT ugc, max(oid) as max_oid from {wtable}
-            WHERE wfo = %s and phenomena = 'FF' and significance = 'W'
-            and eventid = %s GROUP by ugc HAVING count(*) > 1
-        """,
-            pgconn,
-            params=(row["wfo"], row["eventid"]),
-        )
-        for __, row2 in df2.iterrows():
-            cursor.execute(
-                f"DELETE from {wtable} WHERE oid = %s", (row2["max_oid"],)
-            )
-            print(
-                "    - removed %s rows for %s in %s"
-                % (cursor.rowcount, row2["ugc"], wtable)
-            )
+        dedup(pgconn, cursor, row)
 
-    if len(argv) == 2:
-        print("NOOP, run with an additional arg to commit")
-        return
     cursor.close()
     pgconn.commit()
 

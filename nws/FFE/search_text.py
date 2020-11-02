@@ -1,29 +1,41 @@
-"""Send products from AFOS database to pyWWA"""
+"""Search the warnings database for potential FFEs."""
 
+from pyiem.util import get_dbconn
 from tqdm import tqdm
-from pyiem.util import noaaport_text, get_dbconn
-
-AFOS = get_dbconn("afos")
-acursor = AFOS.cursor()
 
 
-for year in tqdm(range(2019, 2020)):
-    for suffix in ["0106", "0712"]:
-        table = "products_%s_%s" % (year, suffix)
-        acursor.execute(
+def main():
+    """Go Main Go."""
+    pgconn = get_dbconn("postgis")
+    cursor = pgconn.cursor()
+    wcursor = pgconn.cursor()
+
+    for year in tqdm(range(2003, 2008)):
+        cursor.execute(
             (
-                f"SELECT data, source, entered from {table} "
-                "WHERE entered > '2018-09-14 12:00' and "
-                "substr(pil, 1, 3) in ('FFW', 'FFS') "
-                "and data ~* 'EMERGENCY' ORDER by entered ASC "
+                "SELECT wfo, eventid, ctid, report, svs "
+                f"from warnings_{year} "
+                "WHERE phenomena = 'FF' and significance = 'W' and "
+                "(report ~* 'EMERGENCY' or svs ~* 'EMERGENCY') "
             )
         )
-        with open("flood_emergency_2019.txt", "a") as fh:
-            for row in acursor:
-                raw = " ".join(
-                    row[0].upper().replace("\r", "").replace("\n", " ").split()
-                )
-                if raw.find("FLASH FLOOD EMERGENCY") == -1:
+        for row in cursor:
+            for text in [row[3], row[4]]:
+                if text is None or text.strip() == "":
                     continue
-                fh.write(noaaport_text(row[0]))
-                print(" Hit %s %s" % (row[1], row[2]))
+                raw = " ".join(
+                    text.upper().replace("\r", "").replace("\n", " ").split()
+                )
+                if raw.find("FLASH FLOOD EMERGENCY") > -1:
+                    print(f"Hit {year} {row[0]} {row[1]}")
+                    wcursor.execute(
+                        f"UPDATE warnings_{year} SET is_emergency = 't' "
+                        "WHERE ctid = %s",
+                        (row[2],),
+                    )
+    wcursor.close()
+    pgconn.commit()
+
+
+if __name__ == "__main__":
+    main()

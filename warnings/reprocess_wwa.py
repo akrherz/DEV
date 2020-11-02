@@ -23,19 +23,15 @@ def main(argv):
     table = "warnings_%s" % (argv[1],)
 
     cursor.execute(
-        f"""
-     SELECT oid, ugc, issue at time zone 'UTC',
-     expire at time zone 'UTC',
-     init_expire at time zone 'UTC', report, svs, phenomena,
-     eventid, significance
-     from {table} where
-    issue is null ORDER by oid ASC
-    """
+        "SELECT ctid, ugc, issue at time zone 'UTC', "
+        "expire at time zone 'UTC', init_expire at time zone 'UTC', "
+        f"report, svs, phenomena, eventid, significance from {table} where "
+        "(issue - expire) > '1 month'::interval"
     )
 
     print("Found %s entries to process..." % (cursor.rowcount,))
     for row in cursor:
-        oid = row[0]
+        ctid = row[0]
         ugc = row[1]
         report = row[5]
         if row[6] is None:
@@ -67,7 +63,7 @@ def main(argv):
             try:
                 prod = parser(noaaport_text(svs))
             except Exception as exp:
-                print("%s %s" % (oid, exp))
+                print("%s %s" % (ctid, exp))
                 if i == 0:
                     print("FATAL ABORT as first product failed")
                     break
@@ -140,7 +136,8 @@ def main(argv):
                 % (ugc, phenomena, significance, eventid, p(issue0), p(issue1))
             )
             cursor2.execute(
-                f"UPDATE {table} SET issue = %s WHERE oid = %s", (issue1, oid)
+                f"UPDATE {table} SET issue = %s WHERE ctid = %s",
+                (issue1, ctid),
             )
         if expire0 != expire1:
             print(
@@ -155,8 +152,8 @@ def main(argv):
                 )
             )
             cursor2.execute(
-                f"UPDATE {table} SET expire = %s WHERE oid = %s",
-                (expire1, oid),
+                f"UPDATE {table} SET expire = %s WHERE ctid = %s",
+                (expire1, ctid),
             )
         if init_expire0 != init_expire1:
             print(
@@ -171,8 +168,8 @@ def main(argv):
                 )
             )
             cursor2.execute(
-                f"UPDATE {table} SET init_expire = %s WHERE oid = %s",
-                (init_expire1, oid),
+                f"UPDATE {table} SET init_expire = %s WHERE ctid = %s",
+                (init_expire1, ctid),
             )
 
     cursor2.close()
