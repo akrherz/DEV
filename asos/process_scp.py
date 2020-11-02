@@ -12,13 +12,16 @@ def do(table):
     fcursor = afos.cursor()
     fcursor.execute("SET TIME ZONE 'UTC'")
     fcursor.execute(
-        f"SELECT entered, data from {table} WHERE substr(pil, 1, 3) = 'SCP' "
+        f"SELECT entered, data, pil from {table} WHERE "
+        "substr(pil, 1, 3) = 'SCP' "
         "and source in ('KNES', 'KWBC') ORDER by entered ASC"
     )
     for row in fcursor:
         text = row[1].encode("ascii", "ignore").decode("ascii", "ignore")
         try:
             prod = parser(noaaport_text(text), utcnow=row[0])
+            if prod.afos is None:
+                prod.afos = row[2]
         except Exception as exp:
             print(exp)
             continue
