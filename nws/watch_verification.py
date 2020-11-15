@@ -1,4 +1,5 @@
 """Crude Watch Verification."""
+from datetime import timezone
 
 from tqdm import tqdm
 from geopandas import read_postgis
@@ -46,7 +47,11 @@ def main():
             "SELECT distinct valid, geom from lsrs WHERE valid >= %s and "
             "valid < %s and typetext = 'TORNADO' and "
             "ST_Contains(ST_SetSRID(ST_GeomFromEWKT(%s), 4326), geom)",
-            (row["utc_issue"], row["utc_expire"], row["geom"].wkt),
+            (
+                row["utc_issue"].replace(tzinfo=timezone.utc),
+                row["utc_expire"].replace(tzinfo=timezone.utc),
+                row["geom"].wkt,
+            ),
         )
         df.at[idx, "lsr_tornado_reports"] = cursor.rowcount
         # NWS Tornado Warnings Issued
@@ -55,7 +60,11 @@ def main():
             "issue < %s and phenomena = 'TO' and significance = 'W' and "
             "status = 'NEW' and "
             "ST_Intersects(ST_SetSRID(ST_GeomFromEWKT(%s), 4326), geom)",
-            (row["utc_issue"], row["utc_expire"], row["geom"].wkt),
+            (
+                row["utc_issue"].replace(tzinfo=timezone.utc),
+                row["utc_expire"].replace(tzinfo=timezone.utc),
+                row["geom"].wkt,
+            ),
         )
         df.at[idx, "tornado_warnings"] = cursor.rowcount
     df = df.drop("geom", axis=1)
