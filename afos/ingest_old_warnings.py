@@ -152,10 +152,10 @@ def main(argv):
             continue
         try:
             v = parser(row[0], utcnow=row[1])
+            endts = compute_until(v)
         except Exception as exp:
             print(exp)
             continue
-        endts = compute_until(v)
         if endts is None:
             print(f"Missing endts {v.get_product_id()}")
             continue
