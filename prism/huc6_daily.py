@@ -1,5 +1,4 @@
 """Extract 'daily' PRISM precip by HUC6"""
-from __future__ import print_function
 import datetime
 
 import netCDF4
@@ -32,7 +31,7 @@ def do_year(gdf, rows, year):
 def main():
     """ Get the HUC6 we are interested in"""
     gdf = gpd.GeoDataFrame.from_file(
-        ("/mesonet/data/gis/static/shape/" "4326/us/huc6_01.shp")
+        "/mesonet/data/gis/static/shape/4326/us/huc6_01.shp"
     )
     gdf = gdf[gdf["HUC6"] == "070802"]
     rows = []

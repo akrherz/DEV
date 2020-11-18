@@ -49,10 +49,10 @@ for yr in range(1951, 2014):
             r2 = row[0]
     if yr == 2013:
         r2 = datetime.date(2013, 8, 3)
-        print vt, r2, running
+        print(vt, r2, running)
     days.append((r2 - vt).days)
     if (r2 - vt).days < 20:
-        print row
+        print(row)
     VTs.append(int(vt.strftime("%j")))
     R2s.append(int(r2.strftime("%j")))
 
@@ -106,7 +106,4 @@ ax.set_xlabel(
     "bar color is Story County corn yield departure from 1951-2012 trend"
 )
 
-fig.savefig("test.ps")
-import iemplot
-
-iemplot.makefeature("test")
+fig.savefig("test.png")

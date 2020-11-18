@@ -25,10 +25,8 @@ def main():
         if icao.startswith("K") or icao.startswith("P"):
             continue
         cursor.execute(
-            """
-            SELECT iemid, name from stations where
-            id = %s and (network ~* 'ASOS' or network ~* 'AWOS')
-        """,
+            "SELECT iemid, name from stations where "
+            "id = %s and (network ~* 'ASOS' or network ~* 'AWOS')",
             (icao,),
         )
         if cursor.rowcount != 1:

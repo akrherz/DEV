@@ -1,6 +1,5 @@
 """One time bootstrapping of state averaged and climdiv stations"""
 
-
 from pandas.io.sql import read_sql
 from pyiem.reference import state_names
 from pyiem.util import get_dbconn

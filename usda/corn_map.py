@@ -1,5 +1,4 @@
 """Make a map"""
-from __future__ import print_function
 
 from pyiem.plot.use_agg import plt
 from pyiem.plot.geoplot import MapPlot

@@ -1,5 +1,4 @@
 """Days with threshold based on prism"""
-from __future__ import print_function
 import datetime
 
 import numpy as np

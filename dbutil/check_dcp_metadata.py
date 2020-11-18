@@ -1,5 +1,4 @@
 """Do some self diagnostics on NWSLI / DCP metadata"""
-from __future__ import print_function
 from pyiem.reference import nwsli2country, nwsli2state
 from pyiem.util import get_dbconn
 
@@ -10,9 +9,8 @@ def main():
     cursor = dbconn.cursor()
 
     cursor.execute(
-        """
-        SELECT id, state, country, network from stations
-        WHERE network ~* 'DCP' and length(id) = 5"""
+        "SELECT id, state, country, network from stations "
+        "WHERE network ~* 'DCP' and length(id) = 5"
     )
 
     for row in cursor:

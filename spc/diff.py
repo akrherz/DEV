@@ -7,7 +7,6 @@ import numpy as np
 from tqdm import tqdm
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import get_dbconn
-import matplotlib.pyplot as plt
 
 GRIDDELTA = 0.05
 GRIDWEST = -139.2
@@ -52,7 +51,6 @@ def dump():
         x1 = x0 + dx
         y0 = y1 - dy
         if x0 < 0 or x1 >= xsz or y0 < 0 or y1 >= ysz:
-            # print raster.mask.shape, west, x0, x1, XSZ, north, y0, y1, YSZ
             continue
         counts[y0:y1, x0:x1] += np.where(raster.mask, 0, 1)
     np.save("counts.npy", counts)

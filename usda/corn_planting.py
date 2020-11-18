@@ -1,15 +1,11 @@
 """A corn planting daily feature"""
-from __future__ import print_function
 
+from pyiem.util import get_dbconn
+from pyiem.plot.use_agg import plt
 import numpy as np
 import pandas as pd
 from pandas.io.sql import read_sql
-import matplotlib
-
-matplotlib.use("agg")
-import matplotlib.pyplot as plt
 import matplotlib.font_manager
-from pyiem.util import get_dbconn
 
 
 def main():
