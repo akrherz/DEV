@@ -202,7 +202,57 @@ data = """250528    2000/02/01
 23686664    2016/06/01
 24184016    2016/07/01
 22299404    2016/08/01
-26626264    2016/09/01"""
+26626264    2016/09/01
+22331408	2016/10/01
+16823724	2016/11/01
+18203504	2016/12/01
+19401880	2017/01/01
+15468024	2017/02/01
+23338180	2017/03/01
+19533160	2017/04/01
+25588956	2017/05/01
+24452672	2017/06/01
+24115112	2017/07/01
+23818508	2017/08/01
+24913788	2017/09/01
+22673388	2017/10/01
+22527040	2017/11/01
+17391684	2017/12/01
+17155532	2018/01/01
+17213604	2018/02/01
+24681032	2018/03/01
+19250188	2018/04/01
+20942364	2018/05/01
+25020168	2018/06/01
+25026348	2018/07/01
+27570108	2018/08/01
+28383152	2018/09/01
+24742916	2018/10/01
+26260084	2018/11/01
+29823824	2018/12/01
+20296232	2019/01/01
+21909264	2019/02/01
+21208828	2019/03/01
+19661440	2019/04/01
+26348300	2019/05/01
+23571384	2019/06/01
+23751864	2019/07/01
+26745296	2019/08/01
+26467544	2019/09/01
+25179676	2019/10/01
+22589336	2019/11/01
+22589336    2019/12/01
+17978932	2020/01/01
+20049420	2020/02/01
+17652417	2020/03/01
+18151357	2020/04/01
+19279679	2020/05/01
+19116972	2020/06/01
+22663242	2020/07/01
+22912492	2020/08/01
+26596201	2020/09/01
+19768913	2020/10/01
+17974340	2020/11/01"""
 
 
 def main():
@@ -223,9 +273,10 @@ def main():
     ax2 = ax.twinx()
     ax2.plot(dates, accum, lw=2, c="r")
     ax2.set_ylabel("Total Archive Volume [TB]", color="r")
+    ax2.set_ylim(bottom=0)
     ax.set_ylabel("Daily Archive Volume [GB]")
     ax.grid(True)
-    ax.set_title("IEM File-based Archive Storage (2000 - September 2016)")
+    ax.set_title("IEM File-based Archive Storage (2000 - November 2020)")
 
     ax.annotate(
         "Add Iowa RWIS webcams",
@@ -243,7 +294,7 @@ def main():
         "Add High-res NEXRAD composites",
         xy=(datetime.datetime(2010, 12, 1), 2.25),
         xycoords="data",
-        xytext=(-200, 50),
+        xytext=(-180, 50),
         textcoords="offset points",
         bbox=dict(boxstyle="round", fc="0.8"),
         arrowprops=dict(
@@ -255,7 +306,7 @@ def main():
         "Add GIS GINI Satellite Images",
         xy=(datetime.datetime(2011, 12, 1), 6),
         xycoords="data",
-        xytext=(-200, 50),
+        xytext=(-190, 50),
         textcoords="offset points",
         bbox=dict(boxstyle="round", fc="0.8"),
         arrowprops=dict(
@@ -267,7 +318,7 @@ def main():
         "Add Individual NEXRAD Images",
         xy=(datetime.datetime(2012, 2, 1), 9.5),
         xycoords="data",
-        xytext=(-200, 50),
+        xytext=(-190, 50),
         textcoords="offset points",
         bbox=dict(boxstyle="round", fc="0.8"),
         arrowprops=dict(
@@ -279,7 +330,7 @@ def main():
         "Add Some Model Surface Analysis",
         xy=(datetime.datetime(2013, 4, 1), 13.5),
         xycoords="data",
-        xytext=(-300, 30),
+        xytext=(-210, 40),
         textcoords="offset points",
         bbox=dict(boxstyle="round", fc="0.8"),
         arrowprops=dict(
@@ -291,8 +342,8 @@ def main():
         "Add MRMS Products",
         xy=(datetime.datetime(2014, 6, 1), 17.5),
         xycoords="data",
-        xytext=(-300, 30),
-        textcoords="offset points",
+        xytext=(-250, 40),
+        textcoords="offset pixels",
         bbox=dict(boxstyle="round", fc="0.8"),
         arrowprops=dict(
             arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
@@ -303,7 +354,7 @@ def main():
         "Increased Size of Individual NEXRADs due to SAILS",
         xy=(datetime.datetime(2016, 5, 1), 24.5),
         xycoords="data",
-        xytext=(-400, 30),
+        xytext=(-250, 30),
         textcoords="offset points",
         bbox=dict(boxstyle="round", fc="0.8"),
         arrowprops=dict(
@@ -311,7 +362,7 @@ def main():
         ),
     )
 
-    fig.savefig("test.png")
+    fig.savefig("201126.png")
 
 
 if __name__ == "__main__":
