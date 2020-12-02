@@ -35,37 +35,33 @@ def main():
     df = pd.merge(df, wfos, how="outer", on="wfo")
 
     fig, ax = plt.subplots(1, 1, figsize=(12, 6.75))
-    gdf = df.groupby(["datum", "region"]).agg(["sum", "count"]).reset_index()
-    for region in ["ER", "SR", "CR", "WR", "PR"]:
-        df2 = gdf[gdf["region"] == region].copy()
+    for wfo in ["SJT", "EWX", "CRP", "FWD", "HGX"]:
+        df2 = df[df["wfo"] == wfo].copy()
         df2["date"] = pd.to_datetime(df2["datum"], format="%Y%m")
-        ax.plot(
-            df2["date"],
-            df2[("products", "sum")] / df2[("products", "count")] / 30.25,
-            label=LABELS[region],
-        )
+        ax.plot(df2["date"], df2["words"] / df2["products"], label=wfo)
     # All
     df2 = df.groupby("datum").agg(["sum", "count"]).reset_index()
     df2["date"] = pd.to_datetime(df2["datum"], format="%Y%m")
     ax.plot(
         df2["date"],
-        df2[("products", "sum")] / df2[("products", "count")] / 30.25,
+        df2[("words", "sum")] / df2[("products", "sum")],
         label="ALL",
         color="k",
         lw=2,
     )
     ax.grid()
-    ax.legend(loc=2)
+    ax.legend(loc=2, ncol=3)
     ax.set_title(
         "\n".join(
             [
                 "1 Jan 2004- 30 Nov 2020 Monthly Average Area Forecast Discussions"
-                " issued per Day per Office",
-                "Based on unofficial IEM Archives.",
+                " Word Count",
+                "Based on unofficial IEM Archives, excluding WMO/MND header and "
+                "any numbers found in the product.",
             ]
         )
     )
-    ax.set_ylabel("Products per Day")
+    ax.set_ylabel("Word Count per Product")
     fig.text(0.05, 0.02, "@akrherz, Generated: 30 Nov 2020")
     fig.savefig("test.png")
 
