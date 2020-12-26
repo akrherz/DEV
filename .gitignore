@@ -21,3 +21,5 @@
 **/*.nc
 **/*.prj
 /.vscode
+**/*.json
+google/transfer.py
