@@ -6,10 +6,9 @@ import ephem
 import mx.DateTime
 import matplotlib
 
-matplotlib.use("agg")
-import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.font_manager
+from pyiem.plot.use_agg import plt
 from pyiem.plot import MapPlot
 
 
@@ -46,22 +45,28 @@ def compute_sunrise(lat, long):
     return doy, arr, returnD
 
 
-lats = []
-lons = []
-vals = []
-for lon in tqdm.tqdm(range(-130, -60, 2)):
-    for lat in range(20, 55, 1):
-        lats.append(lat)
-        lons.append(lon)
-        vals.append(compute_sunrise(str(lat), str(lon)))
+def main():
+    """Go Main Go."""
+    lats = []
+    lons = []
+    vals = []
+    for lon in tqdm.tqdm(range(-130, -60, 2)):
+        for lat in range(20, 55, 1):
+            lats.append(lat)
+            lons.append(lon)
+            vals.append(compute_sunrise(str(lat), str(lon)))
 
-m = MapPlot(
-    sector="conus",
-    title="Days to Recover Morning Hour after Spring Saving Time Change",
-    subtitle=(
-        "days until local time of sunrise is earlier "
-        "than on 10 March, local DST rules ignored for plot"
-    ),
-)
-m.contourf(lons, lats, vals, range(27, 78, 3), units="days")
-m.postprocess(filename="180313.png")
+    m = MapPlot(
+        sector="conus",
+        title="Days to Recover Morning Hour after Spring Saving Time Change",
+        subtitle=(
+            "days until local time of sunrise is earlier "
+            "than on 10 March, local DST rules ignored for plot"
+        ),
+    )
+    m.contourf(lons, lats, vals, range(27, 78, 3), units="days")
+    m.postprocess(filename="180313.png")
+
+
+if __name__ == "__main__":
+    main()
