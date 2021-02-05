@@ -2,11 +2,11 @@
 
 from tqdm import tqdm
 import numpy as np
-from matplotlib.ticker import FuncFormatter
-import matplotlib.pyplot as plt
-from pandas.io.sql import read_sql
 from pyiem.network import Table as NetworkTable
 from pyiem.util import get_dbconn
+from pyiem.plot import figure
+from matplotlib.ticker import FuncFormatter
+from pandas.io.sql import read_sql
 
 
 def main():
@@ -42,16 +42,16 @@ def main():
     for sid in tqdm(nt.sts):
         df = read_sql(
             """
-        select w.ugc from warnings_2018 w JOIN ugcs u on (w.gid = u.gid)
+        select w.ugc from warnings_2021 w JOIN ugcs u on (w.gid = u.gid)
         where substr(w.ugc, 1, 2) = 'IA' and phenomena = 'BZ' and
-        significance = 'W' and issue > '2018-11-20' and
+        significance = 'W' and issue > '2021-01-04' and
         st_contains(u.geom, ST_GeomFromEWKT('SRID=4326;POINT(%s %s)'))
         """,
             postgis,
             params=(nt.sts[sid]["lon"], nt.sts[sid]["lat"]),
         )
-        if df.empty:
-            continue
+        # if df.empty:
+        #    continue
         bestvsby[sid] = {"sknt": 0, "vsby": 100}
         bestsknt[sid] = {"sknt": 0, "vsby": 100}
         abestvsby[sid] = {"sknt": 0, "vsby": 100}
@@ -64,8 +64,8 @@ def main():
         SELECT valid, vsby, greatest(sknt, gust) as wind
         from current_log c JOIN stations t
         ON (c.iemid = t.iemid) WHERE
-        t.id = %s and valid > '2018-11-24 12:00' and
-        sknt >= 0 and vsby >= 0 ORDER by valid ASC
+        t.id = %s and valid > '2021-02-04 00:00' and
+        sknt >= 0 and vsby >= 0 and raw !~* 'MADISHF' ORDER by valid ASC
         """,
             pgconn,
             params=(sid,),
@@ -134,17 +134,10 @@ def main():
         Label ticks with the product of the exponentiation"""
         return "%1i" % (x)
 
-    fig = plt.figure(figsize=(9, 6))
-    fig.text(
-        0.5,
-        0.95,
-        "Iowa ASOS/AWOS 25 November 2018 Blizzard Criteria",
-        ha="center",
-        fontsize=16,
-    )
-    ax1 = fig.add_axes([0.075, 0.1, 0.25, 0.8])
-    ax2 = fig.add_axes([0.4, 0.1, 0.25, 0.8])
-    ax3 = fig.add_axes([0.725, 0.1, 0.25, 0.8])
+    fig = figure(title="Iowa ASOS/AWOS 4 February 2021 Blizzard Criteria")
+    ax1 = fig.add_axes([0.075, 0.1, 0.25, 0.7])
+    ax2 = fig.add_axes([0.4, 0.1, 0.25, 0.7])
+    ax3 = fig.add_axes([0.725, 0.1, 0.25, 0.7])
 
     ax1.set_ylim(0, 45)
     ax1.set_ylabel("Minimum 3HR Wind Speed/Gust [mph]")
@@ -228,16 +221,20 @@ def main():
     ax3.xaxis.set_major_formatter(formatter)
 
     ax1.set_title(
-        " \nMax/Min Method: %s/%s Sites Hit" % (len(hits), len(bs_vsby))
+        "Max/Min Method: %s/%s Sites Hit\nSites: %s"
+        % (len(hits), len(bs_vsby), ",".join(hits.keys()))
     )
     ax2.set_title(
-        " \nAverage Method: %s/%s Sites Hit" % (len(ahits), len(abs_vsby))
+        "Average Method: %s/%s Sites Hit\nSites: %s"
+        % (len(ahits), len(abs_vsby), ",".join(ahits.keys()))
     )
+    sites = list(mhits.keys())
     ax3.set_title(
-        " \nMedian Method: %s/%s Sites Hit" % (len(mhits), len(mbs_vsby))
+        "Median Method: %s/%s Sites Hit\nSites: %s\n%s"
+        % (len(mhits), len(mbs_vsby), ",".join(sites[:6]), ",".join(sites[6:]))
     )
 
-    fig.savefig("181127.png")
+    fig.savefig("210204.png")
 
 
 if __name__ == "__main__":
