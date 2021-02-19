@@ -12,30 +12,40 @@ from matplotlib.colors import ListedColormap
 
 def plot():
     """Do plotting work"""
-    cmap1 = plt.get_cmap("inferno_r")
-    colors = list(cmap1(np.arange(10) / 10.0))
-    cmap2 = plt.get_cmap("Pastel1")
-    colors.extend(list(cmap2(np.arange(2) / 2.0)))
+    cmap1 = plt.get_cmap("nipy_spectral_r")
+    colors = list(cmap1(np.arange(12) / 13.0))
+    # cmap2 = plt.get_cmap("Pastel1")
+    # colors.extend(list(cmap2(np.arange(3) / 3.0)))
     cmap = ListedColormap(colors)
 
     cmap.set_under("tan")
     cmap.set_over("white")
-    hours = np.load("hours.npy")
+    hours = np.load("maxhours.npy")
     lons = np.load("lons.npy")
     lats = np.load("lats.npy")
     mp = MapPlot(
-        sector="midwest",
-        statebordercolor="white",
-        title=(r"May Total Hours below 32$^\circ$F Air Temperature"),
+        sector="iowa",
+        south=27,
+        west=-120,
+        east=-68,
+        north=50,
+        twitter=True,
+        continentalcolor="tan",
+        # statebordercolor="white",
+        title=(
+            r"February Maximum Consecutive Hours below 0$^\circ$F "
+            "Air Temperature"
+        ),
         subtitle=(
             "based on hourly NCEP Real-Time Mesoscale Analysis "
-            "(RTMA) ending 4 AM 12 May 2020 CDT"
+            "(RTMA) ending 8 PM 18 Feb 2021 CST"
         ),
     )
 
-    levels = [1, 4, 8]
-    levels2 = list(range(10, 101, 10))
-    levels.extend(levels2)
+    # levels = [1, 4, 8, 12]
+    # levels2 = list(range(24, 14 * 24 + 1, 48))
+    # levels.extend(levels2)
+    levels = range(12, 145, 12)
     mp.pcolormesh(
         lons,
         lats,
@@ -44,18 +54,19 @@ def plot():
         cmap=cmap,
         clip_on=False,
         units="hours",
-        spacing="proportional",
-        extend="max",
+        # spacing="proportional",
+        extend="both",
     )
+    mp.drawcounties()
     mp.postprocess(filename="test.png")
 
 
 def process():
     """Go Main Go"""
-    now = datetime.datetime(2020, 5, 1, 5)
-    ets = datetime.datetime(2020, 5, 12, 13)
+    now = datetime.datetime(2021, 2, 1, 6)
+    ets = datetime.datetime(2021, 2, 19, 2)
     interval = datetime.timedelta(hours=1)
-    hours = None
+    current = None
     while now < ets:
         fn = now.strftime(
             "/mesonet/ARCHIVE/data/%Y/%m/%d/"
@@ -71,18 +82,20 @@ def process():
                     print(f"failed to get 2t in {fn}!")
                     now += interval
                     continue
-                if hours is None:
-                    hours = np.zeros(np.shape(t2))
+                if current is None:
+                    current = np.zeros(np.shape(t2))
+                    maxhours = np.zeros(np.shape(t2))
                     lats, lons = grbs.select(shortName="2t")[0].latlons()
                     np.save("lons", lons)
                     np.save("lats", lats)
             t2 = (t2 * units("degK")).to(units("degF")).magnitude
-            hours = np.where(t2 < 32, hours + 1, hours)
-            print(f"{now} min: {np.min(hours):.1f} max: {np.max(hours):.1f}")
+            current = np.where(t2 < 0, current + 1, 0)
+            maxhours = np.where(current > maxhours, current, maxhours)
+            print(f"{now} max: {np.max(maxhours):.1f}")
 
         now += interval
 
-    np.save("hours", hours)
+    np.save("maxhours", maxhours)
 
 
 if __name__ == "__main__":
