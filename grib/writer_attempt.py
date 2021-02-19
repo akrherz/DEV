@@ -43,9 +43,8 @@ def main():
     grb = pygrib.reload(grb)
     # grb['validityDate'] = int(fx.strftime("%Y%m%d"))
     # grb['validityTime'] = int(fx.strftime("%H%M"))
-    fp = open("test.grb", "wb")
-    fp.write(grb.tostring())
-    fp.close()
+    with open("test.grb", "wb") as fh:
+        fh.write(grb.tostring())
 
 
 if __name__ == "__main__":
