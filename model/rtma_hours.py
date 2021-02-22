@@ -13,7 +13,7 @@ from matplotlib.colors import ListedColormap
 def plot():
     """Do plotting work"""
     cmap1 = plt.get_cmap("nipy_spectral_r")
-    colors = list(cmap1(np.arange(12) / 13.0))
+    colors = list(cmap1(np.arange(13) / 14.0))
     # cmap2 = plt.get_cmap("Pastel1")
     # colors.extend(list(cmap2(np.arange(3) / 3.0)))
     cmap = ListedColormap(colors)
@@ -24,28 +24,44 @@ def plot():
     lons = np.load("lons.npy")
     lats = np.load("lats.npy")
     mp = MapPlot(
-        sector="iowa",
-        south=27,
-        west=-120,
+        sector="conus",
+        south=25,
+        west=-121,
         east=-68,
         north=50,
         twitter=True,
         continentalcolor="tan",
         # statebordercolor="white",
         title=(
-            r"February Maximum Consecutive Hours below 0$^\circ$F "
+            r"1 Jan - 22 Feb 2021 Maximum Consecutive Hours below 32$^\circ$F "
             "Air Temperature"
         ),
         subtitle=(
             "based on hourly NCEP Real-Time Mesoscale Analysis "
-            "(RTMA) ending 8 PM 18 Feb 2021 CST"
+            "(RTMA) ending 3 PM 22 Feb 2021 CST"
         ),
     )
 
     # levels = [1, 4, 8, 12]
     # levels2 = list(range(24, 14 * 24 + 1, 48))
     # levels.extend(levels2)
-    levels = range(12, 145, 12)
+    # levels = range(12, 145, 12)
+    levels = [1, 3, 6, 12, 24, 48, 72, 120, 240, 15 * 24, 480, 720, 40 * 24]
+    clevlabels = [
+        "1hr",
+        "3hr",
+        "6hr",
+        "12hr",
+        "1",
+        "2",
+        3,
+        5,
+        10,
+        15,
+        20,
+        30,
+        40,
+    ]
     mp.pcolormesh(
         lons,
         lats,
@@ -53,11 +69,12 @@ def plot():
         levels,
         cmap=cmap,
         clip_on=False,
-        units="hours",
+        units="days",
+        clevlabels=clevlabels,
         # spacing="proportional",
         extend="both",
     )
-    mp.drawcounties()
+    # mp.drawcounties()
     mp.postprocess(filename="test.png")
 
 
