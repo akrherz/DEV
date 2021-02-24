@@ -12,33 +12,33 @@ from matplotlib.colors import ListedColormap
 
 def plot():
     """Do plotting work"""
-    cmap1 = plt.get_cmap("nipy_spectral_r")
-    colors = list(cmap1(np.arange(13) / 14.0))
+    cmap1 = plt.get_cmap("hot_r")
+    colors = list(cmap1(np.arange(18) / 19.0))
     # cmap2 = plt.get_cmap("Pastel1")
     # colors.extend(list(cmap2(np.arange(3) / 3.0)))
     cmap = ListedColormap(colors)
 
-    cmap.set_under("tan")
-    cmap.set_over("white")
-    hours = np.load("maxhours.npy")
+    # cmap.set_under("tan")
+    cmap.set_under("white")
+    delta = np.load("feb23.npy") - np.load("current.npy")
     lons = np.load("lons.npy")
     lats = np.load("lats.npy")
     mp = MapPlot(
-        sector="conus",
-        south=25,
-        west=-121,
-        east=-68,
+        sector="custom",
+        south=28,
+        west=-113,
+        east=-76,
         north=50,
         twitter=True,
         continentalcolor="tan",
         # statebordercolor="white",
         title=(
-            r"1 Jan - 22 Feb 2021 Maximum Consecutive Hours below 32$^\circ$F "
+            r"Difference between 23 Feb 2021 High Temp and 1 Jan - 22 Feb Warmest "
             "Air Temperature"
         ),
         subtitle=(
             "based on hourly NCEP Real-Time Mesoscale Analysis "
-            "(RTMA) ending 3 PM 22 Feb 2021 CST"
+            "(RTMA) ending 8 PM 23 Feb 2021 CST, only positive difference shown"
         ),
     )
 
@@ -46,32 +46,16 @@ def plot():
     # levels2 = list(range(24, 14 * 24 + 1, 48))
     # levels.extend(levels2)
     # levels = range(12, 145, 12)
-    levels = [1, 3, 6, 12, 24, 48, 72, 120, 240, 15 * 24, 480, 720, 40 * 24]
-    clevlabels = [
-        "1hr",
-        "3hr",
-        "6hr",
-        "12hr",
-        "1",
-        "2",
-        3,
-        5,
-        10,
-        15,
-        20,
-        30,
-        40,
-    ]
+    levels = [0, 1, 2, 4, 6, 8, 10, 12, 15]
     mp.pcolormesh(
         lons,
         lats,
-        hours,
+        delta,
         levels,
         cmap=cmap,
         clip_on=False,
-        units="days",
-        clevlabels=clevlabels,
-        # spacing="proportional",
+        units=r"$^\circ$F",
+        spacing="proportional",
         extend="both",
     )
     # mp.drawcounties()
