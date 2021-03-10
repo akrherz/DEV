@@ -1,5 +1,4 @@
 """A util script to dump IEMRE json service to csv files"""
-from __future__ import print_function
 
 import requests
 import pandas as pd

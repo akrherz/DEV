@@ -1,6 +1,5 @@
 """Ingest the NWSTG text files into the AFOS IEM database
 """
-from __future__ import print_function
 import glob
 import datetime
 import tarfile

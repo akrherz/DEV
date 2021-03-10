@@ -1,4 +1,4 @@
-from __future__ import print_function
+"""Unsure what this was."""
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 

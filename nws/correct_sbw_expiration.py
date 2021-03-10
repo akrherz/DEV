@@ -1,5 +1,4 @@
 """Make sure our database storage of expiration time is right"""
-from __future__ import print_function
 import sys
 
 from pyiem.util import get_dbconn
@@ -16,10 +15,8 @@ def main():
 
     cursor.execute("""SET TIME ZONE 'UTC'""")
     cursor.execute(
-        """
-    SELECT report, expire from """
-        + table
-        + """ where
+        f"""
+    SELECT report, expire from {table} where
     status = 'CAN' and polygon_end != expire
     and phenomena in ('TO', 'SV')
     """
@@ -31,9 +28,7 @@ def main():
             continue
         vtec = prod.segments[0].vtec[0]
         cursor2.execute(
-            """UPDATE """
-            + table
-            + """ SET expire = %s
+            f"""UPDATE {table} SET expire = %s
                     where %s <= expire and wfo = %s and phenomena = %s
                     and significance = %s and eventid = %s
         """,

@@ -1,5 +1,4 @@
 """Something to hit NCEI's HAS API"""
-from __future__ import print_function
 import datetime
 import sys
 

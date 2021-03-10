@@ -2,7 +2,6 @@
 
 1981 thru 2017
 """
-from __future__ import print_function
 import os
 import datetime
 from collections import namedtuple

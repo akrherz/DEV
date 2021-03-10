@@ -1,5 +1,4 @@
 """Generic plotter"""
-from __future__ import print_function
 import datetime
 from calendar import month_abbr
 

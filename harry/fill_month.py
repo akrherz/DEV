@@ -1,5 +1,4 @@
 """Look for missing entries"""
-from __future__ import print_function
 import datetime
 import sys
 from pyiem.network import Table as NetworkTable

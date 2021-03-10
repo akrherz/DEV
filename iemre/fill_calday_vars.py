@@ -3,7 +3,6 @@
 For old dates, we only have 12z totals, so these are copied to the calday
 totals.
 """
-from __future__ import print_function
 
 import numpy as np
 from pyiem.iemre import get_daily_ncname

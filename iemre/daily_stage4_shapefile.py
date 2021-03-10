@@ -2,7 +2,6 @@
 
 NOTE: DBF has a 256 column limit, so we dump twice here.
 """
-from __future__ import print_function
 import datetime
 
 from shapely.geometry import Point

@@ -1,5 +1,4 @@
 """Figure out if we have new daily records set"""
-from __future__ import print_function
 import sys
 import json
 import datetime

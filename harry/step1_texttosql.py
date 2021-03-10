@@ -2,7 +2,6 @@
 Harry Hillaker kindly provides a monthly file of his QC'd COOP observations
 This script processes them into something we can insert into the IEM database
 """
-from __future__ import print_function
 import sys
 import re
 import datetime

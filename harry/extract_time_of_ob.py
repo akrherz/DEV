@@ -1,5 +1,4 @@
 """ Get the time of ob set in Harry's file"""
-from __future__ import print_function
 import sys
 
 from pyiem.util import get_dbconn

@@ -1,5 +1,4 @@
 """Search emails for a given subject for NCEI"""
-from __future__ import print_function
 import sys
 import email
 import getpass

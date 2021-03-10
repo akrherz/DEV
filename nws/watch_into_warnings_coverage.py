@@ -1,4 +1,3 @@
-from __future__ import print_function
 import matplotlib.pyplot as plt
 import psycopg2
 from pandas.io.sql import read_sql
