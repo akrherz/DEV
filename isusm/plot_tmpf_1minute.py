@@ -1,8 +1,12 @@
-"""Generate a plot of 1minute srad."""
+"""Generate a plot of 1minute data."""
 
-from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
+from pyiem.plot import figure_axes
+from pyiem.util import get_dbconn, utc
+import pytz
+import matplotlib.dates as mdates
+from matplotlib.lines import Line2D
 from metpy.units import units
+from metpy.calc import dewpoint_from_relative_humidity
 from pandas.io.sql import read_sql
 
 
@@ -11,47 +15,82 @@ def main():
     pgconn = get_dbconn("isuag")
     df = read_sql(
         """
-        SELECT valid, tair_c_avg,
-        extract(day from valid) as day,
-        extract(minute from valid) + extract(hour from valid) * 60. as minute
-        from sm_minute where station = 'CIRI4'
-        and valid >= '2020-05-09' and valid < '2020-05-10' ORDER by valid ASC
+        SELECT valid, tair_c_avg_qc, rh_avg_qc, winddir_d1_wvt_qc,
+        ws_mph_s_wvt_qc from sm_minute where station = 'CNAI4'
+        and valid >= '2021-03-10 08:00' and valid < '2021-03-10 20:00'
+        ORDER by valid ASC
     """,
         pgconn,
         index_col="valid",
     )
-    df["tmpf"] = (df["tair_c_avg"].values * units("degC")).to(units("degF")).m
-    (fig, axes) = plt.subplots(2, 1, sharex=True)
-    ax = axes[0]
-    ax.plot(df["minute"].values, df["tmpf"].values, label="1 minute obs")
-    df2 = df[df["minute"] % 60 == 0]
-    df3 = df2.resample("1T").interpolate("linear")
-    df["delta"] = df["tmpf"] - df3["tmpf"]
-    print(df)
-    ax.plot(df3["minute"].values, df3["tmpf"].values, label="60 minute sample")
-    ax.grid(True)
-    ax.legend()
-    ax.set_ylim(20, 45)
-    ax.set_ylabel(r"Air Temperature [$^\circ$F]")
-    ax.set_title("ISU Soil Moisture 9 May 2020 -- Cedar Rapids")
+    tmpc = df["tair_c_avg_qc"].values * units("degC")
+    df["tmpf"] = tmpc.to(units("degF")).m
+    df["dwpf"] = (
+        dewpoint_from_relative_humidity(
+            tmpc,
+            df["rh_avg_qc"].values * units("percent"),
+        )
+        .to(units("degF"))
+        .m
+    )
+    title = "ISU Soil Moisture 10 Mar 2021 -- Western ISU Farm near Castana"
+    subtitle = "One Minute Time Series between 8 AM and 8 PM CST"
+    (fig, ax) = figure_axes(title=title, subtitle=subtitle)
+    ax.set_position([0.05, 0.5, 0.9, 0.4])
+    x = df.index.values
+    ax.plot(x, df["tmpf"].values, color="r")
+    ax.plot(x, df["dwpf"].values, color="b")
+    ax.set_ylim(30, 80)
+    ax.annotate(
+        "Approximate\nDry Line Passage",
+        xy=(utc(2021, 3, 10, 17, 45), 55),
+        xytext=(-50, -50),
+        textcoords="offset points",
+        bbox=dict(boxstyle="round", fc="0.8"),
+        arrowprops=dict(
+            arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
+        ),
+    )
+    ax.annotate(
+        "Cold Front Passage",
+        xy=(utc(2021, 3, 10, 20), 38),
+        xytext=(30, -20),
+        textcoords="offset points",
+        bbox=dict(boxstyle="round", fc="0.8"),
+        arrowprops=dict(
+            arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
+        ),
+    )
+    ax2 = ax.twinx()
+    ax2.plot(x, df["rh_avg_qc"].values, color="g")
+    ax2.set_ylim(0, 100)
+    ax2.set_ylabel("Relative Humidity [%]", color="g")
+    lines = [
+        Line2D([0], [0], color="r", lw=2),
+        Line2D([0], [0], color="b", lw=2),
+        Line2D([0], [0], color="g", lw=2),
+    ]
+    ax.legend(lines, ["Air Temp", "Dew Point", "RH%"], loc=3)
+    tz = pytz.timezone("America/Chicago")
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%I %p", tz=tz))
+    ax.grid()
+    ax.set_ylabel(r"Temperature $^\circ$F")
 
-    # ------------------
-    ax = axes[1]
-    ax.plot(
-        df["minute"].values, df["delta"], label="1min - 60 min interpolated"
-    )
-    ax.set_xlim(0, 8 * 60)
-    ax.set_xticks(range(0, 8 * 60 + 1, 60))
-    ax.set_xticklabels(
-        ["Mid", "1 AM", "2 AM", "3 AM", "4 AM", "5 AM", "6 AM", "7 AM", "8 AM"]
-    )
-    ax.set_xlabel("Central Daylight Time")
+    # Second
+    ax = fig.add_axes([0.05, 0.1, 0.9, 0.35])
+    ax.plot(x, df["ws_mph_s_wvt_qc"].values, color="k")
+    ax.set_ylim(0, 40)
+    ax.set_ylabel("One Min Avg Wind Speed [MPH]")
     ax.grid(True)
-    ax.legend()
-    ax.set_ylim(-4, 4)
-    ax.axhline(0, color="r", lw=1.5)
-    ax.set_yticks(range(-4, 5))
-    ax.set_ylabel(r"Temperature Difference [$^\circ$F]")
+
+    ax2 = ax.twinx()
+    ax2.scatter(x, df["winddir_d1_wvt_qc"].values, s=10, color="b")
+    ax2.set_ylim(0, 360)
+    ax2.set_yticks(range(0, 361, 45))
+    ax2.set_yticklabels(["N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"])
+    ax2.set_ylabel("Wind Direction", color="b")
+    ax2.xaxis.set_major_formatter(mdates.DateFormatter("%I %p", tz=tz))
+    ax.set_xlabel("Central Standard Time on 10 March 2021")
 
     fig.savefig("test.png")
 
