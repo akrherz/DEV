@@ -8,13 +8,13 @@ import requests
 def main(argv):
     """Go Main"""
     # can't do jan 1 as the ramp changes for single day plots :/
-    now = datetime.datetime(2020, 1, 2)
-    ets = datetime.datetime(2020, 9, 11)
+    now = datetime.datetime(int(argv[2]), 1, 2)
+    ets = datetime.datetime(int(argv[2]) + 1, 1, 1)
     interval = datetime.timedelta(days=1)
     scenario = argv[1]
     baseuri = (
         "http://depbackend.local/auto/%%s0101_%%s_%s_avg_delivery.png"
-        "?mn&progressbar&cruse"
+        "?iowa&progressbar&cruse"
     ) % (scenario,)
 
     stepi = 0
@@ -22,7 +22,9 @@ def main(argv):
         print(now)
         url = baseuri % (now.year, now.strftime("%Y%m%d"))
         req = requests.get(url)
-        with open("images/%05i_%s.png" % (stepi, scenario), "wb") as fh:
+        with open(
+            "images/%s_%05i_%s.png" % (now.year, stepi, scenario), "wb"
+        ) as fh:
             fh.write(req.content)
         stepi += 1
         now += interval

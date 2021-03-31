@@ -2,20 +2,18 @@
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 
-ax = plt.axes(projection=ccrs.Mercator())
-ax.set_extent([-120, -60, 10, 60], crs=ccrs.PlateCarree())
-print(ax.get_extent())
-# ax.background_patch.set_facecolor('k')
-ax.coastlines(color="k")
-polycollect = ax.hexbin(
-    range(-120, -80, 1),
-    range(10, 50, 1),
-    range(40),
-    bins=range(40),
-    transform=ccrs.PlateCarree(),
+projection = ccrs.GOOGLE_MERCATOR
+fig = plt.figure(figsize=(12, 6))
+ax = fig.add_axes(
+    [0.01, 0.01, 0.98, 0.98],
+    aspect="equal",
+    # autoscale_on=True,
+    adjustable="datalim",
+    projection=projection,
 )
-transform, transOffset, offsets, paths = polycollect._prepare_points()
-for poly in paths:
-    print(poly)
-
-plt.savefig("test.png")
+ax.set_extent([-1e6, 1e6, -1e6, 1e6], crs=projection)
+ax.plot([-1e6, 1e6], [-1e6, 1e6], lw=3)
+print(ax.get_extent())
+print(ax.dataLim)
+print(ax.viewLim)
+fig.savefig("test.png")
