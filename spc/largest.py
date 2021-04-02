@@ -13,7 +13,8 @@ def main():
         geom, valid,
         rank() OVER
           (PARTITION by category, threshold ORDER by ST_Area(geom) DESC)
-        from spc_outlooks where day = 1 and outlook_type = 'C'
+        from spc_outlook o JOIN spc_outlook_geometries g
+        on (o.id = g.spc_outlook_id) where day = 1 and outlook_type = 'C'
         ORDER by category, threshold)
     SELECT category, threshold,
     st_area(st_transform(geom, 5070)) / 1000000. * 0.386102 as area,

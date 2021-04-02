@@ -11,11 +11,8 @@ def main(argv):
     cursor = pgconn.cursor()
     cursor2 = pgconn.cursor()
     cursor.execute(
-        """
-        SELECT product_id, product, num from mcd
-        where watch_confidence is null and year = %s
-        ORDER by num ASC
-    """,
+        "SELECT product_id, product, num from mcd where "
+        "watch_confidence is null and year = %s ORDER by num ASC",
         (int(argv[1]),),
     )
     for row in cursor:
@@ -26,10 +23,7 @@ def main(argv):
             continue
         val = prod.find_watch_probability()
         cursor2.execute(
-            """
-            UPDATE mcd SET watch_confidence = %s where
-            product_id = %s
-        """,
+            "UPDATE mcd SET watch_confidence = %s where product_id = %s",
             (val, row[0]),
         )
 

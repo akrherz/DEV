@@ -1,11 +1,9 @@
 """Plot number of watches per day for a given month"""
 
-import matplotlib
-
-matplotlib.use("agg")
-import matplotlib.pyplot as plt
+# third party
 import numpy as np
 from pyiem.util import get_dbconn
+from pyiem.plot.use_agg import plt
 
 
 def main():

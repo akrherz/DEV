@@ -385,80 +385,87 @@ data = """month|word|count
  201607 |   1 |  185
 """
 
-df = pd.read_csv(StringIO(data.replace(" ", "")), sep="|")
-df["date"] = df["month"].astype(str) + "01"
-df["date"] = pd.to_datetime(df["date"])
-df.drop("month", axis=1, inplace=True)
-jdf = df.pivot(index="date", columns="word", values="count")
-jdf["ratio"] = jdf[0] / jdf[1]
-overall = jdf[0].sum() / float(jdf[1].sum())
-s = pd.rolling_mean(jdf["ratio"], window=12)
-jdf["month"] = jdf.index.month
 
-(fig, ax) = plt.subplots(2, 1)
-ax[0].bar(
-    jdf.index.values,
-    jdf["ratio"],
-    width=31,
-    ec="tan",
-    fc="tan",
-    align="center",
-)
-ax[0].plot(
-    s.index.values,
-    s.values,
-    lw=2,
-    color="k",
-    zorder=5,
-    label="12mon trailing avg",
-)
-ax[0].grid(True)
-ax[0].axhline(overall, color="r", lw=2, label="Avg", zorder=4)
-ax[0].legend(loc=4, fontsize=10, ncol=2)
-ax[0].text(
-    0.5,
-    0.92,
-    "Monthly",
-    transform=ax[0].transAxes,
-    ha="center",
-    va="center",
-    bbox=dict(color="white"),
-)
-ax[0].set_ylabel("Ratio (certain / uncertain)")
-fig.text(
-    0.5,
-    0.95,
-    (
-        "2001-2016 Storm Prediction Center Day1 Outlook Text, Avg: %.1f\n"
-        "certain:  'WILL', 'LIKELY', 'UNLIKELY', 'CERTAINLY', 'UNDOUBTEDLY'\n"
-        "uncertain: 'MAY', 'PERHAPS', 'UNCERTAIN', 'COULD', 'MAYBE'"
+def main():
+    """Go Main Go."""
+    df = pd.read_csv(StringIO(data.replace(" ", "")), sep="|")
+    df["date"] = df["month"].astype(str) + "01"
+    df["date"] = pd.to_datetime(df["date"])
+    df.drop("month", axis=1, inplace=True)
+    jdf = df.pivot(index="date", columns="word", values="count")
+    jdf["ratio"] = jdf[0] / jdf[1]
+    overall = jdf[0].sum() / float(jdf[1].sum())
+    s = pd.rolling_mean(jdf["ratio"], window=12)
+    jdf["month"] = jdf.index.month
+
+    (fig, ax) = plt.subplots(2, 1)
+    ax[0].bar(
+        jdf.index.values,
+        jdf["ratio"],
+        width=31,
+        ec="tan",
+        fc="tan",
+        align="center",
     )
-    % (overall,),
-    ha="center",
-    va="center",
-)
+    ax[0].plot(
+        s.index.values,
+        s.values,
+        lw=2,
+        color="k",
+        zorder=5,
+        label="12mon trailing avg",
+    )
+    ax[0].grid(True)
+    ax[0].axhline(overall, color="r", lw=2, label="Avg", zorder=4)
+    ax[0].legend(loc=4, fontsize=10, ncol=2)
+    ax[0].text(
+        0.5,
+        0.92,
+        "Monthly",
+        transform=ax[0].transAxes,
+        ha="center",
+        va="center",
+        bbox=dict(color="white"),
+    )
+    ax[0].set_ylabel("Ratio (certain / uncertain)")
+    fig.text(
+        0.5,
+        0.95,
+        (
+            "2001-2016 Storm Prediction Center Day1 Outlook Text, Avg: %.1f\n"
+            "certain:  'WILL', 'LIKELY', 'UNLIKELY', 'CERTAINLY', "
+            "'UNDOUBTEDLY'\n"
+            "uncertain: 'MAY', 'PERHAPS', 'UNCERTAIN', 'COULD', 'MAYBE'"
+        )
+        % (overall,),
+        ha="center",
+        va="center",
+    )
+
+    g = jdf.groupby("month").sum()
+    g["ratio"] = g[0] / g[1]
+
+    ax[1].bar(g.index.values, g["ratio"], ec="tan", fc="tan", align="center")
+    ax[1].axhline(overall, color="r", lw=2, label="Avg", zorder=4)
+    ax[1].set_xticks(range(1, 13))
+    ax[1].text(
+        0.5,
+        0.92,
+        "By Month",
+        transform=ax[1].transAxes,
+        ha="center",
+        va="center",
+        bbox=dict(color="white"),
+    )
+    ax[1].set_xticklabels(calendar.month_abbr[1:])
+    ax[1].grid(True)
+    ax[1].set_xlim(0.5, 12.5)
+    ax[1].set_ylabel("Ratio (certain / uncertain)")
+
+    fig.text(0.01, 0.01, "Generated 6 July 2016 by @akrherz", fontsize=10)
+
+    fig.savefig("test.png")
 
 
-g = jdf.groupby("month").sum()
-g["ratio"] = g[0] / g[1]
-
-ax[1].bar(g.index.values, g["ratio"], ec="tan", fc="tan", align="center")
-ax[1].axhline(overall, color="r", lw=2, label="Avg", zorder=4)
-ax[1].set_xticks(range(1, 13))
-ax[1].text(
-    0.5,
-    0.92,
-    "By Month",
-    transform=ax[1].transAxes,
-    ha="center",
-    va="center",
-    bbox=dict(color="white"),
-)
-ax[1].set_xticklabels(calendar.month_abbr[1:])
-ax[1].grid(True)
-ax[1].set_xlim(0.5, 12.5)
-ax[1].set_ylabel("Ratio (certain / uncertain)")
-
-fig.text(0.01, 0.01, "Generated 6 July 2016 by @akrherz", fontsize=10)
-
-fig.savefig("test.png")
+if __name__ == "__main__":
+    main()

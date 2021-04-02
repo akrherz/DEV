@@ -144,7 +144,8 @@ def main():
         0.93,
         (
             "NWS Storm Prediction Center 2007-2017\n"
-            "Percentage of Tornado Day 1 Outlook Area receiving 1+ Tor Warn Polygon\n"
+            "Percentage of Tornado Day 1 Outlook Area receiving "
+            "1+ Tor Warn Polygon\n"
             "Daily events are weighted equally while averaging"
         ),
         fontsize=14,
