@@ -11,7 +11,7 @@ import pytz
 import pandas as pd
 from pyiem.util import get_dbconn, utc
 
-VERSION = "2021APR05"
+VERSION = "2021APR07"
 CRCRLF = "\r\r\n"
 CENTRAL_TZ = pytz.timezone("America/Chicago")
 RIGHT_OF_LINE = re.compile("(RGT|RIGHT|RT) OF A (LN|LINE) (FM|FROM)")
@@ -49,10 +49,24 @@ UNKNOWN = {}
 
 def load_stations():
     """Load up the tie points according to ancient GEMPAK."""
-    mydir = "/home/gempak/GEMPAK7/gempak/tables/stns/"
+    # Personal correspondance, Andy Dean
     rows = []
     entries = []
+    for line in open("SPCstn.txt"):
+        tokens = line.split()
+        sid = tokens[0]
+        if sid in entries:
+            continue
+        entries.append(sid)
+        rows.append(
+            {
+                "sid": sid,
+                "lat": float(tokens[1]) / 100.0,
+                "lon": 0 - float(tokens[2]) / 100.0,
+            }
+        )
     # Be so careful of order and synop tbl has naughty entries
+    mydir = "/home/gempak/GEMPAK7/gempak/tables/stns/"
     for tbl in ["spcwatch", "synop", "inactive", "pirep_navaids", "vors"]:
         for line in open(f"{mydir}/{tbl}.tbl"):
             if line.startswith("!") or len(line) < 70 or line[0] == " ":
@@ -66,24 +80,6 @@ def load_stations():
             lat = float(line[56:60]) / 100.0
             lon = float(line[61:67]) / 100.0
             rows.append(dict(sid=sid, lat=lat, lon=lon))
-    # manual
-    rows.append({"sid": "H63", "lon": -99.25, "lat": 40.04})
-    rows.append({"sid": "6B2", "lon": -69.58, "lat": 45.47})
-    rows.append({"sid": "4MC", "lon": -104.95, "lat": 44.27})
-    rows.append({"sid": "0A8", "lon": -87.09, "lat": 32.94})
-    rows.append({"sid": "4FC", "lon": -105.83, "lat": 39.95})
-    rows.append({"sid": "0YZ", "lon": -93.93, "lat": 40.61})
-    rows.append({"sid": "CHB", "lon": -99.31, "lat": 43.80})
-    rows.append({"sid": "47B", "lon": -67.02, "lat": 44.92})
-    rows.append({"sid": "WGN", "lon": -97.57, "lat": 49.03})
-    rows.append({"sid": "YEN", "lon": -102.97, "lat": 49.22})
-    rows.append({"sid": "BAL", "lon": -76.66, "lat": 39.17})
-    rows.append({"sid": "MXL", "lon": -115.25, "lat": 32.63})
-    rows.append({"sid": "YHE", "lon": -121.48, "lat": 49.37})
-    rows.append({"sid": "YDC", "lon": -120.52, "lat": 49.47})
-    rows.append({"sid": "YCG", "lon": -117.63, "lat": 49.30})
-    rows.append({"sid": "YXC", "lon": -115.78, "lat": 49.60})
-    rows.append({"sid": "YSC", "lon": -71.68, "lat": 45.43})
     return pd.DataFrame(rows).set_index("sid")
 
 
@@ -167,7 +163,13 @@ def process(fh, stns, row):
     """Do work."""
     lines = [
         x.strip()
-        for x in row[1].replace("\r", "").replace("\n.\n", "\n\n").split("\n")
+        for x in (
+            row[1]
+            .replace("\r", "")
+            .replace("\003", "")
+            .replace("\n.\n", "\n\n")
+            .split("\n")
+        )
     ]
     text = "\n".join(lines)
     if text.find("\n\nVALID") == -1:
@@ -231,10 +233,13 @@ def process(fh, stns, row):
                 continue
             want = True
             pts = compute(stns, token[s.end() :].strip())
+            if len(pts) < 2:
+                continue
             if threshold not in thresholds:
                 thresholds[threshold] = pts
             else:
-                thresholds[threshold].append("99999999")
+                if thresholds[threshold][-1] != "99999999":
+                    thresholds[threshold].append("99999999")
                 thresholds[threshold].extend(pts)
         if want:
             take_paragraphs.append(paragraph.replace("\n", CRCRLF))
@@ -247,11 +252,9 @@ def process(fh, stns, row):
         sz = len(thresholds[threshold])
         for i, pt in enumerate(thresholds[threshold]):
             if i % 6 == 0 and i > 1:
-                fh.write("       ")
+                fh.write(f"{CRCRLF}       ")
             fh.write(pt)
-            if (i + 1) % 6 == 0 and i > 0:
-                fh.write(CRCRLF)
-            elif (i + 1) != sz:
+            if (i + 1) != sz:
                 fh.write(" ")
         fh.write(CRCRLF)
     fh.write(CRCRLF + "&&" + CRCRLF)
