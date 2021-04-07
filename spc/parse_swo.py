@@ -14,7 +14,7 @@ from pyiem.util import get_dbconn, utc
 VERSION = "2021APR07"
 CRCRLF = "\r\r\n"
 CENTRAL_TZ = pytz.timezone("America/Chicago")
-RIGHT_OF_LINE = re.compile("(RGT|RIGHT|RT) OF A (LN|LINE) (FM|FROM)")
+RIGHT_OF_LINE = re.compile(r"(RGT|RIGHT|RT) OF A?\s?(LN|LINE) (FM|FROM)")
 VALID_TIME = re.compile(r"^VALID (TIME)?\s*([0-9]{6})Z?\s-\s([0-9]{6})", re.M)
 STS = utc(1987, 1, 1)
 ETS = utc(2002, 3, 26)
@@ -270,7 +270,7 @@ def main():
     cursor.execute(
         "SELECT entered at time zone 'UTC', data, pil from products "
         "WHERE entered > %s and entered < %s "
-        "and pil in ('SWODY1', 'SWODY2')"
+        "and pil in ('SWODY1', 'SWODY2') "
         "ORDER by entered ASC",
         (STS, ETS),
     )
