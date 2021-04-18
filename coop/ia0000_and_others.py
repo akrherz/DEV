@@ -1,3 +1,4 @@
+"""Somewhat interesting."""
 import numpy as np
 import numpy.ma as ma
 import matplotlib.pyplot as plt
@@ -36,37 +37,43 @@ def get(month):
     return H2, extent
 
 
-(fig, ax) = plt.subplots(2, 2, sharex=True, sharey=True)
-fig.text(
-    0.5,
-    0.95,
-    "Iowa Daily Precipitation Coverage vs Areal Average Total",
-    ha="center",
-)
+def main():
+    """Go Main Go."""
+    (fig, ax) = plt.subplots(2, 2, sharex=True, sharey=True)
+    fig.text(
+        0.5,
+        0.95,
+        "Iowa Daily Precipitation Coverage vs Areal Average Total",
+        ha="center",
+    )
 
-H2, extent = get(1)
-ax[0, 0].imshow(H2, interpolation="nearest", extent=extent, aspect="auto")
-ax[0, 0].set_ylim(0, 100)
-ax[0, 0].grid(True)
-ax[0, 0].text(0.8, 20, "January", ha="center")
-ax[0, 0].set_ylabel("Areal Coverage [%]")
+    H2, extent = get(1)
+    ax[0, 0].imshow(H2, interpolation="nearest", extent=extent, aspect="auto")
+    ax[0, 0].set_ylim(0, 100)
+    ax[0, 0].grid(True)
+    ax[0, 0].text(0.8, 20, "January", ha="center")
+    ax[0, 0].set_ylabel("Areal Coverage [%]")
 
-H2, extent = get(4)
-ax[0, 1].imshow(H2, interpolation="nearest", extent=extent, aspect="auto")
-ax[0, 1].grid(True)
-ax[0, 1].text(0.8, 20, "April", ha="center")
+    H2, extent = get(4)
+    ax[0, 1].imshow(H2, interpolation="nearest", extent=extent, aspect="auto")
+    ax[0, 1].grid(True)
+    ax[0, 1].text(0.8, 20, "April", ha="center")
 
-H2, extent = get(7)
-ax[1, 0].imshow(H2, interpolation="nearest", extent=extent, aspect="auto")
-ax[1, 0].grid(True)
-ax[1, 0].text(0.8, 20, "July", ha="center")
-ax[1, 0].set_ylabel("Areal Coverage [%]")
-ax[1, 0].set_xlabel("Precipitation [inch]")
+    H2, extent = get(7)
+    ax[1, 0].imshow(H2, interpolation="nearest", extent=extent, aspect="auto")
+    ax[1, 0].grid(True)
+    ax[1, 0].text(0.8, 20, "July", ha="center")
+    ax[1, 0].set_ylabel("Areal Coverage [%]")
+    ax[1, 0].set_xlabel("Precipitation [inch]")
 
-H2, extent = get(10)
-ax[1, 1].imshow(H2, interpolation="nearest", extent=extent, aspect="auto")
-ax[1, 1].grid(True)
-ax[1, 1].text(0.8, 20, "October", ha="center")
-ax[1, 1].set_xlabel("Precipitation [inch]")
+    H2, extent = get(10)
+    ax[1, 1].imshow(H2, interpolation="nearest", extent=extent, aspect="auto")
+    ax[1, 1].grid(True)
+    ax[1, 1].text(0.8, 20, "October", ha="center")
+    ax[1, 1].set_xlabel("Precipitation [inch]")
 
-fig.savefig("test.png")
+    fig.savefig("test.png")
+
+
+if __name__ == "__main__":
+    main()

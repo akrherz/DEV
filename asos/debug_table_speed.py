@@ -1,5 +1,4 @@
 """Debug printout of partitioned table speed within ASOS database"""
-from __future__ import print_function
 import datetime
 
 from pyiem.util import get_dbconn
@@ -13,12 +12,7 @@ def main():
     for yr in range(1928, datetime.datetime.now().year + 1):
         sts = datetime.datetime.now()
         cursor.execute(
-            """
-            SELECT count(*) from t"""
-            + str(yr)
-            + """
-            WHERE station = %s
-        """,
+            f"SELECT count(*) from t{yr} WHERE station = %s",
             ("DSM",),
         )
         row = cursor.fetchone()

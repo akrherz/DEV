@@ -24,7 +24,7 @@ def dump(pgconn, sid, ncdc81, fips):
         c.precip as climo_precip_mm
         from {table} o JOIN avgs c on (o.sday = c.sday)
         WHERE o.station = %s and o.year >= 2006 and o.year < 2020
-        ORDER by day ASC 
+        ORDER by day ASC
         """,
         pgconn,
         params=(ncdc81, sid),

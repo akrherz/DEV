@@ -1,5 +1,4 @@
 """Fill a data request from Fawaz Alharbi"""
-from __future__ import print_function
 from io import StringIO
 import shutil
 

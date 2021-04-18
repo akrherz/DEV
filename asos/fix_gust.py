@@ -15,12 +15,8 @@ def main(argv):
     cursor = pgconn.cursor()
     cursor2 = pgconn.cursor()
     cursor.execute(
-        """
-        SELECT station, valid, sknt, gust, metar from t"""
-        + year
-        + """
-        WHERE round(gust::numeric, 2) != gust::int
-    """
+        f"SELECT station, valid, sknt, gust, metar from t{year} "
+        "WHERE round(gust::numeric, 2) != gust::int"
     )
     hits = 0
     for row in cursor:
@@ -38,12 +34,8 @@ def main(argv):
         if not dirty:
             continue
         cursor2.execute(
-            """
-            UPDATE t"""
-            + year
-            + """ SET sknt = %s, gust = %s WHERE
-            station = %s and valid = %s
-        """,
+            f"UPDATE t{year} SET sknt = %s, gust = %s WHERE station = %s "
+            "and valid = %s",
             (sknt, gust, row[0], row[1]),
         )
         hits += 1

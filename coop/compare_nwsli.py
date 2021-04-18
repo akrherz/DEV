@@ -11,9 +11,7 @@ def main():
     df = pd.read_csv("/home/akrherz/Downloads/DVN_Coop.csv")
     for _i, row in df.iterrows():
         cursor.execute(
-            """
-        select network from stations where id = %s
-        """,
+            "select network from stations where id = %s",
             (row["SID"],),
         )
         if cursor.rowcount != 1:

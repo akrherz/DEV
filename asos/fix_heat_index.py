@@ -4,11 +4,9 @@ Between MetPy and my pyIEM library, neither was implementing the NWS equation
 for heat index.  So here we are, repairing the damage.
 """
 import sys
-import datetime
 
-from pyiem.util import get_dbconn, utc
+from pyiem.util import get_dbconn
 from tqdm import tqdm
-import pandas as pd
 from pandas.io.sql import read_sql
 from metpy.units import units
 from metpy.calc.basic import heat_index
@@ -20,10 +18,7 @@ def repair(pgconn, df):
     count = 0
     for _, row in tqdm(df.iterrows()):
         cursor.execute(
-            """
-            UPDATE current_log
-            SET feel = %s where iemid = %s and valid = %s
-        """,
+            "UPDATE current_log SET feel = %s where iemid = %s and valid = %s",
             (row["calc_heat"], row["iemid"], row["valid"]),
         )
         count += 1
