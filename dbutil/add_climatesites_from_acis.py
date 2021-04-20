@@ -5,10 +5,11 @@ import sys
 
 # Third Party
 from pyiem.network import Table as NetworkTable
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconn, logger
 from pyiem.reference import nwsli2state
 import requests
 
+LOG = logger()
 state2nwsli = dict([(value, key) for key, value in nwsli2state.items()])
 
 
@@ -24,8 +25,10 @@ def process_state(state, data):
     """Do Some Magic."""
     pgconn = get_dbconn("mesosite")
     cursor = pgconn.cursor()
-    COOP_SITES = NetworkTable(f"{state}_COOP")
-    CLIMATE_SITES = NetworkTable(f"{state}CLIMATE")
+    COOP_SITES = NetworkTable(f"{state}_COOP", only_online=False)
+    CLIMATE_SITES = NetworkTable(f"{state}CLIMATE", only_online=False)
+    cmds = []
+    unknown_coops = []
     for meta in data["meta"]:
         sids = [
             s.split()[0]
@@ -34,6 +37,11 @@ def process_state(state, data):
         ]
         if not sids or len(sids) > 1:
             continue
+        acis_sid = [s.split()[0] for s in meta["sids"] if s.endswith(" 2")]
+        if not acis_sid:
+            LOG.info("failed to get 2-type station for %s", meta["sids"])
+            continue
+        acis_sid = acis_sid[0]
         nwsli = sids[0]
         (maxt, pcpn, snow) = [make_dates(r) for r in meta["valid_daterange"]]
         if None in [maxt, pcpn, snow]:
@@ -45,14 +53,32 @@ def process_state(state, data):
             continue
         if nwsli not in COOP_SITES.sts:
             print(f"Whoa {nwsli} is not a known COOP site?")
-            sys.exit()
+            unknown_coops.append(nwsli)
+            continue
         # Here we go!
         clstation = (
             state
             + [s.split()[0][-4:] for s in meta["sids"] if s.find(" 2") > -1][0]
         )
         if clstation in CLIMATE_SITES.sts:
-            print(f"Skipping {clstation} as already known.")
+            tracks = CLIMATE_SITES.sts[clstation]["attributes"].get(
+                "TRACKS_STATION"
+            )
+            if tracks is None:
+                iemid = CLIMATE_SITES.sts[clstation]["iemid"]
+                print(f"{clstation} should track {nwsli}")
+                cursor.execute(
+                    "INSERT into station_attributes(iemid, attr, value) "
+                    "VALUES (%s, %s, %s)",
+                    (iemid, "TRACKS_STATION", f"{nwsli}|{state}_COOP"),
+                )
+            if not CLIMATE_SITES.sts[clstation]["online"]:
+                print(f"Setting {clstation} to online")
+                cursor.execute(
+                    "UPDATE stations SET online = 't' where iemid = %s",
+                    (iemid,),
+                )
+            print(f"Skipping {clstation} -> {tracks} as already known.")
             continue
         entry = COOP_SITES.sts[nwsli]
         print(f"--> creating {clstation} {entry['name']} {nwsli}")
@@ -80,9 +106,14 @@ def process_state(state, data):
             "VALUES (%s, %s, %s)",
             (iemid, "TRACKS_STATION", f"{nwsli}|{state}_COOP"),
         )
+        cmds.append(f"python use_acis.py {clstation} {acis_sid}")
 
     cursor.close()
     pgconn.commit()
+    print()
+    print(unknown_coops)
+    print()
+    print("\n".join(cmds))
 
 
 def main(argv):
@@ -97,6 +128,10 @@ def main(argv):
         },
     )
     data = req.json()
+    if "meta" not in data:
+        LOG.info("Got status_code %s with no meta", req.status_code)
+        LOG.info(req.content)
+        return
     process_state(state, data)
 
 
