@@ -1,45 +1,64 @@
-"""Fix damage from akrherz/pyIEM#108"""
+"""Fix damage from akrherz/pyIEM#442"""
+# stdlib
+import datetime
 
+# Third Party
+from psycopg2.extras import RealDictCursor
+import pandas as pd
+from pywwa.workflows.pirep_parser import load_locs, LOCS
 from pyiem.nws.products.pirep import Pirep
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconn, utc, logger
+
+LOG = logger()
 
 
-def main():
-    """Go Main Go."""
-    pgconn = get_dbconn("postgis")
+def do(pgconn, date):
+    """do a date."""
     cursor = pgconn.cursor()
     cursor2 = pgconn.cursor()
+    sts = utc(date.year, date.month, date.day)
     cursor.execute(
-        """
-        SELECT oid, st_x(geom::geometry), st_y(geom::geometry), report
-        from pireps WHERE report ~* 'OV TED'
-    """
+        "SELECT ctid, st_x(geom::geometry), st_y(geom::geometry), report "
+        "from pireps WHERE valid >= %s and valid < %s",
+        (sts, sts + datetime.timedelta(days=1)),
     )
     updates = 0
-    nwsli_provider = {
-        "TED": {"lat": 61.17, "lon": -149.99},
-        "PANC": {"lat": 61.17, "lon": -149.99},
-        "ANC": {"lat": 61.17, "lon": -149.99},
-    }
     for row in cursor:
         fake = "000 \r\r\nSAUS99 KDMX 241200\r\r\n%s=\r\r\n" % (row[3],)
-        p = Pirep(fake, nwsli_provider=nwsli_provider)
+        p = Pirep(fake, nwsli_provider=LOCS)
         if not p.reports:
             print(fake)
             continue
+        newlon = p.reports[0].longitude
+        newlat = p.reports[0].latitude
+        if newlon is None:
+            print(fake)
+            continue
+        dist = ((newlon - row[1]) ** 2 + (newlat - row[2]) ** 2) ** 0.5
+        if dist < 0.0001:
+            continue
         cursor2.execute(
-            """
-            UPDATE pireps SET geom = 'SRID=4326;POINT(%s %s)'
-            WHERE oid = %s
-        """,
-            (p.reports[0].longitude, p.reports[0].latitude, row[0]),
+            "UPDATE pireps SET geom = 'SRID=4326;POINT(%s %s)' "
+            "WHERE ctid = %s",
+            (newlon, newlat, row[0]),
         )
         updates += 1
 
-    print("updated %s/%s rows" % (updates, cursor.rowcount))
+    print("%s updated %s/%s rows" % (date, updates, cursor.rowcount))
     cursor2.close()
     pgconn.commit()
 
 
+def main():
+    """GO Main Go."""
+    pgconn = get_dbconn("postgis")
+    cursor = pgconn.cursor(cursor_factory=RealDictCursor)
+    load_locs(cursor)
+    cursor.close()
+    for date in pd.date_range("2015/01/19", "2021/04/22"):
+        do(pgconn, date)
+
+
 if __name__ == "__main__":
+    print("hi")
     main()
