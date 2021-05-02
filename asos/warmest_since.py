@@ -15,22 +15,29 @@ def main():
         cursor.execute(
             """
             WITH today as (
-                SELECT max(tmpf)::int as tmpf from t2020 where station = %s and
-                valid > '2020-07-19 04:50' and valid < '2020-07-19 05:00'
+                SELECT valid, tmpf::int as tmpf, dwpf::int as dwpf
+                from t2021 where station = %s and
+                valid > '2021-05-01 00:50' and valid < '2021-05-01 23:00'
+                and tmpf is not null and dwpf is not null
+                ORDER by tmpf DESC LIMIT 1
             )
-            select valid, a.tmpf from alldata a, today t where station = %s and
-            extract(hour from valid + '10 minutes'::interval) = 5 and
-            a.tmpf::int >= t.tmpf ORDER by valid DESC
+            select a.valid, a.tmpf, a.dwpf,
+            t.valid as t_valid, t.tmpf as t_tmpf, t.dwpf as t_dwpf
+            from alldata a, today t
+            where station = %s and a.valid <= t.valid and
+            a.tmpf::int >= t.tmpf and a.dwpf::int <= t.dwpf ORDER by valid DESC
             """,
             (station, station),
         )
         row1 = cursor.fetchone()
         row2 = None
-        if cursor.rowcount > 1:
-            row2 = cursor.fetchone()
-            while row2[0].strftime("%Y%m%d") == "20200719":
-                row2 = cursor.fetchone()
-        print(f"{station} {row1[1]} {row2}")
+        hours = 0
+        for row in cursor:
+            if row[0].strftime("%Y%m%d") != "20210501":
+                if row2 is None:
+                    row2 = row
+                hours += 1
+        print(f"{station} {hours} {row1[1]} {row2}")
 
 
 if __name__ == "__main__":
