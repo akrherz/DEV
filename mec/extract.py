@@ -31,7 +31,6 @@ for line in open("dates.txt"):
     """,
         (sts, ets),
     )
-    print sts, ets, cursor.rowcount
     for row in cursor:
         ts = row[1].astimezone(pytz.timezone("UTC"))
         output.write(

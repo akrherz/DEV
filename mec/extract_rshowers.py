@@ -53,7 +53,6 @@ for line in dates.split("\n"):
     """,
         (sts, ets),
     )
-    print sts, ets, cursor.rowcount
     for row in cursor:
         ts = row[0].astimezone(pytz.timezone("UTC"))
         output.write(

@@ -51,7 +51,6 @@ for row in cursor:
                 row2[5],
             )
         )
-    print row[0], cursor2.rowcount
 
 p.close()
 o.close()

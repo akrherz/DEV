@@ -14,7 +14,6 @@ cursor = dbconn.cursor()
 
 for line in open("mec-cypher.txt"):
     tokens = line.strip().split("\t")
-    print tokens
     sql = """INSERT into turbines(farmname, expansion, unitnumber,
     farmnumber, turbinename, geom) values ('%s', '%s', '%s',
     '%s', '%s', 'SRID=4326;POINT(%s %s)')""" % (

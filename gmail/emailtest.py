@@ -51,7 +51,6 @@ def blah():
         typ, data = obj.fetch(num, "(RFC822)")
         msg = email.message_from_string(data[0][1])
         if msg["From"].find("akrherz@iastate.edu") == -1:
-            # print msg['From']
             continue
         for myto in compute(msg["To"], msg["Cc"]):
             if myto not in counts:

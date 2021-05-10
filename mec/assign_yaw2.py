@@ -35,7 +35,7 @@ def process(xedges, yedges, counts):
 
 
 def compute_correction(unitnumber, turbineid):
-    """ Compute what the bias is for this turbine """
+    """Compute what the bias is for this turbine"""
     cursor2 = PGCONN.cursor()
 
     # Go find interesting cases!
@@ -64,7 +64,6 @@ def compute_correction(unitnumber, turbineid):
         turbine.append(float(row2[0]))
         valid.append(row[0])
     if len(valid) < 2:
-        print "missing"
         return
 
     turbine = np.array(turbine)
@@ -89,7 +88,6 @@ def compute_correction(unitnumber, turbineid):
 
         x, correction = process(xedges, yedges, counts)
         cor_stddev2 = np.std(correction)
-        print "[180adj old: %.1f new: %.1f]" % (cor_stddev, cor_stddev2),
 
     fig.colorbar(img, ax=ax[0])
     ax[0].set_xlabel("Storm Lake AWOS Wind Direction")
@@ -139,7 +137,7 @@ def compute_correction(unitnumber, turbineid):
 
 
 def update_database(unitnumber, turbineid, correction):
-    """ Apply this correction """
+    """Apply this correction"""
     cursor2 = PGCONN.cursor()
     cursor2.execute(
         """UPDATE sampled_data_"""
@@ -169,14 +167,12 @@ def update_database(unitnumber, turbineid, correction):
 
 
 def main():
-    """ Do stuff """
+    """Do stuff"""
     cursor.execute("""select unitnumber, id from turbines""")
     for row in cursor:
-        print "ID: %s" % (row[1],),
         correction = compute_correction(row[0], row[1])
         if correction is None:
             continue
-        print "... correction: %.1f" % (correction,)
         if abs(correction) > 5:
             update_database(row[0], row[1], correction)
         else:

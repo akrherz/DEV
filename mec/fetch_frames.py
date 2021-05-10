@@ -7,7 +7,6 @@ interval = datetime.timedelta(minutes=1)
 
 frame = 0
 while sts < ets:
-    print sts
     data = urllib2.urlopen(
         sts.strftime("http://iem.local/mec/map_power_%Y%m%d%H%M_yaw2.png")
     )

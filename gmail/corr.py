@@ -1,7 +1,5 @@
 import imaplib
-import re
 import email
-import datetime
 
 obj = imaplib.IMAP4_SSL("imap.gmail.com", 993)
 obj.login("akrherz", "")
@@ -11,7 +9,8 @@ users = {}
 
 typ, data = obj.search(
     None,
-    '(TO "akrherz@iastate.edu" FROM "@iastate.edu" since "01-Jan-2014" NOT FROM "agron.iastate.edu")',
+    '(TO "akrherz@iastate.edu" FROM "@iastate.edu" since "01-Jan-2014" '
+    'NOT FROM "agron.iastate.edu")',
 )
 for num in data[0].split():
     typ, data = obj.fetch(num, "(RFC822)")
@@ -19,4 +18,4 @@ for num in data[0].split():
     users[msg["From"]] = 1
 
 for key in users:
-    print key
+    print(key)
