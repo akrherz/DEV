@@ -86,7 +86,7 @@ def load_stations():
 def get_threshold(text):
     """Convert things we need."""
     # Order here matters as some funky things could happen in the text
-    if text.find("GEN TSTMS") > -1:
+    if text.find("GEN TSTM") > -1:
         return "TSTM"
     if text.find("SLGT RISK") > -1:
         return "SLGT"
