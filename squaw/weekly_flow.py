@@ -37,7 +37,7 @@ def main():
     res = ax.imshow(
         np.flipud(data),
         interpolation="nearest",
-        extent=(1, 54, 1989.5, 2015.5),
+        extent=(1, 54, 1989.5, 2021.5),
         cmap=cmap,
         norm=norm,
         aspect="auto",
