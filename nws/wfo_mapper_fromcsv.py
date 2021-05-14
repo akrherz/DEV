@@ -14,21 +14,25 @@ def main():
     df = df.set_index("wfo")
     print(df)
     # df["count"] = 100. - df["count"]
-    vals = df["rank"].to_dict()
-    bins = list(range(1, 22, 2))
+    data = (df["count"] - df["avg"]).round(0)
+    vals = data.to_dict()
+    bins = list(range(-100, 101, 25))
     # bins = np.arange(2012, 2022, 1)
     # bins = [0, 0.1, 0.2, 0.5, 0.75, 1, 2, 5, 10]
     # bins = [1, 5, 10, 25, 50, 75, 100, 125]
     # bins = np.arange(0, 17, 2)
-    cmap = get_cmap("Greens")
+    cmap = get_cmap("RdBu")
     # cmap.set_over("lightyellow")
     mp = MapPlot(
         sector="nws",
         continentalcolor="white",
         twitter=True,
-        title=("2021 Rank for Least Severe T'Storm + Tornado Warnings Issued"),
+        title=(
+            "2021 Departure of Total Severe T'Storm + Tornado Warnings Issued vs 20 Year Average"
+        ),
         subtitle=(
-            "based on unofficial IEM archives over 1 Jan - 7 May, 2002-2021, rank of 1 indicates least number issued, may include ties"
+            "based on unofficial IEM archives over 1 Jan - 13 May, 2002-2021, nationwide depature %.0f warnings"
+            % (data.sum())
         ),
     )
     mp.fill_cwas(
@@ -37,7 +41,7 @@ def main():
         lblformat="%.0f",  # , labels=labels,
         cmap=cmap,
         ilabel=True,  # clevlabels=clevlabels,
-        units="rank out of 20",
+        units="departure count",
         extend="neither",
         spacing="proportional",
     )
