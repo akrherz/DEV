@@ -33,31 +33,37 @@ def getdata(year):
     return doy, ratio
 
 
-doy2009, ratio2009 = getdata(2009)
-doy2010, ratio2010 = getdata(2010)
+def main():
+    """Go Main Go."""
+    doy2009, ratio2009 = getdata(2009)
+    doy2010, ratio2010 = getdata(2010)
 
-fig = plt.figure()
-ax = fig.add_subplot(211)
+    fig = plt.figure()
+    ax = fig.add_subplot(211)
 
-ax.bar(doy2009, ratio2009, edgecolor="r", facecolor="r", label="2009")
-ax.set_xlim(0, 366)
-ax.set_ylim(0, 100)
-ax.set_ylabel("Iowa Areal Coverage [%]")
-ax.set_xticks((1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 365))
-ax.set_xticklabels(calendar.month_abbr[1:])
-ax.grid(True)
-ax.legend(loc=2)
-ax.set_title("SPC Day 1 Convective Slight Risk\n13 UTC Morning Issuance")
+    ax.bar(doy2009, ratio2009, edgecolor="r", facecolor="r", label="2009")
+    ax.set_xlim(0, 366)
+    ax.set_ylim(0, 100)
+    ax.set_ylabel("Iowa Areal Coverage [%]")
+    ax.set_xticks((1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335))
+    ax.set_xticklabels(calendar.month_abbr[1:])
+    ax.grid(True)
+    ax.legend(loc=2)
+    ax.set_title("SPC Day 1 Convective Slight Risk\n13 UTC Morning Issuance")
 
-ax = fig.add_subplot(212)
+    ax = fig.add_subplot(212)
 
-ax.bar(doy2010, ratio2010, edgecolor="r", facecolor="r", label="2010")
-ax.set_xlim(0, 366)
-ax.set_ylim(0, 100)
-ax.set_ylabel("Iowa Areal Coverage [%]")
-ax.set_xticks((1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 365))
-ax.set_xticklabels(calendar.month_abbr[1:])
-ax.set_xlabel("*2010 Data Valid Thru 24 October")
-ax.grid(True)
-ax.legend(loc=2)
-fig.savefig("test.png")
+    ax.bar(doy2010, ratio2010, edgecolor="r", facecolor="r", label="2010")
+    ax.set_xlim(0, 366)
+    ax.set_ylim(0, 100)
+    ax.set_ylabel("Iowa Areal Coverage [%]")
+    ax.set_xticks((1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335))
+    ax.set_xticklabels(calendar.month_abbr[1:])
+    ax.set_xlabel("*2010 Data Valid Thru 24 October")
+    ax.grid(True)
+    ax.legend(loc=2)
+    fig.savefig("test.png")
+
+
+if __name__ == "__main__":
+    main()

@@ -9,7 +9,7 @@ from pandas.io.sql import read_sql
 
 def main():
     """Go Main Go"""
-    pgconn = get_dbconn("postgis", user="nobody")
+    pgconn = get_dbconn("postgis")
     df = read_sql(
         """
     SELECT st_x(geom::geometry) as lon, st_y(geom::geometry) as lat

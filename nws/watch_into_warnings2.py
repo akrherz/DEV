@@ -40,36 +40,43 @@ data = """  1 |  6622 |   7453
  11 |  5205 |   6348
  12 |  5462 |   6468"""
 
-ratio = []
-h, a = 0, 0
-for line in data.split("\n"):
-    tokens = line.split("|")
-    h += float(tokens[1])
-    a += float(tokens[2])
-    if float(tokens[2]) == 0:
-        ratio.append(0)
-    else:
-        ratio.append(float(tokens[1]) / float(tokens[2]) * 100.0)
 
-(fig, ax) = plt.subplots(1, 1)
-ax.bar(np.arange(1, 13) - 0.4, ratio)
-ax.set_xlim(0.5, 12.5)
-for i, r in enumerate(ratio):
-    if r > 0:
-        ax.text(i + 1, r + 1, "%.1f%%" % (r,), ha="center")
-ax.set_ylim(0, 100)
-ax.set_yticks(np.arange(0, 101, 25))
-ax.grid(True)
-ax.set_title(
-    (
-        "1 Oct 2005 - 22 Aug 2015 "
-        "Percent of NWS County Svr Tstorm Warnings\n"
-        "that no SPC Svr Tstorm Watch Active, Overall (%.0f/%.0f %.1f%%)"
+def main():
+    """Go Main Go."""
+    ratio = []
+    h, a = 0, 0
+    for line in data.split("\n"):
+        tokens = line.split("|")
+        h += float(tokens[1])
+        a += float(tokens[2])
+        if float(tokens[2]) == 0:
+            ratio.append(0)
+        else:
+            ratio.append(float(tokens[1]) / float(tokens[2]) * 100.0)
+
+    (fig, ax) = plt.subplots(1, 1)
+    ax.bar(np.arange(1, 13) - 0.4, ratio)
+    ax.set_xlim(0.5, 12.5)
+    for i, r in enumerate(ratio):
+        if r > 0:
+            ax.text(i + 1, r + 1, "%.1f%%" % (r,), ha="center")
+    ax.set_ylim(0, 100)
+    ax.set_yticks(np.arange(0, 101, 25))
+    ax.grid(True)
+    ax.set_title(
+        (
+            "1 Oct 2005 - 22 Aug 2015 "
+            "Percent of NWS County Svr Tstorm Warnings\n"
+            "that no SPC Svr Tstorm Watch Active, Overall (%.0f/%.0f %.1f%%)"
+        )
+        % (h, a, h / a * 100.0)
     )
-    % (h, a, h / a * 100.0)
-)
-ax.set_xticks(range(1, 13))
-ax.set_xticklabels(calendar.month_abbr[1:])
-ax.set_ylabel("Percentage [%]")
-ax.set_xlabel("*based on unofficial IEM archives of NWS WWA")
-fig.savefig("test.png")
+    ax.set_xticks(range(1, 13))
+    ax.set_xticklabels(calendar.month_abbr[1:])
+    ax.set_ylabel("Percentage [%]")
+    ax.set_xlabel("*based on unofficial IEM archives of NWS WWA")
+    fig.savefig("test.png")
+
+
+if __name__ == "__main__":
+    main()

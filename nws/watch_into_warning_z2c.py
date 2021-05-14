@@ -90,7 +90,7 @@ def main():
 def plot():
     """Make a pretty plot"""
     df = pd.read_csv("wfo.csv")
-    df.set_index("wfo", inplace=True)
+    df = df.set_index("wfo")
     m = MapPlot(
         sector="conus",
         title="Percentage of Flash Flood Watches receiving 1+ FFW",

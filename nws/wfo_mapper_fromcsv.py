@@ -39,6 +39,7 @@ def main():
         vals,
         bins=bins,
         lblformat="%.0f",  # , labels=labels,
+        labelbuffer=0,
         cmap=cmap,
         ilabel=True,  # clevlabels=clevlabels,
         units="departure count",
