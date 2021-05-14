@@ -27,16 +27,13 @@ def main():
         mydir = "KOKX/%s" % (row[0],)
         if not os.path.isdir(mydir):
             os.makedirs(mydir)
-        o = open(
+        with open(
             "%s/%s_%s_%s.txt"
             % (mydir, row[1].strftime("%Y%m%d%H%M"), row[2], row[0]),
             "a",
-        )
-        o.write(row[3])
-        o.write("\r\r\n\003")
-        o.close()
-
-    o.close()
+        ) as fh:
+            fh.write(row[3])
+            fh.write("\r\r\n\003")
 
 
 if __name__ == "__main__":

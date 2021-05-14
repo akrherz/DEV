@@ -28,12 +28,8 @@ def save(prod, cursor):
     if len(wmo) == 5:
         wmo = "%s0%s" % (wmo[:4], wmo[4])
     cursor.execute(
-        """
-        INSERT into """
-        + table
-        + """ (data, pil, entered, source, wmo)
-        VALUES (%s, %s, %s, %s, %s)
-    """,
+        f"INSERT into {table} (data, pil, entered, source, wmo) VALUES "
+        "(%s, %s, %s, %s, %s)",
         (
             prod.text,
             prod.afos,

@@ -11,7 +11,6 @@ WMO_RE = re.compile(
     r"(?P<ddhhmm>[0-3][0-9][0-2][0-9][0-5][0-9])",
     re.M,
 )
-# Copied from iem/scripts/util/poker2afos.py
 sys.path.insert(0, "/opt/iem/scripts/util")
 from poker2afos import XREF_SOURCE
 

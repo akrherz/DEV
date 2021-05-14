@@ -46,7 +46,8 @@ def main():
 
         res.append([row[1][1:], wordcount])
     df = pd.DataFrame(res, columns=["wfo", "count"])
-    # df2 = df[df["count"] == 0].groupby("wfo").count() / df.groupby("wfo").count()
+    # df2 = df[df["count"] == 0].groupby("wfo").count() /
+    # df.groupby("wfo").count()
     # df2["count"] = df2["count"] * 100.
     df2 = df.groupby("wfo").mean().copy()
     df2.to_csv("wfo.csv")

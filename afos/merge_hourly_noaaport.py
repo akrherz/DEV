@@ -21,10 +21,8 @@ def main():
         if tp.afos is None:
             continue
         cursor.execute(
-            """
-            SELECT data from products_2019_0712 where entered = %s
-            and source = %s and wmo = %s and pil = %s
-        """,
+            "SELECT data from products_2019_0712 where entered = %s and "
+            "source = %s and wmo = %s and pil = %s",
             (tp.valid, tp.source, tp.wmo, tp.afos),
         )
         if cursor.rowcount > 0:

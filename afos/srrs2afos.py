@@ -1,5 +1,4 @@
 """Ingest the SRRS text files into the AFOS IEM database"""
-from __future__ import print_function
 import glob
 import datetime
 import tarfile
@@ -20,7 +19,7 @@ PGCONN = get_dbconn("afos")
 
 
 def process():
-    """ Process this timestamp """
+    """Process this timestamp"""
     for tarfn in glob.glob("9957*tar.Z"):
         cursor = PGCONN.cursor()
         subprocess.call("uncompress %s" % (tarfn,), shell=True)
@@ -101,7 +100,7 @@ def process():
 
 
 def main():
-    """ Go Main Go """
+    """Go Main Go"""
     os.chdir("/mesonet/tmp/ncei")
     for order in glob.glob("HAS*"):
         os.chdir(order)

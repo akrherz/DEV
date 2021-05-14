@@ -18,10 +18,7 @@ def main():
             int(fn[21:23]),
         )
         cursor.execute(
-            """
-            DELETE from products where pil = 'PTSDY1' and
-            entered = %s
-        """,
+            "DELETE from products where pil = 'PTSDY1' and entered = %s",
             (ts,),
         )
         if cursor.rowcount == 0:
@@ -36,12 +33,8 @@ def main():
             "0106" if ts.month < 7 else "0712",
         )
         cursor.execute(
-            """
-            INSERT into """
-            + table
-            + """(data, pil, entered, source, wmo)
-            VALUES (%s, 'PTSDY1', %s, 'KWNS', 'WUUS01')
-        """,
+            f"INSERT into {table} (data, pil, entered, source, wmo) "
+            "VALUES (%s, 'PTSDY1', %s, 'KWNS', 'WUUS01')",
             (txt, ts),
         )
     cursor.close()
