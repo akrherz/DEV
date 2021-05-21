@@ -6,11 +6,11 @@ from pyiem.plot import MapPlot
 
 def main():
     """Go Main Go."""
-    now = datetime.date(2016, 11, 1)
-    ets = datetime.date(2017, 1, 3)
+    now = datetime.date(2019, 4, 30)
+    ets = datetime.date(2021, 5, 19)
     interval = datetime.timedelta(days=7)
 
-    frame = 878
+    frame = 0
     while now < ets:
         print(now)
         mp = MapPlot(
