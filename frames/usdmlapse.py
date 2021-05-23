@@ -6,7 +6,7 @@ from pyiem.plot import MapPlot
 
 def main():
     """Go Main Go."""
-    now = datetime.date(2019, 4, 30)
+    now = datetime.date(2000, 1, 4)
     ets = datetime.date(2021, 5, 19)
     interval = datetime.timedelta(days=7)
 
