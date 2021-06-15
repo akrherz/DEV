@@ -13,8 +13,7 @@ def run_station(station):
     cursor.execute(
         """
     select sday, day, high, low from alldata_co WHERE station = %s
-    and high is not null and low is not null
-    ORDER by day ASC
+    and high is not null and low is not null ORDER by day ASC
     """,
         (station,),
     )

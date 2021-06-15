@@ -36,7 +36,7 @@ def main():
 
     mp = MapPlot(
         title="1-5 June :: Frequency of +0.5 inches of Precipitation",
-        subtitle=("based on 1995-2019 data"),
+        subtitle="based on 1995-2019 data",
         sector="state",
         state="IA",
         drawstates=True,

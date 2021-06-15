@@ -1,12 +1,11 @@
 """consec days"""
-from __future__ import print_function
 
 from pyiem.util import get_dbconn
 
 
 def main():
     """Go Main Go"""
-    pgconn = get_dbconn("coop", user="nobody")
+    pgconn = get_dbconn("coop")
     cursor = pgconn.cursor()
     cursor.execute(
         """
