@@ -2,7 +2,7 @@
 import pandas as pd
 from pyiem.util import get_dbconn
 
-pgconn = get_dbconn("mesosite", user="mesonet")
+pgconn = get_dbconn("mesosite")
 cursor = pgconn.cursor()
 
 df = pd.read_csv("/tmp/SNOTEL.SCAN.metadata.txt", sep="|")

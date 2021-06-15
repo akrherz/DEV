@@ -35,11 +35,9 @@ def workflow(iemid, row):
         table = day.strftime("raw%Y_%m")
         ts = ts.replace(year=day.year, month=day.month, day=day.day)
         hcursor.execute(
-            """
+            f"""
         SELECT distinct extract(hour from valid)::int as hr
-        from """
-            + table
-            + """ WHERE station = %s
+        from {table} WHERE station = %s
         and valid between %s and %s and substr(key, 1, 2) in ('PP', 'TA')
         """,
             (
@@ -57,12 +55,8 @@ def workflow(iemid, row):
         )
         table = "summary_%s" % (coopvalid.year,)
         icursor.execute(
-            """
-        UPDATE """
-            + table
-            + """ SET coop_valid = %s
-        WHERE iemid = %s and day = %s
-        """,
+            f"UPDATE {table} SET coop_valid = %s "
+            "WHERE iemid = %s and day = %s",
             (coopvalid, iemid, day),
         )
         updated += 1

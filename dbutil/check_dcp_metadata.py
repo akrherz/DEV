@@ -5,7 +5,7 @@ from pyiem.util import get_dbconn
 
 def main():
     """Go Main"""
-    dbconn = get_dbconn("mesosite", user="nobody")
+    dbconn = get_dbconn("mesosite")
     cursor = dbconn.cursor()
 
     cursor.execute(
@@ -15,6 +15,9 @@ def main():
 
     for row in cursor:
         nwsli = row[0]
+        # only care about digits
+        if not nwsli[-1].isdigit():
+            continue
         state = row[1]
         country = row[2]
         network = row[3]
