@@ -1,81 +1,60 @@
-"""Map of hour of most common warning."""
+"""Map UGC stuff."""
 
+from pandas.io.sql import read_sql
 import numpy as np
-from pyiem.plot import MapPlot
+from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import get_dbconn
-
-# import matplotlib.colors as mpcolors
-import matplotlib.cm as cm
 
 
 def main():
     """Go Main Go."""
     pgconn = get_dbconn("postgis")
-    pcursor = pgconn.cursor()
 
-    cmap = cm.get_cmap("terrain")
+    cmap = get_cmap("terrain")
+    cmap.set_over("red")
 
-    m = MapPlot(
+    mp = MapPlot(
         sector="conus",
         axisbg="#EEEEEE",
-        title="Hour of Day with Most Number of Severe T'Storm Warnings Issued",
-        subtitle=(
-            "Hours presented are local to the NWS Office "
-            "that issued the warning (1986-2019)"
+        title=(
+            "Percentage of All Tornado Watches for Location "
+            "Active at 3 AM CDT (8 UTC)"
         ),
+        subtitle=("Based on unofficial IEM archives (2005-2021)"),
         cwas=True,
+        twitter=True,
     )
 
-    bins = np.arange(12, 25, 1)
     # norm = mpcolors.BoundaryNorm(bins, cmap.N)
 
-    pcursor.execute(
+    df = read_sql(
         """
-    WITH data as (
-        SELECT ugc, issue at time zone tzname as v
-        from warnings w JOIN stations t
-        ON (w.wfo =
-            (case when length(t.id) = 4 then substr(t.id, 1, 3) else t.id end))
-        WHERE t.network = 'WFO' and
-        phenomena = 'SV' and significance = 'W' and issue is not null),
-    agg as (
-        SELECT ugc, extract(hour from v) as hr, count(*) from data
-        GROUP by ugc, hr),
-    ranks as (
-        SELECT ugc, hr, rank() OVER (PARTITION by ugc ORDER by count DESC)
-        from agg)
-
-    SELECT ugc, hr from ranks where rank = 1
-    """
+    with events as (select ugc, generate_series(issue at time zone 'UTC',
+    expire at time zone 'UTC', '1 minute'::interval) as ts from warnings
+    where phenomena = 'TO' and significance = 'A'), totals as (select ugc,
+    count(*) from warnings where phenomena = 'TO' and significance = 'A'
+    GROUP by ugc), morning as (select ugc, count(*) from events where
+    extract(hour from ts) = 8 and extract(minute from ts) = 0 GROUP by ugc)
+    select t.ugc, t.count as events, m.count as morning
+    from totals t LEFT JOIN morning m on
+    (t.ugc = m.ugc)
+    """,
+        pgconn,
+        index_col="ugc",
     )
-    data = {}
-    for row in pcursor:
-        data[row[0]] = float(row[1])
-
-    cl = [
-        "Noon",
-        "",
-        "2 PM",
-        "",
-        "4 PM",
-        "",
-        "6 PM",
-        "",
-        "8 PM",
-        "",
-        "10 PM",
-        "",
-    ]
-    m.fill_ugcs(
-        data,
-        bins,
+    df = df.fillna(0)
+    df["percent"] = df["morning"] / df["events"] * 100.0
+    print(df["percent"].max())
+    mp.fill_ugcs(
+        df["percent"].to_dict(),
+        bins=[0, 0.1, 5, 10, 15, 20, 25, 30, 35, 40],
         cmap=cmap,
-        units="Hour of Day",
-        clevstride=2,
-        clevlabels=cl,
-        extend="neither",
+        units="%",
+        spacing="uniform",
+        extend="max",
     )
-    m.postprocess(filename="test.png")
+    mp.draw_cwas()
+    mp.postprocess(filename="test.png")
 
 
 if __name__ == "__main__":
