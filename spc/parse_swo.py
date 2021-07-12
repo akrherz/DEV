@@ -11,7 +11,7 @@ import pytz
 import pandas as pd
 from pyiem.util import get_dbconn, utc
 
-VERSION = "2021JUL02"
+VERSION = "2021JUL08"
 CRCRLF = "\r\r\n"
 CENTRAL_TZ = pytz.timezone("America/Chicago")
 RIGHT_OF_LINE = re.compile(r"(RGT|RIGHT|RT) OF A?\s?(LN|LINE) (FM|FROM)")
@@ -86,6 +86,7 @@ def load_stations():
 def get_threshold(text):
     """Convert things we need."""
     # Order here matters as some funky things could happen in the text
+    # text.find("TSTMS MAY APCH SVR LIMITS") > -1  is NOT TSTM!
     if text.find("GEN TSTM") > -1 or text.find("GNL TSTM") > -1:
         return "TSTM"
     if text.find("SLGT RISK") > -1:
@@ -183,6 +184,7 @@ def process(fh, stns, row):
             paragraph.replace("\n", " ")
             .replace("...", " ")
             .replace("..", " ")
+            .replace(".", " ")
             .replace("AND TO ", ". TO ")
             .replace("ALSO TO ", ". TO ")
             .replace('"', "")
