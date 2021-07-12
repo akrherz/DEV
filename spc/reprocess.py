@@ -3,6 +3,7 @@ import subprocess
 
 # third party
 from tqdm import tqdm
+import requests
 from psycopg2.extras import RealDictCursor
 from pyiem.util import get_dbconn
 
@@ -11,31 +12,24 @@ def main():
     """Go Main Go."""
     postgis_pgconn = get_dbconn("postgis")
     pcursor = postgis_pgconn.cursor()
-    pgconn = get_dbconn("afos")
-    cursor = pgconn.cursor(cursor_factory=RealDictCursor)
-    cursor.execute(
-        "SELECT entered at time zone 'UTC' as valid, pil, source, wmo, data "
-        "from products where pil = 'PTSDY1' and entered > '2020-03-08' and "
-        "entered < '2020-03-23' ORDER by entered ASC"
+    # pgconn = get_dbconn("afos")
+    # cursor = pgconn.cursor(cursor_factory=RealDictCursor)
+    pcursor.execute(
+        "select product_id, st_area(geom) as area, updated from spc_outlooks "
+        "where updated < '2021-07-07' and geom is not null and day = 3 and "
+        "threshold = 'SLGT' "
+        "ORDER by area DESC LIMIT 50"
     )
-    print(f"Found {cursor.rowcount}")
-    for row in tqdm(cursor, total=cursor.rowcount):
-        product_id = "%s-%s-%s-%s" % (
-            row["valid"].strftime("%Y%m%d%H%M"),
-            row["source"],
-            row["wmo"],
-            row["pil"],
+    progress = tqdm(pcursor, total=pcursor.rowcount)
+    for row in progress:
+        product_id = row[0]
+        progress.set_description(product_id)
+        req = requests.get(
+            f"http://mesonet.agron.iastate.edu/api/1/nwstext/{product_id}"
         )
-        pcursor.execute(
-            "SELECT product_id from spc_outlook where product_id = %s",
-            (product_id,),
-        )
-        if pcursor.rowcount == 1:
-            continue
-        print(product_id)
         tmpfn = f"/tmp/{product_id}.txt"
         with open(tmpfn, "wb") as fh:
-            fh.write(row["data"].encode("utf-8"))
+            fh.write(req.content)
         cmd = f"python ~/projects/pyWWA/util/make_text_noaaportish.py {tmpfn}"
         subprocess.call(cmd, shell=True)
         cmd = (
