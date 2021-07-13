@@ -1,4 +1,5 @@
 """Exp plot."""
+from datetime import datetime
 from itertools import combinations
 
 import pandas as pd
@@ -7,17 +8,22 @@ from pyiem.plot.use_agg import plt
 
 def main():
     """Go Main Go."""
-    df = pd.read_csv("AEA_Inversion2_MinSI.dat", skiprows=[0, 2, 3])
+    df = pd.read_csv(
+        "AEA_Inversion2_MinSI.dat",
+        skiprows=[0, 2, 3],
+        na_values=["NAN"],
+    )
     df["valid"] = pd.to_datetime(df["TIMESTAMP"])
+    df = df[df["valid"] > datetime(2021, 7, 8, 10)]
 
     fig, axes = plt.subplots(3, 1, figsize=(10.24, 7.68))
     ax = axes[0]
     ax.set_title(
-        "Ames AEA Farm 24 Jun -6 Jul 2021 Inversion Station Equal Height Test"
+        "Ames AEA Farm 8-13 Jul Inversion Station 2 Equal Height Test"
     )
-    ax.plot(df["valid"], df["T5_Avg"], label="CS215 '5'")
-    ax.plot(df["valid"], df["T10_Avg"], label="CS215 '10'")
-    ax.plot(df["valid"], df["T15_Avg"], label="CS215 '15'")
+    ax.plot(df["valid"], df["T5_Avg"], label="T107 '5'")
+    ax.plot(df["valid"], df["T10_Avg"], label="T107 '10'")
+    ax.plot(df["valid"], df["T15_Avg"], label="T107 '15'")
     ax.grid(True)
     ax.set_ylabel("Temperature C")
     ax.legend(ncol=3)
@@ -37,7 +43,7 @@ def main():
     for (one, two) in combinations([5, 10, 15], 2):
         df["delta"] = df[f"T{one}_Avg"] - df[f"T{two}_Avg"]
         ax.plot(df["valid"], df["delta"], label=f"{one} - {two}")
-        ax.set_ylabel("CS215 Difference C")
+        ax.set_ylabel("T107 Difference C")
     ax.grid(True)
     ax.legend()
     fig.savefig("inversion.png")
