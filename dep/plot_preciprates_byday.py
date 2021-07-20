@@ -10,7 +10,7 @@ def main():
     """Go Main Go."""
     df = read_cli("/i/0/cli/091x041/091.48x041.88.cli")
     df["jday"] = df.index.strftime("%j").astype("i")
-    df["maxr"] = (df["maxr"].values * units("mm")).to(units("inch")).m
+    df["maxr"] = (df["maxr"].values * units("mm")).to(units("mm")).m
     gdf = df[["jday", "maxr"]].groupby("jday").max()
 
     (fig, ax) = plt.subplots(1, 1)
@@ -40,10 +40,11 @@ def main():
         )
     )
     ax.legend()
-    ax.set_ylabel("Precipitation Rate [in/hr]")
+    ax.set_ylabel("Precipitation Rate [mm/hr]")
     ax.grid(True)
     ax.set_xlim(60, 182)
-    fig.savefig("test.png")
+    ax.set_yticks(range(0, 176, 25))
+    fig.savefig("test.png", dpi=300)
 
 
 if __name__ == "__main__":
