@@ -10,6 +10,22 @@ MESOSITE = get_dbconn("mesosite")
 
 def workflow(iemid, row):
     """Do Work."""
+    icursor = IEM.cursor()
+    # Double check that we have no data coming from other sources
+    icursor.execute(
+        "SELECT count(*) from summary_2021 where iemid = %s and "
+        "(max_tmpf is not null or min_tmpf is not null or pday is not null "
+        "or snow is not null)",
+        (iemid,),
+    )
+    if icursor.fetchone()[0] > 0:
+        LOG.info(
+            "Skipping %s[%s] as summary table had data",
+            row["id"],
+            row["network"],
+        )
+        return
+    icursor.close()
     mcursor = MESOSITE.cursor()
     mcursor.execute(
         "UPDATE stations SET online = 'f' where iemid = %s",
@@ -39,7 +55,7 @@ def main():
         """
         SELECT s.iemid, id, network from stations s JOIN current c ON
         (s.iemid = c.iemid) where c.valid < '2019-01-01' and
-        s.network ~* 'DCP' ORDER by id
+        s.network ~* 'COOP' ORDER by id
     """,
         IEM,
         index_col="iemid",
