@@ -10,7 +10,7 @@ cursor = pgconn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 
 def get_data(sid, valid):
-    """ Go get data for this time! """
+    """Go get data for this time!"""
     if sid[0] == "K":
         sid = sid[1:]
 
@@ -50,14 +50,14 @@ def get_data(sid, valid):
 
 
 def timefmt(val):
-    """ Nice formatter """
+    """Nice formatter"""
     if val is None:
         return "NULL"
     return val.strftime("%Y-%m-%d %H:%M:%S.000")
 
 
 def format_entry(arr):
-    """ Convert a dict into csv that we want """
+    """Convert a dict into csv that we want"""
     return "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s," % (
         arr.get("station", "NULL"),
         timefmt(arr.get("utctime")),

@@ -29,7 +29,7 @@ def do_year(gdf, rows, year):
 
 
 def main():
-    """ Get the HUC6 we are interested in"""
+    """Get the HUC6 we are interested in"""
     gdf = gpd.GeoDataFrame.from_file(
         "/mesonet/data/gis/static/shape/4326/us/huc6_01.shp"
     )

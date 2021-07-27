@@ -82,7 +82,7 @@ def do_polygon(ctx):
 
 
 def plotter(ctx):
-    """ Go """
+    """Go"""
     # Covert datetime to UTC
     do_polygon(ctx)
 

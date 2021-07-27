@@ -1367,7 +1367,7 @@ class BaseInit(Forecaster):
         fillMasks=[],
     ):
 
-        """ T - use model sounding to get temperature at real topography instead of
+        """T - use model sounding to get temperature at real topography instead of
         model topography
 
         Where the topo is above the model topo - use the boundary layer temperature to
@@ -2325,20 +2325,20 @@ class BaseInit(Forecaster):
         the nearest cloud.  Thus, uses the average BL to 500mb RH to make an
         adjustment on the low end - adding to PoP where RH is high.  Ignores surface
         RH to try to ignore fog cases. Would also like to consider omega.
-        
+
         Uses hyperbolic tangent of QPF, so that it rises quickly as model QPF
         increases - but tapers out to nearly 100% as QPF gets high.  Also uses
         hyperbolic tangent of QPF to reduce the impact of high RH as QPF gets higher
         (since avg RH will always be high when QPF is high)
-        
+
         Adjustable parameters:
             topQPF is QPF amount that would give 75% PoP if nothing else considered
                 at half this amount, PoP is 45%, at double this amount PoP is 96%
                 Default set at 0.40.
-            RHexcess is amount of average BL to 500mb RH above which PoP is 
+            RHexcess is amount of average BL to 500mb RH above which PoP is
                 adjusted upward
                 Default set to 70%
-            adjAmount is maximum amount of adjustment if BL to 500mb RH is 
+            adjAmount is maximum amount of adjustment if BL to 500mb RH is
                 totally saturated
                 Default set to 15%
         """
@@ -3367,7 +3367,7 @@ class BaseInit(Forecaster):
               BI_BLW - wind (magnitude kts, direction)
               BI_BLD - dewpoint (K)
               BI_BLE - wetbulb temperature (K) [if desired]
-    
+
         Modified to permit the use of model MSL pressure when surface pressure
         is not available.  Set the MSLP flag to 1, and a surface pressure will
         be calculated.
@@ -3532,7 +3532,9 @@ class BaseInit(Forecaster):
 
         #  Get the "correct" order of levels at each individual point
         sortedIndices = argsort(self.BI_BLP, axis=0)
-        sortedIndices = sortedIndices[::-1,]
+        sortedIndices = sortedIndices[
+            ::-1,
+        ]
         height, row, col = indices(self.BI_BLP.shape)
 
         # -------------------------------------------------------------------
@@ -3787,30 +3789,30 @@ class BaseInit(Forecaster):
     # From: ../../methods/BI_smoothpm/BI_smoothpm.py
     def BI_smoothpm(self, grid, k, mask=None, onlyMaskedData=1):
         """smoothpm - smooths grid by averaging over plus and minus k gridpoints, which
-       means an average over a square 2k+1 gridpoints on a side.
+        means an average over a square 2k+1 gridpoints on a side.
 
-       If mask is specified (an integer grid of 1s and 0s), only modify points that
-       have mask=1, not any other points.
+        If mask is specified (an integer grid of 1s and 0s), only modify points that
+        have mask=1, not any other points.
 
-       If a mask is specified, the default is for only the points inside the mask to
-       influence the smoothed points.  this keeps data from outside the mask
-       "bleeding" into the area being smoothed.  If, however, you want the data
-       outside the mask to impact the smoothed data, set onlyMaskedData=0 (it defaults
-       to 1)
+        If a mask is specified, the default is for only the points inside the mask to
+        influence the smoothed points.  this keeps data from outside the mask
+        "bleeding" into the area being smoothed.  If, however, you want the data
+        outside the mask to impact the smoothed data, set onlyMaskedData=0 (it defaults
+        to 1)
 
-       Near the edges of the grid, the average is over fewer points than in the center
-       of the grid - because some of the points in the averaging window would be off
-       the grid. It just averages over the points that it can.  For example, on the
-       edge gridpoint - it can only come inside k points - so the average is over only
-       k+1 points in that direction (though over all 2k+1 points in the other
-       direction - if possible)
+        Near the edges of the grid, the average is over fewer points than in the center
+        of the grid - because some of the points in the averaging window would be off
+        the grid. It just averages over the points that it can.  For example, on the
+        edge gridpoint - it can only come inside k points - so the average is over only
+        k+1 points in that direction (though over all 2k+1 points in the other
+        direction - if possible)
 
-       This is much faster than shifting the grid multiple times and adding them up.
-       Instead it uses the cumsum function in numpy - which gives you cumulative sum
-       across a row/column.  Total across the 2k+1 points is the cumsum at the last
-       point minus the cumsum at the point before the first point. Only edge points
-       need special handling - and the cumsum is useful there too.
-       """
+        This is much faster than shifting the grid multiple times and adding them up.
+        Instead it uses the cumsum function in numpy - which gives you cumulative sum
+        across a row/column.  Total across the 2k+1 points is the cumsum at the last
+        point minus the cumsum at the point before the first point. Only edge points
+        need special handling - and the cumsum is useful there too.
+        """
 
         k = int(k)  # has to be integer number of gridpoints
         if k < 1:  # has to be a positive number of gridpoints

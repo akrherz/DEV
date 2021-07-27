@@ -18,7 +18,7 @@ def k2c(thisk):
 
 
 def figureXY(lon, lat):
-    """  Figure out the x,y values of our point of interest :) """
+    """Figure out the x,y values of our point of interest :)"""
     nc = NetCDF.NetCDFFile("/mnt/nrel/cjames/NARR/air.2m.2006.nc")
     xsz = nc.dimensions["x"]
     ysz = nc.dimensions["y"]

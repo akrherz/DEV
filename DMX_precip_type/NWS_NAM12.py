@@ -276,12 +276,12 @@ class NAM12(BaseInit.BaseInit):
 
         """MixHgt - the height to which a parcel above a 'fire' would rise
         (in height) above ground level (in feet).
-    
+
         Calculated by assuming a parcel above a fire is VERY hot - but the fire
         is very small - so that entrainment quickly makes it only a few degrees
         warmer than the environment.  Ideally would want to consider moisture
         and entrainment - but this is a very simple first guess.
-    
+
         This does NO downscaling - and even smooths the field a little at the
         end.  We have no observations of this - other than at sounding
         locations - so we have no idea what the spatial patterns should look

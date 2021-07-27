@@ -11,10 +11,8 @@ from pyiem.util import exponential_backoff
 
 TWDR = NetworkTable("TWDR")
 FNREGEX = re.compile(
-    (
-        '"Level3_(?P<nexrad>...)_(?P<nids>...)_'
-        "(?P<date>[0-9]{8})_(?P<time>[0-9]{4}).nids"
-    )
+    '"Level3_(?P<nexrad>...)_(?P<nids>...)_'
+    "(?P<date>[0-9]{8})_(?P<time>[0-9]{4}).nids"
 )
 DATES = [datetime.date(2018, 5, 18), datetime.date(2018, 5, 19)]
 
@@ -31,16 +29,8 @@ def main():
             os.chdir(nids)
             for date in DATES:
                 dir_uri = date.strftime(
-                    (
-                        "http://motherlode.ucar.edu/native/"
-                        "radar/level3/"
-                        + source
-                        + "/"
-                        + nids
-                        + "/"
-                        + nexrad
-                        + "/%Y%m%d/"
-                    )
+                    f"http://motherlode.ucar.edu/native/radar/level3/{source}"
+                    f"/{nids}/{nexrad}/%Y%m%d/"
                 )
                 req = exponential_backoff(requests.get, dir_uri, timeout=30)
                 tokens = FNREGEX.findall(req.content.decode("ascii"))

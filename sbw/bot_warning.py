@@ -14,7 +14,7 @@ P2163 = pyproj.Proj(init="epsg:2163")
 
 
 def dir2ccwrot(mydir):
-    """ Convert to CCW"""
+    """Convert to CCW"""
     res = None
     if mydir >= 270 and mydir <= 360:
         res = 0 - (mydir - 270)

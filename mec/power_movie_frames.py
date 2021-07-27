@@ -19,7 +19,7 @@ cursor = PGCONN.cursor()
 
 
 def make_colorbar(clevs, norm, cmap):
-    """ Manual Color Bar """
+    """Manual Color Bar"""
 
     ax = plt.axes([0.92, 0.1, 0.07, 0.8], frameon=False, yticks=[], xticks=[])
 
@@ -46,7 +46,7 @@ def make_colorbar(clevs, norm, cmap):
 
 
 def do(valid, frame):
-    """ Generate plot for a given timestamp """
+    """Generate plot for a given timestamp"""
 
     cursor.execute(
         """select turbineid, power, ST_x(geom), ST_y(geom), yaw,

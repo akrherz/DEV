@@ -43,10 +43,8 @@ def main():
     ax1.legend()
     ax1.set_ylabel("Frequency [%]")
     ax1.set_title(
-        (
-            "Des Moines NEXRAD Storm Attribute Direction Frequency"
-            "\n2000-2017 for storms traveling at least 5 knots speed"
-        )
+        "Des Moines NEXRAD Storm Attribute Direction Frequency"
+        "\n2000-2017 for storms traveling at least 5 knots speed"
     )
     ax2.bar(
         yestdf["bindrct"] * 15.0 + 7.5,

@@ -6,7 +6,7 @@ from pyiem.util import get_dbconn
 
 
 def main():
-    """ Go Main Go """
+    """Go Main Go"""
     pgconn = get_dbconn("coop")
     cursor = pgconn.cursor()
     year = int(sys.argv[1])

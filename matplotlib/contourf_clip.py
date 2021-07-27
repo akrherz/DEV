@@ -9,14 +9,14 @@ from scipy.interpolate import griddata
 
 def mask_outside_polygon(poly_verts, ax=None):
     """
-    Plots a mask on the specified axis ("ax", defaults to plt.gca()) such
-that
-    all areas outside of the polygon specified by "poly_verts" are masked.
+        Plots a mask on the specified axis ("ax", defaults to plt.gca()) such
+    that
+        all areas outside of the polygon specified by "poly_verts" are masked.
 
-    "poly_verts" must be a list of tuples of the verticies in the polygon in
-    counter-clockwise order.
+        "poly_verts" must be a list of tuples of the verticies in the polygon in
+        counter-clockwise order.
 
-    Returns the matplotlib.patches.PathPatch instance plotted on the figure.
+        Returns the matplotlib.patches.PathPatch instance plotted on the figure.
     """
     import matplotlib.patches as mpatches
     import matplotlib.path as mpath

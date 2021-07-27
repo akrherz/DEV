@@ -13,7 +13,7 @@ pils = "DSW|SQW"
 
 
 def workflow(date):
-    """ Process a given UTC date """
+    """Process a given UTC date"""
     sts = utc(date.year, date.month, date.day)
     ets = sts + datetime.timedelta(hours=24)
     for pil in pils.split("|"):

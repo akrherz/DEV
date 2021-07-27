@@ -10,7 +10,7 @@ OLDDIR = "/mesonet/share/windrose/climate"
 
 
 def main():
-    """ Go Main Go."""
+    """Go Main Go."""
     pgconn = get_dbconn("mesosite")
     cursor = pgconn.cursor()
     cursor.execute(

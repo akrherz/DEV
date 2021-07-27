@@ -3,10 +3,10 @@ script to send the MZZU data to LDM
 
 daryl herzmann akrherz@iastate.edu
 """
-import subprocess
-import sys
 import glob
 import os
+import subprocess
+import sys
 
 DIRNAME = "/data/ewrtemp/"
 PQINSERT = "/home/ldm/bin/pqinsert"
@@ -38,7 +38,7 @@ def send2ldm(fn):
 
 
 def main(_argv):
-    """ code entry """
+    """code entry"""
     os.chdir(DIRNAME)
     # Get all files with name starting with MZZU
     files = glob.glob("MZZU*")

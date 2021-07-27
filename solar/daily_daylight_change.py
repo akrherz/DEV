@@ -10,7 +10,7 @@ nt = NetworkTable(("IA_ASOS", "AK_ASOS", "MI_ASOS", "FL_ASOS"))
 
 
 def do(lon, lat):
-    """ Compute the daily daylight change """
+    """Compute the daily daylight change"""
     loc = ephem.Observer()
     loc.lat = str(lat)
     loc.long = str(lon)

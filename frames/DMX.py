@@ -13,12 +13,9 @@ def main():
     for day in range(24, 25):
         sts = datetime.datetime(2015, 7, day, 0, 0)
         ets = sts + datetime.timedelta(days=1)
-        wsurl = (
-            "http://mesonet.agron.iastate.edu/json/radar?operation=list&radar=DMX&product=N0Q&start=%s&end=%s"
-            % (
-                sts.strftime("%Y-%m-%dT%H:%MZ"),
-                ets.strftime("%Y-%m-%dT%H:%MZ"),
-            )
+        wsurl = "http://mesonet.agron.iastate.edu/json/radar?operation=list&radar=DMX&product=N0Q&start=%s&end=%s" % (
+            sts.strftime("%Y-%m-%dT%H:%MZ"),
+            ets.strftime("%Y-%m-%dT%H:%MZ"),
         )
         res = urllib2.urlopen(wsurl)
         j = json.loads(res.read())

@@ -11,7 +11,7 @@ import numpy as np
 
 
 def dl(valid):
-    """ Get me files """
+    """Get me files"""
     for hr in range(-15, 0):
         ts = valid + datetime.timedelta(hours=hr)
         fn = ts.strftime("/tmp/hrrr.ref.%Y%m%d%H00.grib2")
@@ -30,7 +30,7 @@ def dl(valid):
 
 
 def compute(valid):
-    """ Get me files """
+    """Get me files"""
     prob = None
     for hr in range(-15, 0):
         ts = valid + datetime.timedelta(hours=hr)

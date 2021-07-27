@@ -41,20 +41,17 @@ def main():
         else:
             sz = 0
 
-        sql = (
-            "SELECT * from lsrs_2007 WHERE wfo = '%s' and \
+        sql = "SELECT * from lsrs_2007 WHERE wfo = '%s' and \
         valid >= '%s' and valid < '%s' and \
         ((type = 'H' and magnitude >= 0.75) \
         or (type = 'G' and magnitude >= 58) or type = 'D') and\
         geom && SetSrid(GeometryFromText('%s'),4326) and \
-        contains(SetSrid(GeometryFromText('%s'),4326), geom)"
-            % (
-                rs[i]["wfo"],
-                rs[i]["issue"],
-                rs[i]["expire"],
-                rs[i]["txt"],
-                rs[i]["txt"],
-            )
+        contains(SetSrid(GeometryFromText('%s'),4326), geom)" % (
+            rs[i]["wfo"],
+            rs[i]["issue"],
+            rs[i]["expire"],
+            rs[i]["txt"],
+            rs[i]["txt"],
         )
         rs2 = postgis.query(sql).dictresult()
         verif = {}

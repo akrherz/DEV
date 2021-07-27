@@ -6,7 +6,7 @@ import datetime
 
 
 def make_none(val):
-    """Check the value and make sure it is okay """
+    """Check the value and make sure it is okay"""
     if float(val) < -990:
         return None
     return float(val)

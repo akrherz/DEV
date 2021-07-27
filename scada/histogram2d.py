@@ -12,7 +12,7 @@ pgconn = psycopg2.connect(database="scada")
 
 
 def make_colorbar(clevs, norm, cmap):
-    """ Manual Color Bar """
+    """Manual Color Bar"""
 
     ax = plt.axes([0.92, 0.1, 0.05, 0.8], frameon=False, yticks=[], xticks=[])
 

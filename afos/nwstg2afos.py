@@ -17,7 +17,7 @@ PGCONN = get_dbconn("afos")
 
 
 def process(order):
-    """ Process this timestamp """
+    """Process this timestamp"""
     cursor = PGCONN.cursor()
     for tarfn in glob.glob("NWSTG*tar.Z"):
         subprocess.call("uncompress %s" % (tarfn,), shell=True)
@@ -97,7 +97,7 @@ def process(order):
 
 
 def main():
-    """ Go Main Go """
+    """Go Main Go"""
     os.chdir("/mesonet/tmp/ncei")
     for order in glob.glob("HAS*"):
         os.chdir(order)

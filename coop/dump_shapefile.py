@@ -10,7 +10,7 @@ import pandas as pd
 
 
 def main():
-    """Go """
+    """Go"""
     pgconn = get_dbconn("coop", user="nobody")
     df = gpd.read_postgis(
         """

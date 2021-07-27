@@ -62,7 +62,7 @@ class OB(object):
 
 
 def get_job_list():
-    """ Figure out the days and stations we need to get """
+    """Figure out the days and stations we need to get"""
     days = []
     stations = []
     tznames = []
@@ -127,7 +127,7 @@ def get_job_list():
 
 
 def process_rawtext(yyyymm):
-    """ Process the raw SAO files the IEM has """
+    """Process the raw SAO files the IEM has"""
     # skip 0z for now
     sts = datetime.datetime(int(yyyymm[:4]), int(yyyymm[4:]), 1, 1)
     ets = sts + datetime.timedelta(days=32)
@@ -271,7 +271,7 @@ def read_legacy(fn):
 
 
 def process_metar(mstr, now):
-    """ Do the METAR Processing """
+    """Do the METAR Processing"""
     mtr = None
     while mtr is None:
         try:
