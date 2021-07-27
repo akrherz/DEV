@@ -11,18 +11,20 @@ def main():
     cursor = pgconn.cursor()
     cursor.execute(
         "SELECT product_id from sps_2021 where issue > 'YESTERDAY' and "
-        "(max_wind_gust is not null or max_hail_size is not null)"
+        "max_wind_gust is null and max_hail_size is null"
     )
+    LOG.info("SPS products without the new IBW tags")
     for row in cursor:
-        LOG.info(row)
+        LOG.info(row[0])
 
     cursor.execute(
-        "SELECT wfo, windthreat, hailthreat from sbw_2021 "
-        "where issue > 'YESTERDAY' and "
-        "(windthreat is not null or hailthreat is not null)"
+        "SELECT distinct wfo from sbw_2021 "
+        "where phenomena = 'SV' and issue > 'YESTERDAY' and "
+        "windthreat is null and hailthreat is null"
     )
+    LOG.info("SVR Products from WFOs without the new tags")
     for row in cursor:
-        LOG.info(row)
+        LOG.info(row[0])
 
 
 if __name__ == "__main__":
