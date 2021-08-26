@@ -11,11 +11,12 @@ def main():
     cursor = pgconn.cursor()
     cursor.execute(
         "SELECT product_id from sps_2021 where issue > 'YESTERDAY' and "
-        "max_wind_gust is null and max_hail_size is null"
+        "(max_wind_gust is null or max_hail_size is null) "
+        "and not ST_IsEmpty(geom)"
     )
-    LOG.info("SPS products without the new IBW tags")
+    LOG.info("SPS products with polygon and without the new IBW tags")
     for row in cursor:
-        LOG.info(row[0])
+        LOG.info(f"https://mesonet.agron.iastate.edu/p.php?pid={row[0]}")
 
     cursor.execute(
         "SELECT distinct wfo from sbw_2021 "
