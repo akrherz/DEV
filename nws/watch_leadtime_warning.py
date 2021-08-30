@@ -2,9 +2,27 @@
 import datetime
 from datetime import timezone
 
+import numpy as np
 import pandas as pd
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
+
+
+def check_negative(df, pgconn):
+    """Check for false positives."""
+    df2 = df[df["lead"] < 0]
+    cursor = pgconn.cursor()
+    for idx, row in df2.iterrows():
+        cursor.execute(
+            "SELECT issue from warnings where ugc in %s and "
+            "phenomena in ('SV', 'TO') and significance = 'A' and "
+            "issue <= %s and expire > %s",
+            (tuple(row["ugcs"]), row["issue"], row["issue"]),
+        )
+        if cursor.rowcount > 0:
+            df.at[idx, "lead"] = np.nan
+
+    cursor.close()
 
 
 def main():
@@ -30,13 +48,15 @@ def main():
         ugcs = gdf["ugc"].tolist()
         # Look for any warnings that are 1 hour prior or to expiration
         issue = gdf["issue"].min()
-        sts = issue - datetime.timedelta(hours=1)
+        sts = issue - datetime.timedelta(hours=2)
         ets = gdf["expire"].max()
         warnings = read_sql(
-            "SELECT distinct wfo, eventid, phenomena, "
+            "SELECT wfo, eventid, phenomena, array_agg(ugc) as ugcs, "
             "issue at time zone 'UTC' as issue from warnings "
             "where phenomena in ('SV', 'TO') and significance = 'W' and "
-            "ugc in %s and issue >= %s and issue < %s ORDER by issue ASC",
+            "ugc in %s and issue >= %s and issue < %s "
+            "GROUP by wfo, eventid, phenomena, issue "
+            "ORDER by issue ASC",
             pgconn,
             params=(tuple(ugcs), sts, ets),
         )
@@ -50,6 +70,8 @@ def main():
             warnings["lead"] = (
                 warnings["issue"] - issue
             ).dt.total_seconds() / 60.0
+            check_negative(warnings, pgconn)
+            warnings = warnings[~pd.isna(warnings["lead"])]
             minlead = warnings["lead"].min()
             warnbefore = len(warnings[warnings["lead"] <= 0].index)
             warnafter = len(warnings.index) - warnbefore
@@ -68,7 +90,7 @@ def main():
         print(minlead)
 
     df = pd.DataFrame(data)
-    df.to_excel("watch_leadtime.xlsx", index=False)
+    df.to_excel("watch_leadtime_m2_v2.xlsx", index=False)
 
 
 if __name__ == "__main__":
