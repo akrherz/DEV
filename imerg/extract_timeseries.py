@@ -14,7 +14,10 @@ def main(argv):
     """Go Main Go."""
     lon = float(argv[1])
     lat = float(argv[2])
-    outfn = "imerg_%s_%s.csv" % (lon, lat)
+    if len(argv) > 3:
+        outfn = argv[3]
+    else:
+        outfn = "imerg_%s_%s.csv" % (lon, lat)
     # Ankeny 41.74373,-93.5909
     y = int(900 - (lat * 10))
     x = int(1800 - (lon * -10))
