@@ -4,6 +4,8 @@ from datetime import date
 import pytz
 import pandas as pd
 
+print("DOUBLE CHECK THE TIMING!  30 MIN vs 1 HOUR....")
+
 
 def compute_breakpoints(df):
     """Turn a day's worth of data into breakpoints."""
@@ -11,12 +13,17 @@ def compute_breakpoints(df):
         return []
     curval = 0
     res = []
-    for idx, val in df["precip_mm"].cumsum().iteritems():
+    # Assume we have 48 items per day, close enough
+    for idx, val in enumerate(df["precip_mm"].cumsum()):
+        if idx >= 24:  # fall leap hour
+            continue
         if val > curval:
-            hr = idx // 2
-            mi = ".00" if idx % 2 == 0 else ".50"
+            hr = idx // 1
+            mi = ".00"  # if idx % 2 == 0 else ".50"
             res.append(f"{hr}{mi} {val:.2f}")
             curval = val
+    if len(res) == 1:
+        res.append(f"23.75 {curval:.2f}")
     return res
 
 
@@ -53,7 +60,7 @@ def do(scenario, huc12):
 
 def main():
     """Go Main Go."""
-    scenario = 140
+    scenario = 141
     hucs = [x.strip() for x in open("myhucs.txt")]
     for huc12 in hucs:
         do(scenario, huc12)
