@@ -18,7 +18,7 @@ def main():
         y = int(900 - (float(lat) * 10))
         x = int(1800 - (float(lon) * -10))
         jobs.append([x, y, open(fn, "w")])
-        jobs[-1][2].write("valid,accum_mm\n")
+        jobs[-1][2].write("valid,precip_mm\n")
     dates = pd.date_range(
         "2007/01/01",
         "2021/01/01 07:00",
