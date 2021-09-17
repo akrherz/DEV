@@ -32,11 +32,9 @@ def main():
     for time in times:
         table = "t%s" % (time.year,)
         cursor.execute(
-            """
+            f"""
         SELECT valid + '10 minutes'::interval, skyc1, skyc2, skyc3, skyc4
-        from """
-            + table
-            + """
+        from {table}
         WHERE station = 'AMW' and valid between %s and %s ORDER by valid ASC
         """,
             (
@@ -72,7 +70,7 @@ def main():
     ax.set_ylabel("Year")
     ax.set_xlabel(
         (
-            "Hours from first fall sub 29$^\circ$F Temperature, "
+            r"Hours from first fall sub 29$^\circ$F Temperature, "
             "tan is missing"
         )
     )
@@ -80,7 +78,7 @@ def main():
         (
             "Ames [AMW] Cloud Coverage Reports\n"
             "%i-2016 for  +/- 24 hours around first fall "
-            "sub 29$^\circ$F Temp"
+            r"sub 29$^\circ$F Temp"
         )
         % (baseyear,)
     )

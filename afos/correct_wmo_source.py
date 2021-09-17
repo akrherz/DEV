@@ -30,7 +30,7 @@ from pandas.io.sql import read_sql
 
 # Pull in the standardized conversion
 sys.path.insert(0, "/opt/iem/scripts/util")
-from poker2afos import XREF_SOURCE
+from poker2afos import XREF_SOURCE  # noqa
 
 
 def fixer(pgconn, oldval, newval):

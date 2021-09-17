@@ -1,11 +1,13 @@
-"""precip contributions."""
+"""precip contributions.
+
+select precip, sum(precip), count(*) from alldata_1minute
+where station = 'DSM' and precip > 0 GROUP by precip ORDER by precip ASC;
+
+"""
 from io import StringIO
 
-from pyiem.plot.use_agg import plt
 import pandas as pd
-
-# select precip, sum(precip), count(*) from alldata_1minute
-# where station = 'DSM' and precip > 0 GROUP by precip ORDER by precip ASC;
+from pyiem.plot.use_agg import plt
 
 
 def main():

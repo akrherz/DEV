@@ -11,9 +11,9 @@ import sys
 
 from pyiem.util import utc, get_dbconn, noaaport_text
 
-# Copied from iem/scripts/util/poker2afos.py
+# Copied from https://github.com/akrherz/iem
 sys.path.insert(0, "/opt/iem/scripts/util")
-from poker2afos import XREF_SOURCE
+from poker2afos import XREF_SOURCE  # noqa
 
 WMO_RE = re.compile(
     r"^(?P<ttaaii>[A-Z0-9]{4,6})\s+(?P<cccc>[A-Z]{4})\s+"

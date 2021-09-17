@@ -1,11 +1,11 @@
 """Time close to the high."""
 import calendar
 
+import pandas as pd
+from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
 from pyiem.plot.use_agg import plt
 import seaborn as sns
-import pandas as pd
-from pandas.io.sql import read_sql
 
 
 def main():

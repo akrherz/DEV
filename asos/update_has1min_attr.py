@@ -26,7 +26,7 @@ def main():
             (station,),
         )
         if cursor.rowcount == 0:
-            LOG.info("station %s is unknown to metadata?", station)
+            LOG.info("station %s is unknown to metadata", station)
             continue
         iemid = cursor.fetchone()[0]
         cursor.execute(

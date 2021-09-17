@@ -82,10 +82,6 @@ def main():
     ax.set_xlabel("14 June 2018 MDT")
     ax2.set_ylim(923, 926)
     ax2.set_yticks(np.arange(923, 926.1, 0.5))
-    # ax2.set_zorder(ax.get_zorder()-1)
-    # ax2.set_ylim(0, 360)
-    # ax2.set_yticks(range(0, 361, 45))
-    # ax2.set_yticklabels(['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N'])
 
     fig.savefig("test.png")
 

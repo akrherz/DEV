@@ -63,25 +63,30 @@ def get_day(ts):
         return np.array(d), np.array(t)
 
 
-d1, t1 = get_day(datetime.datetime(2013, 8, 26))
-d2, t2 = get_day(datetime.datetime(2013, 8, 27))
-d3, t3 = get_day(datetime.datetime(2013, 8, 28))
+def main():
+    """Go Main Go."""
+    d1, t1 = get_day(datetime.datetime(2013, 8, 26))
+    d2, t2 = get_day(datetime.datetime(2013, 8, 27))
+    d3, t3 = get_day(datetime.datetime(2013, 8, 28))
+
+    (fig, ax) = plt.subplots(1, 1)
+
+    ax.plot(d1, t1, label="26 Aug", lw=2.0)
+    ax.plot(d2, t2, label="27 Aug", lw=2.0)
+    ax.plot(d3, t3, label="28 Aug", lw=2.0)
+    ax.legend(loc=2)
+    ax.grid(True)
+    ax.set_xticks(np.arange(0, 8) * 180)
+    ax.set_xticklabels(
+        ["Mid", "3 AM", "6 AM", "9 AM", "Noon", "3 PM", "6 PM", "9 PM"]
+    )
+    ax.set_xlim(0, 1441)
+    ax.set_title("Des Moines 26-28 August 2013 Temperature Timeseries")
+    ax.set_ylabel(r"Temperature $^\circ$F")
+    ax.set_xlabel("* Smooth applied to one minute time-series")
+
+    fig.savefig("test.png")
 
 
-(fig, ax) = plt.subplots(1, 1)
-
-ax.plot(d1, t1, label="26 Aug", lw=2.0)
-ax.plot(d2, t2, label="27 Aug", lw=2.0)
-ax.plot(d3, t3, label="28 Aug", lw=2.0)
-ax.legend(loc=2)
-ax.grid(True)
-ax.set_xticks(np.arange(0, 8) * 180)
-ax.set_xticklabels(
-    ["Mid", "3 AM", "6 AM", "9 AM", "Noon", "3 PM", "6 PM", "9 PM"]
-)
-ax.set_xlim(0, 1441)
-ax.set_title("Des Moines 26-28 August 2013 Temperature Timeseries")
-ax.set_ylabel(r"Temperature $^\circ$F")
-ax.set_xlabel("* Smooth applied to one minute time-series")
-
-fig.savefig("test.png")
+if __name__ == "__main__":
+    main()

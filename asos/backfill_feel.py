@@ -23,10 +23,8 @@ def main(argv):
     pgconn = get_dbconn("asos")
     table = "t%s" % (sts.year,)
     df = read_sql(
-        """
-    SELECT station, valid, tmpf, dwpf, sknt from """
-        + table
-        + """
+        f"""
+    SELECT station, valid, tmpf, dwpf, sknt from {table}
     WHERE valid >= %s and valid < %s and tmpf >= dwpf
     and sknt is not null and feel is null
     """,
@@ -64,11 +62,8 @@ def main(argv):
     count = 0
     for _, row in df2.iterrows():
         cursor.execute(
-            """UPDATE """
-            + table
-            + """
-        SET feel = %s, relh = %s WHERE station = %s and valid = %s
-        """,
+            f"UPDATE {table} SET feel = %s, relh = %s "
+            "WHERE station = %s and valid = %s",
             (
                 not_nan(row["feel"]),
                 not_nan(row["relh"]),

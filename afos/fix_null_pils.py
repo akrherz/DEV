@@ -27,10 +27,8 @@ def main(argv):
         for row2 in cursor2:
             # Lookup over all the data for pils
             cursor3.execute(
-                """
-                SELECT distinct pil from products WHERE source = %s
-                and wmo = %s and pil is not null
-            """,
+                "SELECT distinct pil from products WHERE source = %s and "
+                "wmo = %s and pil is not null",
                 (source, row2[0]),
             )
             # If one result, we have a winner

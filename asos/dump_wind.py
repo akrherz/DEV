@@ -29,8 +29,8 @@ def main(argv):
         network not in ('AK_ASOS', 'HI_ASOS', 'PR_ASOS')
     """
     )
-    with open("%s.csv" % (year,), "w") as fp:
-        fp.write(
+    with open("%s.csv" % (year,), "w") as fh:
+        fh.write(
             (
                 "utc_valid,id,lon,lat,wind_speed_kts,wind_direction,"
                 "wind_gust_kts,peak_wind_gust_kts,peak_wind_drct,"
@@ -38,7 +38,7 @@ def main(argv):
             )
         )
         for row in tqdm(cursor):
-            fp.write(",".join([str(s) for s in row]) + "\n")
+            fh.write(",".join([str(s) for s in row]) + "\n")
 
 
 if __name__ == "__main__":

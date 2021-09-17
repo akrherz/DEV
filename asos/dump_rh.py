@@ -21,7 +21,7 @@ def main():
     )
     df["relh"] = (
         relative_humidity_from_dewpoint(
-            df["temp"].values * units("degF"), df["dew"].values * units("degF")
+            units("degF") * df["temp"].values, units("degF") * df["dew"].values
         )
         * 100.0
     )

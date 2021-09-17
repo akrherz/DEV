@@ -60,40 +60,46 @@ def do(station):
     return max_tmpf, tot_tmpf, tot_sknt, tot_cnt
 
 
-fig = plt.figure()
-ax = fig.add_subplot(111)
+def main():
+    """GO Main Go."""
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
 
-max_tmpf, tot_tmpf, tot_sknt, tot_cnt = do("DSM")
-ax.plot(
-    numpy.arange(720),
-    tot_tmpf / tot_cnt,
-    color="r",
-    label="Des Moines %.0f events" % (tot_cnt[-1],),
-)
-# ax.plot( numpy.arange(720), max_tmpf, color='pink')
-# ax.plot( [0,720], [32,32], color='k')
-ax.set_ylabel("Mean Temperature $^{\circ}\mathrm{F}$")
-ax.set_title(
-    "March/April Radiational Cooling Events [2001-2011]\n"
-    "temp reaches 32$^{\circ}\mathrm{F}$ between 3-6 AM "
-    "with winds below 5 knots"
-)
-ax.set_xlabel("Time before observation of 32$^{\circ}\mathrm{F}$")
-max_tmpf, tot_tmpf, tot_sknt, tot_cnt = do("ALO")
-ax.plot(
-    numpy.arange(720),
-    tot_tmpf / tot_cnt,
-    color="b",
-    label="Waterloo %.0f events" % (tot_cnt[-1],),
-)
-# ax.plot( numpy.arange(720), max_tmpf, color='skyblue')
-ax.set_xlim(540, 720)
-ax.set_xticks(numpy.arange(540, 721, 30))
-ax.set_xticklabels(
-    ["-3hr", "-150min", "-2hr", "-90min", "-1hr", "-30min", "0"]
-)
-ax.grid(True)
-ax.set_ylim(30, 40)
-ax.legend()
+    max_tmpf, tot_tmpf, tot_sknt, tot_cnt = do("DSM")
+    ax.plot(
+        numpy.arange(720),
+        tot_tmpf / tot_cnt,
+        color="r",
+        label="Des Moines %.0f events" % (tot_cnt[-1],),
+    )
+    # ax.plot( numpy.arange(720), max_tmpf, color='pink')
+    # ax.plot( [0,720], [32,32], color='k')
+    ax.set_ylabel(r"Mean Temperature $^{\circ}\mathrm{F}$")
+    ax.set_title(
+        "March/April Radiational Cooling Events [2001-2011]\n"
+        r"temp reaches 32$^{\circ}\mathrm{F}$ between 3-6 AM "
+        "with winds below 5 knots"
+    )
+    ax.set_xlabel(r"Time before observation of 32$^{\circ}\mathrm{F}$")
+    max_tmpf, tot_tmpf, tot_sknt, tot_cnt = do("ALO")
+    ax.plot(
+        numpy.arange(720),
+        tot_tmpf / tot_cnt,
+        color="b",
+        label="Waterloo %.0f events" % (tot_cnt[-1],),
+    )
+    # ax.plot( numpy.arange(720), max_tmpf, color='skyblue')
+    ax.set_xlim(540, 720)
+    ax.set_xticks(numpy.arange(540, 721, 30))
+    ax.set_xticklabels(
+        ["-3hr", "-150min", "-2hr", "-90min", "-1hr", "-30min", "0"]
+    )
+    ax.grid(True)
+    ax.set_ylim(30, 40)
+    ax.legend()
 
-fig.savefig("test.png")
+    fig.savefig("test.png")
+
+
+if __name__ == "__main__":
+    main()

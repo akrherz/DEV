@@ -14,7 +14,7 @@ def main(argv):
     for year in desc:
         desc.set_description(str(year))
         for seg in ["0106", "0712"]:
-            table = "products_%s_%s" % (year, seg)
+            table = f"products_{year}_{seg}"
             cursor = pgconn.cursor("streamer")
             cursor.execute(
                 "SELECT data, entered at time zone 'UTC', source, pil "

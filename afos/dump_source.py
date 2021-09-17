@@ -11,7 +11,7 @@ def main():
     acursor.execute(
         """
         SELECT pil, entered at time zone 'UTC', source, pil, data
-        from products_2017_0712
+        from products
         WHERE source = 'TJSJ' and entered >= '2017-08-26'
         and entered < '2017-09-13'
     """

@@ -1,9 +1,8 @@
 """What was the hour of the first fall temp min"""
-from __future__ import print_function
 
+from pandas.io.sql import read_sql
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn
-from pandas.io.sql import read_sql
 
 
 def main():

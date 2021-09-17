@@ -6,9 +6,9 @@ and a new one at the new logic.
 """
 import sys
 
+import pandas as pd
 from pyiem.util import noaaport_text, get_dbconn
 from pyiem.nws.product import TextProduct
-import pandas as pd
 
 
 def do(pgconn, date):

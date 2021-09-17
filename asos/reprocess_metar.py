@@ -1,7 +1,6 @@
 """
  Reprocess RAW METAR data stored in the database, so to include more fields
 """
-from __future__ import print_function
 import datetime
 
 from metar.Metar import Metar
