@@ -1,5 +1,8 @@
 """map of dates."""
+# stdlib
 import datetime
+
+# 3rd Party
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn
@@ -17,16 +20,16 @@ def main():
 
     cursor.execute(
         """WITH today as (
-        SELECT id, max_tmpf from summary_2020 s JOIN stations t
+        SELECT id, max_tmpf from summary_2021 s JOIN stations t
         ON (s.iemid = t.iemid) WHERE t.network in ('IA_ASOS', 'AWOS')
-        and day = '2020-11-03'),
+        and day = '2021-09-27'),
         agg as (
         SELECT t.id, max(day) from summary s, stations t, today t2
         WHERE s.iemid = t.iemid and t.id = t2.id and
-        t.network in ('IA_ASOS', 'AWOS') and to_char(day, 'mmdd') >= '1103'
-        and day < '2020-11-03' and s.max_tmpf >= t2.max_tmpf
+        t.network in ('IA_ASOS', 'AWOS') and to_char(day, 'mmdd') >= '0927'
+        and day < '2021-09-27' and s.max_tmpf >= t2.max_tmpf
         GROUP by t.id)
-        SELECT id, max from agg ORDER by max DESC
+        SELECT id, max from agg ORDER by max ASC
         """
     )
 
@@ -40,12 +43,14 @@ def main():
     m = MapPlot(
         continentalcolor="white",
         title=(
-            "Iowa ASOS/AWOS Last Nov 3 - Dec 31 Date as Warm as " "3 Nov 2020"
+            "Iowa ASOS/AWOS Last Sep 27 - Dec 31 Date as Warm as 27 Sep 2021"
         ),
     )
-    m.plot_values(lons, lats, vals, fmt="%s", color=colors, labelbuffer=5)
+    m.plot_values(
+        lons, lats, vals, fmt="%s", color=colors, textsize=12, labelbuffer=1
+    )
     m.drawcounties()
-    m.postprocess(filename="201104.png")
+    m.postprocess(filename="210928.png")
 
 
 if __name__ == "__main__":
