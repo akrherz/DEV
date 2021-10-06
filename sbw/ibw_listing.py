@@ -9,6 +9,7 @@ Wants:
 # pylint: disable=abstract-class-instantiated
 from datetime import timezone
 
+from tqdm import tqdm
 from pyiem.util import get_dbconn
 import pandas as pd
 from pandas.io.sql import read_sql
@@ -28,10 +29,13 @@ def main():
                 as init_hailtag,
             max(case when status = 'NEW' then windtag else 0 end)
                 as init_windtag,
+            max(case when status = 'NEW' then tml_sknt else 0 end)
+                as init_tml_sknt,
+            max(tml_sknt) as max_tml_sknt,
             max(hailtag) as max_hailtag,
             max(windtag) as max_windtag from sbw WHERE phenomena = 'SV'
             GROUP by wfo, phenomena, eventid, year)
-        SELECT * from events where max_windtag >= 90
+        SELECT * from events where max_windtag >= 80 or max_tml_sknt >= 50
         ORDER by year, wfo, eventid
     """,
         pgconn,
@@ -43,10 +47,10 @@ def main():
     df["wind_reports"] = 0
 
     ws = []
-    for i, row in df.iterrows():
+    for i, row in tqdm(df.iterrows(), total=len(df.index)):
         # Get the polygon history for this warning
-        sbwtable = "sbw_%i" % (row["year"],)
-        lsrtable = "lsrs_%i" % (row["year"],)
+        sbwtable = f"sbw_{row['year']}"
+        lsrtable = f"lsrs_{row['year']}"
         warndf = read_sql(
             f"""
         SELECT row_number() over(ORDER by polygon_begin ASC) as sequence,
@@ -54,7 +58,7 @@ def main():
         extract(year from polygon_begin)::numeric as year,
         polygon_begin at time zone 'UTC' as polygon_begin,
         polygon_end at time zone 'UTC' as polygon_end,
-        status, windtag, hailtag,
+        status, windtag, hailtag, tml_sknt,
         ST_asText(geom) as geomtext from {sbwtable} WHERE wfo = %s
         and eventid = %s and phenomena = %s and significance = %s
         and status != 'EXP' ORDER by polygon_begin
