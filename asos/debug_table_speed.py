@@ -1,10 +1,11 @@
 """Debug printout of partitioned table speed within ASOS database"""
 import datetime
+import sys
 
 from pyiem.util import get_dbconn
 
 
-def main():
+def main(argv):
     """Go Main Go"""
     pgconn = get_dbconn("asos")
     cursor = pgconn.cursor()
@@ -13,7 +14,7 @@ def main():
         sts = datetime.datetime.now()
         cursor.execute(
             f"SELECT count(*) from t{yr} WHERE station = %s",
-            ("DSM",),
+            (argv[1],),
         )
         row = cursor.fetchone()
         ets = datetime.datetime.now()
@@ -26,4 +27,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv)
