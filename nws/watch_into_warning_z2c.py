@@ -73,7 +73,7 @@ def workflow(wfo):
     overall = (
         df["warn_counties"].sum() / float(df["watch_zones"].sum()) * 100.0
     )
-    print("WFO: %s Efficiency: %.1f  Overall: %.1f" % (wfo, eff, overall))
+    print(f"WFO: {wfo} Efficiency: {eff:.1f}  Overall: {overall:.1f}")
     return eff
 
 

@@ -1,5 +1,4 @@
 """Verify MCD watch confidence."""
-from __future__ import print_function
 import datetime
 
 from tqdm import tqdm
@@ -84,7 +83,7 @@ def do_verification(df):
         for threshold in range(10, 101, 10):
             try:
                 verif, timeoffset = overlap(cursor, prod, threshold)
-            except:
+            except Exception:
                 cursor = pgconn.cursor()
                 print("FATAL")
                 continue

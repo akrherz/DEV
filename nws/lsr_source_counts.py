@@ -1,8 +1,5 @@
 """Plot of LSR sources."""
 
-import datetime
-
-import pytz
 import numpy as np
 from pyiem.util import get_dbconn
 from pyiem.plot import get_cmap
@@ -17,8 +14,8 @@ def main():
 
     df = read_sql(
         """
-    SELECT extract(year from valid)::int as yr, 
-    upper(source) as up, 
+    SELECT extract(year from valid)::int as yr,
+    upper(source) as up,
     count(*) from lsrs WHERE valid > '2006-01-01'
     and valid < '2021-01-01' and typetext in ('HAIL', 'TORNADO')
     GROUP by yr, up ORDER by yr ASC

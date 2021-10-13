@@ -69,7 +69,7 @@ def main():
         sector="nws",
         axisbg="white",
         title=(
-            "Conversion [%%] of %s Watch " "Counties/Parishes into %s Warnings"
+            "Conversion [%%] of %s Watch Counties/Parishes into %s Warnings"
         )
         % (VTEC_PHENOMENA[phenomena], VTEC_PHENOMENA[phenomena]),
         titlefontsize=14,

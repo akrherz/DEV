@@ -26,7 +26,7 @@ def main():
             continue
         good += 1
         output.write(report + b"\003")
-    print("Filtered Products %s" % (good,))
+    print(f"Filtered Products {good}")
     output.close()
 
 

@@ -8,11 +8,9 @@ from pyiem.util import get_dbconn
 from pyiem.nws.product import TextProduct, ugc
 from pyiem.plot.use_agg import plt
 
-AFOS = get_dbconn("afos")
-acursor = AFOS.cursor()
-
 
 def run(ts, data):
+    """Sigh."""
     p = TextProduct(data)
 
     today = p.valid
@@ -60,62 +58,70 @@ def run(ts, data):
         return ids
 
 
-acursor.execute(
+def main():
+    """Go Main Go."""
+    pgconn = get_dbconn("afos")
+    acursor = pgconn.cursor()
+    acursor.execute(
+        """
+    select entered, data from products where pil = 'ZFPDMX'
+    and extract(hour from entered) in (15,16)
+    ORDER by entered DESC
     """
- select entered, data from products where pil = 'ZFPDMX'
- and extract(hour from entered) in (15,16)
- ORDER by entered DESC
-"""
-)
-last = None
-
-zeros = numpy.zeros((13,))
-for row in acursor:
-    day = row[0].strftime("%Y%m%d")
-    if day == last:
-        continue
-    last = day
-    ids = run(row[0], row[1])
-    if ids is None:
-        print("Bad Processing %s" % (row[0],))
-        continue
-    for i in ids:
-        if i is not None:
-            zeros[i] += 1.0
-        else:
-            print("Missed event %s" % (row[0],))
-print(zeros)
-
-data = numpy.array(
-    [64.0, 31.0, 27.0, 8.0, 4.0, 2.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-)
-
-(fig, ax) = plt.subplots(1, 1)
-
-bars = ax.bar(numpy.arange(13), data)
-for i in range(8):
-    ax.text(i, data[i] + 2, "%.0f" % (data[i],), ha="center")
-ax.set_xticks(numpy.arange(9))
-ax.set_xticklabels(
-    [
-        "Tonight",
-        "Tomrw.",
-        "Tomrw.\nNight",
-        "Day\n2",
-        "Day 2\nNight",
-        "Day 3",
-        "Day 3\nNight",
-        "Day 4",
-        "Day 4\nNight",
-    ]
-)
-ax.set_xlim(-0.5, 7.5)
-ax.set_title(
-    (
-        "Des Moines NWS 100% Chance of Precipitation Forecast\n"
-        "Afternoon ZFP for Polk County 1 Jan 2009 - 18 Feb 2013"
     )
-)
-ax.set_ylabel("Events (out of 1145 forecasts)")
+    last = None
 
-fig.savefig("test.png")
+    zeros = numpy.zeros((13,))
+    for row in acursor:
+        day = row[0].strftime("%Y%m%d")
+        if day == last:
+            continue
+        last = day
+        ids = run(row[0], row[1])
+        if ids is None:
+            print("Bad Processing %s" % (row[0],))
+            continue
+        for i in ids:
+            if i is not None:
+                zeros[i] += 1.0
+            else:
+                print("Missed event %s" % (row[0],))
+    print(zeros)
+
+    data = numpy.array(
+        [64.0, 31.0, 27.0, 8.0, 4.0, 2.0, 2.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    )
+
+    (fig, ax) = plt.subplots(1, 1)
+
+    ax.bar(numpy.arange(13), data)
+    for i in range(8):
+        ax.text(i, data[i] + 2, "%.0f" % (data[i],), ha="center")
+    ax.set_xticks(numpy.arange(9))
+    ax.set_xticklabels(
+        [
+            "Tonight",
+            "Tomrw.",
+            "Tomrw.\nNight",
+            "Day\n2",
+            "Day 2\nNight",
+            "Day 3",
+            "Day 3\nNight",
+            "Day 4",
+            "Day 4\nNight",
+        ]
+    )
+    ax.set_xlim(-0.5, 7.5)
+    ax.set_title(
+        (
+            "Des Moines NWS 100% Chance of Precipitation Forecast\n"
+            "Afternoon ZFP for Polk County 1 Jan 2009 - 18 Feb 2013"
+        )
+    )
+    ax.set_ylabel("Events (out of 1145 forecasts)")
+
+    fig.savefig("test.png")
+
+
+if __name__ == "__main__":
+    main()

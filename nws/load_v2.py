@@ -69,7 +69,6 @@ def main():
     # fig.text(0.01, 0.01, "@akrherz, generated 19 Dec 2019")
 
     fig.savefig("test.png")
-    plt.close()
 
 
 if __name__ == "__main__":

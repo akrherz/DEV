@@ -5,7 +5,7 @@ import pandas as pd
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
 
-COMPAREWFOS = ["DMX", "DVN", "ARX", "FSD", "OAX"]
+COMPAREWFOS = "DMX DVN ARX FSD OAX".split()
 
 
 def printr(row):

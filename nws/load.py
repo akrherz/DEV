@@ -16,14 +16,12 @@ def getp(phenomena, sts, ets):
     table = "sbw_%s" % (sts.year,)
     print("%s %s %s" % (table, sts, ets))
     cursor.execute(
-        """
+        f"""
      WITH data as
      (SELECT t, count(*) from
      (select phenomena,
      generate_series(issue, expire, '1 minute'::interval) as t
-     from """
-        + table
-        + """ where status = 'NEW' and issue > %s and
+     from {table} where status = 'NEW' and issue > %s and
      issue < %s and phenomena in %s) as foo
      GROUP by t),
 

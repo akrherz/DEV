@@ -12,9 +12,9 @@ FILENAME = sys.argv[1]
 def checker(lon, lat, strdata):
     """make sure our values are within physical bounds"""
     if lat >= 90 or lat <= -90:
-        raise Exception("invalid latitude %s from %s" % (lat, strdata))
+        raise Exception(f"invalid latitude {lat} from {strdata}")
     if lon > 180 or lon < -180:
-        raise Exception("invalid longitude %s from %s" % (lon, strdata))
+        raise Exception(f"invalid longitude {lon} from {strdata}")
     return (lon, lat)
 
 

@@ -1,7 +1,7 @@
 """simple map with counties filled"""
 
 import cartopy.feature as cfeature
-from pyiem.plot import get_cmap, maue, Z_POLITICAL
+from pyiem.plot import maue, Z_POLITICAL
 from pyiem.util import get_dbconn
 from pyiem.plot import MapPlot
 from pandas.io.sql import read_sql
@@ -22,8 +22,7 @@ def main():
     mp = MapPlot(
         sector="nws",
         title=(
-            "12 Nov 2005 - 1 Jul 2020 Number of NWS Issued Blizzard "
-            "Warnings"
+            "12 Nov 2005 - 1 Jul 2020 Number of NWS Issued Blizzard Warnings"
         ),
         subtitle=(
             "count by county, "

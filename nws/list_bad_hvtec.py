@@ -1,6 +1,4 @@
 """Go Fishing."""
-import sys
-import datetime
 
 from pyiem.util import get_dbconn
 from pyiem.nws.products.vtec import parser
@@ -20,7 +18,7 @@ def main():
         try:
             prod = parser(row[0])
         except Exception as exp:
-            print("ERROR, exp: %s" % (exp,))
+            print(f"ERROR, exp: {exp}")
             continue
         for seg in prod.segments:
             for hvtec in seg.hvtec:
@@ -34,7 +32,8 @@ def main():
                         continue
                     samples[prod.source] = 1
                     print(
-                        f"{prod.get_product_id()} vtec:{seg.vtec[0]} hvtec:{hvtec}"
+                        f"{prod.get_product_id()} vtec:{seg.vtec[0]} "
+                        f"hvtec:{hvtec}"
                     )
 
 

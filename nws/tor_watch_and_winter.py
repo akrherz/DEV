@@ -133,7 +133,7 @@ def main():
     for i, row in df2.iterrows():
         data[i] = row["date"]
 
-    m = MapPlot(
+    mp = MapPlot(
         sector="conus",
         title="Days with Tornado *Watch* & Winter Storm or Blizzard Warning",
         subtitle=(
@@ -146,7 +146,7 @@ def main():
     cmap = plt.get_cmap("jet")
     cmap.set_over("black")
     cmap.set_under("white")
-    m.fill_states(
+    mp.fill_states(
         data,
         bins=[0, 1, 2, 3, 4, 5, 6, 7, 10, 15, 20],
         units="count",
@@ -154,7 +154,7 @@ def main():
         cmap=cmap,
     )
 
-    m.postprocess(filename="states.png")
+    mp.postprocess(filename="states.png")
 
 
 if __name__ == "__main__":
