@@ -1,6 +1,5 @@
 """Do some fun email stuff."""
 import imaplib
-import re
 import email
 import datetime
 
@@ -15,10 +14,10 @@ def monthly_emails():
 
     while now < ets:
         fname = now.strftime("sent-mail-%b-%Y").lower()
-        res, num = obj.select(fname)
+        _res, num = obj.select(fname)
         if num[0].find(b"NON") > 0:
             fname = "oldsent/%s" % (fname,)
-            res, num = obj.select(fname)
+            _res, num = obj.select(fname)
         print("%s,%s,%s" % (now.year, now.month, float(num[0])))
         now = now + datetime.timedelta(days=32)
         now = now.replace(day=1)
@@ -40,7 +39,7 @@ def compute(to, cc):
     return res
 
 
-def blah():
+def blah(obj):
     """Go."""
     obj.select("[Gmail]/All Mail")
     typ, data = obj.search(

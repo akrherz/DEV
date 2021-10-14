@@ -8,7 +8,7 @@ def main():
     xticks = []
     xticklabels = []
 
-    for linenum, line in enumerate(open("data.csv")):
+    for linenum, line in enumerate(open("data.csv", encoding="utf8")):
         (year, month, count) = line.split(",")
         counts.append(float(count))
         if month == "1" and int(year) % 2 == 0:
