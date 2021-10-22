@@ -14,16 +14,18 @@ def main():
         "(max_wind_gust is null or max_hail_size is null) "
         "and not ST_IsEmpty(geom)"
     )
-    LOG.info("SPS products with polygon and without the new IBW tags")
+    if cursor.rowcount > 0:
+        LOG.info("SPS products with polygon and without the new IBW tags")
     for row in cursor:
-        LOG.info(f"https://mesonet.agron.iastate.edu/p.php?pid={row[0]}")
+        LOG.info("https://mesonet.agron.iastate.edu/p.php?pid=%s", row[0])
 
     cursor.execute(
         "SELECT distinct wfo from sbw_2021 "
         "where phenomena = 'SV' and issue > 'YESTERDAY' and "
         "windthreat is null and hailthreat is null"
     )
-    LOG.info("SVR Products from WFOs without the new tags")
+    if cursor.rowcount > 0:
+        LOG.info("SVR Products from WFOs without the new tags")
     for row in cursor:
         LOG.info(row[0])
 
