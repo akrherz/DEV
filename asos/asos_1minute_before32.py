@@ -1,19 +1,19 @@
 """Unsure."""
-import numpy
-import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
-
-ASOS = get_dbconn("asos1min")
-acursor = ASOS.cursor()
-acursor2 = ASOS.cursor()
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 def do(station):
-    tot_tmpf = numpy.zeros((12 * 60), "f")
-    max_tmpf = numpy.zeros((12 * 60), "f")
-    tot_sknt = numpy.zeros((12 * 60), "f")
-    tot_cnt = numpy.zeros((12 * 60), "f")
+    """do work."""
+    tot_tmpf = np.zeros((12 * 60), "f")
+    max_tmpf = np.zeros((12 * 60), "f")
+    tot_sknt = np.zeros((12 * 60), "f")
+    tot_cnt = np.zeros((12 * 60), "f")
 
+    pgconn = get_dbconn("asos1min")
+    acursor = pgconn.cursor()
+    acursor2 = pgconn.cursor()
     acursor.execute(
         "select date from (select date(valid), min(tmpf), max(tmpf) from "
         "alldata_1minute where station = %s and "
@@ -25,9 +25,9 @@ def do(station):
     )
 
     for row in acursor:
-        tmpf = numpy.zeros((12 * 60), "f")
-        sknt = numpy.zeros((12 * 60), "f")
-        cnt = numpy.zeros((12 * 60), "f")
+        tmpf = np.zeros((12 * 60), "f")
+        sknt = np.zeros((12 * 60), "f")
+        cnt = np.zeros((12 * 60), "f")
         acursor2.execute(
             "SELECT valid + '3 hours'::interval, tmpf, sknt from "
             "t%s_1minute where station = '%s' and "
@@ -47,11 +47,11 @@ def do(station):
             cnt[pos] = 1.0
             if row2[1] <= 32 and pos > 180:
                 break
-        if pos == 719 or numpy.min(tmpf[: (pos - 1)]) < 32 or row2[2] > 4:
+        if pos == 719 or np.min(tmpf[: (pos - 1)]) < 32 or row2[2] > 4:
             continue
         pos += 1
         tot_tmpf[-pos:] += tmpf[:pos]
-        max_tmpf[-pos:] = numpy.where(
+        max_tmpf[-pos:] = np.where(
             tmpf[:pos] > max_tmpf[-pos:], tmpf[:pos], max_tmpf[-pos:]
         )
         tot_sknt[-pos:] += sknt[:pos]
@@ -67,7 +67,7 @@ def main():
 
     max_tmpf, tot_tmpf, tot_sknt, tot_cnt = do("DSM")
     ax.plot(
-        numpy.arange(720),
+        np.arange(720),
         tot_tmpf / tot_cnt,
         color="r",
         label="Des Moines %.0f events" % (tot_cnt[-1],),
@@ -83,14 +83,14 @@ def main():
     ax.set_xlabel(r"Time before observation of 32$^{\circ}\mathrm{F}$")
     max_tmpf, tot_tmpf, tot_sknt, tot_cnt = do("ALO")
     ax.plot(
-        numpy.arange(720),
+        np.arange(720),
         tot_tmpf / tot_cnt,
         color="b",
         label="Waterloo %.0f events" % (tot_cnt[-1],),
     )
     # ax.plot( numpy.arange(720), max_tmpf, color='skyblue')
     ax.set_xlim(540, 720)
-    ax.set_xticks(numpy.arange(540, 721, 30))
+    ax.set_xticks(np.arange(540, 721, 30))
     ax.set_xticklabels(
         ["-3hr", "-150min", "-2hr", "-90min", "-1hr", "-30min", "0"]
     )
