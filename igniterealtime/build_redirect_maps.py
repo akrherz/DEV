@@ -15,7 +15,6 @@ Redo:
   Community Plugins at 100
 
 """
-from __future__ import print_function
 import sys
 
 import requests
@@ -26,10 +25,10 @@ JIVEUSER = sys.argv[1]
 JIVEPASS = sys.argv[2]
 API = "https://igniterealtime.jiveon.com/api/core/v3"
 MAP_FPS = {
-    "thread": open("thread_mapping.txt", "a"),
-    "messages": open("message_mapping.txt", "a"),
-    "docs": open("docs_mapping.txt", "a"),
-    "blogs": open("blogs_mapping.txt", "a"),
+    "thread": open("thread_mapping.txt", "a", encoding="utf-8"),
+    "messages": open("message_mapping.txt", "a", encoding="utf-8"),
+    "docs": open("docs_mapping.txt", "a", encoding="utf-8"),
+    "blogs": open("blogs_mapping.txt", "a", encoding="utf-8"),
 }
 
 

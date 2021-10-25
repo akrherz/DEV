@@ -34,7 +34,7 @@ class TestScaleFactor(unittest.TestCase):
 
         nc = netCDF4.Dataset(self.testfn, "r")
         nc.set_auto_scale(False)
-        self.assertEquals(nc.variables["ncvar"][5], expecting)
+        assert nc.variables["ncvar"][5] == expecting
         nc.close()
 
     def test_autoscale_true(self):

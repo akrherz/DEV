@@ -1,5 +1,4 @@
 """Get details on attachments in SBS"""
-from __future__ import print_function
 import sys
 import json
 import os
@@ -31,9 +30,8 @@ def save_attachments(item):
     fn = "attachments/%s_%s.json" % (item["type"], item["id"])
     if os.path.isfile(fn):
         print("    Dup? %s" % (fn,))
-    fp = open(fn, "w")
-    json.dump(item, fp)
-    fp.close()
+    with open(fn, "w", encoding="utf8") as fp:
+        json.dump(item, fp)
 
 
 def main():

@@ -2,7 +2,6 @@
 
 1981 thru 2017
 """
-from __future__ import print_function
 import os
 import datetime
 from collections import namedtuple
@@ -94,11 +93,13 @@ def main():
                                     ("%s/precipitation/P%s.txt")
                                     % (outdir, huc12),
                                     "w",
+                                    encoding="utf8",
                                 ),
                                 open(
                                     ("%s/temperature/T%s.txt")
                                     % (outdir, huc12),
                                     "w",
+                                    encoding="utf8",
                                 ),
                             ]
                         )

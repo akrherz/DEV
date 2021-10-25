@@ -31,7 +31,6 @@
 <a class="attachment" href="/uploads/...txt">hello.txt</a> (12 Bytes)
 6. Put the new post
 """
-from __future__ import print_function
 import os
 import sys
 

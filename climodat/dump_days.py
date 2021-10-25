@@ -3,8 +3,8 @@
 import sys
 
 # Third Party
-from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
+from pandas.io.sql import read_sql
 
 
 def main(argv):

@@ -1,5 +1,6 @@
+"""Cruft."""
+
 import ephem
-import datetime
 from pyiem import iemre
 from pyiem.plot import MapPlot
 import numpy as np
@@ -29,25 +30,35 @@ def do(lat, lon):
     return day1 - day2
 
 
-xs, ys = np.meshgrid(
-    np.concatenate([iemre.XAXIS, [iemre.XAXIS[-1] + 0.25]]),
-    np.concatenate([iemre.YAXIS, [iemre.YAXIS[-1] + 0.25]]),
-)
+def main():
+    """Go Main Go."""
+    xs, ys = np.meshgrid(
+        np.concatenate([iemre.XAXIS, [iemre.XAXIS[-1] + 0.25]]),
+        np.concatenate([iemre.YAXIS, [iemre.YAXIS[-1] + 0.25]]),
+    )
 
-secs = np.zeros(np.shape(w), "f")
+    secs = np.zeros(np.shape(w), "f")
 
-for i, lon in enumerate(iemre.XAXIS):
-    for j, lat in enumerate(iemre.YAXIS):
-        secs[j, i] = do(lat, lon)
+    for i, lon in enumerate(iemre.XAXIS):
+        for j, lat in enumerate(iemre.YAXIS):
+            secs[j, i] = do(lat, lon)
 
-m = MapPlot(
-    sector="midwest",
-    title="21 Jun to 22 Jun 2013 Decrease in Daylight Time",
-    subtitle="No local topography considered",
-)
+    m = MapPlot(
+        sector="midwest",
+        title="21 Jun to 22 Jun 2013 Decrease in Daylight Time",
+        subtitle="No local topography considered",
+    )
 
-m.contourf(
-    iemre.XAXIS, iemre.YAXIS, secs, np.arange(2, 6.1, 0.25), units="seconds"
-)
+    m.contourf(
+        iemre.XAXIS,
+        iemre.YAXIS,
+        secs,
+        np.arange(2, 6.1, 0.25),
+        units="seconds",
+    )
 
-m.postprocess(filename="test.png")
+    m.postprocess(filename="test.png")
+
+
+if __name__ == "__main__":
+    main()

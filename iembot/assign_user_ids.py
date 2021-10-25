@@ -22,9 +22,9 @@ def main():
         try:
             user_id = api.UsersLookup(screen_name=row[0])[0].id
         except Exception:
-            print("FAIL %s" % (row[0],))
+            print(f"FAIL {row[0]}")
             continue
-        print("%s -> %s" % (row[0], user_id))
+        print(f"{row[0]} -> {user_id}")
         cursor2.execute(
             "UPDATE iembot_twitter_oauth SET user_id = %s "
             "where screen_name = %s",

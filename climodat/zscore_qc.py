@@ -7,9 +7,8 @@ from pandas.io.sql import read_sql
 
 def do(state, vname):
     """do"""
-    pgconn = get_dbconn("coop", user="nobody")
-    network = "%sCLIMATE" % (state,)
-    table = "alldata_%s" % (state,)
+    pgconn = get_dbconn("coop")
+    network = f"{state}CLIMATE"
     df = read_sql(
         f"""
     WITH mystations as (
@@ -17,11 +16,11 @@ def do(state, vname):
     (temp24_hour is null or temp24_hour between 4 and 9) and
     substr(id, 3, 1) != 'C' and substr(id, 3, 4) != '0000'),
     stats as (
-    SELECT day, avg({vname}), stddev({vname}) from {table} o
+    SELECT day, avg({vname}), stddev({vname}) from alldata_{state} o
     JOIN mystations t on (o.station = t.id) GROUP by day),
     agg as (
     SELECT o.day, abs((o.{vname} - s.avg) / s.stddev) as zscore,
-    o.{vname}, s.avg, s.stddev, o.station from {table} o,
+    o.{vname}, s.avg, s.stddev, o.station from alldata_{state} o,
     mystations t, stats s WHERE
     o.day = s.day and t.id = o.station)
 

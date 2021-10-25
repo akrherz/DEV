@@ -31,7 +31,6 @@
 <a class="attachment" href="/uploads/...txt">hello.txt</a> (12 Bytes)
 6. Put the new post
 """
-from __future__ import print_function
 import json
 import glob
 import os
@@ -101,9 +100,8 @@ def main():
                 print(req.content)
                 continue
             tmpfn = "%s.bin" % (post_id,)
-            fp = open(tmpfn, "wb")
-            fp.write(req.content)
-            fp.close()
+            with open(tmpfn, "wb", encoding="utf8") as fp:
+                fp.write(req.content)
 
             try:
                 attachfilename = (
@@ -111,12 +109,12 @@ def main():
                     .decode("utf-8")
                     .encode("ascii", "ignore")
                 )
-            except Exception as exp:
+            except Exception:
                 attachfilename = "unknown"
             files = {
                 "file": (
                     attachfilename,
-                    open(tmpfn, "rb"),
+                    open(tmpfn, "rb", encoding="utf8"),
                     attachment["contentType"],
                     {"Expires": "0"},
                 )

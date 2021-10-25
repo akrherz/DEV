@@ -1,5 +1,4 @@
 """Figure out what cruft within Jive is causing API crashes"""
-from __future__ import print_function
 import sys
 
 import requests
