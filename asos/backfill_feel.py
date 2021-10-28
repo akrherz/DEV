@@ -1,6 +1,5 @@
 """Fill in the hole of feel column."""
 import sys
-import math
 import datetime
 
 from pyiem.util import get_dbconn, utc
@@ -12,8 +11,7 @@ from pandas.io.sql import read_sql
 
 def not_nan(val):
     """Make sure this is not NaN."""
-    val = float(val)
-    return val if not math.isnan(val) else None
+    return None if pd.isnull(val) else float(val)
 
 
 def main(argv):
