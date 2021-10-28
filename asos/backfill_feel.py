@@ -6,6 +6,7 @@ import datetime
 from pyiem.util import get_dbconn, utc
 from metpy.units import units
 import metpy.calc as mcalc
+import pandas as pd
 from pandas.io.sql import read_sql
 
 
@@ -23,8 +24,9 @@ def main(argv):
     pgconn = get_dbconn("asos")
     df = read_sql(
         f"""
-    SELECT station, valid, tmpf, dwpf, sknt, relh from t{sts.year}
-    WHERE valid >= %s and valid < %s and tmpf >= dwpf and feel is null
+    SELECT station, valid, tmpf, dwpf, sknt, relh, feel from t{sts.year}
+    WHERE valid >= %s and valid < %s and tmpf >= dwpf
+    and (feel is null or relh is not null)
     """,
         pgconn,
         params=(sts, ets),
@@ -35,32 +37,48 @@ def main(argv):
         f"{(datetime.datetime.now() - start_time).total_seconds():.4f}s"
     )
     start_time = datetime.datetime.now()
-    # df["relh"] = (
-    #    mcalc.relative_humidity_from_dewpoint(
-    #        df["tmpf"].values * units.degF, df["dwpf"].values * units.degF
-    #    )
-    #    .to(units.percent)
-    #    .magnitude
-    # )
-    df["feel"] = (
-        mcalc.apparent_temperature(
-            df["tmpf"].values * units.degF,
-            df["relh"].values * units.percent,
-            df["sknt"].values * units.knots,
-            mask_undefined=False,
+    df["dirty"] = False
+    df2 = df[pd.isnull(df["relh"])]
+    if not df2.empty:
+        print(f"Computing relh for {len(df2.index)} rows")
+        df.at[df2.index, "relh"] = (
+            mcalc.relative_humidity_from_dewpoint(
+                df2["tmpf"].values * units.degF,
+                df2["dwpf"].values * units.degF,
+            )
+            .to(units.percent)
+            .magnitude
         )
-        .to(units.degF)
-        .magnitude
-    )
-    # df2 = df[(df["relh"] > 1) & (df["relh"] < 100.1)]
+        df.at[df2.index, "dirty"] = True
+    df2 = df[pd.isnull(df["feel"])]
+    if not df2.empty:
+        print(f"Computing feel for {len(df2.index)} rows")
+        df.at[df2.index, "feel"] = (
+            mcalc.apparent_temperature(
+                df2["tmpf"].values * units.degF,
+                df2["relh"].values * units.percent,
+                df2["sknt"].values * units.knots,
+                mask_undefined=False,
+            )
+            .to(units.degF)
+            .magnitude
+        )
+        df.at[df2.index, "dirty"] = True
     cursor = pgconn.cursor()
     count = 0
-    for _, row in df.iterrows():
+    skips = 0
+    for _, row in df[df["dirty"]].iterrows():
+        newfeel = not_nan(row["feel"])
+        newrelh = not_nan(row["relh"])
+        if newfeel is None and newrelh is None:
+            skips += 1
+            continue
         cursor.execute(
-            f"UPDATE t{sts.year} SET feel = %s "
+            f"UPDATE t{sts.year} SET feel = %s, relh = %s "
             "WHERE station = %s and valid = %s",
             (
-                not_nan(row["feel"]),
+                newfeel,
+                newrelh,
                 row["station"],
                 row["valid"],
             ),
@@ -73,7 +91,7 @@ def main(argv):
     cursor.close()
     pgconn.commit()
     print(
-        f"{sts:%Y%m%d} edit of {count} rows finished in "
+        f"{sts:%Y%m%d} edit:{count} skip:{skips} rows finished in "
         f"{(datetime.datetime.now() - start_time).total_seconds():.4f}s"
     )
 
