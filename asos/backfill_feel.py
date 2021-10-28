@@ -26,7 +26,7 @@ def main(argv):
         f"""
     SELECT station, valid, tmpf, dwpf, sknt, relh, feel from t{sts.year}
     WHERE valid >= %s and valid < %s and tmpf >= dwpf
-    and (feel is null or relh is not null)
+    and (feel is null or relh is null)
     """,
         pgconn,
         params=(sts, ets),
