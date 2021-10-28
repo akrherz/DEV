@@ -50,7 +50,7 @@ def main(argv):
             .magnitude
         )
         df.at[df2.index, "dirty"] = True
-    df2 = df[pd.isnull(df["feel"])]
+    df2 = df[pd.isnull(df["feel"]) & (df["sknt"] >= 0)]
     if not df2.empty:
         print(f"Computing feel for {len(df2.index)} rows")
         df.at[df2.index, "feel"] = (
