@@ -30,6 +30,7 @@ def compute_bounds(nc):
 
 def main():
     """Go Main Go"""
+    # Need to use hourly as we want calendar day totals
     nc = netCDF4.Dataset("/mesonet/data/stage4/2019_stage4_hourly.nc")
     precip = nc.variables["p01m"]
     # Compute needed grid bounds
