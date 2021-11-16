@@ -1,50 +1,49 @@
 """Remove any duplicated rows with differenting temperatures
 
 A stop gap hack to remove some bad data from the database.  Sadly, gonna be
-tough to resolve how these obs appeared in the database to behind with :(
+tough to resolve how these obs appeared in the database to begin with :(
 """
 
+from tqdm import tqdm
 from pyiem.util import get_dbconn
+from pandas.io.sql import read_sql
 
 
 def do_year(year):
     """Process this year"""
     pgconn = get_dbconn("asos")
-    cursor1 = pgconn.cursor()
-    cursor2 = pgconn.cursor()
-    table = "t%s" % (year,)
-    cursor1.execute(
-        """
-    with data as (select station, valid, max(tmpf), min(tmpf), count(*)
-    from """
-        + table
-        + """ GROUP by station, valid)
-    select station, valid, count, max, min from data
-    where count > 1 and max != min ORDER by valid
-    """
+    table = f"t{year}"
+    stations = read_sql(
+        f"SELECT distinct station from {table} ORDER by station",
+        pgconn,
     )
-    removed = 0
-    for row in cursor1:
-        cursor2.execute(
-            """
-        DELETE from """
-            + table
-            + """ WHERE station = %s and valid = %s
-        """,
-            (row[0], row[1]),
-        )
-        removed += cursor2.rowcount
-    print(
-        ("%s found %s duplicated rows, deleted %s rows")
-        % (year, cursor1.rowcount, removed)
-    )
-    cursor2.close()
-    pgconn.commit()
+    progress = tqdm(stations["station"].values)
+    for station in progress:
+        progress.set_description(f"{station}")
+        while True:
+            cursor = pgconn.cursor()
+            cursor.execute(
+                f"""with obs as (
+                    select valid, count(*), max(ctid) from {table}
+                    where station = %s and report_type = 2 GROUP by valid
+                    ORDER by count DESC)
+                delete from {table} t USING obs o where
+                t.ctid = o.max and t.station = %s and o.count > 1
+                """,
+                (station, station),
+            )
+            if cursor.rowcount > 0:
+                print(f"{station} deleted {cursor.rowcount} rows")
+                pgconn.commit()
+                cursor.close()
+                continue
+            cursor.close()
+            break
 
 
 def main():
     """Go Main"""
-    for year in range(1928, 2017):
+    for year in range(2011, 2012):
         do_year(year)
 
 
