@@ -1,14 +1,15 @@
 import cartopy
 import cartopy.crs as ccrs
+import cartopy.feature as cfeature
 import matplotlib.pyplot as plt
 
 fig = plt.figure()
 
-ax = fig.add_subplot(111, projection=ccrs.LambertConformal())
-feature = cartopy.feature.NaturalEarthFeature(
-    name="coastline",
+ax = fig.add_subplot(111, projection=ccrs.Mercator())
+feature = cfeature.NaturalEarthFeature(
+    name="ocean",
     category="physical",
-    scale="110m",
+    scale="10m",
     edgecolor="#000000",
     facecolor="#AAAAAA",
 )
