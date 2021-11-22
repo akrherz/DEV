@@ -1,4 +1,5 @@
 """Simple comparison of totals."""
+import sys
 
 import requests
 import pandas as pd
@@ -6,13 +7,14 @@ from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
 
 
-def main():
+def main(argv):
     """Go Main Go."""
+    year = argv[1]
     obs = read_sql(
         "SELECT id, st_x(geom) as lon, st_y(geom) as lat, sum(pday) from "
-        "summary_2021 s "
+        "summary_2015 s "
         "JOIN stations t on (s.iemid = t.iemid) WHERE t.network = 'AWOS' and "
-        "s.day >= '2021-04-01' and pday > 0 GROUP by id, lon, lat ORDER by id",
+        "pday > 0 GROUP by id, lon, lat ORDER by id",
         get_dbconn("iem"),
         index_col="id",
     )
@@ -21,8 +23,8 @@ def main():
     obs["iemre"] = -1.0
     for sid, row in obs.iterrows():
         r = requests.get(
-            "https://mesonet.agron.iastate.edu/iemre/multiday/2021-04-01/"
-            f"2021-11-09/{row['lat']}/{row['lon']}/json"
+            f"https://mesonet.agron.iastate.edu/iemre/multiday/{year}-01-01/"
+            f"{year}-12-31/{row['lat']}/{row['lon']}/json"
         )
         data = r.json()
         iemre = pd.DataFrame(data["data"])
@@ -30,8 +32,8 @@ def main():
         obs.at[sid, "mrms"] = iemre["mrms_precip_in"].sum()
         obs.at[sid, "iemre"] = iemre["daily_precip_in"].sum()
 
-    obs.to_csv("awos_precip.csv")
+    obs.to_csv(f"awos_precip_{year}.csv")
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv)
