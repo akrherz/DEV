@@ -1,10 +1,8 @@
 """Plot sub-minute data"""
-from __future__ import print_function
 import datetime
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 import matplotlib.font_manager
 from pyiem.meteorology import dewpoint
 from pyiem.datatypes import temperature, humidity
@@ -45,7 +43,7 @@ def main():
     lines = []
     now = datetime.datetime(2018, 4, 13, 0, 0)
 
-    for line in open("jefferson.txt"):
+    for line in open("jefferson.txt", encoding="utf8"):
         if line.find("Min") > 0 or line.find("Max") > 0:
             continue
         ts = datetime.datetime.strptime(line[7:21], "%H:%M %m/%d/%y")
@@ -94,7 +92,8 @@ def main():
     fancybox = mpatches.FancyBboxPatch(
             [mx.DateTime.DateTime(2012,5,3,8,6).ticks(),
             40], 60*18, 50,
-            boxstyle='round', alpha=0.2, facecolor='#7EE5DE', edgecolor='#EEEEEE',
+            boxstyle='round', alpha=0.2, facecolor='#7EE5DE',
+            edgecolor='#EEEEEE',
             zorder=1)
     ax[0].add_patch( fancybox)
     """
@@ -137,7 +136,7 @@ def main():
     [t.set_color("b") for t in ax[1].yaxis.get_ticklines()]
     [t.set_color("b") for t in ax[1].yaxis.get_ticklabels()]
     ax[1].set_ylabel("Wind Direction")
-    ax[0].set_ylabel("Temperature $^{\circ}\mathrm{F}$")
+    ax[0].set_ylabel(r"Temperature $^{\circ}\mathrm{F}$")
     ax[1].set_yticks(np.arange(0, 361, 90))
     ax[1].set_ylim(0, 361)
     ax[1].set_yticklabels(["N", "E", "S", "W", "N"])

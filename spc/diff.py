@@ -64,7 +64,7 @@ def main():
     lons = np.arange(GRIDWEST, GRIDEAST, GRIDDELTA)
     lats = np.arange(GRIDSOUTH, GRIDNORTH, GRIDDELTA)
 
-    m = MapPlot(
+    mp = MapPlot(
         sector="conus",
         title=(
             "1 Jan - 31 Aug 2020 SPC Tornado Watch Count Departure from "
@@ -85,9 +85,9 @@ def main():
     vals = np.ma.array(c2020 - climo)
     vals.mask = climo < 0.1
 
-    res = m.pcolormesh(lons, lats, vals, rng, cmap=cmap, units="count")
+    res = mp.pcolormesh(lons, lats, vals, rng, cmap=cmap, units="count")
     res.set_rasterized(True)
-    m.ax.text(
+    mp.panels[0].ax.text(
         0.01,
         0.04,
         (
@@ -96,9 +96,9 @@ def main():
         ),
         bbox=dict(color="white"),
         zorder=100,
-        transform=m.ax.transAxes,
+        transform=mp.panels[0].ax.transAxes,
     )
-    m.postprocess(filename="diff.png")
+    mp.postprocess(filename="diff.png")
 
 
 if __name__ == "__main__":

@@ -37,8 +37,8 @@ while (now < ets):
 
 """
 import datetime
+from backports.zoneinfo import ZoneInfo
 
-import pytz
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
@@ -47,12 +47,13 @@ def main():
     """Go Main Go."""
     x = []
     y = []
-    for line in open("area.txt"):
-        tokens = line.split(",")
-        ts = datetime.datetime.strptime(tokens[0], "%Y%m%d%H%M")
-        ts = ts.replace(tzinfo=pytz.UTC)
-        x.append(ts)
-        y.append(float(tokens[1]))
+    with open("area.txt", encoding="utf8") as fh:
+        for line in fh:
+            tokens = line.split(",")
+            ts = datetime.datetime.strptime(tokens[0], "%Y%m%d%H%M")
+            ts = ts.replace(tzinfo=datetime.timezone.utc)
+            x.append(ts)
+            y.append(float(tokens[1]))
 
     (fig, ax) = plt.subplots(1, 1)
 
@@ -60,7 +61,7 @@ def main():
     ax.set_ylabel("Percent Coverage over Iowa [%]")
     ax.set_title("7 April 2014 - Iowa Areal Coverage of 10+ dBZ Reflectivity")
     ax.xaxis.set_major_formatter(
-        mdates.DateFormatter("%-I:%M\n%p", tz=pytz.timezone("America/Chicago"))
+        mdates.DateFormatter("%-I:%M\n%p", tz=ZoneInfo("America/Chicago"))
     )
     ax.grid(True)
     ax.text(

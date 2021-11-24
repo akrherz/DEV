@@ -513,9 +513,8 @@ def main():
         (
             "2001-2019 Storm Prediction Center Day2  Outlook Text\n"
             "Ratio of the words 'WILL' vs 'MAY' appearing "
-            "in the text, Avg: %.1f"
-        )
-        % (overall,),
+            f"in the text, Avg: {overall:.1f}"
+        ),
         ha="center",
         va="center",
     )

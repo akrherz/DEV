@@ -4,16 +4,16 @@ from datetime import timezone
 import math
 import re
 import sys
+from backports.zoneinfo import ZoneInfo
 
 # third party
 from metpy.units import units
-import pytz
 import pandas as pd
 from pyiem.util import get_dbconn, utc
 
 VERSION = "2021JUL08"
 CRCRLF = "\r\r\n"
-CENTRAL_TZ = pytz.timezone("America/Chicago")
+CENTRAL_TZ = ZoneInfo("America/Chicago")
 RIGHT_OF_LINE = re.compile(r"(RGT|RIGHT|RT) OF A?\s?(LN|LINE) (FM|FROM)")
 VALID_TIME = re.compile(r"^VALID (TIME)?\s*([0-9]{6})Z?\s-\s([0-9]{6})", re.M)
 STS = utc(1987, 1, 1)
@@ -52,19 +52,20 @@ def load_stations():
     # Personal correspondance, Andy Dean
     rows = []
     entries = []
-    for line in open("SPCstn.txt"):
-        tokens = line.split()
-        sid = tokens[0]
-        if sid in entries:
-            continue
-        entries.append(sid)
-        rows.append(
-            {
-                "sid": sid,
-                "lat": float(tokens[1]) / 100.0,
-                "lon": 0 - float(tokens[2]) / 100.0,
-            }
-        )
+    with open("SPCstn.txt", encoding="utf8") as fh:
+        for line in fh:
+            tokens = line.split()
+            sid = tokens[0]
+            if sid in entries:
+                continue
+            entries.append(sid)
+            rows.append(
+                {
+                    "sid": sid,
+                    "lat": float(tokens[1]) / 100.0,
+                    "lon": 0 - float(tokens[2]) / 100.0,
+                }
+            )
     # Be so careful of order and synop tbl has naughty entries
     mydir = "/home/gempak/GEMPAK7/gempak/tables/stns/"
     for tbl in ["spcwatch", "synop", "inactive", "pirep_navaids", "vors"]:
@@ -249,10 +250,10 @@ def process(fh, stns, row):
         print("Failed to find VALID LINE.")
         print(paragraphs)
         sys.exit()
-    for threshold in thresholds:
+    for threshold, item in thresholds.items():
         fh.write(f"{threshold:4s}   ")
-        sz = len(thresholds[threshold])
-        for i, pt in enumerate(thresholds[threshold]):
+        sz = len(item)
+        for i, pt in enumerate(item):
             if i % 6 == 0 and i > 1:
                 fh.write(f"{CRCRLF}       ")
             fh.write(pt)

@@ -30,13 +30,7 @@ def main():
             pil = "PFWFD%s" % (row["day"],)
             if row["day"] > 2:
                 pil = "PFWF38"
-        product_id = (
-            row["utc_issue"].strftime("%Y%m%d%H%M")
-            + "-KWNS-"
-            + wmo
-            + "-"
-            + pil
-        )
+        product_id = f"{row['utc_issue']:%Y%m%d%H%M}-KWNS-{wmo}-{pil}"
         url = f"https://mesonet.agron.iastate.edu/api/1/nwstext/{product_id}"
         req = requests.get(url)
         if req.status_code == 200:

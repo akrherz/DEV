@@ -1,7 +1,7 @@
 """Dump links to products."""
 import re
+from datetime import timezone
 
-import pytz
 from pyiem.nws.products import parser
 from pyiem.util import get_dbconn, noaaport_text
 
@@ -13,7 +13,7 @@ def main():
     AFOS = get_dbconn("afos")
     acursor = AFOS.cursor("streamer")
 
-    with open("listing.txt", "w") as fh:
+    with open("listing.txt", "w", encoding="utf8") as fh:
         acursor.execute(
             """
             select source, wmo, entered at time zone 'UTC', data, pil from cem
@@ -28,7 +28,7 @@ def main():
             except Exception as exp:
                 print(exp)
                 continue
-            entered = row[2].replace(tzinfo=pytz.UTC)
+            entered = row[2].replace(tzinfo=timezone.utc)
             tokens = PATTERN.findall(prod.unixtext)
             if not tokens:
                 if prod.unixtext.find(" FIRE") < 0:

@@ -1,9 +1,9 @@
 """Cruft."""
 
 import ephem
+import numpy as np
 from pyiem import iemre
 from pyiem.plot import MapPlot
-import numpy as np
 import netCDF4
 
 sun = ephem.Sun()
@@ -43,13 +43,13 @@ def main():
         for j, lat in enumerate(iemre.YAXIS):
             secs[j, i] = do(lat, lon)
 
-    m = MapPlot(
+    mp = MapPlot(
         sector="midwest",
         title="21 Jun to 22 Jun 2013 Decrease in Daylight Time",
         subtitle="No local topography considered",
     )
 
-    m.contourf(
+    mp.contourf(
         iemre.XAXIS,
         iemre.YAXIS,
         secs,
@@ -57,7 +57,7 @@ def main():
         units="seconds",
     )
 
-    m.postprocess(filename="test.png")
+    mp.postprocess(filename="test.png")
 
 
 if __name__ == "__main__":

@@ -4,22 +4,21 @@ import sys
 import re
 import datetime
 
-import pytz
+from tqdm import tqdm
 from pyiem.util import noaaport_text
 from pyiem.nws.product import TextProduct
 from pyiem.util import utc, get_dbconn
-from tqdm import tqdm
 
 # Copied from iem/scripts/util/poker2afos.py
 sys.path.insert(0, "/opt/iem/scripts/util")
-from poker2afos import XREF_SOURCE
+from poker2afos import XREF_SOURCE  # type: ignore
 
 
 def save(prod, cursor):
     """Save this to the database!"""
     if prod.valid.year > 1996 or prod.valid.year < 1993:
         return
-    utcnow = prod.valid.astimezone(pytz.UTC)
+    utcnow = prod.valid.astimezone(datetime.timezone.utc)
     table = "products_%s_%s" % (
         utcnow.year,
         "0106" if utcnow.month < 7 else "0712",
@@ -42,7 +41,7 @@ def save(prod, cursor):
 
 def splitter(fn):
     """Generate products."""
-    data = open(fn, "rb").read().decode("ascii", "ignore")
+    data = open(fn, "rb", encoding="utf8").read().decode("ascii", "ignore")
     tokens = re.split("[0-9]{3} \r\r\n", data)
     for token in tokens:
         product = "000 \r\r\n%s" % (token,)
@@ -68,7 +67,7 @@ def main():
                         product, utcnow=utcnow, parse_segments=False
                     )
                     save(prod, cursor)
-                except Exception as _exp:
+                except Exception:
                     continue
         cursor.close()
         dbconn.commit()

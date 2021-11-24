@@ -117,8 +117,10 @@ def main():
     ax.set_ylabel("Frequency [# of watches]")
     ax.set_title(
         (
-            "Number of Severe T'Storm + Tornado Warnings per Severe T'Storm Watch\n"
-            "2005-2016, number of distinct storm based warnings issued during watch"
+            "Number of Severe T'Storm + Tornado Warnings "
+            "per Severe T'Storm Watch\n"
+            "2005-2016, number of distinct storm based warnings "
+            "issued during watch"
         ),
         fontsize=12,
     )

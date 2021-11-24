@@ -19,8 +19,8 @@ def main():
             SELECT extract(doy from valid) as d, max(cfs) from real_flow
             WHERE extract(year from valid) = %s and cfs > 0
             GROUP by d ORDER by d ASC
-            """
-            % (yr,)
+            """,
+            (yr,),
         )
         obs = np.ma.ones((366,), "f") * -1
         for row in icursor:

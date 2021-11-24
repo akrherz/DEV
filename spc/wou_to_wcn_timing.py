@@ -13,7 +13,6 @@ def plotter():
     df = pd.read_csv("timing.csv")
     for col in ["wcn", "wou"]:
         df[col] = pd.to_datetime(df[col])
-    print(df.groupby("year").mean())
     df["delta"] = df["wmo_seconds"] / 60.0
     df = df[df["delta"] > -5]
     df = df[df["delta"] < 30]
