@@ -11,6 +11,7 @@ rcParams.update(
 )
 
 from pyiem.dep import read_cli
+from pyiem.plot import figure_axes
 from pyiem.plot.use_agg import plt
 from metpy.units import units
 
@@ -22,7 +23,14 @@ def main():
     df["maxr"] = (df["maxr"].values * units("mm")).to(units("mm")).m
     gdf = df[["jday", "maxr"]].groupby("jday").max()
 
-    (fig, ax) = plt.subplots(1, 1)
+    (fig, ax) = figure_axes(
+        logo="dep",
+        figsize=(8, 6),
+        title=(
+            "DEP 2007-2020 Maximum Precipitation Rate\n"
+            "For Ames, Iowa (41.98N 93.61W), March thru July"
+        ),
+    )
     gdf = (
         df[["jday", "maxr"]]
         .groupby("jday")
@@ -47,12 +55,6 @@ def main():
     )
     ax.set_xticks([1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335])
     ax.set_xticklabels(calendar.month_name[1:])
-    ax.set_title(
-        (
-            "DEP 2007-2020 Maximum Precipitation Rate\n"
-            "For Ames, Iowa (41.98N 93.61W), March thru July"
-        )
-    )
     ax.legend()
     ax.set_ylabel(r"Precipitation Rate $mm$ $h^{-1}$")
     ax.grid(True, color="k")
