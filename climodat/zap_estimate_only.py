@@ -50,6 +50,16 @@ def main():
         coopdb.commit()
         mesositedb.commit()
 
+    # Now remove any COOP tracking status for removed sites
+    mcursor = mesositedb.cursor()
+    mcursor.execute(
+        "delete from station_attributes a USING stations t where "
+        "a.iemid = t.iemid and attr = 'TRACKS_STATION' and not t.online"
+    )
+    print(f"Removed {mcursor.rowcount} COOP tracking from attributes")
+    mcursor.close()
+    mesositedb.commit()
+
 
 if __name__ == "__main__":
     main()
