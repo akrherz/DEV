@@ -5,17 +5,16 @@ https://tgftp.nws.noaa.gov/SL.us008001/ST.opnl/DF.gr2/DC.ndfd/AR.conus/VP.001-00
 import datetime
 
 import numpy as np
-from pyiem.plot.use_agg import plt
-from pyiem.plot import MapPlot, nwssnow
 import pygrib
+from pyiem.plot import MapPlot, nwssnow
 
 
 def main():
     """Go Main"""
     grbs = pygrib.open("/tmp/ds.snow.bin")
-    # skip 1-off first field
     total = None
     lats = lons = None
+    # grib ordering starts at 1
     for grb in grbs[1:9]:
         if lats is None:
             lats, lons = grb.latlons()
@@ -28,15 +27,14 @@ def main():
     analtime = grb.analDate - datetime.timedelta(hours=6)
 
     mp = MapPlot(
-        sector="iowa",
+        sector="custom",
         west=-100,
         east=-88,
-        north=45,
-        south=38,
+        north=46.5,
+        south=39.5,
         axisbg="tan",
-        title="NWS Forecast Accumulated Snow thru 12 PM 24 December 2020",
-        subtitle="NDFD Forecast Issued %s"
-        % (analtime.strftime("%-I %p %-d %B %Y"),),
+        title="NWS Forecast Accumulated Snowfall thru 6 PM 11 December 2021",
+        subtitle=f"NDFD Forecast Issued {analtime:%-I %p %-d %B %Y}",
     )
     cmap = nwssnow()
     bins = [0.1, 1, 2, 3, 4, 6, 8, 12, 18, 24, 30, 36]
