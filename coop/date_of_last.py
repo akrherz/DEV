@@ -34,7 +34,7 @@ def main():
     for station, row in df.iterrows():
         lats.append(nt.sts[station]["lat"])
         lons.append(nt.sts[station]["lon"])
-        label = "%s\n%s" % (row["low"], row["max"].year)
+        label = f"{row['low']}\n{row['max'].year}"
         vals.append(label)
         colors.append("k")
 

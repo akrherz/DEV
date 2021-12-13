@@ -72,7 +72,7 @@ def main():
         ax.text(
             x1 + datetime.timedelta(hours=5),
             y,
-            "%.1f" % (total,),
+            f"{total:.1f}",
             ha="right",
             va="center",
         )
