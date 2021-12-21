@@ -8,7 +8,7 @@ import matplotlib.colors as mpcolors
 import geopandas as gpd
 from pandas.io.sql import read_sql
 from pyiem.plot import MapPlot, get_cmap, geoplot
-from pyiem.util import utc, get_dbconn, convert_value
+from pyiem.util import utc, get_dbconn
 from pyiem.reference import Z_OVERLAY2, Z_FILL
 
 CST = ZoneInfo("America/Chicago")
@@ -32,7 +32,6 @@ def main():
         params=(sts, ets),
     )
     df["valid"] = df["valid"].dt.tz_localize("UTC")
-    df["magnitude"] = convert_value(df["magnitude"].values, "knot", "mph")
     print(df["magnitude"].describe())
     warndf = gpd.read_postgis(
         "SELECT phenomena, geom, issue at time zone 'UTC' as issue, "
@@ -211,7 +210,7 @@ def main():
         ax.set_xlim(sts, ets)
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%-I %p", tz=CST))
         ax.xaxis.set_major_locator(mdates.HourLocator(interval=1))
-        ax.set_xlabel("10 Aug 2021 Central Daylight Time, 5 minute bar width")
+        ax.set_xlabel("10 Aug 2020 Central Daylight Time, 5 minute bar width")
         ax.set_yticks(range(50, 131, 10))
         ax.set_ylim(50, 131)
         ax.set_ylabel("Wind Gust [MPH]")
