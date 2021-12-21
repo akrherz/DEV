@@ -17,14 +17,14 @@ geoplot.MAIN_AX_BOUNDS = [0.05, 0.3, 0.89, 0.6]
 
 def main():
     """Go Main Go."""
-    sts = utc(2021, 12, 15, 18)
-    ets = utc(2021, 12, 16, 5, 56)
+    sts = utc(2020, 8, 10, 9)
+    ets = utc(2020, 8, 11, 2, 59)
     interval = datetime.timedelta(minutes=5)
     i = 0
     now = sts
     df = read_sql(
         "SELECT distinct ST_x(geom) as lon, ST_y(geom) as lat, typetext, "
-        "valid at time zone 'UTC' as valid, magnitude from lsrs_2021 where "
+        "valid at time zone 'UTC' as valid, magnitude from lsrs_2020 where "
         "valid >= %s and valid < %s and "
         "((typetext = 'TSTM WND GST' and magnitude >= 50) or "
         "typetext = 'TORNADO') ORDER by magnitude ASC",
@@ -33,9 +33,10 @@ def main():
     )
     df["valid"] = df["valid"].dt.tz_localize("UTC")
     df["magnitude"] = convert_value(df["magnitude"].values, "knot", "mph")
+    print(df["magnitude"].describe())
     warndf = gpd.read_postgis(
         "SELECT phenomena, geom, issue at time zone 'UTC' as issue, "
-        "expire at time zone 'UTC' as expire from sbw_2021 where "
+        "expire at time zone 'UTC' as expire from sbw_2020 where "
         "status = 'NEW' and expire >= %s and issue <= %s and "
         "phenomena in ('TO', 'SV')",
         get_dbconn("postgis"),
@@ -47,17 +48,17 @@ def main():
     warndf["issue"] = warndf["issue"].dt.tz_localize("UTC")
     warndf["expire"] = warndf["expire"].dt.tz_localize("UTC")
 
-    nldn = gpd.read_postgis(
-        "SELECT geom, valid at time zone 'UTC' as valid from nldn2021_12 "
-        "WHERE valid >= %s and valid < %s",
-        get_dbconn("nldn"),
-        params=(sts, ets),
-    )
-    nldn["valid"] = nldn["valid"].dt.tz_localize("UTC")
-    nldn = nldn.to_crs(epsg=4326)
+    # nldn = gpd.read_postgis(
+    #    "SELECT geom, valid at time zone 'UTC' as valid from nldn2021_12 "
+    #    "WHERE valid >= %s and valid < %s",
+    #    get_dbconn("nldn"),
+    #    params=(sts, ets),
+    # )
+    # nldn["valid"] = nldn["valid"].dt.tz_localize("UTC")
+    # nldn = nldn.to_crs(epsg=4326)
 
     cmap = get_cmap("cool")
-    bins = list(range(50, 111, 10))
+    bins = list(range(50, 131, 10))
     norm = mpcolors.BoundaryNorm(bins, cmap.N)
 
     def f(val):
@@ -68,28 +69,28 @@ def main():
     ncmap = get_cmap("binary_r")
     ncmap.set_under("#00000000")
     ncmap.set_over("white")
-    nbins = list(range(0, 101, 10))
+    nbins = list(range(0, 121, 10))
     nbins[0] = 1
     nnorm = mpcolors.BoundaryNorm(nbins, ncmap.N)
 
     while now < ets:
         mp = MapPlot(
             sector="custom",
-            west=-103.5,
-            east=-87,
+            west=-98.5,
+            east=-84,
             south=36.0,
-            north=46.0,
+            north=45.0,
             continentalcolor="k",
             statebordercolor="white",
-            title="15 Dec 2021 Serial Derecho",
+            title="10 Aug 2020 Derecho",
             subtitle=(
                 f"{now.astimezone(CST).strftime('%I:%M %p %Z')}, "
-                "NWS NEXRAD, SVR+TORs, T-Storm Wind + Tornado LSRs"
+                "NWS NEXRAD, SVR+TORs, T-Storm Wind LSRs"
             ),
             twitter=True,
             caption="@akrherz",
         )
-
+        """
         df2 = nldn[nldn["valid"] <= now]
         # ~ 2254 km x 973 km  2.32x about 24km2 grid
         mp.panels[0].ax.hexbin(
@@ -116,7 +117,7 @@ def main():
             "Strikes per ~24 km cell, courtesy Vaisala NLDN",
             loc="bottom",
         )
-
+        """
         mp.overlay_nexrad(now)
         ax = mp.fig.add_axes([0.1, 0.1, 0.8, 0.15], facecolor="tan")
 
@@ -142,7 +143,7 @@ def main():
                 color=df2["color"].to_list(),
                 width=15 / 1440.0,  # 15 minutes
             )
-
+        """
         df2 = df[(df["valid"] <= now) & (df["typetext"] == "TORNADO")]
         if not df2.empty:
             mp.panels[0].ax.scatter(
@@ -177,6 +178,7 @@ def main():
         ax.text(
             0.03, 0.96, "Tornado", transform=ax.transAxes, ha="left", va="top"
         )
+        """
         df2 = warndf[(warndf["issue"] <= now) & (warndf["expire"] > now)]
         if not df2.empty:
             df2.plot(
@@ -209,8 +211,9 @@ def main():
         ax.set_xlim(sts, ets)
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%-I %p", tz=CST))
         ax.xaxis.set_major_locator(mdates.HourLocator(interval=1))
-        ax.set_xlabel("15 Dec 2021 Central Standard Time, 5 minute bar width")
-        ax.set_ylim(50, 110)
+        ax.set_xlabel("10 Aug 2021 Central Daylight Time, 5 minute bar width")
+        ax.set_yticks(range(50, 131, 10))
+        ax.set_ylim(50, 131)
         ax.set_ylabel("Wind Gust [MPH]")
         ax.set_title("NWS Thunderstorm Wind Gust Reports [MPH]")
         ax.grid(True)
