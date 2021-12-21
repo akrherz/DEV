@@ -17,14 +17,14 @@ geoplot.MAIN_AX_BOUNDS = [0.05, 0.3, 0.89, 0.6]
 
 def main():
     """Go Main Go."""
-    sts = utc(2020, 8, 10, 9)
-    ets = utc(2020, 8, 11, 2, 59)
+    sts = utc(2021, 12, 15, 18)
+    ets = utc(2021, 12, 16, 5, 56)
     interval = datetime.timedelta(minutes=5)
     i = 0
     now = sts
     df = read_sql(
         "SELECT distinct ST_x(geom) as lon, ST_y(geom) as lat, typetext, "
-        "valid at time zone 'UTC' as valid, magnitude from lsrs_2020 where "
+        "valid at time zone 'UTC' as valid, magnitude from lsrs_2021 where "
         "valid >= %s and valid < %s and "
         "((typetext = 'TSTM WND GST' and magnitude >= 50) or "
         "typetext = 'TORNADO') ORDER by magnitude ASC",
@@ -35,7 +35,7 @@ def main():
     print(df["magnitude"].describe())
     warndf = gpd.read_postgis(
         "SELECT phenomena, geom, issue at time zone 'UTC' as issue, "
-        "expire at time zone 'UTC' as expire from sbw_2020 where "
+        "expire at time zone 'UTC' as expire from sbw_2021 where "
         "status = 'NEW' and expire >= %s and issue <= %s and "
         "phenomena in ('TO', 'SV')",
         get_dbconn("postgis"),
@@ -57,7 +57,7 @@ def main():
     # nldn = nldn.to_crs(epsg=4326)
 
     cmap = get_cmap("cool")
-    bins = list(range(50, 131, 10))
+    bins = list(range(50, 101, 10))
     norm = mpcolors.BoundaryNorm(bins, cmap.N)
 
     def f(val):
@@ -75,13 +75,13 @@ def main():
     while now < ets:
         mp = MapPlot(
             sector="custom",
-            west=-98.5,
-            east=-84,
+            west=-103.5,
+            east=-87,
             south=36.0,
-            north=45.0,
+            north=46.0,
             continentalcolor="k",
             statebordercolor="white",
-            title="10 Aug 2020 Derecho",
+            title="15 Dec 2021 Serial Derecho",
             subtitle=(
                 f"{now.astimezone(CST).strftime('%I:%M %p %Z')}, "
                 "NWS NEXRAD, SVR+TORs, T-Storm Wind LSRs"
@@ -210,9 +210,9 @@ def main():
         ax.set_xlim(sts, ets)
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%-I %p", tz=CST))
         ax.xaxis.set_major_locator(mdates.HourLocator(interval=1))
-        ax.set_xlabel("10 Aug 2020 Central Daylight Time, 5 minute bar width")
-        ax.set_yticks(range(50, 131, 10))
-        ax.set_ylim(50, 131)
+        ax.set_xlabel("15 Dec 2021 Central Standard Time, 5 minute bar width")
+        ax.set_yticks(range(50, 101, 10))
+        ax.set_ylim(50, 100)
         ax.set_ylabel("Wind Gust [MPH]")
         ax.set_title("NWS Thunderstorm Wind Gust Reports [MPH]")
         ax.grid(True)
