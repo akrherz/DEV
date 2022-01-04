@@ -87,10 +87,10 @@ def main():
                 "warnafter": warnafter,
             }
         )
-        print(minlead)
+        print(f"year:{year} eventid:{eventid} minlead:{minlead:.2f}")
 
     df = pd.DataFrame(data)
-    df.to_excel("watch_leadtime_m2_v2.xlsx", index=False)
+    df.to_excel("watch_leadtime_m2_v3.xlsx", index=False)
 
 
 if __name__ == "__main__":
