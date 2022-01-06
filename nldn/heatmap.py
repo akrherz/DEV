@@ -4,7 +4,7 @@ import geopandas as gpd
 
 from matplotlib.colorbar import ColorbarBase
 import matplotlib.colors as mpcolors
-from pyiem.reference import Z_FILL, IA_EAST, IA_NORTH, IA_SOUTH, IA_WEST
+from pyiem.reference import Z_FILL
 from pyiem.util import get_dbconn
 from pyiem.plot import MapPlot, get_cmap
 
@@ -19,28 +19,26 @@ def main():
         "valid >= '2021-01-01' and valid < '2022-01-01'",
         get_dbconn("nldn"),
     )
-    nldn = nldn.to_crs(epsg=4326)
-    print(nldn)
     mp = MapPlot(
-        sector="custom",
-        west=IA_WEST,
-        east=IA_EAST,
-        south=IA_SOUTH,
-        north=IA_NORTH,
-        continentalcolor="k",
+        sector="iowa",
+        continentalcolor="white",
         statebordercolor="white",
         title="15 Dec 2021 Serial Derecho",
         twitter=True,
         caption="@akrherz",
     )
-    ncmap = get_cmap("binary_r")
-    ncmap.set_under("#000000")
+    nldn = nldn.to_crs(mp.panels[0].crs)
+    ncmap = get_cmap("copper")
+    ncmap.set_under("#EEEEEE")
     ncmap.set_over("red")
-    nbins = list(range(20, 81, 10))
-    nbins[0] = 1
-    nnorm = mpcolors.BoundaryNorm(nbins, ncmap.N)
+    nbins = [2 ** i for i in range(0, 7)]
+    scaled = [n * 25 for n in nbins]
+    nnorm = mpcolors.BoundaryNorm(scaled, ncmap.N)
 
-    print(mp.panels[0].get_extent())
+    xmin, xmax, ymin, ymax = mp.panels[0].get_extent(crs=mp.panels[0].crs)
+    xs = (xmax - xmin) / 5000  # 2km
+    ys = (ymax - ymin) / 5000  # 2km
+    print(f"{xs:.2f} {ys:.2f}")
     mp.panels[0].ax.hexbin(
         nldn["geom"].x,
         nldn["geom"].y,
@@ -48,22 +46,24 @@ def main():
         norm=nnorm,
         zorder=Z_FILL - 1,
         extent=mp.panels[0].get_extent(),
-        gridsize=(600, 370),
+        gridsize=(int(xs), int(ys)),
     )
 
     ncax = mp.fig.add_axes(
-        [0.92, 0.3, 0.02, 0.2],
+        [0.92, 0.3, 0.02, 0.6],
         frameon=True,
         facecolor="#EEEEEE",
         yticks=[],
         xticks=[],
     )
 
+    # 2km hack
+    nnorm = mpcolors.BoundaryNorm(nbins, ncmap.N)
     ncb = ColorbarBase(
-        ncax, norm=nnorm, cmap=ncmap, extend="max", spacing="proportional"
+        ncax, norm=nnorm, cmap=ncmap, extend="both", spacing="uniform"
     )
     ncb.set_label(
-        "Strikes per ~24 km cell, courtesy Vaisala NLDN",
+        "Events per sqkm, courtesy Vaisala NLDN",
         loc="bottom",
     )
     mp.fig.savefig("test.png")
