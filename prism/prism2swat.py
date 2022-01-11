@@ -40,18 +40,20 @@ def main(argv):
     for dirname in ["precipitation", "temperature"]:
         os.mkdir("%s/%s" % (outdir, dirname))
     pgconn = get_dbconn("idep")
+    myhucs = [x.strip() for x in open("myhucs.txt")]
     huc8df = gpd.GeoDataFrame.from_postgis(
         """
-    SELECT huc8, ST_Transform(simple_geom, %s) as geo from wbd_huc8
-    WHERE swat_use ORDER by huc8
+    SELECT huc_12, ST_Transform(simple_geom, %s) as geo from huc12
+    WHERE scenario = 0 and huc_12 in %s ORDER by huc12
     """,
         pgconn,
-        params=(PROJSTR,),
-        index_col="huc8",
+        params=(PROJSTR, tuple(myhucs)),
+        index_col="huc_12",
         geom_col="geo",
     )
     hucs = huc8df.index.values
-    years = range(1981, 2018)
+    assert len(hucs) == len(myhucs)
+    years = range(1981, 2021)
     nc = netCDF4.Dataset("%s/%s_daily.nc" % (basedir, years[0]))
 
     # compute the affine
@@ -99,7 +101,7 @@ def main(argv):
 
                 fps[j][0].write(("%.1f\n") % (mypr[j],))
                 fps[j][1].write(("%.2f,%.2f\n") % (mytasmax[j], mytasmin[j]))
-
+        nc.close()
     for fp in fps:
         fp[0].close()
         fp[1].close()
