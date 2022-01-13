@@ -18,6 +18,7 @@
 **/*.grib2
 **/*.grib
 **/*.docx
+**/*.xlsx
 **/*.nc
 **/*.prj
 /.vscode
