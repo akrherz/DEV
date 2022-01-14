@@ -33,7 +33,7 @@ def main():
         north=46.5,
         south=39.5,
         axisbg="tan",
-        title="NWS Forecast Accumulated Snowfall thru 6 PM 11 December 2021",
+        title="NWS Forecast Accumulated Snowfall thru 12 AM 16 January 2022",
         subtitle=f"NDFD Forecast Issued {analtime:%-I %p %-d %B %Y}",
     )
     cmap = nwssnow()
