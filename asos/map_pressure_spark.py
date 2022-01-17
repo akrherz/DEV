@@ -21,7 +21,7 @@ def main():
     norm = mpcolors.BoundaryNorm(np.arange(-0.1, 0.11, 0.02), 256)
     minutes = 15
     for dt in pd.date_range(
-        "2022-01-15 11:30", "2022-01-15 19:00", freq="60S"
+        "2022-01-16 04:00", "2022-01-16 19:00", freq="60S"
     ).tz_localize(timezone.utc):
         df = read_postgis(
             """
