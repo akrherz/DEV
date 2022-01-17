@@ -21,12 +21,13 @@ def main():
     norm = mpcolors.BoundaryNorm(np.arange(-0.1, 0.11, 0.02), 256)
     minutes = 15
     for dt in pd.date_range(
-        "2022-01-15 11:00", "2022-01-15 20:00", freq="60S"
+        "2022-01-15 11:30", "2022-01-15 19:00", freq="60S"
     ).tz_localize(timezone.utc):
         df = read_postgis(
             """
             with data as (
-                select station, valid, pres1 from t202201_1minute where
+                select station, valid at time zone 'UTC' as valid,
+                pres1 from t202201_1minute where
                 valid > %s and valid <= %s and pres1 is not null
                 ORDER by station, valid
             )
@@ -48,16 +49,20 @@ def main():
         xmin, xmax = mp.panels[0].ax.get_xlim()
         psz = (xmax - xmin) * 0.02
         df = df.to_crs(mp.panels[0].crs)
-        for station, gdf in df.groupby("station"):
+        for _station, gdf in df.groupby("station"):
             # Create a little spark line for each station, with a color based
             # on the pressure change
             x0 = gdf.iloc[0]["geom"].x - psz / 2.0
             y0 = gdf.iloc[0]["geom"].y
+            # x0 is anchored to the left
             xpos = (
                 x0
-                + (dt - gdf["valid"]).dt.total_seconds() / (minutes * 60) * psz
+                + (gdf["valid"] - gdf["valid"].values[0]).dt.total_seconds()
+                / (minutes * 60)
+                * psz
             )
-            ypos = y0 + (gdf["pres1"].values[-1] - gdf["pres1"]) / 0.05 * psz
+            # y is anchored to the last point, which is the current value
+            ypos = y0 + (gdf["pres1"] - gdf["pres1"].values[-1]) / 0.05 * psz
             mp.panels[0].ax.plot(
                 xpos,
                 ypos,
