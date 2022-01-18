@@ -4,12 +4,11 @@ from datetime import timedelta, timezone
 import matplotlib.colors as mpcolors
 from matplotlib.colorbar import ColorbarBase
 from pyiem.plot import MapPlot, get_cmap
-from pyiem.reference import Z_POLITICAL
 from pyiem.util import get_dbconn
-from pandas.io.sql import read_sql
 from geopandas import read_postgis
 import pandas as pd
 import numpy as np
+from tqdm import tqdm
 
 
 def main():
@@ -20,9 +19,13 @@ def main():
     cmap = get_cmap("RdBu")
     norm = mpcolors.BoundaryNorm(np.arange(-0.1, 0.11, 0.02), 256)
     minutes = 15
-    for dt in pd.date_range(
-        "2022-01-16 04:00", "2022-01-16 19:00", freq="60S"
-    ).tz_localize(timezone.utc):
+    progress = tqdm(
+        pd.date_range(
+            "2022-01-16 21:30", "2022-01-17 19:00", freq="60S"
+        ).tz_localize(timezone.utc)
+    )
+    for dt in progress:
+        progress.set_description(dt.strftime("%Y-%m-%d %H:%M"))
         df = read_postgis(
             """
             with data as (
