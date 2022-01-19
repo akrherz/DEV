@@ -1,5 +1,6 @@
 """Map of pressure fluctation."""
 from datetime import timedelta, timezone
+from backports.zoneinfo import ZoneInfo
 
 import matplotlib.colors as mpcolors
 from matplotlib.colorbar import ColorbarBase
@@ -9,6 +10,26 @@ from geopandas import read_postgis
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
+
+CST = ZoneInfo("America/Chicago")
+
+
+def place_legend(mp, x, y, xsize):
+    """A cartoon helper."""
+    mp.ax.plot([x, x + xsize], [y, y], color="white", lw=2, zorder=100)
+    mp.ax.plot([x, x], [y, y + xsize], color="white", lw=2, zorder=100)
+    mp.ax.text(
+        x, y - xsize * 0.15, "15 minutes", va="top", fontsize=9, color="white"
+    )
+    mp.ax.text(
+        x - xsize * 0.15,
+        y,
+        "+/- 0.1 inHg",
+        color="white",
+        ha="right",
+        fontsize=9,
+        rotation=90,
+    )
 
 
 def main():
@@ -21,7 +42,7 @@ def main():
     minutes = 15
     progress = tqdm(
         pd.date_range(
-            "2022-01-17 15:00", "2022-01-17 22:00", freq="60S"
+            "2022-01-18 09:00", "2022-01-18 15:00", freq="60S"
         ).tz_localize(timezone.utc)
     )
     for dt in progress:
@@ -42,15 +63,22 @@ def main():
             geom_col="geom",
             params=(dt - timedelta(minutes=minutes), dt),
         )
+        localdt = (
+            dt.to_pydatetime().astimezone(CST).strftime("%b %d %Y %-I:%M %p")
+        )
         mp = MapPlot(
             sector="conus",
             continentalcolor="k",
             statebordercolor="white",
             title=f"{minutes} Minute Pressure Altimeter Sparkline ending at {dt:%b %d %Y %H%M} UTC",
-            subtitle=f"Data via NCEI/NWS One Minute ASOS, colored by {minutes} minute change",
+            subtitle=f"Data via NCEI/NWS One Minute ASOS, colored by {minutes} minute change, {localdt} US Central",
         )
         xmin, xmax = mp.panels[0].ax.get_xlim()
+        yn, yx = mp.panels[0].ax.get_ylim()
         psz = (xmax - xmin) * 0.02
+        place_legend(
+            mp, xmin + (xmax - xmin) * 0.05, yn + (yx - yn) * 0.05, psz
+        )
         df = df.to_crs(mp.panels[0].crs)
         for _station, gdf in df.groupby("station"):
             # Create a little spark line for each station, with a color based
