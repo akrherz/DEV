@@ -42,7 +42,7 @@ def main():
     minutes = 15
     progress = tqdm(
         pd.date_range(
-            "2022-01-19 04:00", "2022-01-19 10:00", freq="60S"
+            "2022-01-20 15:30", "2022-01-20 21:30", freq="60S"
         ).tz_localize(timezone.utc)
     )
     for dt in progress:
