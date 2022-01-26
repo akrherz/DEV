@@ -1,11 +1,11 @@
 """Map of pressure fluctation."""
 from datetime import timedelta, timezone
-from backports.zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo
 
 import matplotlib.colors as mpcolors
 from matplotlib.colorbar import ColorbarBase
 from pyiem.plot import MapPlot, get_cmap
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconnstr
 from geopandas import read_postgis
 import pandas as pd
 import numpy as np
@@ -14,7 +14,7 @@ from tqdm import tqdm
 CST = ZoneInfo("America/Chicago")
 
 
-def place_legend(mp, x, y, xsize):
+def place_legend(mp, x, y, xsize, ymax):
     """A cartoon helper."""
     mp.ax.plot([x, x + xsize], [y, y], color="white", lw=2, zorder=100)
     mp.ax.plot([x, x], [y, y + xsize], color="white", lw=2, zorder=100)
@@ -24,7 +24,7 @@ def place_legend(mp, x, y, xsize):
     mp.ax.text(
         x - xsize * 0.15,
         y,
-        "+/- 0.1 inHg",
+        f"+/- {ymax:.02f} inHg",
         color="white",
         ha="right",
         fontsize=9,
@@ -34,15 +34,16 @@ def place_legend(mp, x, y, xsize):
 
 def main():
     """Go Main Go."""
-    pgconn = get_dbconn("asos1min")
+    pgconn = get_dbconnstr("asos1min")
     frame = 0
 
     cmap = get_cmap("RdBu")
-    norm = mpcolors.BoundaryNorm(np.arange(-0.1, 0.11, 0.02), 256)
     minutes = 15
+    ymax = 0.02
+    norm = mpcolors.BoundaryNorm(np.arange(0 - ymax, ymax + 0.001, 0.004), 256)
     progress = tqdm(
         pd.date_range(
-            "2022-01-20 15:30", "2022-01-20 21:30", freq="60S"
+            "2022-01-22 4:00", "2022-01-22 10:00", freq="60S"
         ).tz_localize(timezone.utc)
     )
     for dt in progress:
@@ -77,7 +78,7 @@ def main():
         yn, yx = mp.panels[0].ax.get_ylim()
         psz = (xmax - xmin) * 0.02
         place_legend(
-            mp, xmin + (xmax - xmin) * 0.05, yn + (yx - yn) * 0.05, psz
+            mp, xmin + (xmax - xmin) * 0.05, yn + (yx - yn) * 0.05, psz, ymax
         )
         df = df.to_crs(mp.panels[0].crs)
         for _station, gdf in df.groupby("station"):
