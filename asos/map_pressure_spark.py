@@ -2,14 +2,14 @@
 from datetime import timedelta, timezone
 from zoneinfo import ZoneInfo
 
+import numpy as np
+from tqdm import tqdm
 import matplotlib.colors as mpcolors
 from matplotlib.colorbar import ColorbarBase
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import get_dbconnstr
 from geopandas import read_postgis
 import pandas as pd
-import numpy as np
-from tqdm import tqdm
 
 CST = ZoneInfo("America/Chicago")
 
@@ -39,11 +39,11 @@ def main():
 
     cmap = get_cmap("RdBu")
     minutes = 15
-    ymax = 0.02
-    norm = mpcolors.BoundaryNorm(np.arange(0 - ymax, ymax + 0.001, 0.004), 256)
+    ymax = 0.10
+    norm = mpcolors.BoundaryNorm(np.arange(0 - ymax, ymax + 0.001, 0.02), 256)
     progress = tqdm(
         pd.date_range(
-            "2022-01-22 4:00", "2022-01-22 10:00", freq="60S"
+            "2022-01-17 15:00", "2022-01-17 22:00", freq="60S"
         ).tz_localize(timezone.utc)
     )
     for dt in progress:
@@ -71,8 +71,14 @@ def main():
             sector="conus",
             continentalcolor="k",
             statebordercolor="white",
-            title=f"{minutes} Minute Pressure Altimeter Sparkline ending at {dt:%b %d %Y %H%M} UTC",
-            subtitle=f"Data via NCEI/NWS One Minute ASOS, colored by {minutes} minute change, {localdt} US Central",
+            title=(
+                f"{minutes} Minute Pressure Altimeter Sparkline ending "
+                f"at {dt:%b %d %Y %H%M} UTC"
+            ),
+            subtitle=(
+                f"Data via NCEI/NWS One Minute ASOS, colored by {minutes} "
+                f"minute change, {localdt} US Central"
+            ),
         )
         xmin, xmax = mp.panels[0].ax.get_xlim()
         yn, yx = mp.panels[0].ax.get_ylim()
