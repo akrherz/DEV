@@ -1,5 +1,4 @@
 """Do a comparison with what's on SRH"""
-from __future__ import print_function
 import datetime
 
 import pandas as pd

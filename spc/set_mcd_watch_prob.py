@@ -19,7 +19,7 @@ def main(argv):
         try:
             prod = mcd.parser(noaaport_text(row[1]))
         except Exception:
-            print("%s fail" % (row[2],))
+            print(f"{row[2]} fail")
             continue
         val = prod.find_watch_probability()
         cursor2.execute(

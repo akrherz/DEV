@@ -50,12 +50,8 @@ def main():
     ax.set_xticklabels(cats)
     ax.grid(True)
     ax.set_title(
-        (
-            "Storm Prediction Center :: "
-            "Mesoscale Discussion\nWatch Confidence "
-            "(%.0f total, 1 May 2012 - 27 Mar 2017)"
-        )
-        % (total,)
+        "Storm Prediction Center :: Mesoscale Discussion\n"
+        f"Watch Confidence ({total:.0f} total, 1 May 2012 - 27 Mar 2017)"
     )
     ax.set_ylabel("Frequency (Product Count)")
     # ax.set_xlabel("Value mentioned in text")

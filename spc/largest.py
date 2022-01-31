@@ -1,12 +1,11 @@
 """Print out the largest outlooks"""
 
-from pyiem.util import get_dbconn
-from pandas.io.sql import read_sql
+from pyiem.util import get_dbconnstr
+from pandas import read_sql
 
 
 def main():
     """Go Please"""
-    pgconn = get_dbconn("postgis")
     df = read_sql(
         """WITH data as (
         SELECT category, threshold,
@@ -20,7 +19,7 @@ def main():
     st_area(st_transform(geom, 5070)) / 1000000. * 0.386102 as area,
     valid from data where rank = 1 ORDER by category, threshold
     """,
-        pgconn,
+        get_dbconnstr("postgis"),
         index_col=None,
     )
     for _, row in df.iterrows():

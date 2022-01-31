@@ -74,26 +74,7 @@ def main():
         latlon=True,
     )
 
-    # xs, ys = m.map(-93.72, 41.72)
-    # m.ax.scatter(xs, ys, marker='o', zorder=20, s=50, color='k')
-
-    # xs, ys = m.map(lons, lats)
-    # m.ax.scatter(xs, ys, marker='+', zorder=20, s=100, color='k')
-
-    # m.drawcounties()
     m.postprocess(filename="test.png")
-
-    """
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.imshow(numpy.rot90(Z), cmap=plt.cm.gist_earth_r,
-            extent=[reference.IA_WEST,reference.IA_EAST, reference.IA_SOUTH,
-                    reference.IA_NORTH])
-    ax.plot(lons, lats, 'k.', markersize=2)
-    ax.set_title("2013 Des Moines NEXRAD MESO Kernel Density Estimate")
-    fig.savefig('test.png')
-    """
 
 
 if __name__ == "__main__":

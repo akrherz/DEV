@@ -43,7 +43,7 @@ def main():
     ax.set_yticks(range(1998, 2019, 2))
     ax.grid(True, zorder=3)
     ax.set_title(
-        "1997-2018 May\nStorm Prediction Center Daily Tornado Watch Count"
+        "1997-2018 May\n" "Storm Prediction Center Daily Tornado Watch Count"
     )
     ax.set_xlabel("CDT Calendar Day of May")
     plt.gcf().text(0.01, 0.01, "@akrherz, generated 22 May 2018")

@@ -1,10 +1,10 @@
 """Scrape the SPC website and verify we have all that data!"""
 
 # Third party
+import requests
+import pandas as pd
 from pyiem.util import logger, utc, noaaport_text
 from pyiem.nws.product import TextProduct
-import pandas as pd
-import requests
 
 LOG = logger()
 
@@ -34,9 +34,9 @@ def do(date):
         return
     localfn = f"prods/{date.strftime('%Y%m%d')}.txt"
     LOG.info("Writing %s", localfn)
-    with open(localfn, "w") as fh:
+    with open(localfn, "w", encoding="utf-8") as fh:
         fh.write(noaaport_text(text))
-    with open("cmds_to_run", "a") as fh:
+    with open("cmds_to_run", "a", encoding="utf-8") as fh:
         fh.write(
             (
                 f"cat {localfn} | python parsers/afos_dump.py -x -l "

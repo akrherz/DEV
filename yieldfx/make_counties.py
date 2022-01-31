@@ -8,7 +8,7 @@ def main():
     """Go Main Go."""
     pgconn = get_dbconn("postgis")
     cursor = pgconn.cursor()
-    with open("counties.csv", "w") as fp:
+    with open("counties.csv", "w", encoding="utf-8") as fp:
         fp.write("State,County,long,lat\n")
         for lon in np.arange(-104, -80, 0.125):
             for lat in np.arange(36, 50, 0.125):

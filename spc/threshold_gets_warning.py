@@ -63,6 +63,7 @@ FONT.set_weight("bold")
 
 
 def gett(data):
+    """Get"""
     labels = []
     vals = []
     for line in data.split("\n"):
@@ -77,8 +78,8 @@ def gett(data):
 def main():
     """Go"""
     labels, vals = gett(DATA)
-    labels16, vals16 = gett(DATA16)
-    labels20, vals20 = gett(DATA20)
+    _labels16, vals16 = gett(DATA16)
+    _labels20, vals20 = gett(DATA20)
     plt.style.use("ggplot")
     ax = plt.axes([0.15, 0.11, 0.8, 0.76])
     plt.gcf().set_size_inches(8, 6)

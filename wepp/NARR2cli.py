@@ -1,12 +1,15 @@
-# Generate a WEPP format cli file from NARR analysis
-# Daryl Herzmann 1 Oct 2008
+"""Generate a WEPP format cli file from NARR analysis
+Daryl Herzmann 1 Oct 2008
+"""
+import datetime
+import math
+import sys
 
-import mx.DateTime, math, sys
-from Scientific.IO import NetCDF
+from pyiem.util import ncopen
 
-sts = mx.DateTime.DateTime(1997, 1, 1)
-ets = mx.DateTime.DateTime(2007, 1, 1)
-interval = mx.DateTime.RelativeDateTime(days=1)
+sts = datetime.datetime(1997, 1, 1)
+ets = datetime.datetime(2007, 1, 1)
+interval = datetime.timedelta(days=1)
 
 
 def k2f(thisk):
@@ -19,7 +22,7 @@ def k2c(thisk):
 
 def figureXY(lon, lat):
     """Figure out the x,y values of our point of interest :)"""
-    nc = NetCDF.NetCDFFile("/mnt/nrel/cjames/NARR/air.2m.2006.nc")
+    nc = ncopen("/mnt/nrel/cjames/NARR/air.2m.2006.nc")
     xsz = nc.dimensions["x"]
     ysz = nc.dimensions["y"]
     lats = nc.variables["lat"]
@@ -47,31 +50,31 @@ while now < ets:
     # Load up the netcdf variables we need to do business
     # air:add_offset = 275.5f ;
     # air:scale_factor = 0.003799786f ;
-    tmpk = NetCDF.NetCDFFile(
+    tmpk = ncopen(
         "/mnt/nrel/cjames/NARR/air.2m.%s.nc" % (now.year,)
     ).variables["air"][:, y, x]
 
     # dpt:add_offset = 492.66f ;
     # dpt:scale_factor = 0.01f ;
-    dwpk = NetCDF.NetCDFFile(
+    dwpk = ncopen(
         "/mnt/nrel/cjames/NARR/dpt.2m.%s.nc" % (now.year,)
     ).variables["dpt"][:, y, x]
 
     #  Watts/per/meter sq
     #  dswrf:add_offset = 3041.6f ;
     #  dswrf:scale_factor = 0.1f ;
-    solar = NetCDF.NetCDFFile(
+    solar = ncopen(
         "/mnt/nrel/cjames/NARR/dswrf.%s.nc" % (now.year,)
     ).variables["dswrf"][:, y, x]
 
     #  apcp:add_offset = 50.f ;
     #  apcp:scale_factor = 0.001526019f ;
-    precip = NetCDF.NetCDFFile(
+    precip = ncopen(
         "/mnt/nrel/cjames/NARR/apcp.%s.nc" % (now.year,)
     ).variables["apcp"][:, y, x]
 
     # Loop over each day this year
-    nextyear = now + mx.DateTime.RelativeDateTime(years=1)
+    nextyear = now + datetime.timedelta(years=1)
     sts = now
     while now < nextyear:
         offset = int((now - sts).days)

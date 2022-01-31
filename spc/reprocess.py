@@ -4,7 +4,6 @@ import subprocess
 # third party
 from tqdm import tqdm
 import requests
-from psycopg2.extras import RealDictCursor
 from pyiem.util import get_dbconn
 
 
@@ -12,8 +11,6 @@ def main():
     """Go Main Go."""
     postgis_pgconn = get_dbconn("postgis")
     pcursor = postgis_pgconn.cursor()
-    # pgconn = get_dbconn("afos")
-    # cursor = pgconn.cursor(cursor_factory=RealDictCursor)
     pcursor.execute(
         "select product_id, st_area(geom) as area, updated from spc_outlooks "
         "where updated < '2021-07-07' and geom is not null and day = 3 and "

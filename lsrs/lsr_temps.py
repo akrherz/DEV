@@ -35,8 +35,8 @@ def main():
         and (network ~* 'AWOS' or network ~* 'ASOS')
         and ST_X(geom) BETWEEN %s and %s and
         ST_Y(geom) BETWEEN %s and %s ORDER by dist ASC LIMIT 5
-        """
-            % (lon, lat, lon - 0.5, lon + 0.5, lat - 0.5, lat + 0.5)
+        """,
+            (lon, lat, lon - 0.5, lon + 0.5, lat - 0.5, lat + 0.5),
         )
         stids = []
         for row2 in icursor:
@@ -50,14 +50,14 @@ def main():
             icursor.execute(
                 """
                 SELECT tmpf from current_log c JOIn stations s on
-                (s.iemid = c.iemid) WHERE s.id = '%s' and
-                c.valid BETWEEN '%s' and '%s'
-            """
-                % (
+                (s.iemid = c.iemid) WHERE s.id = %s and
+                c.valid BETWEEN %s and %s
+            """,
+                (
                     stid,
                     row[3] - datetime.timedelta(minutes=15),
                     row[3] + datetime.timedelta(minutes=15),
-                )
+                ),
             )
             row2 = icursor.fetchone()
             if row2 is None:

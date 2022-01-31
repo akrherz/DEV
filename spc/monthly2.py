@@ -432,12 +432,12 @@ def main():
         0.5,
         0.95,
         (
-            "2001-2016 Storm Prediction Center Day1 Outlook Text, Avg: %.1f\n"
+            "2001-2016 Storm Prediction Center Day1 Outlook Text, "
+            f"Avg: {overall:.1f}\n"
             "certain:  'WILL', 'LIKELY', 'UNLIKELY', 'CERTAINLY', "
             "'UNDOUBTEDLY'\n"
             "uncertain: 'MAY', 'PERHAPS', 'UNCERTAIN', 'COULD', 'MAYBE'"
-        )
-        % (overall,),
+        ),
         ha="center",
         va="center",
     )

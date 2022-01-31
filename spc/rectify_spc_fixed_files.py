@@ -15,7 +15,8 @@ def process(cursor, fn):
     """Process this filename."""
     pil = fn.split("/")[1][4:10]
     # Add some filler at the top, which should get ignored?
-    newtext = open(fn).read()
+    with open(fn, encoding="utf-8") as fh:
+        newtext = fh.read()
     data = "000 \nSAUS22 KWNS 010000\n" + newtext
     prod = TextProduct(data)
     LOG.info("%s, %s, %s", fn, pil, prod.valid)
@@ -32,7 +33,7 @@ def process(cursor, fn):
     assert len(needed[1]) == 18
     newtext = "\n".join(needed) + newtext
     tmpfn = f"/tmp/{prod.get_product_id()}.txt"
-    with open(tmpfn, "w") as fh:
+    with open(tmpfn, "w", encoding="utf-8") as fh:
         fh.write(newtext)
     cmd = f"python ~/projects/pyWWA/util/make_text_noaaportish.py {tmpfn}"
     subprocess.call(cmd, shell=True)

@@ -1,8 +1,8 @@
 """LSR Magnitude is empty for ice-storm."""
 
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconnstr, get_dbconn
 from pyiem.nws.lsr import _icestorm_remark
-from pandas.io.sql import read_sql
+from pandas import read_sql
 
 
 def main():
@@ -12,7 +12,7 @@ def main():
     df = read_sql(
         "SELECT remark, ctid, tableoid::regclass as tablename from lsrs "
         "where magnitude is null and typetext = 'ICE STORM' ",
-        pgconn,
+        get_dbconnstr("postgis"),
     )
     df["val"] = 0
     for idx, row in df.iterrows():

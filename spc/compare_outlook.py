@@ -6,7 +6,7 @@ import requests
 import pandas as pd
 import geopandas as gpd
 import pytz
-from pyiem.util import get_dbconn, logger, utc
+from pyiem.util import get_dbconnstr, logger, utc
 
 LOG = logger()
 BASEURL = "https://www.spc.noaa.gov/products/outlook/archive"
@@ -68,11 +68,11 @@ def run(valid, cycle, secondtrip):
         f"and date(issue at time zone 'UTC') = '{dbvalid:%Y-%m-%d}' and "
         "day = %s and cycle = %s and "
         "category = 'CATEGORICAL'",
-        get_dbconn("postgis"),
+        get_dbconnstr("postgis"),
         params=(DAY, cycle),
         geom_col="geom",
     )
-    for idx, row in spc.iterrows():
+    for _idx, row in spc.iterrows():
         if row["LABEL"] == "":
             continue
         iemrow = iem[iem["threshold"] == row["LABEL"]]

@@ -1,10 +1,7 @@
-"""See if we have metadata in a local CSV file
-
-NOTE: I had to manually edit the .csv file to remove the first row
-"""
+"""See if we have metadata in a local CSV file."""
 import pandas as pd
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconn, get_dbconnstr
 
 CSVFN = "/home/akrherz/Downloads/nwsli_database.csv"
 
@@ -62,10 +59,9 @@ def dowork(df, nwsli):
 
 def main():
     """Go Main Go!"""
-    pgconn = get_dbconn("hads", user="mesonet")
     udf = read_sql(
         "SELECT distinct nwsli, 1 as col from unknown ORDER by nwsli",
-        pgconn,
+        get_dbconnstr("hads"),
         index_col="nwsli",
     )
     print("Found %s unknown entries" % (len(udf.index),))
