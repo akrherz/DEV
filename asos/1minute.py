@@ -4,84 +4,92 @@ TODO: roll this visualization into autoplot 211
 """
 import datetime
 
-import numpy as np
+import pytz
+from matplotlib.patches import Rectangle
+import matplotlib.dates as mdates
 from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
-from pyiem.datatypes import speed, pressure
+from pyiem.util import get_dbconnstr, utc
 import pandas as pd
-from pandas.io.sql import read_sql
+
+
+def shade(ax):
+    """Draw the axspans for the passage times."""
+    ebbase = utc(2022, 1, 15, 14, 15)
+    wbbase = utc(2022, 1, 16, 7, 0)
+    width = datetime.timedelta(minutes=15)
+    period = 35.0 * 60.0
+    for passage in range(5):
+        ax.axvspan(
+            ebbase + datetime.timedelta(minutes=passage * period) - width,
+            ebbase + datetime.timedelta(minutes=passage * period) + width,
+            color="pink",
+        )
+        ax.axvspan(
+            wbbase + datetime.timedelta(minutes=passage * period) - width,
+            wbbase + datetime.timedelta(minutes=passage * period) + width,
+            color="lightblue",
+        )
 
 
 def main():
     """Go Main"""
-    pgconn = get_dbconn("asos")
-    df = read_sql(
+    df = pd.read_sql(
         """
-    SELECT valid - '1 hour'::interval as valid,
-    drct, sknt, gust_sknt, pres1, tmpf, dwpf
-    from t2018_1minute
-    where station = %s and valid >= '2018-06-14 08:30' and
-    valid <= '2018-06-14 10:15' ORDER by valid ASC
+    SELECT valid, pres1 from t202201_1minute
+    where station = %s and valid >= '2022-01-15 0:00' and
+    valid <= '2022-01-21 23:59' ORDER by valid ASC
     """,
-        pgconn,
-        params=("PHP",),
+        get_dbconnstr("asos1min"),
+        params=("AMW",),
         index_col="valid",
     )
-    xticks = []
-    xticklabels = []
-    for valid in df.index.values:
-        if pd.to_datetime(valid).minute % 15 == 0:
-            xticks.append(valid)
-            ts = pd.to_datetime(valid) - datetime.timedelta(hours=5)
-            xticklabels.append(ts.strftime("%-H:%M\n%p"))
+    # Fill out the dataframe to have obs every minutes
+    df = df.resample("1min").interpolate()
 
-    fig = plt.figure(figsize=(8, 9))
-    ax = fig.add_axes([0.1, 0.55, 0.75, 0.35])
-    ax.plot(df.index.values, df["tmpf"], label="Air Temp")
-    ax.plot(df.index.values, df["dwpf"], label="Dew Point")
-    ax.legend()
+    CST = pytz.timezone("America/Chicago")
+    xlocator = mdates.HourLocator(range(0, 24, 12), tz=CST)
+    xformater = mdates.DateFormatter("%I %p\n%b%-d", tz=CST)
+    x0 = 0.09
+    xwidth = 0.88
+
+    fig = plt.figure(figsize=(10, 6))
+    ax = fig.add_axes([x0, 0.51, xwidth, 0.35])
+    ax.plot(df.index.values, df["pres1"], color="k")
+    ax.xaxis.set_major_locator(xlocator)
+    ax.xaxis.set_major_formatter(xformater)
     ax.grid(True)
-    ax.set_ylabel(r"Temperature $^\circ$F")
-    ax.set_xticks(xticks)
-    ax.set_xticklabels(xticklabels)
-    ax.set_title(
-        (
-            "Philip, SD (KPHP) ASOS 1 Minute Interval Data for 14 Jun 2018\n"
-            "Heat Burst Event, data missing in NCEI files 8:02 to 8:10 AM"
-        )
+    ax.set_ylabel("Pressure Altimeter (in)")
+    fig.text(
+        0.5,
+        0.99,
+        "15-21 January 2022 - Pressure Altimeter Timeseries for Ames\n"
+        "Data Source: NCEI/NWS One Minute ASOS\n"
+        "Estimated wave passage with 35 hour return interval",
+        ha="center",
+        va="top",
+        fontsize=14,
     )
+    ax.legend(
+        [
+            Rectangle((0, 0), 1, 1, fc="pink"),
+            Rectangle((0, 0), 1, 1, fc="lightblue"),
+        ],
+        ["Eastbound", "Westbound"],
+        loc=[-0.07, 1.01],
+        ncol=1,
+    )
+    ax.set_xlim(df.index.values[0], df.index.values[-1])
+    shade(ax)
 
-    ax = fig.add_axes([0.1, 0.08, 0.75, 0.35])
-
-    ax.bar(
-        df.index.values,
-        speed(df["gust_sknt"], "KT").value("MPH"),
-        width=1 / 1440.0,
-        color="red",
-    )
-    ax.bar(
-        df.index.values,
-        speed(df["sknt"], "KT").value("MPH"),
-        width=1 / 1440.0,
-        color="tan",
-    )
-    ax.set_ylabel("Wind Speed (tan) & Gust (red) [mph]")
-    ax.grid(True, zorder=5)
-    ax.set_ylim(0, 60)
-
-    ax2 = ax.twinx()
-    ax2.plot(
-        df.index.values,
-        pressure(df["pres1"], "IN").value("MB"),
-        color="g",
-        lw=2,
-    )
-    ax2.set_ylabel("Air Pressure [hPa]", color="green")
-    ax2.set_xticks(xticks)
-    ax2.set_xticklabels(xticklabels)
-    ax.set_xlabel("14 June 2018 MDT")
-    ax2.set_ylim(923, 926)
-    ax2.set_yticks(np.arange(923, 926.1, 0.5))
+    gdf = df - df.rolling(15, center=True).mean()
+    ax = fig.add_axes([x0, 0.08, xwidth, 0.35])
+    ax.plot(gdf.index.values, gdf["pres1"], color="k")
+    ax.xaxis.set_major_locator(xlocator)
+    ax.xaxis.set_major_formatter(xformater)
+    ax.grid(True)
+    ax.set_xlim(df.index.values[0], df.index.values[-1])
+    ax.set_ylabel("Alimeter - 15min Avg (in)")
+    shade(ax)
 
     fig.savefig("test.png")
 
