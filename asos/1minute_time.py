@@ -1,17 +1,15 @@
 """Time close to the high."""
 import calendar
 
-import pandas as pd
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
-from pyiem.plot.use_agg import plt
 import seaborn as sns
+import pandas as pd
+from pyiem.util import get_dbconnstr
+from pyiem.plot import figure_axes
 
 
 def main():
     """Go Main Go."""
-    pgconn = get_dbconn("asos")
-    df = read_sql(
+    df = pd.read_sql(
         """
         with highs as (
             SELECT date(valid) as date,
@@ -23,35 +21,35 @@ def main():
         obs as (
             SELECT valid from alldata_1minute o, highs h WHERE
             o.station = 'DSM' and date(o.valid) = h.date and
-            o.tmpf >= ((h.high + h.low) / 2.) and valid < '2020-01-01'
+            o.tmpf >= h.high - 3 and valid < '2022-01-01'
         )
 
         SELECT date(valid) as date, count(*) from obs GROUP by date
     """,
-        pgconn,
+        get_dbconnstr("asos1min"),
         index_col=None,
     )
     df["date"] = pd.to_datetime(df["date"])
     df["doy"] = pd.to_numeric(df["date"].dt.strftime("%j"))
     df["month"] = df["date"].dt.month
 
-    (fig, ax) = plt.subplots(1, 1)
-    sns.violinplot(x="month", y="count", data=df, ax=ax, inner="box")
+    title = (
+        "Time with Temperature within Three Degrees Fahrenheit of Daily High\n"
+        "based on 1 minute data for Des Moines 2000-2021"
+    )
+    (fig, ax) = figure_axes(apctx={"_r": "43"}, title=title)
+    sns.violinplot(x="month", y="count", data=df, ax=ax, inner="box", width=1)
     ax.set_ylim(0, 24 * 60 + 1)
     ax.set_yticks(range(0, 24 * 60 + 1, 120))
-    ax.set_yticklabels(range(0, 24, 2))
+    ax.set_yticklabels(range(0, 25, 2))
     ax.grid(True)
     ax.set_ylabel("Hours")
     ax.set_xlabel("Month of Year")
     ax.axhline(12 * 60, lw=1.5, color="k")
-    ax.set_title(
-        "Time with Temperature above Daily Average (high+low)/2\n"
-        "based on 1 minute data for Des Moines 2000-2010"
-    )
     ax.set_xticks(range(0, 12))
     ax.set_xticklabels(calendar.month_abbr[1:])
     # ax.scatter(df['doy'].values, df['count'].values)
-    fig.savefig("test.png")
+    fig.savefig("220207.png")
 
 
 if __name__ == "__main__":
