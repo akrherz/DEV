@@ -4,8 +4,9 @@ https://wvs.earthdata.nasa.gov/
 """
 
 from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
-from pandas.io.sql import read_sql
+from pyiem.reference import Z_CLIP
+from pyiem.util import get_dbconnstr
+from pandas import read_sql
 import matplotlib.image as mpimg
 from pyiem.plot import MapPlot
 from shapely.wkb import loads
@@ -17,37 +18,37 @@ import cartopy.crs as ccrs
 def main():
     """Go Main Go."""
     mp = MapPlot(
-        title="11 August 2020 :: Aqua MODIS True Color",
-        subtitle="10 August NWS Local Storm Report Wind Gusts [MPH] overlain",
+        title="7 February 2022 :: NOAA20 VIIRS True Color",
+        subtitle="with Iowa aiport high temperatures [F] for date overlain",
         sector="custom",
-        west=-96.40,
-        east=-89.132,
-        south=39.775,
+        apctx={"_r": "43"},
+        west=-97.0,
+        east=-90.132,
+        south=38.775,
         north=44.15,
-        projection=ccrs.PlateCarree(),
     )
 
-    img = plt.imread("snapshot-2020-08-11.jpg")
-    mp.ax.imshow(
+    img = plt.imread("/tmp/snapshot-2022-02-07.png")
+    mp.panels[0].ax.imshow(
         img,
-        extent=(-99.1495, -86.049, 36.7965, 46.5584),
+        extent=(-105.0401, -84.8848, 35.6035623, 49.2988283),
         origin="upper",
-        transform=ccrs.PlateCarree(),
-        zorder=1,
+        zorder=Z_CLIP,
     )
     mp.drawcounties("tan")
     df = read_sql(
-        "SELECT distinct st_x(geom) as lon, st_y(geom) as lat, magnitude from "
-        "lsrs_2020 where valid > '2020-08-10' and valid < '2020-08-11' and "
-        "type = 'G' ORDER by magnitude DESC",
-        get_dbconn("postgis"),
+        "SELECT st_x(geom) as lon, st_y(geom) as lat, max_tmpf from "
+        "summary_2022 s JOIN stations t on (s.iemid = t.iemid) "
+        "where day = '2022-02-07' and network in ('IA_ASOS', 'AWOS') "
+        "and max_tmpf is not null ORDER by max_tmpf ASC",
+        get_dbconnstr("iem"),
         index_col=None,
     )
     print(df)
     mp.plot_values(
         df["lon"].values,
         df["lat"].values,
-        df["magnitude"].values,
+        df["max_tmpf"].values,
         labeltextsize=8,
         fmt="%.0f",
         labelbuffer=1,
@@ -55,7 +56,7 @@ def main():
         outlinecolor="black",
     )
 
-    mp.postprocess(filename="test.png")
+    mp.fig.savefig("220208.png")
 
     """
     cursor.execute('''select ST_asEWKB(ST_Transform(simple_geom,4326)) from roads_base
