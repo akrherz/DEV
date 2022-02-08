@@ -53,13 +53,20 @@ def run(date):
         else:
             total += val
 
+    offset = iemre.daily_offset(date)
+    if lats is None:
+        LOG.warning("No data found for %s, using zeros", date)
+        with ncopen(iemre.get_daily_mrms_ncname(date.year), "a") as nc:
+            ncprecip = nc.variables["p01d"]
+            ncprecip[offset, :, :] = 0
+        return
+
     # CAREFUL HERE!  The MRMS grid is North to South
     # set top (smallest y)
     y0 = int((lats[0, 0] - iemre.NORTH) * 100.0)
     y1 = int((lats[0, 0] - iemre.SOUTH) * 100.0)
     x0 = int((iemre.WEST - WEST) * 100.0)
     x1 = int((iemre.EAST - WEST) * 100.0)
-    offset = iemre.daily_offset(date)
     with ncopen(iemre.get_daily_mrms_ncname(date.year), "a") as nc:
         ncprecip = nc.variables["p01d"]
         ncprecip[offset, :, :] = np.flipud(total[y0:y1, x0:x1])
