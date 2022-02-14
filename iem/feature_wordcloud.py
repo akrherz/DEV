@@ -9,9 +9,9 @@ def main():
     pgconn = get_dbconn("mesosite")
     cursor = pgconn.cursor()
     data = ""
-    cursor.execute("""SELECT story from feature""")
+    cursor.execute("SELECT story from feature")
     for row in cursor:
-        data += " %s " % (row[0],)
+        data += f" {row[0]} "
     wordcloud = WordCloud().generate(data)
     plt.imshow(wordcloud, interpolation="bilinear")
     plt.axis("off")

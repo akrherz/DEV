@@ -11,11 +11,11 @@ def check(station, network):
         "SELECT valid from alldata where station = %s LIMIT 5", (station,)
     )
     if cursor.rowcount == 5:
-        print("station: %s network: %s has data?" % (station, network))
+        print(f"station: {station} network: {network} has data?")
         return
-    print("%s %s %s" % (network, station, cursor.rowcount))
-    with open("jobs.sh", "a") as fh:
-        fh.write("python delete_station.py %s %s\n" % (network, station))
+    print(f"{network} {station} {cursor.rowcount}")
+    with open("jobs.sh", "a", encoding="utf-8") as fh:
+        fh.write(f"python delete_station.py {network} {station}\n")
 
 
 def main():

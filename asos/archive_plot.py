@@ -1,24 +1,19 @@
 """Plot of archived data."""
 import datetime
 
-import pytz
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 import pandas as pd
-from pandas.io.sql import read_sql
-from pyiem.network import Table as NetworkTable
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconnstr
 from pyiem.datatypes import speed, pressure
 
 
 def main():
     """Go Main"""
-    pgconn = get_dbconn("asos")
-    df = read_sql(
+    df = pd.read_sql(
         "SELECT valid, drct, sknt, gust, alti, tmpf, dwpf from t2019 "
         "where station = %s and valid >= '2019-06-28 08:30' and "
         "valid <= '2019-06-28 13:15' ORDER by valid ASC",
-        pgconn,
+        get_dbconnstr("asos"),
         params=("MXO",),
         index_col="valid",
     )
@@ -43,9 +38,11 @@ def main():
         (
             "Monticello, IA (KMXO) AWOS Observations for 28 Jun 2019\n"
             "Heat Burst Event, "
-            r"Max Temp: %.1f$^\circ$F Min Dewpoint: %.1f$^\circ$F"
+            f"Max Temp: {df['tmpf'].max():.1f}"
+            r"$^\circ$F Min Dewpoint: "
+            f"{df['tmpf'].min():.1f}"
+            r"$^\circ$F"
         )
-        % (df["tmpf"].max(), df["dwpf"].min())
     )
 
     ax = fig.add_axes([0.1, 0.08, 0.75, 0.35])
