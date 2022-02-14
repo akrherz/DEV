@@ -18,7 +18,7 @@ def main():
     WITH data as (
     SELECT distinct s.iemid
     from summary s JOIN stations t on (t.iemid = s.iemid)
-    WHERE t.network = 'IACOCORAHS' and s.day >= '2019-06-01' and pday > 0)
+    WHERE t.network = 'IACOCORAHS' and s.day >= '2021-02-01' and pday > 0)
 
     SELECT ugc_county, count(*)
     from stations t JOIN data d on (d.iemid = t.iemid)
@@ -53,20 +53,20 @@ def main():
         axisbg="white",
         title=f"Iowa CoCoRaHS Observers Per County ({total} Total)",
         subtitle=(
-            "Sites with at least one report in past year (June 2019-2020)"
+            "Sites with at least one report in past year (Feb 2021-2022)"
         ),
     )
     cmap = plt.get_cmap("YlGnBu")
     mp.fill_ugcs(
         data,
-        [1, 2, 3, 4, 5, 7, 10, 15, 20],
+        bins=[1, 2, 3, 4, 5, 7, 10, 15, 20],
         cmap=cmap,
         spacing="proportional",
         extend="max",
     )
     mp.plot_values(clons, clats, cvals, labelbuffer=0)
     mp.drawcounties()
-    mp.postprocess(filename="200625.png")
+    mp.postprocess(filename="220215.png")
 
 
 if __name__ == "__main__":
