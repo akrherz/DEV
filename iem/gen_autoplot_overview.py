@@ -2,12 +2,12 @@
 from io import StringIO
 
 from bs4 import BeautifulSoup
-from pyiem.util import logger
 from tqdm import tqdm
 import requests
+from pyiem.util import logger
 
 LOG = logger()
-BASEURL = "http://iem.local/plotting/auto"
+BASEURL = "http://mesonet.agron.iastate.edu/plotting/auto"
 STORAGE = "/mesonet/share/pickup/autoplot"
 
 
@@ -50,7 +50,7 @@ def main():
             apid = plot["id"]
             progress.set_description(str(apid))
             # 2. get a thumbnail image result (when possible)
-            uri = f"{BASEURL}/plot/{apid}/dpi:50.png"
+            uri = f"{BASEURL}/plot/{apid}/dpi:50::_r:43.png"
             req = requests.get(uri)
             if req.status_code != 200:
                 LOG.info("got %s status_code from %s", req.status_code, uri)
@@ -62,7 +62,7 @@ def main():
             write_html(html, plot, meta, counter)
             counter += 1
 
-    with open(f"{STORAGE}/overview.html", "w") as fh:
+    with open(f"{STORAGE}/overview.html", "w", encoding="utf-8") as fh:
         fh.write('<div class="row">\n')
         fh.write(html.getvalue())
         fh.write("</div>")
