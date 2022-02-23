@@ -1,23 +1,22 @@
 """map of dates."""
 
 from pyiem.plot import MapPlot
-from pyiem.util import get_dbconn
+from pyiem.util import get_sqlalchemy_conn
 from pandas.io.sql import read_sql
 
 
 def main():
     """Go Main Go."""
-    pgconn = get_dbconn("mesosite")
-
-    df = read_sql(
-        """
-        SELECT id, st_x(geom) as lon, st_y(geom) as lat from stations
-        WHERE network ~* 'ASOS' and archive_begin < '1979-01-01' and
-        archive_end is null ORDER by id ASC
-        """,
-        pgconn,
-        index_col="id",
-    )
+    with get_sqlalchemy_conn("postgis") as conn:
+        df = read_sql(
+            """
+            SELECT id, st_x(geom) as lon, st_y(geom) as lat from stations
+            WHERE network ~* 'ASOS' and archive_begin < '1979-01-01' and
+            archive_end is null ORDER by id ASC
+            """,
+            conn,
+            index_col="id",
+        )
     df["val"] = "x"
 
     m = MapPlot(

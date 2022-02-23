@@ -1,7 +1,7 @@
 """Reporting Smoke."""
 
-from pyiem.util import get_dbconn
 import pytz
+from pyiem.util import get_dbconn
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
