@@ -41,9 +41,10 @@ def main(argv):
     """Go Main Go."""
     network = argv[1]
     station = argv[2]
+    hours = argv[3]
     url = (
         "https://mesonet.agron.iastate.edu/plotting/auto/plot/169/"
-        f"network:{network}::zstation:{station}::hours:1::month:all::"
+        f"network:{network}::zstation:{station}::hours:{hours}::month:all::"
         "dir:cool::_cb:1.csv"
     )
     df = pd.read_csv(url, parse_dates=["valid1", "valid2"])
