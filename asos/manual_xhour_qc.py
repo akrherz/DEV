@@ -12,7 +12,8 @@ def process(engine, conn, row, station):
     """Do what we need to do here."""
     obs = pd.read_sql(
         "SELECT valid, tmpf, dwpf, feel, relh from alldata where "
-        "station = %s and valid >= %s and valid <= %s ORDER by valid ASC",
+        "station = %s and valid >= %s and valid <= %s and tmpf is not null "
+        "ORDER by valid ASC",
         engine,
         params=(
             station,
@@ -21,7 +22,7 @@ def process(engine, conn, row, station):
         ),
         index_col=None,
     )
-    print(obs)
+    print(obs.head(100))
     res = input("List dumped obs or enter for noop: ")
     if res == "":
         return
@@ -45,7 +46,7 @@ def main(argv):
     url = (
         "https://mesonet.agron.iastate.edu/plotting/auto/plot/169/"
         f"network:{network}::zstation:{station}::hours:{hours}::month:all::"
-        "dir:cool::_cb:1.csv"
+        "dir:warm::_cb:1.csv"
     )
     df = pd.read_csv(url, parse_dates=["valid1", "valid2"])
 
