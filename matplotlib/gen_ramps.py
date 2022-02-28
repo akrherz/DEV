@@ -3,11 +3,11 @@ import numpy as np
 from pyiem.plot.use_agg import plt
 
 
-# https://matplotlib.org/examples/color/colormaps_reference.html
+# https://matplotlib.org/stable/tutorials/colors/colormaps.html
 cmaps = [
     (
         "Perceptually Uniform Sequential",
-        ["viridis", "plasma", "inferno", "magma"],
+        ["viridis", "plasma", "inferno", "magma", "cividis"],
     ),
     (
         "Sequential",
@@ -70,6 +70,7 @@ cmaps = [
             "seismic",
         ],
     ),
+    ("Cyclic", ["twilight", "twilight_shifted", "hsv"]),
     (
         "Qualitative",
         [
@@ -101,10 +102,10 @@ cmaps = [
             "CMRmap",
             "cubehelix",
             "brg",
-            "hsv",
             "gist_rainbow",
             "rainbow",
             "jet",
+            "turbo",
             "nipy_spectral",
             "gist_ncar",
         ],
@@ -116,19 +117,14 @@ gradient = np.vstack((gradient, gradient))
 
 def main():
     """Go Main Go."""
-    print("$cmaps = Array(")
-    for cmap_category, cmap_list in cmaps:
-        print('"%s" => Array(' % (cmap_category,))
+    for _cmap_category, cmap_list in cmaps:
         for cmap in cmap_list:
             fig, ax = plt.subplots(1, 1, figsize=(2.5, 0.25))
             ax.set_position([0, 0, 1, 1])
             ax.imshow(gradient, aspect="auto", cmap=plt.get_cmap(cmap))
             ax.set_axis_off()
-            fig.savefig("/mesonet/share/pickup/cmaps/%s.png" % (cmap,))
+            fig.savefig(f"/mesonet/share/pickup/cmaps/{cmap}.png")
             plt.close()
-            print('"%s" => "%s", ' % (cmap, cmap), end="")
-        print("),")
-    print(");")
 
 
 if __name__ == "__main__":
