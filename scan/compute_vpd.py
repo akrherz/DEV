@@ -1,18 +1,15 @@
 """Compute water-yearly VPD"""
 
-from __future__ import print_function
-
 import metpy.calc as mcalc
 from metpy.units import units
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.datatypes import temperature
-from pyiem.util import get_dbconn
+from pyiem.util import get_sqlalchemy_conn
 from pyiem import meteorology
 
 
 def main():
     """Go Main Go"""
-    pgconn = get_dbconn("scan")
     for station in [
         "S2004",
         "S2196",
@@ -23,16 +20,17 @@ def main():
         "S2001",
         "S2047",
     ]:
-        df = read_sql(
-            """
-        select extract(year from valid + '2 months'::interval) as wy,
-        tmpf, dwpf from alldata where station = %s and tmpf is not null
-        and dwpf is not null
-        """,
-            pgconn,
-            params=(station,),
-            index_col=None,
-        )
+        with get_sqlalchemy_conn("scan") as conn:
+            df = pd.read_sql(
+                """
+            select extract(year from valid + '2 months'::interval) as wy,
+            tmpf, dwpf from alldata where station = %s and tmpf is not null
+            and dwpf is not null
+            """,
+                conn,
+                params=(station,),
+                index_col=None,
+            )
         df["mixingratio"] = meteorology.mixing_ratio(
             temperature(df["dwpf"].values, "F")
         ).value("KG/KG")

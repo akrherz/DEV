@@ -1,7 +1,7 @@
 """Old school feature I did on red sky webcam images."""
-import matplotlib.pyplot as plt
 from PIL import Image
 import matplotlib.patheffects as PathEffects
+import matplotlib.pyplot as plt
 
 
 def main():

@@ -1,11 +1,9 @@
 """An old feature."""
 import os
 import datetime
-import shutil
+import urllib2
 
 from PIL import Image
-import colorsys
-import urllib2
 import ephem
 from pyiem.util import get_dbconn
 
