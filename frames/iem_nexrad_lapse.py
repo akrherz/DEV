@@ -1,47 +1,46 @@
 """Pretty things."""
 import datetime
-from backports.zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo
 
 from matplotlib.colorbar import ColorbarBase
 import matplotlib.dates as mdates
 import matplotlib.colors as mpcolors
 import geopandas as gpd
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.plot import MapPlot, get_cmap, geoplot
-from pyiem.util import utc, get_dbconn
+from pyiem.util import utc, get_sqlalchemy_conn
 from pyiem.reference import Z_OVERLAY2, Z_FILL
 
 CST = ZoneInfo("America/Chicago")
-geoplot.MAIN_AX_BOUNDS = [0.05, 0.3, 0.89, 0.6]
+# geoplot.MAIN_AX_BOUNDS = [0.05, 0.3, 0.89, 0.6]
 
 
 def main():
     """Go Main Go."""
-    sts = utc(2021, 12, 15, 18)
-    ets = utc(2021, 12, 16, 5, 56)
+    sts = utc(2022, 3, 5, 17)
+    ets = utc(2022, 3, 6, 4, 0)
     interval = datetime.timedelta(minutes=5)
     i = 0
     now = sts
-    df = read_sql(
-        "SELECT distinct ST_x(geom) as lon, ST_y(geom) as lat, typetext, "
-        "valid at time zone 'UTC' as valid, magnitude from lsrs_2021 where "
-        "valid >= %s and valid < %s and "
-        "((typetext = 'TSTM WND GST' and magnitude >= 50) or "
-        "typetext = 'TORNADO') ORDER by magnitude ASC",
-        get_dbconn("postgis"),
-        params=(sts, ets),
-    )
-    df["valid"] = df["valid"].dt.tz_localize("UTC")
-    print(df["magnitude"].describe())
-    warndf = gpd.read_postgis(
-        "SELECT phenomena, geom, issue at time zone 'UTC' as issue, "
-        "expire at time zone 'UTC' as expire from sbw_2021 where "
-        "status = 'NEW' and expire >= %s and issue <= %s and "
-        "phenomena in ('TO', 'SV')",
-        get_dbconn("postgis"),
-        params=(sts, ets),
-        geom_col="geom",
-    )
+    with get_sqlalchemy_conn("postgis") as conn:
+        df = pd.read_sql(
+            "SELECT distinct ST_x(geom) as lon, ST_y(geom) as lat, typetext, "
+            "valid at time zone 'UTC' as valid, magnitude from lsrs_2022 "
+            "where valid >= %s and valid < %s ORDER by magnitude ASC",
+            conn,
+            params=(sts, ets),
+        )
+        df["valid"] = df["valid"].dt.tz_localize("UTC")
+        print(df["magnitude"].describe())
+        warndf = gpd.read_postgis(
+            "SELECT phenomena, geom, issue at time zone 'UTC' as issue, "
+            "expire at time zone 'UTC' as expire from sbw_2022 where "
+            "status = 'NEW' and expire >= %s and issue <= %s and "
+            "phenomena in ('TO', 'SV')",
+            conn,
+            params=(sts, ets),
+            geom_col="geom",
+        )
     warndf["color"] = "yellow"
     warndf.loc[warndf["phenomena"] == "TO", "color"] = "red"
     warndf["issue"] = warndf["issue"].dt.tz_localize("UTC")
@@ -75,17 +74,17 @@ def main():
     while now < ets:
         mp = MapPlot(
             sector="custom",
-            west=-103.5,
-            east=-87,
-            south=36.0,
-            north=46.0,
-            continentalcolor="k",
+            west=-99.5,
+            east=-90,
+            south=39.5,
+            north=43.5,
+            # dark gray color
+            continentalcolor="#808080",
             statebordercolor="white",
-            title="15 Dec 2021 Serial Derecho",
-            subtitle=(
-                f"{now.astimezone(CST).strftime('%I:%M %p %Z')}, "
-                "NWS NEXRAD, SVR+TORs, T-Storm Wind LSRs"
+            title=(
+                f"5 March 2022 {now.astimezone(CST).strftime('%I:%M %p %Z')}"
             ),
+            subtitle=("NWS NEXRAD, SVR+TORs, Unfiltered Local Storm Reports"),
             twitter=True,
             caption="@akrherz",
         )
@@ -118,7 +117,7 @@ def main():
         )
         """
         mp.overlay_nexrad(now)
-        ax = mp.fig.add_axes([0.1, 0.1, 0.8, 0.15], facecolor="tan")
+        # ax = mp.fig.add_axes([0.1, 0.1, 0.8, 0.15], facecolor="tan")
 
         df2 = df[(df["valid"] <= now) & (df["typetext"] == "TSTM WND GST")]
         if not df2.empty:
@@ -134,13 +133,29 @@ def main():
                 # fmt="%.1f",
                 # color=df2["color"].to_list(),
                 # labeltextsize=8,
-                # labelbuffer=0,
+                labelbuffer=0,
             )
-            ax.bar(
-                df2["valid"].values,
+        df2 = df[(df["valid"] <= now) & (df["typetext"] == "HAIL")]
+        if not df2.empty:
+            mp.plot_values(
+                df2["lon"].values,
+                df2["lat"].values,
                 df2["magnitude"].values,
-                color=df2["color"].to_list(),
-                width=15 / 1440.0,  # 15 minutes
+                color="darkgreen",
+                outlinecolor="lightgreen",
+                labeltextsize=14,
+                labelbuffer=0,
+            )
+        df2 = df[(df["valid"] <= now) & (df["typetext"] == "TORNADO")]
+        if not df2.empty:
+            mp.plot_values(
+                df2["lon"].values,
+                df2["lat"].values,
+                ["T"] * len(df2.index),
+                color="r",
+                outlinecolor="yellow",
+                labeltextsize=14,
+                labelbuffer=0,
             )
         """
         df2 = df[(df["valid"] <= now) & (df["typetext"] == "TORNADO")]
@@ -188,6 +203,18 @@ def main():
                 zorder=Z_OVERLAY2,
                 lw=2,
             )
+        mp.fig.text(
+            0.92,
+            0.3,
+            "Tornado\nReports",
+            color="r",
+        )
+        mp.fig.text(
+            0.92,
+            0.37,
+            "Hail (inch)\nReports",
+            color="darkgreen",
+        )
         cax2 = mp.fig.add_axes(
             [0.91, 0.05, 0.02, 0.2],
             frameon=False,
@@ -206,17 +233,17 @@ def main():
             "Wind Gust [MPH]",
             loc="bottom",
         )
-        ax.axvline(now, color="k", lw=1)
-        ax.set_xlim(sts, ets)
-        ax.xaxis.set_major_formatter(mdates.DateFormatter("%-I %p", tz=CST))
-        ax.xaxis.set_major_locator(mdates.HourLocator(interval=1))
-        ax.set_xlabel("15 Dec 2021 Central Standard Time, 5 minute bar width")
-        ax.set_yticks(range(50, 101, 10))
-        ax.set_ylim(50, 100)
-        ax.set_ylabel("Wind Gust [MPH]")
-        ax.set_title("NWS Thunderstorm Wind Gust Reports [MPH]")
-        ax.grid(True)
-
+        # ax.axvline(now, color="k", lw=1)
+        # ax.set_xlim(sts, ets)
+        # ax.xaxis.set_major_formatter(mdates.DateFormatter("%-I %p", tz=CST))
+        # ax.xaxis.set_major_locator(mdates.HourLocator(interval=1))
+        # ax.set_xlabel("15 Dec 2021 Central Standard Time, 5 minute bar width")
+        # ax.set_yticks(range(50, 101, 10))
+        # ax.set_ylim(50, 100)
+        # ax.set_ylabel("Wind Gust [MPH]")
+        # ax.set_title("NWS Thunderstorm Wind Gust Reports [MPH]")
+        # ax.grid(True)
+        mp.drawcounties("k")
         mp.fig.savefig(f"images/{i:05d}.png")
         mp.close()
         i += 1
