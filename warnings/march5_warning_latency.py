@@ -43,6 +43,7 @@ def main():
             index_col="eventid",
             geom_col="geom",
         )
+    tow["hit"] = False
     tow["utc_issue"] = tow["utc_issue"].dt.tz_localize(timezone.utc)
     tow["utc_expire"] = tow["utc_expire"].dt.tz_localize(timezone.utc)
     track = kmz.geometry[0]
@@ -86,6 +87,13 @@ def main():
         delay_issue = dol["delay_issue"].min()
         ndol = ol[(ol["est_issue"] <= valid)]
         nodelay_issue = ndol["est_issue"].min()
+
+        if not ndol.iloc[0].hit:
+            ii = ndol.index[0]
+            tow.at[ii, "hit"] = True
+            print(
+                ii, valid, tow.at[ii, "est_issue"], tow.at[ii, "delay_issue"]
+            )
 
         pts.at[idx, "delay_lead"] = (
             row.valid - delay_issue
