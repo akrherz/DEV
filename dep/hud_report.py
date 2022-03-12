@@ -1,5 +1,5 @@
 """Dump out a table."""
-from pyiem.util import get_dbconn
+from pyiem.util import get_sqlalchemy_conn
 from pandas.io.sql import read_sql
 
 VALS = [
@@ -25,23 +25,23 @@ VALS = [
 
 def main():
     """Go Main Go."""
-    pgconn = get_dbconn("idep")
-    df = read_sql(
-        """
-        SELECT
-        max('') as name,
-        huc_12,
-        sum(qc_precip) as "Precipitation (mm)",
-        sum(avg_runoff) as "Runoff (mm)",
-        sum(avg_loss) as "Detachment (kg/m^2)",
-        sum(avg_delivery) as "Hillslope Soil Loss (kg/m^2)"
-        from results_by_huc12 WHERE scenario = 0 and
-        valid >= '2020-07-01' and valid < '2020-09-17'
-        GROUP by huc_12
-    """,
-        pgconn,
-        index_col="huc_12",
-    )
+    with get_sqlalchemy_conn("idep") as conn:
+        df = read_sql(
+            """
+            SELECT
+            max('') as name,
+            huc_12,
+            sum(qc_precip) as "Precipitation (mm)",
+            sum(avg_runoff) as "Runoff (mm)",
+            sum(avg_loss) as "Detachment (kg/m^2)",
+            sum(avg_delivery) as "Hillslope Soil Loss (kg/m^2)"
+            from results_by_huc12 WHERE scenario = 0 and
+            valid >= '2022-01-01' and valid < '2022-03-10'
+            GROUP by huc_12
+        """,
+            conn,
+            index_col="huc_12",
+        )
     df["Precipitation (in)"] = df["Precipitation (mm)"] / 25.4
     df["Runoff (in)"] = df["Runoff (mm)"] / 25.4
     df["Detachment (ton/acre)"] = df["Detachment (kg/m^2)"] * 4.463
