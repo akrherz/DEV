@@ -7,6 +7,7 @@ from tqdm import tqdm
 import matplotlib.colors as mpcolors
 from matplotlib.colorbar import ColorbarBase
 from pyiem.plot import MapPlot, get_cmap
+from pyiem.reference import Z_POLITICAL
 from pyiem.util import get_dbconnstr
 from geopandas import read_postgis
 import pandas as pd
@@ -39,11 +40,11 @@ def main():
 
     cmap = get_cmap("RdBu")
     minutes = 15
-    ymax = 0.10
+    ymax = 0.20
     norm = mpcolors.BoundaryNorm(np.arange(0 - ymax, ymax + 0.001, 0.02), 256)
     progress = tqdm(
         pd.date_range(
-            "2022-01-17 15:00", "2022-01-17 22:00", freq="60S"
+            "2022-03-18 15:00", "2022-03-18 20:00", freq="60S"
         ).tz_localize(timezone.utc)
     )
     for dt in progress:
@@ -52,7 +53,7 @@ def main():
             """
             with data as (
                 select station, valid at time zone 'UTC' as valid,
-                pres1 from t202201_1minute where
+                pres1 from t202203_1minute where
                 valid > %s and valid <= %s and pres1 is not null
                 ORDER by station, valid
             )
@@ -68,7 +69,7 @@ def main():
             dt.to_pydatetime().astimezone(CST).strftime("%b %d %Y %-I:%M %p")
         )
         mp = MapPlot(
-            sector="conus",
+            sector="southeast",
             continentalcolor="k",
             statebordercolor="white",
             title=(
@@ -104,10 +105,18 @@ def main():
             mp.panels[0].ax.plot(
                 xpos,
                 ypos,
+                color="k",
+                lw=3,
+                zorder=Z_POLITICAL + 3,
+            )
+            mp.panels[0].ax.plot(
+                xpos,
+                ypos,
                 color=cmap(
                     norm(gdf["pres1"].values[-1] - gdf["pres1"].values[0])
                 ),
                 lw=2,
+                zorder=Z_POLITICAL + 4,
             )
 
         ncb = ColorbarBase(
@@ -121,7 +130,7 @@ def main():
         ncb.set_label(
             "Altimeter Change (inHg)",
         )
-
+        mp.overlay_nexrad(dt, caxpos=[-0.5, -0.5, 0.1, 0.1])
         mp.postprocess(filename=f"frames/{frame:05d}.png")
         mp.close()
         frame += 1
