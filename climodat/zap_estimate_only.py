@@ -7,22 +7,23 @@ for example.  This script will remove realtime status for such sites.
 
 from pandas.io.sql import read_sql
 from pyiem.reference import state_names
-from pyiem.util import get_dbconn
+from pyiem.util import get_sqlalchemy_conn, get_dbconn
 
 
 def do(ccursor, mcursor, state):
     """Do great things."""
-    df = read_sql(
-        "select station, "
-        "sum(case when temp_estimated then 1 else 0 end) as testimated, "
-        "sum(case when precip_estimated then 1 else 0 end) as pestimated, "
-        "count(*) as obs "
-        f"from alldata_{state} where year = 2021 and "
-        "substr(station, 3, 1) not in ('T', 'C') and "
-        "substr(station, 3, 4) != '0000' GROUP by station",
-        get_dbconn("coop"),
-        index_col="station",
-    )
+    with get_sqlalchemy_conn("coop") as conn:
+        df = read_sql(
+            "select station, "
+            "sum(case when temp_estimated then 1 else 0 end) as testimated, "
+            "sum(case when precip_estimated then 1 else 0 end) as pestimated, "
+            "count(*) as obs "
+            f"from alldata_{state} where day > now() - '1 year'::interval and "
+            "substr(station, 3, 1) not in ('T', 'C') and "
+            "substr(station, 3, 4) != '0000' GROUP by station",
+            conn,
+            index_col="station",
+        )
     df2 = df.query("obs == testimated or obs == pestimated")
     for station in df2.index.values:
         # Set online to false in mesosite
@@ -31,10 +32,10 @@ def do(ccursor, mcursor, state):
         )
         # Truncate alldata for this station and year
         ccursor.execute(
-            f"DELETE from alldata_{state} WHERE station = %s and year = 2021",
+            f"DELETE from alldata_{state} WHERE station = %s and year = 2022",
             (station,),
         )
-        print(f"Culling {ccursor.rowcount} rows for 2021 data for {station}")
+        print(f"Culling {ccursor.rowcount} rows for last data for {station}")
 
 
 def main():
