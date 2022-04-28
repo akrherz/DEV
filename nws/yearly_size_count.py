@@ -14,7 +14,7 @@ def get_polygon():
         phenomena, ST_Area(ST_Transform(geom, 2163)) / 1000000. as st_area
         from sbw w  WHERE
         phenomena in ('SV', 'TO') and significance = 'W' and status = 'NEW'
-        and issue < '2021-01-01'
+        and issue < '2022-01-01'
     )
     SELECT year, count(*), sum(st_area) / 7663941. as area
     from events
@@ -30,7 +30,7 @@ def get_county():
         phenomena, u.area2163 as st_area
         from warnings w JOIN ugcs u on (w.gid = u.gid) WHERE
         phenomena in ('SV', 'TO') and significance = 'W'
-        and issue < '2021-01-01'
+        and issue < '2022-01-01'
     )
     SELECT year, count(*), sum(st_area)  / 7663941. as area
     from events
@@ -41,7 +41,7 @@ def get_county():
 def main():
     """Go Main Go"""
     pgconn = get_dbconn("postgis")
-    sql = get_county()
+    sql = get_polygon()
     df = read_sql(sql, pgconn, index_col="year")
     print(df)
 
@@ -59,10 +59,10 @@ def main():
     ax.legend([p1, p3], ["Counts", "Size"], loc=2)
     ax.grid(True)
 
-    ax.set_title("NWS *County* Tornado + Severe Thunderstorm Warnings")
+    ax.set_title("NWS *Polygon* Tornado + Severe Thunderstorm Warnings")
     ax.set_ylim(0, 90000)
     y2.set_ylim(0, 25)
-    ax.set_xlim(1985.5, 2020.5)
+    ax.set_xlim(1985.5, 2021.5)
 
     fig.text(0.01, 0.01, "Generated %s" % (datetime.date.today(),))
     fig.savefig("test.png")
