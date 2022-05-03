@@ -3,7 +3,7 @@
 /ldm/*.log
 **/.ipynb_checkpoints
 **/*.png
-**/*.png
+**/*.jpg
 **/*.mp4
 **/*.csv
 **/*.cpg
