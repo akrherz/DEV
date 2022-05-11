@@ -4,26 +4,29 @@ import sys
 import requests
 import pandas as pd
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
+from pyiem.util import get_sqlalchemy_conn
 
 
 def main(argv):
     """Go Main Go."""
     year = argv[1]
-    obs = read_sql(
-        "SELECT id, st_x(geom) as lon, st_y(geom) as lat, sum(pday) from "
-        "summary_2015 s "
-        "JOIN stations t on (s.iemid = t.iemid) WHERE t.network = 'AWOS' and "
-        "pday > 0 GROUP by id, lon, lat ORDER by id",
-        get_dbconn("iem"),
-        index_col="id",
-    )
+    with get_sqlalchemy_conn("iem") as conn:
+        obs = read_sql(
+            "SELECT id, st_x(geom) as lon, st_y(geom) as lat, sum(pday) from "
+            f"summary_{year} s "
+            "JOIN stations t on (s.iemid = t.iemid) WHERE "
+            "t.network = 'IA_ASOS' "
+            "and pday > 0 and extract(month from day) > 3 "
+            "GROUP by id, lon, lat ORDER by id",
+            conn,
+            index_col="id",
+        )
     obs["prism"] = -1.0
     obs["mrms"] = -1.0
     obs["iemre"] = -1.0
     for sid, row in obs.iterrows():
         r = requests.get(
-            f"https://mesonet.agron.iastate.edu/iemre/multiday/{year}-01-01/"
+            f"https://mesonet.agron.iastate.edu/iemre/multiday/{year}-04-01/"
             f"{year}-12-31/{row['lat']}/{row['lon']}/json"
         )
         data = r.json()

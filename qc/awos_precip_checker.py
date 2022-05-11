@@ -19,7 +19,7 @@ def main(argv):
             text(
                 "SELECT id, st_x(geom) as lon, st_y(geom) as lat, pday from "
                 "summary s JOIN stations t on (s.iemid = t.iemid) "
-                "WHERE t.network = 'AWOS' and "
+                "WHERE t.network = 'IA_ASOS' and "
                 "id in :ids and day = :dt ORDER by id"
             ),
             conn,
