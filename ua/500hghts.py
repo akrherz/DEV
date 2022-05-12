@@ -20,19 +20,17 @@ def run():
         """
  select valid, max(case when p.pressure = 500 then height else 0 end) -
  min(case when p.pressure = 1000 then height else 9999 end) from
- raob_profile p JOIN raob_flights f on 
+ raob_profile p JOIN raob_flights f on
  (p.fid = f.fid) where f.station in ('KOAX', 'KOVN', 'KOMA') and
  p.pressure in (1000,500)
  and extract(hour from valid at time zone 'UTC') in (0,12)
- GROUP by valid ORDER by valid ASC 
+ GROUP by valid ORDER by valid ASC
     """
     )
     for row in pcursor:
         valid = row[0]
         acursor.execute(
-            """SELECT tmpf, p01i, presentwx from t"""
-            + str(valid.year)
-            + """
+            f"""SELECT tmpf, p01i, presentwx from t{valid.year}
             WHERE station = 'OMA' and valid BETWEEN %s and %s
             and presentwx is not null
         """,

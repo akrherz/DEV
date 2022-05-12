@@ -32,14 +32,13 @@ def main():
     c3 = []
     for row in cursor:
         cursor2.execute(
-            """
+            f"""
         select valid, height, smps, drct from
         raob_profile p JOIN raob_flights f on
         (p.fid = f.fid) where f.station in ('KOAX','KOMA','KOVN') and
         p.pressure = 500 and p.height < 7000 and smps >= 0 and
-        valid = '%s 00:00+00'::timestamptz + '1 day'::interval
+        valid = '{row[0]:%Y-%m-%d} 00:00+00'::timestamptz + '1 day'::interval
         """
-            % (row[0].strftime("%Y-%m-%d"),)
         )
         row2 = cursor2.fetchone()
         if row2:

@@ -16,7 +16,7 @@ def main():
             ab = nt.sts[station2]["archive_begin"]
             ae = nt.sts[station2]["archive_end"]
             on = nt.sts[station2]["online"]
-            print("%s %s[%s] %s -> %s" % (station, station2, on, ab, ae))
+            print(f"{station} {station2}[{on}] {ab} -> {ae}")
         print()
 
 
