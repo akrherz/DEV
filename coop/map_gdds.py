@@ -4,11 +4,25 @@ from pyiem.util import get_sqlalchemy_conn
 from pyiem.plot import MapPlot
 from pandas.io.sql import read_sql
 
+# NOTE: this fancy SQL did not save much in time.
 SQL = """
 with freezes as (
     select station, year, min(day) as min_day from alldata WHERE
     substr(station, 3, 1) not in ('C', 'T') and substr(station, 3, 4) != '0000'
-    and year >= 1992 and year < 2022 and month > 7 and low <= 28
+    and year >= 1992 and year < 2022 and month > 7 and low <= 28 and (
+    (station > 'ND0000' and station < 'ND9999') or
+    (station > 'SD0000' and station < 'SD9999') or
+    (station > 'NE0000' and station < 'NE9999') or
+    (station > 'KS0000' and station < 'KS9999') or
+    (station > 'MO0000' and station < 'MO9999') or
+    (station > 'IA0000' and station < 'IA9999') or
+    (station > 'MN0000' and station < 'MN9999') or
+    (station > 'WI0000' and station < 'WI9999') or
+    (station > 'IL0000' and station < 'IL9999') or
+    (station > 'IN0000' and station < 'IN9999') or
+    (station > 'MI0000' and station < 'MI9999') or
+    (station > 'OH0000' and station < 'OH9999') or
+    (station > 'KY0000' and station < 'KY9999'))
     GROUP by station, year
 ), obs as (
     select a.station, a.year, gdd50(high, low) as gdd from alldata a, freezes f
@@ -29,10 +43,13 @@ def main():
     # Enforce a quorum of 30 years of data
     gdf = df.groupby(df.index).count()
     df = df.loc[gdf.loc[gdf.gdd == 30].index]
+    df.to_csv("gdds.csv")
     df = df.groupby(df.index).mean()
-    print(df)
     mp = MapPlot(
-        title="1992-2021 Average Growing Degree Days(50/86) May 20 -> First Fall 28F",
+        title=(
+            "1992-2021 Average Growing Degree Days(50/86) "
+            "May 20 -> First Fall 28F"
+        ),
         sector="midwest",
         drawstates=True,
         continentalcolor="white",
