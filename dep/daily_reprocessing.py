@@ -15,9 +15,10 @@ def env2database():
         return
     os.chdir("/opt/dep/scripts/RT")
     cmd = "python env2database.py -s 0 "
-    for line in open(SAVEFILE):
-        cmd += " --date %s " % (line.strip(),)
-    LOG.debug(cmd)
+    with open(SAVEFILE, "r", encoding="utf-8") as fh:
+        for line in fh:
+            cmd += f" --date {line.strip()} "
+    LOG.info(cmd)
     subprocess.call(cmd, shell=True)
 
 
@@ -47,15 +48,15 @@ def edit_clifiles():
             break
     pgconn.close()
     # write a log file for what work we did
-    with open(SAVEFILE, "w") as fh:
+    with open(SAVEFILE, "w", encoding="utf-8") as fh:
         for day in days:
-            fh.write("%s\n" % (day.strftime("%Y-%m-%d"),))
+            fh.write(f"{day:%Y-%m-%d}\n")
 
     # Now we do some work!
     os.chdir("/opt/dep/scripts/cligen")
     for day in days:
-        cmd = "python proctor_tile_edit.py 0 %s" % (day.strftime("%Y %m %d"),)
-        LOG.debug(cmd)
+        cmd = f"python proctor_tile_edit.py 0 {day:%Y %m %d}"
+        LOG.info(cmd)
         subprocess.call(cmd, shell=True)
 
 
