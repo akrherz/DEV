@@ -3,8 +3,8 @@
 The pain is so bad with this, see akrherz/pyIEM#387
 """
 
-from pyiem.util import get_dbconn, logger
-from pandas.io.sql import read_sql
+import pandas as pd
+from pyiem.util import get_dbconn, logger, get_sqlalchemy_conn
 
 LOG = logger()
 
@@ -30,13 +30,14 @@ def drop_gid(cursor, ugc, gid):
     )
 
 
-def cull_no_times(pgconn, cursor):
+def cull_no_times(cursor):
     """Entries with begin_ts == end_ts are in error, cull them."""
-    df = read_sql(
-        "SELECT ugc, gid from ugcs where begin_ts = end_ts ORDER by ugc",
-        pgconn,
-        index_col=None,
-    )
+    with get_sqlalchemy_conn("postgis") as conn:
+        df = pd.read_sql(
+            "SELECT ugc, gid from ugcs where begin_ts = end_ts ORDER by ugc",
+            conn,
+            index_col=None,
+        )
     LOG.info("Found %s rows for consideration", len(df.index))
     for _, row in df.iterrows():
         drop_gid(cursor, row["ugc"], row["gid"])
@@ -59,11 +60,7 @@ def dual_firewx_zone_collapse(pgconn, gdf, ugc):
         "source is not null",
         (ugc,),
     )
-    LOG.info(
-        "Removing %s rows for %s",
-        len(gdf.index) - 2,
-        ugc,
-    )
+    LOG.info("Removing %s rows for %s", len(gdf.index) - 2, ugc)
     for gid, row in gdf.iterrows():
         if row["source"] is not None:
             continue
@@ -157,12 +154,13 @@ def collapse(pgconn):
     """Find UGCs that can easily be collapsed."""
     # Requirements for equality
     # name, wfo, area2163 <1sqkm, source=1
-    df = read_sql(
-        "SELECT ugc, gid, begin_ts, end_ts, source, area2163, name, wfo from "
-        "ugcs ORDER by ugc ASC, begin_ts ASC",
-        pgconn,
-        index_col="gid",
-    )
+    with get_sqlalchemy_conn("postgis") as conn:
+        df = pd.read_sql(
+            "SELECT ugc, gid, begin_ts, end_ts, source, area2163, name, "
+            "wfo from ugcs ORDER by ugc ASC, begin_ts ASC",
+            conn,
+            index_col="gid",
+        )
     LOG.info("loaded %s ugcs entries", len(df.index))
     for ugc, gdf in df.groupby("ugc"):
         if len(gdf.index) == 1:
@@ -177,7 +175,7 @@ def main():
     """Things that we can do."""
     pgconn = get_dbconn("postgis")
     cursor = pgconn.cursor()
-    # cull_no_times(pgconn, cursor)
+    # cull_no_times(cursor)
     collapse(pgconn)
     cursor.close()
     pgconn.commit()

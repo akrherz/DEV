@@ -26,25 +26,25 @@ def main():
         country2 = nwsli2country.get(code)
         if country != country2:
             print(
-                ("ID:%s ST:%s C:%s NET:%s L_C:%s")
-                % (nwsli, state, country, network, country2)
+                f"ID:{nwsli} ST:{state} C:{country} NET:{network} "
+                f"L_C:{country2}"
             )
-        network2 = "%s_DCP" % (state,)
+        network2 = f"{state}_DCP"
         if country in ["MX", "CA"]:
-            network2 = "%s_%s_DCP" % (country, state)
+            network2 = f"{country}_{state}_DCP"
         elif country not in ["MX", "CA", "US"]:
-            network2 = "%s__DCP" % (country,)
+            network2 = f"{country}__DCP"
         if network != network2:
             print(
-                ("ID:%s ST:%s C:%s NET:%s L_N:%s")
-                % (nwsli, state, country, network, network2)
+                f"ID:{nwsli} ST:{state} C:{country} NET:{network} "
+                f"L_N:{network2}"
             )
 
         state2 = nwsli2state.get(code)
         if state is not None and state != state2:
             print(
-                ("ID:%s ST:%s C:%s NET:%s L_S:%s")
-                % (nwsli, state, country, network, state2)
+                f"ID:{nwsli} ST:{state} C:{country} NET:{network} "
+                f"L_S:{state2}"
             )
 
 

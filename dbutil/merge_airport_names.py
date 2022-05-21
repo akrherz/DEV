@@ -1,19 +1,20 @@
-"""Merge this info.
-
-https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat
-"""
+"""Merge this info."""
 import sys
 
 from pyiem.util import get_dbconn, logger
 import pandas as pd
 
 LOG = logger()
+SRC = (
+    "https://raw.githubusercontent.com/jpatokal/openflights/"
+    "master/data/airports.dat"
+)
 
 
 def main(argv):
     """Go Main Go."""
     networkin = argv[1]
-    df = pd.read_csv("airports.dat", header=None)
+    df = pd.read_csv(SRC, header=None)
 
     dbconn = get_dbconn("mesosite")
     cursor = dbconn.cursor()

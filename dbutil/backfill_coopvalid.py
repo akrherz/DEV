@@ -4,8 +4,8 @@ should backfill it"""
 import sys
 import datetime
 
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn, logger
+import pandas as pd
+from pyiem.util import get_dbconn, logger, get_sqlalchemy_conn
 
 LOG = logger()
 IEM = get_dbconn("iem")
@@ -19,25 +19,25 @@ def workflow(iemid, row):
     icursor = IEM.cursor()
     nwsli = row["id"]
     ts = datetime.datetime.now()
-    df = read_sql(
-        """
-    SELECT day, max_tmpf, pday from summary WHERE iemid = %s
-    and day < %s and (max_tmpf is not null or pday is not null)
-    and coop_valid is null
-    ORDER by day
-    """,
-        IEM,
-        params=(iemid, row["coop_valid_begin"]),
-        index_col="day",
-    )
+    with get_sqlalchemy_conn("iem") as conn:
+        df = pd.read_sql(
+            """
+        SELECT day, max_tmpf, pday from summary WHERE iemid = %s
+        and day < %s and (max_tmpf is not null or pday is not null)
+        and coop_valid is null
+        ORDER by day
+        """,
+            conn,
+            params=(iemid, row["coop_valid_begin"]),
+            index_col="day",
+        )
     updated = 0
     for day, _ in df.iterrows():
-        table = day.strftime("raw%Y_%m")
         ts = ts.replace(year=day.year, month=day.month, day=day.day)
         hcursor.execute(
             f"""
         SELECT distinct extract(hour from valid)::int as hr
-        from {table} WHERE station = %s
+        from raw{day:%Y_%m} WHERE station = %s
         and valid between %s and %s and substr(key, 1, 2) in ('PP', 'TA')
         """,
             (
@@ -53,9 +53,8 @@ def workflow(iemid, row):
         coopvalid = ts.replace(
             hour=hours[0], minute=0, second=0, microsecond=0
         )
-        table = "summary_%s" % (coopvalid.year,)
         icursor.execute(
-            f"UPDATE {table} SET coop_valid = %s "
+            f"UPDATE summary_{coopvalid.year} SET coop_valid = %s "
             "WHERE iemid = %s and day = %s",
             (coopvalid, iemid, day),
         )
@@ -72,18 +71,19 @@ def main(argv):
     """Go Main Go"""
     network = argv[1]
     # 1. Find stations in 2016 that reported a coop_valid
-    df = read_sql(
-        """
-    SELECT min(day) as archive_begin,
-    min(coop_valid) as coop_valid_begin,
-    t.iemid, t.id from summary S JOIN stations t on (s.iemid = t.iemid)
-    WHERE t.network = %s
-    GROUP by t.iemid, t.id
-    """,
-        IEM,
-        params=(network,),
-        index_col="iemid",
-    )
+    with get_sqlalchemy_conn("iem") as conn:
+        df = pd.read_sql(
+            """
+        SELECT min(day) as archive_begin,
+        min(coop_valid) as coop_valid_begin,
+        t.iemid, t.id from summary S JOIN stations t on (s.iemid = t.iemid)
+        WHERE t.network = %s
+        GROUP by t.iemid, t.id
+        """,
+            conn,
+            params=(network,),
+            index_col="iemid",
+        )
     for iemid, row in df.iterrows():
         if row["coop_valid_begin"] is None:
             continue
