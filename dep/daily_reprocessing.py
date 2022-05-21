@@ -11,7 +11,7 @@ SAVEFILE = "/opt/dep/scripts/cligen/mydays.txt"
 def env2database():
     """Do what we found yesterday."""
     if not os.path.isfile(SAVEFILE):
-        LOG.info("savefile %s does not exist", SAVEFILE)
+        LOG.warning("savefile %s does not exist", SAVEFILE)
         return
     os.chdir("/opt/dep/scripts/RT")
     cmd = "python env2database.py -s 0 "
@@ -29,21 +29,23 @@ def edit_clifiles():
     days = []
     cursor.execute(
         """
-        select huc_12, valid, qc_precip, avg_precip, max_precip,
-        max_precip - qc_precip as diff from results_by_huc12
-        where scenario = 0 and qc_precip > max_precip
-        ORDER by diff ASC LIMIT 100
+        with data as (
+            select huc_12, valid, qc_precip, avg_precip, max_precip,
+            abs(max_precip - qc_precip) as diff from results_by_huc12
+            where scenario = 0 ORDER by diff DESC LIMIT 1000)
+        select valid, count(*), max(diff) from data
+        GROUP by valid ORDER by count desc
     """
     )
     for row in cursor:
         if row[1] not in days:
-            LOG.info(
-                "do %s qc_precip: %.2f max_precip: %.2f",
-                row[1],
+            LOG.warning(
+                "do %s max_delta: %.2f count: %.0f",
+                row[0],
                 row[2],
-                row[4],
+                row[1],
             )
-            days.append(row[1])
+            days.append(row[0])
         if len(days) >= 10:
             break
     pgconn.close()
