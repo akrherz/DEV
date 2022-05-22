@@ -30,8 +30,8 @@ def edit_clifiles():
     cursor.execute(
         """
         with data as (
-            select huc_12, valid, qc_precip, avg_precip, max_precip,
-            abs(max_precip - qc_precip) as diff from results_by_huc12
+            select valid, abs(avg_precip - qc_precip) as diff
+            from results_by_huc12
             where scenario = 0 ORDER by diff DESC LIMIT 1000)
         select valid, count(*), max(diff) from data
         GROUP by valid ORDER by count desc
