@@ -8,6 +8,17 @@ import pandas as pd
 from pyiem.util import get_sqlalchemy_conn
 
 
+def create_meta_alias(meta, oldid, newid):
+    """Add a station attribute."""
+    with get_sqlalchemy_conn("mesosite") as conn:
+        stmt = text(
+            "INSERT INTO station_attributes (iemid, attr, value) "
+            "VALUES (:newid, 'WAS', :oldid)"
+        )
+        res = conn.execute(stmt, newid=meta.loc[newid, "iemid"], oldid=oldid)
+        print(f"{res.rowcount} rows inserted into WAS attr for {newid}")
+
+
 def check_overlaps(oldid, newid):
     """Make sure we don't have trouble with overlapping obs."""
     with get_sqlalchemy_conn("mesosite") as conn:
@@ -80,6 +91,7 @@ def main(argv):
     meta = check_overlaps(oldid, newid)
     update_asosdb(oldid, newid)
     update_iemaccess(meta, oldid, newid)
+    create_meta_alias(meta, oldid, newid)
     print("Considering running dbutil/delete_stations.py")
 
 
