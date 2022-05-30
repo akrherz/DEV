@@ -13,12 +13,11 @@ def main(argv):
         """
         SELECT data, entered at time zone 'UTC', pil from products
         WHERE substr(pil, 1, 3) = %s
-        and entered > '2020-12-26 12:00+00' and data ~* 'LAT...LON'
-        LIMIT 100
+        and entered > '2022-05-30 00:00+00' ORDER by entered ASC
     """,
         (argv[1],),
     )
-    with open("%s.txt" % (argv[1],), "a") as fh:
+    with open(f"{argv[1]}.txt", "a", encoding="ascii") as fh:
         for _i, row in enumerate(cursor):
             print(row[1])
             fh.write(noaaport_text(row[0]))

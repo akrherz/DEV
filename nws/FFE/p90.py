@@ -1,24 +1,16 @@
 """UGC/Polygon WWA stats onimbus"""
-import datetime
 
-import psycopg2.extras
 import numpy as np
-import pytz
 from rasterstats import zonal_stats
-import pandas as pd
-from geopandas import read_postgis
 from affine import Affine
-from pyiem.nws import vtec
-from pyiem.reference import state_names, state_bounds, wfo_bounds
-from pyiem.network import Table as NetworkTable
-from pyiem.plot.use_agg import plt
+import geopandas as gpd
+from pyiem.plot import get_cmap
 from pyiem.plot.geoplot import MapPlot
-from pyiem.util import get_autoplot_context, get_dbconn
+from pyiem.util import get_sqlalchemy_conn
 
 
 def do_polygon(ctx):
     """polygon workflow"""
-    pgconn = get_dbconn("postgis")
     griddelta = 0.02
     west = -134
     north = 49.5
@@ -32,20 +24,21 @@ def do_polygon(ctx):
     affine = Affine(griddelta, 0.0, west, 0.0, 0 - griddelta, north)
     ones = np.ones((int(YSZ), int(XSZ)))
     counts = np.zeros((int(YSZ), int(XSZ)))
-    df = read_postgis(
-        """
-    WITH data as (
-        SELECT ST_Forcerhr(ST_Buffer(geom, 0.0005)) as geom,
-        rank() OVER (
-            PARTITION by wfo, eventid, extract(year from updated)
-            ORDER by updated)
-        from sbw where phenomena = 'FF' and is_emergency
-    ) select * from data where rank = 1
-    """,
-        pgconn,
-        geom_col="geom",
-        index_col=None,
-    )
+    with get_sqlalchemy_conn("postgis") as conn:
+        df = gpd.read_postgis(
+            """
+        WITH data as (
+            SELECT ST_Forcerhr(ST_Buffer(geom, 0.0005)) as geom,
+            rank() OVER (
+                PARTITION by wfo, eventid, extract(year from updated)
+                ORDER by updated)
+            from sbw where phenomena = 'FF' and is_emergency
+        ) select * from data where rank = 1
+        """,
+            conn,
+            geom_col="geom",
+            index_col=None,
+        )
     # print df, sts, ets, west, east, south, north
     zs = zonal_stats(
         df["geom"],
@@ -55,7 +48,7 @@ def do_polygon(ctx):
         all_touched=True,
         raster_out=True,
     )
-    for i, z in enumerate(zs):
+    for _i, z in enumerate(zs):
         aff = z["mini_raster_affine"]
         mywest = aff.c
         mynorth = aff.f
@@ -86,34 +79,37 @@ def plotter(ctx):
     # Covert datetime to UTC
     do_polygon(ctx)
 
-    m = MapPlot(
-        title="2009-2019 Flash Flood Emergency Polygon Heatmap",
-        sector="custom",
+    mp = MapPlot(
+        title="2009-2022 Flash Flood Emergency Polygon Heatmap",
+        sector="state",
+        state="TX",
         axisbg="white",
-        west=-107,
-        south=25.5,
-        east=-88,
-        north=41,
+        # west=-107,
+        # south=25.5,
+        # east=-88,
+        # north=41,
         # west=-82, south=36., east=-68, north=48,
         # west=-85, south=31.8, north=45.2, east=-69,
-        subtitle="based on unofficial IEM Archives",
+        subtitle="based on unofficial IEM Archives with data till 30 May 2022",
         nocaption=True,
     )
-    cmap = plt.get_cmap("jet")
+    cmap = get_cmap("jet")
     cmap.set_under("white")
     cmap.set_over("black")
-    res = m.pcolormesh(
+    res = mp.pcolormesh(
         ctx["lons"],
         ctx["lats"],
         ctx["data"],
         ctx["bins"],
         cmap=cmap,
         units="count",
+        extend="both",
     )
+    mp.drawcounties()
     # Cut down on SVG et al size
     res.set_rasterized(True)
 
-    m.postprocess(filename="test.png")
+    mp.postprocess(filename="test.png")
 
 
 if __name__ == "__main__":

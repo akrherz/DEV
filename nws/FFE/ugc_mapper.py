@@ -11,16 +11,14 @@ def main():
         df = pd.read_sql(
             """
             WITH data as (
-                select distinct wfo, extract(year from issue) as year, eventid
+                select distinct ugc, extract(year from issue) as year, eventid
                 from warnings where phenomena = 'FF' and is_emergency
             )
-            SELECT wfo, count(*) from data GROUP by wfo ORDER by count DESC
+            SELECT ugc, count(*) from data GROUP by ugc ORDER by count DESC
         """,
             conn,
-            index_col="wfo",
+            index_col="ugc",
         )
-    if "JSJ" in df.index:
-        df.at["SJU", "count"] = df.at["JSJ", "count"]
 
     bins = list(range(0, 41, 4))
     bins[0] = 1
@@ -35,7 +33,7 @@ def main():
         title=("2003-2022 Flash Flood Emergency Events"),
         subtitle=("based on unofficial IEM archives, data till 30 May 2022."),
     )
-    mp.fill_cwas(
+    mp.fill_ugcs(
         df["count"].to_dict(),
         bins=bins,
         lblformat="%.0f",
