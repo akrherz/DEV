@@ -2,12 +2,12 @@
 import datetime
 from io import StringIO
 
+import requests
+from tqdm import tqdm
 from pyiem.reference import state_names
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot, get_cmap
-import requests
 import pandas as pd
-from tqdm import tqdm
 
 
 def todate(val):

@@ -1,22 +1,22 @@
 """Do Something Fun"""
 
 # third party
-from pyiem.util import get_dbconn
-from pandas.io.sql import read_sql
+from pyiem.util import get_sqlalchemy_conn
+import pandas as pd
 
 
 def main():
     """Do Something"""
-    pgconn = get_dbconn("postgis")
-    df = read_sql(
-        """SELECT ugc, eventid,
-    generate_series(issue, expire, '1 minute'::interval) as ts from warnings
-    WHERE phenomena = 'TO' and significance = 'W'
-    ORDER by ts ASC
-    """,
-        pgconn,
-        index_col=None,
-    )
+    with get_sqlalchemy_conn("postgis") as conn:
+        df = pd.read_sql(
+            """SELECT ugc, eventid,
+            generate_series(issue, expire, '1 minute'::interval) as ts
+            from warnings WHERE phenomena = 'TO' and significance = 'W'
+            ORDER by ts ASC
+        """,
+            conn,
+            index_col=None,
+        )
     maxrunning = 0
     for ugc, gdf in df.groupby("ugc"):
         lastts = gdf.iloc[0]["ts"]

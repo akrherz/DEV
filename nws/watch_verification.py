@@ -2,7 +2,7 @@
 from datetime import timezone
 
 from tqdm import tqdm
-from geopandas import read_postgis
+import geopandas as gpd
 from pyiem.util import get_dbconn
 
 
@@ -15,7 +15,7 @@ def main():
     # Year,
     # Hour of Issuance,
     # Watch Duration,
-    df = read_postgis(
+    df = gpd.read_postgis(
         """with tors as (
             SELECT issued at time zone 'UTC' as utc_issue,
             expired at time zone 'UTC' as utc_expire,

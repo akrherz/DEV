@@ -90,10 +90,7 @@ def main():
     ax[0].set_ylabel(r"Temperature $^{\circ}\mathrm{F}$")
 
     ax[1].set_title(
-        (
-            "Date of Yearly 'Death Cross' "
-            "(50DMA breaches 200DMA), JJA ENSO 3.4"
-        )
+        "Date of Yearly 'Death Cross' (50DMA breaches 200DMA), JJA ENSO 3.4"
     )
     ax[1].scatter(numpy.arange(1901, 2013), death)
     for yr in range(1950, 2013):

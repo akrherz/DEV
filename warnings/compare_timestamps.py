@@ -17,7 +17,7 @@ def main():
         "status = 'NEW' and phenomena = 'SQ' and significance = 'W'"
     )
 
-    print("Found %s entries to process..." % (cursor.rowcount,))
+    print(f"Found {cursor.rowcount} entries to process...")
     entries = []
     for row in cursor:
         prod = parser(noaaport_text(row[0]), utcnow=row[1])

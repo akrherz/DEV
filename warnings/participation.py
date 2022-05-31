@@ -1,8 +1,8 @@
 """did the UGC have a warning on most active days."""
 
+import numpy as np
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn
-import numpy as np
 import matplotlib.cm as cm
 
 
@@ -15,7 +15,7 @@ def main():
     cmap.set_under("#ffffff")
     cmap.set_over("black")
 
-    m = MapPlot(
+    mp = MapPlot(
         sector="nws",
         axisbg="#EEEEEE",
         title=(
@@ -54,8 +54,8 @@ def main():
     for row in pcursor:
         data[row[0]] = float(row[1])
 
-    m.fill_ugcs(data, bins, cmap=cmap, units="Count")
-    m.postprocess(filename="test.png")
+    mp.fill_ugcs(data, bins, cmap=cmap, units="Count")
+    mp.postprocess(filename="test.png")
 
 
 if __name__ == "__main__":

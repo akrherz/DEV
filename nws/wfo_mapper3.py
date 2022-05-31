@@ -1,13 +1,7 @@
 """Generic plotter"""
-import datetime
-from calendar import month_abbr
 
 from pyiem.plot.use_agg import plt
 from pyiem.plot import MapPlot
-from pyiem.network import Table as NetworkTable
-from pyiem.util import get_dbconn, drct2text
-import numpy as np
-from pandas.io.sql import read_sql
 
 data = """ ABQ |  5.43790849673202614379
  ABR |  4.45205479452054794521
@@ -146,7 +140,8 @@ def main():
         continentalcolor="white",
         figsize=(12.0, 6.75),
         title=(
-            "2010-2020 Average Number of 'CON'tinues WSW Statements per Winter Storm Warning"
+            "2010-2020 Average Number of 'CON'tinues WSW Statements "
+            "per Winter Storm Warning"
         ),
         subtitle=("based on IEM archives"),
     )

@@ -4,7 +4,7 @@ import datetime
 import sys
 from pyiem.nws.products import parser
 
-POSTGIS = psycopg2.connect(database="postgis", host="localhost", port=5555)
+POSTGIS = psycopg2.connect(database="postgis")
 cursor = POSTGIS.cursor()
 cursor2 = POSTGIS.cursor()
 
@@ -29,7 +29,7 @@ for row in cursor:
             continue
         try:
             p = parser(svs)
-        except Exception as exp:
+        except Exception as _exp:
             continue
         times.append(p.valid)
         svss.append(svs)
@@ -42,7 +42,7 @@ for row in cursor:
         delta = times[i] - times[i - 1]
         if delta < datetime.timedelta(days=1):
             continue
-        print "Discontinuity %s %s %s %s" % (oid, i, times[i - 1], times[i])
+        print("Discontinuity %s %s %s %s" % (oid, i, times[i - 1], times[i]))
         newsvs = "__".join(svss[:i]) + "__"
         cursor2.execute(
             """UPDATE """

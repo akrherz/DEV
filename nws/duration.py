@@ -1,25 +1,25 @@
 """Warning duration plot."""
 import numpy as np
 import matplotlib.pyplot as plt
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
+import pandas as pd
+from pyiem.util import get_sqlalchemy_conn
 
 
 def main():
     """Go Main Go."""
-    pgconn = get_dbconn("postgis")
-
-    df = read_sql(
-        """
-        select extract(year from issue) as yr, phenomena,
-        avg(init_expire - issue) as duration
-        from warnings where phenomena in ('TO', 'SV') and significance = 'W'
-        and issue < init_expire and issue < '2020-01-01'
-        GROUP by yr, phenomena ORDER by yr ASC
-        """,
-        pgconn,
-        index_col="yr",
-    )
+    with get_sqlalchemy_conn("postgis") as conn:
+        df = pd.read_sql(
+            """
+            select extract(year from issue) as yr, phenomena,
+            avg(init_expire - issue) as duration
+            from warnings where phenomena in ('TO', 'SV') and
+            significance = 'W'
+            and issue < init_expire and issue < '2020-01-01'
+            GROUP by yr, phenomena ORDER by yr ASC
+            """,
+            conn,
+            index_col="yr",
+        )
     df["minutes"] = df["duration"] / np.timedelta64(60, "s")
 
     (fig, ax) = plt.subplots(1, 1, figsize=(8, 6))

@@ -73,7 +73,7 @@ def main(argv):
         color=conf[school][1],
         fontsize=18,
     )
-    fig.savefig("%s.png" % (school,))
+    fig.savefig(f"{school}.png")
 
 
 if __name__ == "__main__":

@@ -11,21 +11,15 @@ def main(argv):
     cursor = pgconn.cursor("streamer")
     cursor2 = pgconn.cursor()
 
-    table = "warnings_%s" % (argv[1],)
-
     cursor.execute(
-        """
-        SELECT oid, report, svs, updated from """
-        + table
-        + """
-        WHERE svs is not null ORDER by issue
-    """
+        f"SELECT ctid, report, svs, updated from warnings_{argv[1]} "
+        "WHERE svs is not null ORDER by issue"
     )
     considered = 0
     updated = 0
     for row in cursor:
         considered += 1
-        oid = row[0]
+        ctid = row[0]
         # report = row[1]
         svss = row[2]
         baseupdated = row[3]
@@ -41,12 +35,9 @@ def main(argv):
                 print("old: %s new: %s" % (baseupdated, prod.valid))
                 updated += 1
                 cursor2.execute(
-                    """
-                    UPDATE """
-                    + table
-                    + """ SET updated = %s WHERE oid = %s
-                """,
-                    (prod.valid, oid),
+                    f"UPDATE warnings_{argv[1]} SET updated = %s "
+                    "WHERE ctid = %s",
+                    (prod.valid, ctid),
                 )
             break
     print("done updated %s rows of %s candidates" % (updated, considered))

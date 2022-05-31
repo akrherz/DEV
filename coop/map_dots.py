@@ -1,26 +1,25 @@
 """A map of dots!"""
 from pyiem.plot import MapPlot
 from pyiem.reference import Z_OVERLAY
-from pyiem.util import get_dbconn
+from pyiem.util import get_sqlalchemy_conn
 import cartopy.crs as ccrs
-from pandas.io.sql import read_sql
+import pandas as pd
 
 
 def main():
     """Go Main Go."""
-    pgconn = get_dbconn("iem")
-
-    df = read_sql(
-        """SELECT ST_x(geom) as x, ST_y(geom) as y,
-    min(min_tmpf) as val, state, count(*) from
-    summary s JOIN stations t on (t.iemid = s.iemid) WHERE
-    s.day > '2020-09-01' and min_tmpf is not null and t.country = 'US' and
-    t.network ~* 'COOP' and t.state in ('IA', 'MN', 'ND', 'SD', 'NE',
-    'KS', 'MO', 'WI', 'IL', 'IN', 'OH', 'MI', 'KY') GROUP by y, x, state
-    ORDER by val ASC""",
-        pgconn,
-        index_col=None,
-    )
+    with get_sqlalchemy_conn("iem") as conn:
+        df = pd.read_sql(
+            """SELECT ST_x(geom) as x, ST_y(geom) as y,
+        min(min_tmpf) as val, state, count(*) from
+        summary s JOIN stations t on (t.iemid = s.iemid) WHERE
+        s.day > '2020-09-01' and min_tmpf is not null and t.country = 'US' and
+        t.network ~* 'COOP' and t.state in ('IA', 'MN', 'ND', 'SD', 'NE',
+        'KS', 'MO', 'WI', 'IL', 'IN', 'OH', 'MI', 'KY') GROUP by y, x, state
+        ORDER by val ASC""",
+            conn,
+            index_col=None,
+        )
     df = df[(df["count"] > 30)]
 
     x3 = df[(df.val < 40) & (df.val >= 32)]

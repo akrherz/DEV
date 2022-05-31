@@ -2,7 +2,7 @@
 import sys
 
 from pyiem.plot import MapPlot, plt
-from pyiem.util import get_dbconn
+from pyiem.util import get_sqlalchemy_conn
 from pandas.io.sql import read_sql
 
 
@@ -10,21 +10,22 @@ def main(argv):
     """Go Main Go."""
     wfo = argv[1]
     name = argv[2]
-    dbconn = get_dbconn("postgis")
-    df = read_sql(
-        "with dmx as ("
-        "select distinct extract(year from expire) as year, eventid from "
-        "warnings where phenomena = 'SV' and significance = 'A' "
-        "and wfo = %s), "
-        "other as (select distinct extract(year from expire) as year, eventid, "
-        "wfo from warnings where phenomena = 'SV' and significance = 'A' "
-        "and wfo != 'HFO') "
-        "select d.wfo, count(*) from dmx x JOIN other d "
-        "on (x.eventid = d.eventid and x.year = d.year) GROUP by d.wfo",
-        dbconn,
-        index_col="wfo",
-        params=(wfo,),
-    )
+    with get_sqlalchemy_conn("postgis") as conn:
+        df = read_sql(
+            """with dmx as (
+            select distinct extract(year from expire) as year, eventid from
+            warnings where phenomena = 'SV' and significance = 'A'
+            and wfo = %s),
+            other as (select distinct extract(year from expire) as year,
+            eventid,
+            wfo from warnings where phenomena = 'SV' and significance = 'A'
+            and wfo != 'HFO')
+            select d.wfo, count(*) from dmx x JOIN other d
+            on (x.eventid = d.eventid and x.year = d.year) GROUP by d.wfo""",
+            conn,
+            index_col="wfo",
+            params=(wfo,),
+        )
     selftotal = df.at[wfo, "count"]
     df = df.drop(wfo)
     mp = MapPlot(
@@ -50,6 +51,8 @@ def main(argv):
         ilabel=True,
         extend="neither",
         units="events",
+        lblformat="%.0f",
+        labelbuffer=0,
     )
     mp.postprocess(filename=f"/tmp/{wfo}.png")
 

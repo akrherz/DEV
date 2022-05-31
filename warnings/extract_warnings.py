@@ -12,7 +12,7 @@ def get_misses(pgconn):
             SELECT wfo, eventid, geom, issue, expire from sbw
             WHERE phenomena = 'TO'
             and significance = 'W' and status = 'NEW' and
-            (expire - issue) >= '30 minutes'::interval   
+            (expire - issue) >= '30 minutes'::interval
         ), agg as (SELECT valid, w.wfo, w.eventid, w.issue, w.expire from
             tornadowarnings w LEFT JOIN lsrs l on (l.type = 'T' and
             ST_Contains(w.geom, l.geom)

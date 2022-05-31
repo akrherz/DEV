@@ -11,7 +11,7 @@ def main():
     cursor = pgconn.cursor()
     cursor2 = pgconn.cursor()
 
-    table = "sbw_%s" % (sys.argv[1],)
+    table = f"sbw_{sys.argv[1]}"
 
     cursor.execute("""SET TIME ZONE 'UTC'""")
     cursor.execute(

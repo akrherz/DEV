@@ -2,18 +2,18 @@
 
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import get_dbconn
-from pandas.io.sql import read_sql
+import pandas as pd
 
 
 def main():
     """Go Main Go."""
-    df = read_sql(
+    df = pd.read_sql(
         "SELECT ST_Area(the_geom::geography) / 1000000000. as area, "
         "state_abbr from states where state_abbr != 'DC' ORDER by state_abbr",
         get_dbconn("postgis"),
         index_col="state_abbr",
     )
-    stations = read_sql(
+    stations = pd.read_sql(
         "SELECT state, count(*) from stations where "
         "network ~* 'DCP' and archive_begin is not null "
         "GROUP by state",

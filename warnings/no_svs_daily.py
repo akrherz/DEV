@@ -1,7 +1,7 @@
 """Request for maps and data of products without SVS updates."""
 import calendar
 
-from pyiem.util import get_dbconn
+from pyiem.util import get_sqlalchemy_conn
 from pyiem.plot import get_cmap
 from pyiem.plot.use_agg import plt
 import seaborn as sns
@@ -10,22 +10,23 @@ from pandas.io.sql import read_sql
 
 def main():
     """Go Main Go."""
-    dbconn = get_dbconn("postgis")
-    df = read_sql(
-        """
-    WITH data as (
-        SELECT wfo, eventid, extract(year from issue)::int as year,
-        extract(month from issue) as month, phenomena,
-        max(case when svs is not null then 1 else 0 end) as hit from
-        warnings where issue > '2008-01-01' and
-        issue < '2021-01-01' and phenomena in ('SV', 'TO', 'FF')
-        and significance = 'W' GROUP by wfo, eventid, year, month, phenomena
-    )
-    SELECT year, month, sum(hit) as got_update, count(*) as total_events
-    from data GROUP by year, month ORDER by year, month ASC
-    """,
-        dbconn,
-    )
+    with get_sqlalchemy_conn("postgis") as conn:
+        df = read_sql(
+            """
+        WITH data as (
+            SELECT wfo, eventid, extract(year from issue)::int as year,
+            extract(month from issue) as month, phenomena,
+            max(case when svs is not null then 1 else 0 end) as hit from
+            warnings where issue > '2008-01-01' and
+            issue < '2021-01-01' and phenomena in ('SV', 'TO', 'FF')
+            and significance = 'W'
+            GROUP by wfo, eventid, year, month, phenomena
+        )
+        SELECT year, month, sum(hit) as got_update, count(*) as total_events
+        from data GROUP by year, month ORDER by year, month ASC
+        """,
+            conn,
+        )
     df["no_update_percent"] = (
         100.0 - df["got_update"] / df["total_events"] * 100.0
     )

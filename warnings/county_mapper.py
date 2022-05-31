@@ -1,10 +1,9 @@
 """Make county plots of stuff."""
 import datetime
-import subprocess
 
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn
-import matplotlib.cm as cm
+from matplotlib import cm
 
 
 def main():
@@ -124,7 +123,6 @@ def main():
     )
 
     m.postprocess(filename=fn)
-    subprocess.call("eog %s" % (fn,), shell=True)
 
 
 if __name__ == "__main__":

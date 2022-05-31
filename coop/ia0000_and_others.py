@@ -9,6 +9,7 @@ cursor = IEM.cursor()
 
 
 def get(month):
+    """Hmmm."""
     cursor.execute(
         """
      select day, sum(case when precip > 0 then 1 else 0 end), count(*),
