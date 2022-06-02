@@ -1,95 +1,78 @@
 """Generic plotter"""
-import datetime
-from calendar import month_abbr
+import sys
 
 import numpy as np
 import pandas as pd
-from pandas.io.sql import read_sql
 from pyiem.plot.use_agg import plt
 from tqdm import tqdm
-from pyiem.plot import MapPlot
+from pyiem.plot import MapPlot, get_cmap
 from pyiem.network import Table as NetworkTable
-from pyiem.util import get_dbconn, drct2text
+from pyiem.util import get_sqlalchemy_conn, drct2text
 
 
-def get_database_data():
+def get_database_data(year):
     """Get data from database"""
-    return pd.read_csv("data.csv", index_col="wfo")
-    data = {"wfo": [], "days": []}
-    nt = NetworkTable("WFO")
-    pgconn = get_dbconn("postgis")
-    cursor = pgconn.cursor()
-    for sid in tqdm(nt.sts):
-        cursor.execute(
+    with get_sqlalchemy_conn("postgis") as pgconn:
+        df = pd.read_sql(
             """
-            select distinct date(expire - '1 day'::interval)
-            from spc_outlooks o, ugcs c where day = 1 and threshold = 'MDT'
-            and ST_Intersects(c.geom, o.geom) and c.wfo = %s
-            and c.end_ts is null
+            with data as (
+    select wfo, eventid, extract(year from polygon_begin) as year,
+    max(case when tornadotag = 'POSSIBLE' then 1 else 0 end) as hit
+    from sbw where phenomena = 'SV' and polygon_begin > '2015-01-01'
+    and status = 'NEW' group by wfo, eventid, year )
+    select wfo, sum(hit) as hits,
+    count(*), sum(hit) / count(*)::float * 100. as freq
+    from data WHERE year = %s GROUP by wfo ORDER by wfo asc
         """,
-            (sid,),
+            pgconn,
+            index_col="wfo",
+            params=(year,),
         )
-        data["wfo"].append(sid)
-        data["days"].append(cursor.rowcount)
-
-    df = pd.DataFrame(data)
-    df.to_csv("data.csv")
     return df
 
 
-def main():
+def main(argv):
     """Go Main"""
-    df = get_database_data()
-    pgconn = get_dbconn("postgis")
-    df2 = read_sql(
-        """
-        SELECT wfo, st_area(the_geom::geography) / 1000000000. as area
-        from cwa""",
-        pgconn,
-        index_col="wfo",
-    )
-    df["area"] = df2["area"]
-    df["ratio"] = df["days"] / df["area"]
-    print(df["ratio"].describe())
-    vals = {}
-    labels = {}
-    for wfo, row in df.iterrows():
-        if wfo == "JSJ":
-            wfo = "SJU"
-        vals[wfo] = row["ratio"]
-        labels[wfo] = "%.1f" % (row["ratio"],)
-        # if row['count'] == 0:
-        #    labels[wfo] = '-'
+    year = int(argv[1])
+    df = get_database_data(year)
+    print(df["freq"].describe())
+    if "JSJ" in df.index:
+        df.loc["SJU", "freq"] = df.loc["JSJ", "freq"]
 
-    bins = np.arange(0, 3.1, 0.25)
+    bins = np.arange(0, 41, 5)
     # bins = [1, 2, 5, 10, 20, 30, 50, 75, 100, 125, 150, 175]
     # bins = [-50, -25, -10, -5, 0, 5, 10, 25, 50]
     # bins[0] = 1
     # clevlabels = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N']
-    cmap = plt.get_cmap("magma")
+    cmap = get_cmap("YlOrRd")
+    freq = df["hits"].sum() / df["count"].sum() * 100.0
+    extra = "till 1 Jun 2022" if year == 2022 else ""
     mp = MapPlot(
-        sector="conus",
+        sector="nws",
         continentalcolor="white",
         figsize=(12.0, 9.0),
         title=(
-            "2002-2019 SPC Day 1 Moderate Convective Risk Days/WFO Area by WFO"
+            f"{year} Percentage of Svr TStorm Warnings (at issuance) "
+            "with Tornado 'POSSIBLE' Tag"
         ),
         subtitle=(
-            "till 17 Jul 2019, based on unofficial IEM Archives of any part of risk area overlapping CWA"
+            f"{extra}, based on unofficial IEM Archives. Overall: "
+            f"{df['hits'].sum():,.0f}/{df['count'].sum():,.0f} {freq:.1f}%"
         ),
     )
     mp.fill_cwas(
-        vals,
+        df["freq"],
         bins=bins,
-        lblformat="%s",
-        labels=labels,
+        lblformat="%.1f",
         cmap=cmap,
         ilabel=True,  # clevlabels=clevlabels,
-        units="days / 1000 sqkm",
+        units="%",
+        labelbuffer=0,
+        extend="neither",
     )
 
-    mp.postprocess(filename="test.png")
+    mp.postprocess(filename=f"{year}_SVR_torpossible.png")
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv)

@@ -14,3 +14,12 @@ agg2 as (
     from agg GROUP by eventid, phenomena, significance, wfo, year)
 
 select wfo, avg(cnt) from agg2 GROUP by wfo ORDER by wfo;
+
+-- precentage of SVRs with tor possible, 2015 for nationwide impl
+with data as (
+    select wfo, eventid, extract(year from polygon_begin) as year,
+    max(case when tornadotag = 'POSSIBLE' then 1 else 0 end) as hit
+    from sbw where phenomena = 'SV' and polygon_begin > '2015-01-01'
+    and status = 'NEW' group by wfo, eventid, year )
+    select wfo, sum(hit) , count(*), sum(hit) / count(*)::float * 100.
+    from data GROUP by wfo ORDER by wfo asc;
