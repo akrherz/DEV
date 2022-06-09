@@ -15,9 +15,9 @@ def main():
         "and not ST_IsEmpty(geom)"
     )
     if cursor.rowcount > 0:
-        LOG.info("SPS products with polygon and without the new IBW tags")
+        LOG.warning("SPS products with polygon and without the new IBW tags")
     for row in cursor:
-        LOG.info("https://mesonet.agron.iastate.edu/p.php?pid=%s", row[0])
+        LOG.warning("https://mesonet.agron.iastate.edu/p.php?pid=%s", row[0])
 
     cursor.execute(
         "SELECT distinct wfo from sbw_2021 "
@@ -25,9 +25,9 @@ def main():
         "windthreat is null and hailthreat is null"
     )
     if cursor.rowcount > 0:
-        LOG.info("SVR Products from WFOs without the new tags")
+        LOG.warning("SVR Products from WFOs without the new tags")
     for row in cursor:
-        LOG.info(row[0])
+        LOG.warning(row[0])
 
 
 if __name__ == "__main__":
