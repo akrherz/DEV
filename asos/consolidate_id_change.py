@@ -31,7 +31,10 @@ def check_overlaps(oldid, newid):
             params={"ids": tuple([oldid, newid])},
             index_col="id",
         )
-    assert df.loc[oldid, "archive_end"] < df.loc[newid, "archive_begin"]
+    # Possible a new id change, so archive_end may not be set
+    if df.loc[oldid, "archive_end"] is None:
+        df.loc[oldid, "archive_end"] = df.loc[newid, "archive_begin"]
+    assert df.loc[oldid, "archive_end"] <= df.loc[newid, "archive_begin"]
     return df
 
 
