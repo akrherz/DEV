@@ -14,8 +14,9 @@ def main():
 
     cursor.execute(
         """SELECT ST_x(geom) as lon, ST_y(geom) as lat,
-    pday from summary_2016 s JOIN stations t on (s.iemid = t.iemid)
-    where day = '2016-08-24' and network in ('WI_COOP', 'MN_COOP', 'IA_COOP')
+    pday from summary_2022 s JOIN stations t on (s.iemid = t.iemid)
+    where day = '2022-06-15' and network in
+    ('IACOCORAHS', 'WI_COOP', 'MN_COOP', 'IA_COOP')
     and pday > 0 ORDER by pday DESC"""
     )
     llons = []
@@ -31,16 +32,16 @@ def main():
 
     cursor.execute(
         """SELECT ST_x(geom) as lon, ST_y(geom) as lat,
-    max(magnitude) from lsrs_2016
+    max(magnitude) from lsrs_2022
     where wfo in ('DMX', 'DVN', 'ARX') and typetext = 'HEAVY RAIN' and
-    valid > '2016-08-23' GROUP by lon, lat ORDER by max DESC"""
+    valid > '2022-06-15' GROUP by lon, lat ORDER by max DESC"""
     )
     for row in cursor:
         llons.append(row[0])
         llats.append(row[1])
         vals.append("%.2f" % (row[2],))
 
-    img = Image.open("p24h_201608241200.png")
+    img = Image.open("/tmp/p24h_202206151700.png")
     data = np.flipud(np.asarray(img))
     # 7000,3500 == -130,-60,55,25 ===  -100 to -90 then 38 to 45
     sample = data[1800:2501, 3000:4501]
@@ -53,17 +54,15 @@ def main():
 
     x, y = np.meshgrid(lons, lats)
 
-    buff = 0.5
-    m = MapPlot(
+    mp = MapPlot(
         sector="custom",
-        projection="aea",
-        west=-93.2,
-        east=-90.3,
-        south=42.5,
-        north=44.0,
+        west=-94.2,
+        east=-93.1,
+        south=41.7,
+        north=42.2,
         title="NOAA MRMS 24 Hour RADAR-Only Precipitation Estimate",
         subtitle=(
-            "MRMS valid 7 AM 23 Aug 2016 to 7 AM 24 Aug 2016, "
+            "MRMS valid 12 PM 14 Jun 2022 to 12 PM 15 Jun 2022, "
             "NWS Local Storm + COOP Reports Overlaid"
         ),
     )
@@ -86,7 +85,7 @@ def main():
         10,
     ]
 
-    m.contourf(x[:, :-1], y[:, :-1], data, clevs, cmap=nwsprecip())
+    mp.contourf(x[:, :-1], y[:, :-1], data, clevs, cmap=nwsprecip())
 
     nt = NetworkTable("IA_ASOS")
     lo = []
@@ -98,14 +97,14 @@ def main():
         va.append(nt.sts[sid]["name"])
 
     # m.plot_values(lo, la, va, fmt='%s', textsize=10, color='black')
-    m.drawcounties(zorder=4, linewidth=1.0)
-    m.drawcities(
+    mp.drawcounties()
+    mp.drawcities(
         labelbuffer=25, textsize=10, color="white", outlinecolor="#000000"
     )
-    m.textmask[:, :] = 0
-    m.plot_values(llons, llats, vals, fmt="%s", labelbuffer=5)
+    mp.textmask[:, :] = 0
+    mp.plot_values(llons, llats, vals, fmt="%s", labelbuffer=1)
 
-    m.postprocess(filename="test.png")
+    mp.postprocess(filename="test.png")
 
 
 if __name__ == "__main__":
