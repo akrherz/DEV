@@ -2,11 +2,11 @@
 import sys
 import datetime
 
-from pyiem.util import get_dbconn, utc
+import numpy as np
+from pyiem.util import get_dbconn, utc, get_sqlalchemy_conn
 from metpy.units import units
 import metpy.calc as mcalc
 import pandas as pd
-from pandas.io.sql import read_sql
 
 
 def not_nan(val):
@@ -20,26 +20,27 @@ def main(argv):
     sts = utc(int(argv[1]), int(argv[2]), int(argv[3]))
     ets = sts + datetime.timedelta(hours=24)
     pgconn = get_dbconn("asos")
-    df = read_sql(
-        f"""
-    SELECT station, valid, tmpf, dwpf, sknt, relh, feel from t{sts.year}
-    WHERE valid >= %s and valid < %s and tmpf >= dwpf
-    and (feel is null or relh is null)
-    """,
-        pgconn,
-        params=(sts, ets),
-        index_col=None,
-    )
+    with get_sqlalchemy_conn("asos") as conn:
+        df = pd.read_sql(
+            f"""
+        SELECT station, valid, tmpf, dwpf, sknt, relh, feel from t{sts.year}
+        WHERE valid >= %s and valid < %s and tmpf >= dwpf
+        and (feel is null or relh is null)
+        """,
+            conn,
+            params=(sts, ets),
+            index_col=None,
+        )
     print(
         f"{sts:%Y%m%d} query of {len(df.index)} rows finished in "
         f"{(datetime.datetime.now() - start_time).total_seconds():.4f}s"
     )
     start_time = datetime.datetime.now()
     df["dirty"] = False
-    df2 = df[pd.isnull(df["relh"])]
+    df2 = df.fillna(np.nan)[pd.isnull(df["relh"])]
     if not df2.empty:
         print(f"Computing relh for {len(df2.index)} rows")
-        df.at[df2.index, "relh"] = (
+        df.loc[df2.index, "relh"] = (
             mcalc.relative_humidity_from_dewpoint(
                 df2["tmpf"].values * units.degF,
                 df2["dwpf"].values * units.degF,
@@ -47,11 +48,11 @@ def main(argv):
             .to(units.percent)
             .magnitude
         )
-        df.at[df2.index, "dirty"] = True
-    df2 = df[pd.isnull(df["feel"]) & (df["sknt"] >= 0) & (df["relh"] > 0)]
+        df.loc[df2.index, "dirty"] = True
+    df2 = df.fillna(np.nan)[pd.isnull(df["feel"]) & (df["relh"] > 0)]
     if not df2.empty:
         print(f"Computing feel for {len(df2.index)} rows")
-        df.at[df2.index, "feel"] = (
+        df.loc[df2.index, "feel"] = (
             mcalc.apparent_temperature(
                 df2["tmpf"].values * units.degF,
                 df2["relh"].values * units.percent,
@@ -61,7 +62,7 @@ def main(argv):
             .to(units.degF)
             .magnitude
         )
-        df.at[df2.index, "dirty"] = True
+        df.loc[df2.index, "dirty"] = True
     cursor = pgconn.cursor()
     count = 0
     skips = 0
