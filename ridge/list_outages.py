@@ -33,7 +33,7 @@ def main(argv):
         for scan in get_scans_for_date(radar, now):
             delta = scan - valid
             if delta > datetime.timedelta(hours=1):
-                print("%s %s %s" % (valid, scan, delta))
+                print(f"{valid} {scan} {delta}")
             valid = scan
         now += interval
 
