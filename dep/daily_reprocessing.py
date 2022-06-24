@@ -40,7 +40,7 @@ def edit_clifiles():
     )
     for row in cursor:
         # Review the date this was processed, so to not redo things recently
-        fn = f"/mnt/idep2/data/dailyprecip/{row[0]:%Y/%Y%m%d}.npy"
+        fn = f"/mnt/idep2/data/dailyprecip/{row[0]:%Y/%Y%m%d}.npy.gz"
         # If this file was modified before 15 June 2022, we skip it
         if os.path.isfile(fn):
             mt = datetime.datetime.fromtimestamp(os.path.getmtime(fn))
