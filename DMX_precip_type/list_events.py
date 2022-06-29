@@ -64,7 +64,7 @@ def calc(T, Td):
         de = (f * pSFC * (tK - tW)) - (ew - ed)
         #
         #       take derivative of difference value w.r.t. Tw to find zero value of function
-        der = (ew * (c1 - (c2 / tW ** 2))) - (f * pSFC)
+        der = (ew * (c1 - (c2 / tW**2))) - (f * pSFC)
         #
         #       calculate next guess of tW
         tW = tW - (de / der)

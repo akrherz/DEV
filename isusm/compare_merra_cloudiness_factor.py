@@ -79,7 +79,7 @@ def do(station):
         color="g",
         lw=3,
         zorder=2,
-        label=r"Fit: $R^2 = %.2f$" % (h_r_value ** 2,),
+        label=r"Fit: $R^2 = %.2f$" % (h_r_value**2,),
     )
     ax.legend(loc=2)
     ax.set_xlim(-0.4, 1.2)
@@ -89,7 +89,7 @@ def do(station):
         "/tmp/merra/%s.png" % (nt.sts[station]["name"].replace(" ", "_"),)
     )
     del fig
-    print("%-20s %.2f %.2f" % (nt.sts[station]["name"], bias, h_r_value ** 2))
+    print("%-20s %.2f %.2f" % (nt.sts[station]["name"], bias, h_r_value**2))
 
 
 for sid in nt.sts.keys():

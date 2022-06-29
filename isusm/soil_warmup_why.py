@@ -18,7 +18,7 @@ def magic(ax, xvals, yvals):
     ax.text(
         1.1,
         0.01,
-        "Slope: %.1f R$^2$= %.1f" % (slope, r_value ** 2),
+        "Slope: %.1f R$^2$= %.1f" % (slope, r_value**2),
         ha="right",
         bbox=dict(color="w"),
         transform=ax.transAxes,

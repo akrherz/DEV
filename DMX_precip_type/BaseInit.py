@@ -4068,7 +4068,7 @@ class BaseInit(Forecaster):
         #
         tg = where(
             less(tg, 1),
-            (thte - 0.5 * teclip ** 1.05) * (pres / 1000.0) ** 0.2,
+            (thte - 0.5 * teclip**1.05) * (pres / 1000.0) ** 0.2,
             tg,
         )
         epsi = 0.01

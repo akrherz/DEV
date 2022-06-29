@@ -6,7 +6,7 @@ import numpy as np
 def main():
     """Go Main Go."""
     x = np.arange(0, 4, 0.01)
-    y = np.round(x + 0.6 * x ** 2, 2)
+    y = np.round(x + 0.6 * x**2, 2)
 
     (fig, ax) = plt.subplots(1, 1)
 

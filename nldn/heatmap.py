@@ -31,7 +31,7 @@ def main():
     ncmap = get_cmap("copper")
     ncmap.set_under("#EEEEEE")
     ncmap.set_over("red")
-    nbins = [2 ** i for i in range(0, 7)]
+    nbins = [2**i for i in range(0, 7)]
     scaled = [n * 25 for n in nbins]
     nnorm = mpcolors.BoundaryNorm(scaled, ncmap.N)
 

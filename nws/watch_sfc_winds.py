@@ -122,10 +122,10 @@ def main():
         avgDir = dir22(avgU, avgV)
         reports.append(r)
         dirs.append(math.radians(avgDir))
-        sknts.append(((avgU ** 2) + (avgV ** 2)) ** 0.5)
+        sknts.append(((avgU**2) + (avgV**2)) ** 0.5)
         print(
             "%s,%s,%s"
-            % (r, math.radians(avgDir), ((avgU ** 2) + (avgV ** 2)) ** 0.5)
+            % (r, math.radians(avgDir), ((avgU**2) + (avgV**2)) ** 0.5)
         )
 
     reports = numpy.array(reports)

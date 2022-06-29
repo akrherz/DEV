@@ -81,7 +81,7 @@ def process():
                 print("FAIL!")
                 now += interval
                 continue
-            smps = (u10 ** 2 + v10 ** 2) ** 0.5
+            smps = (u10**2 + v10**2) ** 0.5
             wcht = windchill(
                 t2 * units("degK"), smps * units("meter / second")
             )
