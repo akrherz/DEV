@@ -1,7 +1,9 @@
 """Need to set a profile string for my bots."""
 import time
 
+from tqdm import tqdm
 import twitter
+from pyiem.plot import MapPlot, get_cmap
 from pyiem.network import Table as NetworkTable
 from pyiem.util import get_dbconn, get_properties
 
@@ -23,17 +25,31 @@ def main():
         access_token_key=row[0],
         access_token_secret=row[1],
     )
+    data = {}
     maxval = 0
+    max10k = 0
     for wfo in list(nt.sts.keys())[:]:
         if len(wfo) == 4:
             wfo = wfo[1:]
         name = f"iembot_{wfo.lower()}"
-        for user in api.GetFollowers(screen_name=name):
-            if user.followers_count > maxval:
-                maxval = user.followers_count
-                print(f"Max: {name} -> {user.screen_name} {maxval}")
-        # 15 req per 15 minutes :/
-        time.sleep(120)
+        try:
+            for user in api.GetFollowers(screen_name=name):
+                if user.followers_count > maxval:
+                    maxval = user.followers_count
+                    print(f"Max: {name} -> {user.screen_name} {maxval}")
+                if (
+                    user.friends_count < 10_000
+                    and user.followers_count > max10k
+                ):
+                    max10k = user.followers_count
+                    print(
+                        f"Max10k: {name} -> {user.screen_name}"
+                        f"[{user.friends_count}] {max10k}"
+                    )
+
+        except Exception as exp:
+            print(name, "failed", exp)
+        time.sleep(7 * 60)
 
 
 if __name__ == "__main__":
