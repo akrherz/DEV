@@ -16,11 +16,9 @@ def dowork(df, nwsli):
         cursor = dbconn.cursor()
         print("------")
         nwsli = row["NWSLI"]
-        city = "%s %s%s - %s" % (
-            row["City"],
-            row["Detail"],
-            row["Direction"],
-            row["Station Name"],
+        city = (
+            f"{row['City']} {row['Detail']}{row['Direction']} - "
+            f"{row['Station Name']}"
         )
         state = row["State"]
         network = f"{state}_DCP"
@@ -28,7 +26,7 @@ def dowork(df, nwsli):
         print(city)
         print(row["State"])
         print(f"Program {row['Program']}")
-        print("Lat: %s Lon: %s" % (row["Latitude"], row["Longitude"]))
+        print(f"Lat: {row['Latitude']} Lon: {row['Longitude']}")
         res = input(f"Enter City [{city}]: ")
         city = city if res == "" else res
         res = input(f"Enter network [{network}]: ")
@@ -64,7 +62,7 @@ def main():
         get_dbconnstr("hads"),
         index_col="nwsli",
     )
-    print("Found %s unknown entries" % (len(udf.index),))
+    print(f"Found {len(udf.index)} unknown entries")
     df = pd.read_csv(CSVFN, low_memory=False)
     for nwsli, _row in udf.iterrows():
         dowork(df, nwsli)
