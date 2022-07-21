@@ -17,7 +17,7 @@ NETWORKS = []
 
 def load_stations():
     """Get station timezone info?"""
-    pgconn = get_dbconn("mesosite", user="nobody")
+    pgconn = get_dbconn("mesosite")
     cursor = pgconn.cursor()
     cursor.execute("SELECT id, network from stations where network ~* 'ASOS'")
     for row in cursor:

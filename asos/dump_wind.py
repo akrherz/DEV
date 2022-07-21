@@ -11,7 +11,7 @@ def main(argv):
     pgconn = get_dbconn("asos")
     cursor = pgconn.cursor("streamer")
     cursor.execute(
-        """
+        f"""
         SELECT
         to_char(valid at time zone 'UTC', 'YYYYmmddHH24MI') as utc_valid,
         id, ST_x(geom) as lon, ST_y(geom) as lat,
@@ -21,15 +21,13 @@ def main(argv):
         to_char(peak_wind_time at time zone 'UTC', 'YYYYmmddHH24MI')
           as utc_peak_wind_time,
         case when array_to_string(wxcodes, ' ') ~* 'TS' then 1 else 0 end
-        from t"""
-        + str(year)
-        + """ d, stations t
+        from t{year} d, stations t
         WHERE t.id = d.station and (t.network ~* 'ASOS' or t.network = 'AWOS')
         and report_type = 2 and country = 'US' and
         network not in ('AK_ASOS', 'HI_ASOS', 'PR_ASOS')
     """
     )
-    with open("%s.csv" % (year,), "w") as fh:
+    with open("%s.csv" % (year,), "w", encoding="utf-8") as fh:
         fh.write(
             (
                 "utc_valid,id,lon,lat,wind_speed_kts,wind_direction,"

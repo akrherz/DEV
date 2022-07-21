@@ -26,7 +26,7 @@ def main():
             lastval = row[1]
             continue
         if len(running) > 10:
-            print("%s %s" % (len(running), running))
+            print(f"{len(running)} {running}")
         lastval = row[1]
         running = []
 

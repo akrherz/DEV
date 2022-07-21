@@ -39,7 +39,7 @@ def main(argv):
             (sknt, gust, row[0], row[1]),
         )
         hits += 1
-    print("%s %s/%s rows updated" % (year, hits, cursor.rowcount))
+    print(f"{year} {hits}/{cursor.rowcount} rows updated")
     cursor2.close()
     pgconn.commit()
 

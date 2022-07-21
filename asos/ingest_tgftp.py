@@ -4,10 +4,10 @@ import re
 import os
 import sys
 
-from pyiem.util import get_dbconn, logger, exponential_backoff
-from pyiem.nws.products.metarcollect import METARReport
 from psycopg2.extras import DictCursor
 import requests
+from pyiem.util import get_dbconn, logger, exponential_backoff
+from pyiem.nws.products.metarcollect import METARReport
 
 LOG = logger()
 URLBASE = "https://tgftp.nws.noaa.gov/data/observations/metar/cycles/"
@@ -46,7 +46,7 @@ def main(argv):
     pgconn = get_dbconn("iem")
     valid = None
     (failures, success) = (0, 0)
-    with open(fn) as fh:
+    with open(fn, encoding="utf-8") as fh:
         for line in fh:
             line = line.strip()
             if line == "":

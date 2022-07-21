@@ -82,7 +82,7 @@ def format_entry(arr):
 
 def main():
     """Go Main Go."""
-    o = open("flight.csv", "w")
+    o = open("flight.csv", "w", encoding="utf-8")
     for linenum, line in enumerate(
         open("FlightsForMetar.csv").read().split("\r")
     ):

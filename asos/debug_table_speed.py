@@ -19,10 +19,8 @@ def main(argv):
         row = cursor.fetchone()
         ets = datetime.datetime.now()
         secs = (ets - sts).total_seconds()
-        print(
-            "%s %6i %8.4f%s"
-            % (yr, row[0], secs, " <-- " if secs > maxt else "")
-        )
+        tt = " <-- " if secs > maxt else ""
+        print(f"{yr} {row[0]:6.0f} {secs:8.4f}{tt}")
         maxt = max([secs, maxt])
 
 

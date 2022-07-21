@@ -1,5 +1,4 @@
 """Plot peaks."""
-import datetime
 
 import pytz
 import numpy as np
@@ -15,34 +14,33 @@ def main():
 
     basets = utc(1999, 1, 1)
 
-    # data = np.zeros((17*365*24*60), 'f')
+    data = np.zeros((17 * 365 * 24 * 60), "f")
     #
-    # cursor.execute("""SELECT valid at time zone 'UTC', precip from alldata_1minute
-    # WHERE station = 'MCW' and precip > 0""")
-    """
+    cursor.execute(
+        """SELECT valid at time zone 'UTC', precip from alldata_1minute
+        WHERE station = 'MCW' and precip > 0"""
+    )
     for row in cursor:
         ts = row[0].replace(tzinfo=pytz.timezone("UTC"))
-        delta = (ts - basets)
-        offset = int(delta.days * 1440 + delta.seconds / 60.)
+        delta = ts - basets
+        offset = int(delta.days * 1440 + delta.seconds / 60.0)
         if row[1] > 0.35:
             continue
         data[offset] = row[1]
-
 
     def rolling(a, window):
         shape = (a.size - window + 1, window)
         strides = (a.itemsize, a.itemsize)
         return stride_tricks.as_strided(a, shape=shape, strides=strides)
 
-    x = range(1, 3*60+1)
+    x = range(1, 3 * 60 + 1)
     y = []
     for i in x:
         Z = rolling(data, i)
         sums = np.sum(Z, 1)
         y.append(np.max(sums))
 
-    np.savetxt('mcw.npyb', y)
-    """
+    np.savetxt("mcw.npyb", y)
     xcid = range(1, 3 * 60 + 1)
     ycid = np.loadtxt("cid.npyb")
     xalo = range(1, 3 * 60 + 1)

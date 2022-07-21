@@ -1,13 +1,11 @@
 """NARR."""
 import os
 
-from pyiem.util import get_dbconn
-from pyiem.plot import MapPlot, Z_FILL, get_cmap
 import numpy as np
 import netCDF4
-import requests
-import cartopy.crs as ccrs
 from tqdm import tqdm
+from pyiem.util import get_dbconn
+from pyiem.plot import MapPlot, Z_FILL, get_cmap
 
 
 def main():

@@ -53,7 +53,8 @@ def main():
     pcursor.execute(
         """
     SELECT issued, expired, ST_AsText(w.geom) as geo,
-    xmax(w.geom), xmin(w.geom), ymax(w.geom), ymin(w.geom) from watches w, states s where 
+    xmax(w.geom), xmin(w.geom), ymax(w.geom), ymin(w.geom) from watches w,
+    states s where
     ST_Contains(s.the_geom, ST_Centroid(w.geom)) and s.state_abbr = 'IA' 
     and type = 'TOR' and issued > '2002-01-01'
     """
@@ -75,7 +76,7 @@ def main():
         sql = """
         SELECT id, x(geom) as lon, y(geom) as lat from stations s
         WHERE ST_Contains(ST_SetSrid(GeometryFromText('%s'),4326), s.geom) 
-        and (network ~* 'ASOS' or network = 'AWOS')
+        and network ~* 'ASOS'
         """ % (
             row[2],
         )

@@ -30,11 +30,10 @@ def main():
     baseyear = times[0].year
 
     for time in times:
-        table = "t%s" % (time.year,)
         cursor.execute(
             f"""
         SELECT valid + '10 minutes'::interval, skyc1, skyc2, skyc3, skyc4
-        from {table}
+        from t{time.year}
         WHERE station = 'AMW' and valid between %s and %s ORDER by valid ASC
         """,
             (

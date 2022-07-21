@@ -1,25 +1,28 @@
 """Map of Station counts, maybe."""
 
 from pyiem.plot import MapPlot, get_cmap
-from pyiem.util import get_dbconn
+from pyiem.util import get_sqlalchemy_conn
 import pandas as pd
 
 
 def main():
     """Go Main Go."""
-    df = pd.read_sql(
-        "SELECT ST_Area(the_geom::geography) / 1000000000. as area, "
-        "state_abbr from states where state_abbr != 'DC' ORDER by state_abbr",
-        get_dbconn("postgis"),
-        index_col="state_abbr",
-    )
-    stations = pd.read_sql(
-        "SELECT state, count(*) from stations where "
-        "network ~* 'DCP' and archive_begin is not null "
-        "GROUP by state",
-        get_dbconn("mesosite"),
-        index_col="state",
-    )
+    with get_sqlalchemy_conn("postgis") as conn:
+        df = pd.read_sql(
+            "SELECT ST_Area(the_geom::geography) / 1000000000. as area, "
+            "state_abbr from states where state_abbr != 'DC' "
+            "ORDER by state_abbr",
+            conn,
+            index_col="state_abbr",
+        )
+    with get_sqlalchemy_conn("mesosite") as conn:
+        stations = pd.read_sql(
+            "SELECT state, count(*) from stations where "
+            "network ~* 'DCP' and archive_begin is not null "
+            "GROUP by state",
+            conn,
+            index_col="state",
+        )
     df["density"] = stations["count"] / df["area"]
 
     m = MapPlot(

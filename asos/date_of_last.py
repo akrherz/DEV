@@ -10,7 +10,7 @@ from pyiem.util import get_dbconn
 
 def main():
     """Go Main Go."""
-    nt = NetworkTable(["IA_ASOS", "AWOS"])
+    nt = NetworkTable("IA_ASOS")
     pgconn = get_dbconn("iem")
     cursor = pgconn.cursor()
 
@@ -21,12 +21,12 @@ def main():
     cursor.execute(
         """WITH today as (
         SELECT id, max_tmpf from summary_2021 s JOIN stations t
-        ON (s.iemid = t.iemid) WHERE t.network in ('IA_ASOS', 'AWOS')
+        ON (s.iemid = t.iemid) WHERE t.network = 'IA_ASOS'
         and day = '2021-09-27'),
         agg as (
         SELECT t.id, max(day) from summary s, stations t, today t2
         WHERE s.iemid = t.iemid and t.id = t2.id and
-        t.network in ('IA_ASOS', 'AWOS') and to_char(day, 'mmdd') >= '0927'
+        t.network = 'IA_ASOS' and to_char(day, 'mmdd') >= '0927'
         and day < '2021-09-27' and s.max_tmpf >= t2.max_tmpf
         GROUP by t.id)
         SELECT id, max from agg ORDER by max ASC

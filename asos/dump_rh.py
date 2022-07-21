@@ -1,7 +1,5 @@
 """Dump RH frequencies per year."""
 
-from metpy.units import units
-from metpy.calc import relative_humidity_from_dewpoint
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
 
@@ -12,18 +10,12 @@ def main():
     df = read_sql(
         """
         SELECT date_trunc('hour', valid) as ts, avg(tmpf) as temp,
-        avg(dwpf) as dew from alldata where station = 'DSM'
+        avg(dwpf) as dew, relh from alldata where station = 'DSM'
         and extract(month from valid) in (5, 6, 7, 8) and tmpf is not null
         and dwpf is not null GROUP by ts
     """,
         pgconn,
         index_col=None,
-    )
-    df["relh"] = (
-        relative_humidity_from_dewpoint(
-            units("degF") * df["temp"].values, units("degF") * df["dew"].values
-        )
-        * 100.0
     )
     df["year"] = df["ts"].dt.year
     counts = df[["year", "relh"]].groupby("year").count()

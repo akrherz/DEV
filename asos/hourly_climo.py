@@ -1,7 +1,7 @@
+"""One Off."""
+from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
 from pyiem.datatypes import temperature, speed, distance
-from pyiem.meteorology import relh
-from pandas.io.sql import read_sql
 
 
 def main():
@@ -10,7 +10,7 @@ def main():
 
     # air temperature, RH, Radiation, WS, and precipitation
     df = read_sql(
-        """SELECT valid, tmpf, dwpf, sknt, p01i,
+        """SELECT valid, tmpf, dwpf, sknt, p01i, relh,
     extract(month from valid) as month,
     extract(hour from valid + '10 minutes'::interval) as hour,
     extract(day from valid + '10 minutes'::interval) as day from alldata
@@ -21,10 +21,6 @@ def main():
         pgconn,
         index_col=None,
     )
-
-    df["relh"] = relh(
-        temperature(df["tmpf"], "F"), temperature(df["dwpf"], "F")
-    ).value("%")
 
     gdf = df.groupby(by=["month", "day", "hour"]).mean()
 

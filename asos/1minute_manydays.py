@@ -34,7 +34,7 @@ def smooth(x, window_len=11, window="hanning"):
 
 
 def get_day(ts):
-
+    """erm."""
     cursor.execute(
         f"""SELECT extract(hour from valid) * 60.0 +
     extract(minute from valid), tmpf, valid from t{ts.year}_1minute

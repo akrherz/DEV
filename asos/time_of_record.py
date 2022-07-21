@@ -14,10 +14,8 @@ def main():
 
     # Get records
     ccursor.execute(
-        """
-    SELECT valid, max_high_yr, max_high from climate where station = 'IA2203'
-    and max_high_yr > 1932
-    """
+        "SELECT valid, max_high_yr, max_high from climate where "
+        "station = 'IA2203' and max_high_yr > 1932"
     )
 
     hjday = []

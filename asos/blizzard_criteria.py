@@ -3,7 +3,7 @@
 from tqdm import tqdm
 import numpy as np
 from pyiem.network import Table as NetworkTable
-from pyiem.util import get_dbconn
+from pyiem.util import get_sqlalchemy_conn
 from pyiem.plot import figure
 from matplotlib.ticker import FuncFormatter
 from pandas.io.sql import read_sql
@@ -11,8 +11,6 @@ from pandas.io.sql import read_sql
 
 def main():
     """Go Main Go."""
-    pgconn = get_dbconn("iem")
-    postgis = get_dbconn("postgis")
     nt = NetworkTable(("IA_ASOS", "AWOS"))
 
     bestvsby = {}
@@ -40,16 +38,17 @@ def main():
     ahits = {}
     mhits = {}
     for sid in tqdm(nt.sts):
-        df = read_sql(
-            """
-        select w.ugc from warnings_2021 w JOIN ugcs u on (w.gid = u.gid)
-        where substr(w.ugc, 1, 2) = 'IA' and phenomena = 'BZ' and
-        significance = 'W' and issue > '2021-01-04' and
-        st_contains(u.geom, ST_GeomFromEWKT('SRID=4326;POINT(%s %s)'))
-        """,
-            postgis,
-            params=(nt.sts[sid]["lon"], nt.sts[sid]["lat"]),
-        )
+        with get_sqlalchemy_conn("postgis") as conn:
+            df = read_sql(
+                """
+            select w.ugc from warnings_2021 w JOIN ugcs u on (w.gid = u.gid)
+            where substr(w.ugc, 1, 2) = 'IA' and phenomena = 'BZ' and
+            significance = 'W' and issue > '2021-01-04' and
+            st_contains(u.geom, ST_GeomFromEWKT('SRID=4326;POINT(%s %s)'))
+            """,
+                conn,
+                params=(nt.sts[sid]["lon"], nt.sts[sid]["lat"]),
+            )
         # if df.empty:
         #    continue
         bestvsby[sid] = {"sknt": 0, "vsby": 100}
@@ -59,18 +58,19 @@ def main():
         mbestvsby[sid] = {"sknt": 0, "vsby": 100}
         mbestsknt[sid] = {"sknt": 0, "vsby": 100}
 
-        df = read_sql(
-            """
-        SELECT valid, vsby, greatest(sknt, gust) as wind
-        from current_log c JOIN stations t
-        ON (c.iemid = t.iemid) WHERE
-        t.id = %s and valid > '2021-02-04 00:00' and
-        sknt >= 0 and vsby >= 0 and raw !~* 'MADISHF' ORDER by valid ASC
-        """,
-            pgconn,
-            params=(sid,),
-            index_col=None,
-        )
+        with get_sqlalchemy_conn("iem") as conn:
+            df = read_sql(
+                """
+            SELECT valid, vsby, greatest(sknt, gust) as wind
+            from current_log c JOIN stations t
+            ON (c.iemid = t.iemid) WHERE
+            t.id = %s and valid > '2021-02-04 00:00' and
+            sknt >= 0 and vsby >= 0 and raw !~* 'MADISHF' ORDER by valid ASC
+            """,
+                conn,
+                params=(sid,),
+                index_col=None,
+            )
         obs = len(df.index)
         if obs < 10:
             print("failed to find enough obs for %s" % (sid,))
