@@ -50,7 +50,7 @@ def main():
         df2 = df[df["year"] == year]
         df2.to_file("iowaclimate_%s.shp" % (year,))
         shutil.copyfile(
-            "/mesonet/data/gis/meta/4326.prj", "iowaclimate_%s.prj" % (year,)
+            "/opt/iem/data/gis/meta/4326.prj", "iowaclimate_%s.prj" % (year,)
         )
 
 

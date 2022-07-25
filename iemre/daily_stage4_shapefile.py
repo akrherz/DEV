@@ -83,7 +83,7 @@ def main(argv):
             ).value("IN")
         fn = f"combined{year}_{m1:02.0f}{m2:02.0f}"
         df.to_file(f"{fn}.shp")
-        shutil.copyfile("/mesonet/data/gis/meta/4326.prj", f"{fn}.prj")
+        shutil.copyfile("/opt/iem/data/gis/meta/4326.prj", f"{fn}.prj")
     nc.close()
 
 
