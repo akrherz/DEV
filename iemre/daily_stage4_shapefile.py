@@ -3,15 +3,20 @@
 NOTE: DBF has a 256 column limit, so we dump twice here.
 """
 import datetime
+import shutil
+import sys
 
-from shapely.geometry import Point
-import geopandas as gpd
 import numpy as np
 import netCDF4
+from shapely.geometry import Point
+import pandas as pd
+import geopandas as gpd
 from pyiem import util
 from pyiem import iemre
 from pyiem import reference
 from pyiem.datatypes import distance
+
+LOG = util.logger()
 
 
 def compute_bounds(nc):
@@ -28,10 +33,11 @@ def compute_bounds(nc):
         print(np.unravel_index(dist.argmin(), dist.shape))
 
 
-def main():
+def main(argv):
     """Go Main Go"""
+    year = int(argv[1])
     # Need to use hourly as we want calendar day totals
-    nc = netCDF4.Dataset("/mesonet/data/stage4/2019_stage4_hourly.nc")
+    nc = netCDF4.Dataset(f"/mesonet/data/stage4/{year}_stage4_hourly.nc")
     precip = nc.variables["p01m"]
     # Compute needed grid bounds
     #     y,  x
@@ -49,28 +55,37 @@ def main():
     pts = []
     for lon, lat in zip(np.ravel(lons), np.ravel(lats)):
         pts.append(Point(lon, lat))
-    df = gpd.GeoDataFrame({"geometry": pts})
-    # iterate over days
-    now = datetime.date(2019, 3, 1)
-    ets = datetime.date(2019, 10, 1)
-    while now < ets:
-        valid = util.utc(now.year, now.month, now.day, 5)
-        tidx0 = iemre.hourly_offset(valid)
-        now += datetime.timedelta(days=1)
-        valid = util.utc(now.year, now.month, now.day, 5)
-        tidx1 = iemre.hourly_offset(valid)
-        data = precip[tidx0:tidx1, south:north, west:east]
-        total = np.sum(data, axis=0)
-        print(
-            "Processing %s max precip: %.2f"
-            % (now - datetime.timedelta(days=1), np.max(total))
-        )
-        df[(now - datetime.timedelta(days=1)).strftime("%b%d")] = distance(
-            np.ravel(total), "MM"
-        ).value("IN")
+    for (m1, m2) in [(1, 8), (9, 12)]:
+        # iterate over days
+        now = datetime.date(year, m1, 1)
+        ets = datetime.date(year, m2, 31)
+        cols = {"geometry": pts}
+        for dt in pd.date_range(now, ets).strftime("%b%d"):
+            cols[dt] = 0
+        df = gpd.GeoDataFrame(cols)
+        while now <= ets:
+            valid = util.utc(now.year, now.month, now.day, 5)
+            tidx0 = iemre.hourly_offset(valid)
+            now += datetime.timedelta(days=1)
+            valid = util.utc(now.year, now.month, now.day, 5)
+            tidx1 = iemre.hourly_offset(valid)
+            if now.strftime("%m%d") == "1231":
+                tidx1 = -1
+            data = precip[tidx0:tidx1, south:north, west:east]
+            total = np.sum(data, axis=0)
+            LOG.info(
+                "Processing %s max precip: %.2f",
+                now - datetime.timedelta(days=1),
+                np.max(total),
+            )
+            df[(now - datetime.timedelta(days=1)).strftime("%b%d")] = distance(
+                np.ravel(total), "MM"
+            ).value("IN")
+        fn = f"combined{year}_{m1:02.0f}{m2:02.0f}"
+        df.to_file(f"{fn}.shp")
+        shutil.copyfile("/mesonet/data/gis/meta/4326.prj", f"{fn}.prj")
     nc.close()
-    df.to_file("combined.shp")
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv)
