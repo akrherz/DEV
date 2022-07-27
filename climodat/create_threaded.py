@@ -14,7 +14,8 @@ def main(argv):
     """Go Main Go."""
     pgconn = get_dbconn("mesosite")
     cursor = pgconn.cursor()
-    job = json.load(open(argv[1]))
+    with open(argv[1], encoding="utf-8") as fh:
+        job = json.load(fh)
     network = f"{job['threaded'][:2]}CLIMATE"
     nt = NetworkTable(network, only_online=False)
     # Figure the start and end dates for each station in sids

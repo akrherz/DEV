@@ -4,13 +4,13 @@ from datetime import datetime, date, timedelta
 import sys
 
 # Third Party
+import requests
 from pyiem.network import Table as NetworkTable
 from pyiem.util import get_dbconn, logger, convert_value
 from pyiem.reference import nwsli2state
-import requests
 
 LOG = logger()
-state2nwsli = dict([(value, key) for key, value in nwsli2state.items()])
+state2nwsli = dict((value, key) for key, value in nwsli2state.items())
 
 
 def make_dates(tokens):

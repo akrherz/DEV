@@ -72,14 +72,9 @@ def workflow(state):
                 nt[to_network].sts[to_track]["lat"],
             ),
         )
-        idnum = cursor.fetchone()[0]
+        # idnum = cursor.fetchone()[0]
 
-        value = f"{to_track}|{to_network}"
-        cursor.execute(
-            "INSERT into station_attributes(iemid, attr, value) "
-            "VALUES (%s, %s, %s)",
-            (idnum, MYATTR, value),
-        )
+        # TODO Add a station_threading entry
     cursor.close()
     pgconn.commit()
 
