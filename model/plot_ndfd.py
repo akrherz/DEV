@@ -6,27 +6,20 @@ import datetime
 
 import numpy as np
 from pandas.io.sql import read_sql
-from pyiem.util import c2f, get_dbconn
+from pyiem.util import c2f, get_sqlalchemy_conn
 from pyiem.plot import MapPlot, get_cmap
 import pygrib
 
 
 def main():
     """Go Main"""
-    grbs = pygrib.open("ds.mint.bin")
-    # skip 1-off first field
-    total = None
-    lats = lons = None
-    for grb in grbs[1:]:
-        if lats is None:
-            lats, lons = grb.latlons()
-            total = grb["values"]
-            continue
-        total = c2f(grb["values"] - 273.15)
-        print(np.max(total))
-        print(grb.validDate)
+    grbs = pygrib.open("/tmp/ds.maxt.bin")
+    grb = grbs[3]
+    lats, lons = grb.latlons()
+    total = c2f(grb["values"] - 273.15)
+    print(grb.validDate)
     # TODO tz-hack here
-    analtime = grb.analDate - datetime.timedelta(hours=6)
+    analtime = grb.analDate - datetime.timedelta(hours=5)
 
     mp = MapPlot(
         sector="iowa",
@@ -36,12 +29,11 @@ def main():
         north=45,
         south=38,
         axisbg="tan",
-        title="NWS 29 May 2021 Morning Low Temperature Forecast",
-        subtitle="NDFD Forecast Issued %s, Actual ASOS/AWOS Lows Plotted"
-        % (analtime.strftime("%-I %p %-d %B %Y"),),
+        title="NWS 3 August 2022 Afternoon High Temperature Forecast",
+        subtitle=f"NDFD Forecast Issued {analtime:%-I %p %-d %B %Y}",
     )
-    cmap = get_cmap("jet")
-    bins = np.arange(32, 43, 1)
+    cmap = get_cmap("turbo")
+    bins = np.arange(90, 105, 2)
     mp.pcolormesh(
         lons,
         lats,
@@ -52,6 +44,7 @@ def main():
         units="Fahrenheit",
         clip_on=False,
     )
+    """
     df = read_sql(
         "SELECT ST_x(geom) as lon, ST_y(geom) as lat, id, min_tmpf from "
         "summary_2021 s JOIN stations t on (s.iemid = t.iemid) WHERE "
@@ -67,6 +60,7 @@ def main():
         fmt="%.0f",
         labelbuffer=2,
     )
+    """
     mp.drawcounties()
     # mp.drawcities()
     mp.postprocess(filename="test.png")
