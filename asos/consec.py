@@ -13,8 +13,8 @@ def main():
     cursor.execute(
         """
     select valid, round(tmpf::numeric, 0) from alldata where station = %s and
-    extract(minute from valid) in (53, 0) and tmpf is not null
-    and report_type = 2 ORDER by valid ASC
+    tmpf is not null and report_type = 3
+    ORDER by valid ASC
     """,
         (site,),
     )

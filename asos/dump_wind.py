@@ -23,7 +23,7 @@ def main(argv):
         case when array_to_string(wxcodes, ' ') ~* 'TS' then 1 else 0 end
         from t{year} d, stations t
         WHERE t.id = d.station and (t.network ~* 'ASOS' or t.network = 'AWOS')
-        and report_type = 2 and country = 'US' and
+        and report_type in (3, 4) and country = 'US' and
         network not in ('AK_ASOS', 'HI_ASOS', 'PR_ASOS')
     """
     )

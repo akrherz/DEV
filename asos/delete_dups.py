@@ -25,7 +25,7 @@ def do_year(year):
             cursor.execute(
                 f"""with obs as (
                     select valid, count(*), max(ctid) from {table}
-                    where station = %s and report_type = 2 GROUP by valid
+                    where station = %s and report_type in (3, 4) GROUP by valid
                     ORDER by count DESC)
                 delete from {table} t USING obs o where
                 t.ctid = o.max and t.station = %s and o.count > 1
