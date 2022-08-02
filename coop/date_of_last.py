@@ -1,56 +1,44 @@
 """map of dates."""
 
-from pyiem.network import Table as NetworkTable
+import pandas as pd
 from pyiem.plot import MapPlot
-from pyiem.util import get_dbconn
-from pandas.io.sql import read_sql
+from pyiem.util import get_sqlalchemy_conn
 
 
 def main():
     """Go Main Go."""
-    nt = NetworkTable("IACLIMATE")
-    pgconn = get_dbconn("coop")
+    with get_sqlalchemy_conn("coop") as conn:
+        df = pd.read_sql(
+            """
+            WITH today as (
+            SELECT station, max(day) as last_date from alldata_ia WHERE
+            high >= 100 GROUP by station)
 
-    lats = []
-    lons = []
-    vals = []
-
-    df = read_sql(
-        """WITH today as (
-        SELECT station, low from alldata_ia WHERE
-        day = '2019-11-12')
-
-        SELECT a.station, max(a.day), min(t.low) as low
-        from alldata_ia a JOIN today t ON
-        (a.station = t.station) WHERE a.day < '2019-11-12' and
-        sday < '1113' and sday > '0701' and a.low <= t.low
-        GROUP by a.station ORDER by max ASC
-        """,
-        pgconn,
-        index_col="station",
-    )
-
-    colors = []
-    for station, row in df.iterrows():
-        lats.append(nt.sts[station]["lat"])
-        lons.append(nt.sts[station]["lon"])
-        label = f"{row['low']}\n{row['max'].year}"
-        vals.append(label)
-        colors.append("k")
-
+            SELECT a.station, last_date, st_x(geom) as lon, st_y(geom) as lat
+            from today a JOIN stations t ON
+            (a.station = t.id) WHERE t.online and t.network = 'IACLIMATE'
+            ORDER by last_date ASC
+            """,
+            conn,
+            index_col="station",
+            parse_dates="last_date",
+        )
+    df["year"] = df["last_date"].dt.year
     m = MapPlot(
         continentalcolor="white",
-        title="12 Nov 2019 Iowa COOP Low Temperature",
-        subtitle=(
-            "and most recent year with as cold a temperature "
-            "prior to 13 November"
-        ),
+        title="Year of Last 100+" r"$^\circ$F" "High Temperature",
+        subtitle="Based on NWS Long Term COOP sites",
     )
     m.plot_values(
-        lons, lats, vals, fmt="%s", color=colors, labelbuffer=3, textsize=12
+        df["lon"],
+        df["lat"],
+        df["year"].values,
+        fmt="%s",
+        labelbuffer=3,
+        textsize=12,
     )
     m.drawcounties()
-    m.postprocess(filename="191113.png")
+    m.postprocess(filename="220802.png")
 
 
 if __name__ == "__main__":
