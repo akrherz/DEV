@@ -41,10 +41,10 @@ def edit_clifiles():
     for row in cursor:
         # Review the date this was processed, so to not redo things recently
         fn = f"/mnt/idep2/data/dailyprecip/{row[0]:%Y/%Y%m%d}.npy.gz"
-        # If this file was modified after 25 June 2022, we skip it
+        # If this file was modified after 5 July 2022, we skip it
         if os.path.isfile(fn):
             mt = datetime.datetime.fromtimestamp(os.path.getmtime(fn))
-            if mt > datetime.datetime(2022, 6, 25):
+            if mt > datetime.datetime(2022, 7, 5):
                 LOG.warning("Skipping %s as it was modified %s", row[0], mt)
                 continue
         LOG.warning(
