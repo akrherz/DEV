@@ -27,7 +27,7 @@ def main():
         lat = int(line[39:41])
         lat += float(line[42:44]) / 60.0
         lon = 0 - int(line[47:50])
-        lon -= float(line[51:53])
+        lon -= float(line[51:53]) / 60.0
         network = f"CA_{line[:2]}_ASOS"
         print(network, sid4, lon, lat)
         mcursor.execute(
