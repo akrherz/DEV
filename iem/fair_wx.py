@@ -1,9 +1,10 @@
 """State Fair Wx"""
 from datetime import date, timedelta
+import os
 
 import numpy as np
 import pandas as pd
-from pandas.io.sql import read_sql
+from pyiem.plot import figure_axes
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn
 
@@ -145,13 +146,59 @@ FAIRS = [
     [date(2019, 8, 8), date(2019, 8, 18)],
     # No 2020 Fair, COVID
     [date(2021, 8, 12), date(2021, 8, 22)],
+    [date(2022, 8, 11), date(2022, 8, 21)],
 ]
+
+
+def hours_above():
+    """Plot hours above some threshold."""
+    if not os.path.isfile("/tmp/data.csv"):
+        years = []
+        hours = []
+        dbconn = get_dbconn("asos")
+        cursor = dbconn.cursor()
+        for (sts, ets) in FAIRS:
+            if sts.year < 1973:
+                continue
+            cursor.execute(
+                """
+                SELECT distinct
+                date_trunc('hour', valid + '10 minutes'::interval)
+                from alldata where station = 'DSM' and valid >= %s and
+                valid < %s and tmpf >= 79.5
+                """,
+                (sts, ets + timedelta(hours=24)),
+            )
+            years.append(sts.year)
+            hours.append(cursor.rowcount)
+        pd.DataFrame({"years": years, "hours": hours}).to_csv("/tmp/data.csv")
+    df = pd.read_csv("/tmp/data.csv")
+    (fig, ax) = figure_axes(
+        title="Iowa State Fair:: Number of Hourly Observations >= 80$^\circ$F",
+        subtitle=(
+            "based on hourly Des Moines Airport temperature reports "
+            "(1973-2022)"
+        ),
+        apctx={"_r": "43"},
+    )
+    ax.bar(df["years"], df["hours"])
+    avgv = df["hours"].mean()
+    ax.axhline(avgv, lw=2)
+    ax.text(2024, avgv, f"Avg:\n{avgv:.1f} hrs", va="center")
+    ax.axvspan(1941.5, 1945.5, color="tan")
+    ax.axvspan(2019.5, 2020.5, color="tan")
+    ax.set_xlim(1972.5, 2022.5)
+    ax.set_yticks(np.arange(0, 8 * 24 + 1, 24))
+    ax.set_xlabel("No State Fair in 2020")
+    ax.set_ylabel("Total Hours")
+    ax.grid(True)
+    fig.savefig("220822.png")
 
 
 def main():
     """Do Something!"""
     pgconn = get_dbconn("coop")
-    df = read_sql(
+    df = pd.read_sql(
         "SELECT day, high, low, precip from alldata where station = 'IATDSM' "
         "ORDER by day ASC",
         pgconn,
@@ -191,14 +238,14 @@ def main2():
     """Legacy"""
     (fig, ax) = plt.subplots(2, 1, sharex=True)
     bars = ax[0].bar(
-        numpy.arange(1880, 2016) - 0.4, avgH, edgecolor="r", facecolor="r"
+        np.arange(1880, 2016) - 0.4, avgH, edgecolor="r", facecolor="r"
     )
     for bar in bars:
         if bar.get_height() < avgHH:
             bar.set_facecolor("b")
             bar.set_edgecolor("b")
     ax[0].bar(
-        numpy.arange(1942, 1946),
+        np.arange(1942, 1946),
         [110, 110, 110, 110],
         fc="#EEEEEE",
         ec="#EEEEEE",
@@ -230,4 +277,4 @@ def main2():
 
 
 if __name__ == "__main__":
-    main()
+    hours_above()
