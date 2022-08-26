@@ -30,7 +30,8 @@ def process(engine, conn, row, station):
     for _, cullrow in obs.loc[[int(i) for i in res.split()]].iterrows():
         cursor.execute(
             f"UPDATE t{cullrow['valid'].year} SET tmpf = null, dwpf = null, "
-            "feel = null, relh = null WHERE station = %s and valid = %s",
+            "feel = null, relh = null, editable = 'f' "
+            "WHERE station = %s and valid = %s",
             (station, cullrow["valid"]),
         )
         print(f"Nulled out {cullrow['valid']} count: {cursor.rowcount}")
