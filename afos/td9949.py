@@ -1,6 +1,7 @@
 """Process really old files from NCEI.
 
 https://www1.ncdc.noaa.gov/pub/data/documentlibrary/tddoc/td9949.pdf
+
 """
 from io import BytesIO
 import re
@@ -13,7 +14,7 @@ from pyiem.util import utc, get_dbconn, noaaport_text
 
 # Copied from https://github.com/akrherz/iem
 sys.path.insert(0, "/opt/iem/scripts/util")
-from poker2afos import XREF_SOURCE  # noqa
+from poker2afos import XREF_SOURCE  # type: ignore
 
 WMO_RE = re.compile(
     r"^(?P<ttaaii>[A-Z0-9]{4,6})\s+(?P<cccc>[A-Z]{4})\s+"
@@ -67,7 +68,6 @@ def persist(cursor, record, utcnow):
         return
     # Check 1 we must match the WMO header
     m = WMO_RE.match(text)
-    # ingest = False
     if not m:
         # Check for the strange prefixed products of :blah:WMO
         if text[0] == ":":
@@ -77,16 +77,12 @@ def persist(cursor, record, utcnow):
                 print("Double failure")
                 print(text)
                 return
-            # ingest = True
         else:
             print(
                 f"WMO_RE FAILED! {ord(record['text'][0])} "
                 f"{ord(record['text'][1])}"
             )
             return
-    # if not ingest:
-    #    print("SKIPPING AS WE LIKELY ALREADY HAVE THIS PRODUCT.")
-    #    return
     wmo = m.groupdict()
     # Check 2 we have a good AFOS
     m = AFOS_RE.match(record["cccnnnxxx"])
@@ -96,13 +92,16 @@ def persist(cursor, record, utcnow):
     valid = compute_valid(utcnow, wmo["ddhhmm"])
     ttaaii = clean_ttaaii(wmo["ttaaii"])
     cccc = XREF_SOURCE.get(wmo["cccc"], wmo["cccc"])
-    print(f"Insert {valid} {cccc} {ttaaii}")
+    afos = record["cccnnnxxx"][3:].strip()
+    if not afos.startswith("ROB"):
+        return
+    print(f"Insert {valid} {cccc} {ttaaii} {afos}")
     cursor.execute(
         "INSERT into products (data, pil, entered, source, wmo) VALUES "
         "(%s, %s, %s, %s, %s)",
         (
             noaaport_text(text),
-            record["cccnnnxxx"][3:].strip(),
+            afos,
             valid,
             cccc,
             ttaaii,
