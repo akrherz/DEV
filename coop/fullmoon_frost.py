@@ -1,3 +1,4 @@
+"""First frost and moon phase."""
 import datetime
 
 import ephem
@@ -16,14 +17,14 @@ def run(cursor, myloc):
     that year"""
     cursor.execute(
         "SELECT year, min(day), min(extract(doy from day)) from "
-        "alldata_ia where station = 'IA0200' and low < 29 and month > 6 "
+        "alldata_ia where station = 'IATAME' and low < 32 and month > 6 "
         "GROUP by year ORDER by year ASC"
     )
     juliandays = []
     moondiff = []
     for row in cursor:
         juliandays.append(row[2])
-        myloc.date = "%s/%s/%s" % (row[1].year, row[1].month, row[1].day)
+        myloc.date = f"{row[1]:%Y/%m/%d}"
 
         lastd = s2dt(ephem.previous_full_moon(myloc.date)).date()
         today = row[1]
@@ -55,7 +56,7 @@ def main():
 
     (fig, ax) = plt.subplots(1, 1)
     ax.scatter(moondiff, juliandays, marker="x", s=40)
-    ax.set_title(r"1893-2012 Ames First Fall sub 29$^\circ$F Temperature")
+    ax.set_title(r"1893-2021 Ames First Fall sub 32$^\circ$F Temperature")
     ax.set_ylabel("Date")
     ax.set_xlabel("Days to nearest Full Moon")
     ax.set_xlim(-16, 16)
@@ -76,7 +77,7 @@ def main():
     )
 
     ax.grid(True)
-    fig.savefig("test.png")
+    fig.savefig("220916.png")
 
 
 if __name__ == "__main__":
