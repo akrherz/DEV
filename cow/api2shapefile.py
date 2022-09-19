@@ -13,7 +13,7 @@ def main():
         "begints=2019-01-01T00:00Z&endts=2019-08-06T00:00Z&"
         "phenomena=TO&lsrtype=TO&"
     )
-    reg = requests.get(url)
+    reg = requests.get(url, timeout=300)
     jsobj = reg.json()
     for name in ["events", "stormreports"]:
         # This feels hacky, but I did not find another means yet to do it

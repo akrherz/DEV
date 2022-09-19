@@ -18,7 +18,7 @@ def main():
             "begints=2015-01-01T00:00Z&endts=2020-01-01T00:00Z&"
             "phenomena=SV&lsrtype=SV&"
         )
-        reg = requests.get(url)
+        reg = requests.get(url, timeout=300)
         jsobj = reg.json()
         jsobj["stats"]["wfo"] = wfo
         res.append(jsobj["stats"])

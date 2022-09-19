@@ -1,3 +1,4 @@
+"""Legacy cruft."""
 import mx.DateTime, pg
 from pyIEM import stationTable, iemdb
 

@@ -3,8 +3,6 @@ import pg, stationTable
 st = stationTable.stationTable("/mesonet/TABLES/kcci.stns")
 mydb = pg.connect("portfolio", "meteor.geol.iastate.edu")
 
-# rs = mydb.query("SELECT name, email, s_mid from iem_site_contacts WHERE \
-#  portfolio = 'kccisnet' and s_mid in ('SPKI4', 'SOCI4', 'SCEI4', 'SJCI4', 'SOGI4')").dictresult()
 rs = mydb.query(
     "SELECT name, email, s_mid from iem_site_contacts WHERE \
   portfolio = 'kelosnet'"

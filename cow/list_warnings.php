@@ -23,22 +23,21 @@ while (list($key,$val) = each($nt->table)){
  //Iterate over the warnings
  reset($cow->warnings);
  while( list($k, $warn) = each($cow->warnings)){
- 	fwrite($wfp, sprintf("%s,%s,%s,%s,%.2f,%.2f,%.3f\n", $warn["wfo"],
- 			date("Y-m-d H:i", $warn["sts"]), date("H", $warn["sts"]),
- 			$warn["verify"] ? "Y": "N", $warn["lon0"],
- 			$warn["lat0"], $warn["parea"]));
+     fwrite($wfp, sprintf("%s,%s,%s,%s,%.2f,%.2f,%.3f\n", $warn["wfo"],
+             date("Y-m-d H:i", $warn["sts"]), date("H", $warn["sts"]),
+             $warn["verify"] ? "Y": "N", $warn["lon0"],
+             $warn["lat0"], $warn["parea"]));
  }
 
  reset($cow->lsrs);
  while(list($k, $lsr) = each($cow->lsrs)){
- 	fwrite($lfp, sprintf("%s,%s,%s,%s,%.2f,%.2f\n", $lsr["wfo"],
- 			date("Y-m-d H:i", $lsr["ts"]),
- 			date("H", $lsr["ts"]),
- 			$lsr["warned"] ? "Y": "N", $lsr["lon0"],
- 			$lsr["lat0"]));
+     fwrite($lfp, sprintf("%s,%s,%s,%s,%.2f,%.2f\n", $lsr["wfo"],
+             date("Y-m-d H:i", $lsr["ts"]),
+             date("H", $lsr["ts"]),
+             $lsr["warned"] ? "Y": "N", $lsr["lon0"],
+             $lsr["lat0"]));
  }
 }
 
 fclose($wfp);
 fclose($lfp);
-?>

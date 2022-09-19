@@ -1,9 +1,9 @@
 """Generate a pretty map."""
 
-from pyiem.plot.use_agg import plt
-from pyiem.plot.geoplot import MapPlot
 import numpy as np
 import pandas as pd
+from pyiem.plot.use_agg import plt
+from pyiem.plot.geoplot import MapPlot
 
 
 def main():

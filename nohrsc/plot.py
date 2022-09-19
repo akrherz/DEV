@@ -44,7 +44,7 @@ def overlay(mp):
         pgconn,
         geom_col="geom",
     )
-    print("Found %s warnings" % (len(df.index),))
+    print(f"Found {len(df.index)} warnings")
     crs = ccrs.PlateCarree()
     crs_new = ccrs.PlateCarree()
     # crs_new = ccrs.Mercator()
