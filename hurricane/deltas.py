@@ -2,54 +2,55 @@
 import datetime
 
 import numpy as np
-from pyiem.util import get_dbconn
+import pandas as pd
+from pyiem.util import get_sqlalchemy_conn
 from pyiem.plot.use_agg import plt
-from pandas.io.sql import read_sql
 
 
 def main():
     """Go Main Go"""
-    pgconn = get_dbconn("coop")
-    df = read_sql(
-        """
-    select sday, to_char(day, 'YYYYMMDD') as date, high, low, precip
-    from alldata_ia
-    where station = 'IA2203'
-    """,
-        pgconn,
-        index_col="date",
-    )
+    with get_sqlalchemy_conn("coop") as conn:
+        df = pd.read_sql(
+            """
+        select sday, to_char(day, 'YYYYMMDD') as date, high, low, precip
+        from alldata_ia
+        where station = 'IATDSM'
+        """,
+            conn,
+            index_col="date",
+        )
     climo = df.groupby("sday").mean()
 
     hevents = []
     levents = []
     pevents = []
-    for line in open("dates.txt"):
-        date = line.strip()
-        if date not in df.index:
-            continue
-        dt = datetime.datetime.strptime(date, "%Y%m%d")
-        harr = []
-        larr = []
-        parr = []
-        for dy in range(-5, 6):
-            dt2 = dt + datetime.timedelta(days=dy)
-            deltahigh = (
-                df.at[dt2.strftime("%Y%m%d"), "high"]
-                - climo.at[dt2.strftime("%m%d"), "high"]
-            )
-            harr.append(deltahigh)
-            deltalow = (
-                df.at[dt2.strftime("%Y%m%d"), "low"]
-                - climo.at[dt2.strftime("%m%d"), "low"]
-            )
-            larr.append(deltalow)
-            parr.append(
-                1 if df.at[dt2.strftime("%Y%m%d"), "precip"] >= 0.01 else 0
-            )
-        hevents.append(harr)
-        levents.append(larr)
-        pevents.append(parr)
+    with open("gc_dates.txt", encoding="ascii") as fh:
+        for line in fh:
+            date = line.strip()
+            if date not in df.index:
+                continue
+            dt = datetime.datetime.strptime(date, "%Y%m%d")
+            harr = []
+            larr = []
+            parr = []
+            for dy in range(-5, 6):
+                dt2 = dt + datetime.timedelta(days=dy)
+                deltahigh = (
+                    df.at[dt2.strftime("%Y%m%d"), "high"]
+                    - climo.at[dt2.strftime("%m%d"), "high"]
+                )
+                harr.append(deltahigh)
+                deltalow = (
+                    df.at[dt2.strftime("%Y%m%d"), "low"]
+                    - climo.at[dt2.strftime("%m%d"), "low"]
+                )
+                larr.append(deltalow)
+                parr.append(
+                    1 if df.at[dt2.strftime("%Y%m%d"), "precip"] >= 0.01 else 0
+                )
+            hevents.append(harr)
+            levents.append(larr)
+            pevents.append(parr)
 
     hdata = np.array(hevents)
     highs = np.mean(hdata, axis=0)
@@ -63,8 +64,8 @@ def main():
         0.1,
         0.95,
         (
-            "Des Moines Daily Weather (1880-2017)\n"
-            "for dates around US East Coast Landfalling Hurricane"
+            "Des Moines Daily Weather (1880-2021)\n"
+            "for dates around US Gulf Coast Landfalling Hurricane"
         ),
         ha="left",
         va="center",
@@ -102,8 +103,8 @@ def main():
     ax[2].set_ylabel("Frequency [%]")
     ax[2].grid(True)
     ax[2].set_xlabel(
-        ("Relative Days to Hurricane Landfall, " "%s events considered")
-        % (len(hevents),)
+        "Relative Days to Hurricane Landfall, "
+        f"{len(hevents)} events considered"
     )
 
     fig.savefig("test.png")
