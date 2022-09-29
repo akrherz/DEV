@@ -12,62 +12,60 @@ from matplotlib.colors import ListedColormap
 
 def plot():
     """Do plotting work"""
-    cmap1 = plt.get_cmap("hot_r")
-    colors = list(cmap1(np.arange(18) / 19.0))
+    cmap1 = plt.get_cmap("terrain_r")
+    colors = list(cmap1(np.arange(11) / 12.0))
     # cmap2 = plt.get_cmap("Pastel1")
     # colors.extend(list(cmap2(np.arange(3) / 3.0)))
     cmap = ListedColormap(colors)
 
     # cmap.set_under("tan")
     cmap.set_under("white")
-    delta = np.load("feb23.npy") - np.load("current.npy")
-    lons = np.load("lons.npy")
-    lats = np.load("lats.npy")
+    hours = np.load("/tmp/hours.npy")
+    minval = np.load("/tmp/minval.npy")
+    lons = np.load("/tmp/lons.npy")
+    lats = np.load("/tmp/lats.npy")
     mp = MapPlot(
         sector="custom",
-        south=28,
-        west=-113,
-        east=-76,
-        north=50,
+        south=40,
+        west=-100,
+        north=49,
+        east=-87,
         twitter=True,
         continentalcolor="tan",
         # statebordercolor="white",
         title=(
-            r"Difference between 23 Feb 2021 High Temp and 1 Jan - 22 Feb Warmest "
-            "Air Temperature"
+            r"6 PM 27 Sep - 12 PM 28 Sep 2022 :: Hours below 32$^\circ$F Air Temperature"
         ),
-        subtitle=(
-            "based on hourly NCEP Real-Time Mesoscale Analysis "
-            "(RTMA) ending 8 PM 23 Feb 2021 CST, only positive difference shown"
-        ),
+        subtitle="based on hourly NCEP Real-Time Mesoscale Analysis",
     )
 
     # levels = [1, 4, 8, 12]
     # levels2 = list(range(24, 14 * 24 + 1, 48))
     # levels.extend(levels2)
     # levels = range(12, 145, 12)
-    levels = [0, 1, 2, 4, 6, 8, 10, 12, 15]
+    levels = range(1, 9)
     mp.pcolormesh(
         lons,
         lats,
-        delta,
+        hours,
         levels,
         cmap=cmap,
         clip_on=False,
-        units=r"$^\circ$F",
+        units="hours",
         spacing="proportional",
         extend="both",
     )
-    # mp.drawcounties()
-    mp.postprocess(filename="test.png")
+    mp.drawcounties()
+    mp.postprocess(filename="220929.png")
 
 
 def process():
     """Go Main Go"""
-    now = datetime.datetime(2021, 2, 1, 6)
-    ets = datetime.datetime(2021, 2, 19, 2)
+    now = datetime.datetime(2022, 9, 28, 0)
+    ets = datetime.datetime(2022, 9, 28, 18)
     interval = datetime.timedelta(hours=1)
-    current = None
+    minval = None
+    hours = None
     while now < ets:
         fn = now.strftime(
             "/mesonet/ARCHIVE/data/%Y/%m/%d/"
@@ -83,20 +81,21 @@ def process():
                     print(f"failed to get 2t in {fn}!")
                     now += interval
                     continue
-                if current is None:
-                    current = np.zeros(np.shape(t2))
-                    maxhours = np.zeros(np.shape(t2))
+                if minval is None:
+                    hours = np.zeros(np.shape(t2))
+                    minval = np.ones(np.shape(t2)) * 100.0
                     lats, lons = grbs.select(shortName="2t")[0].latlons()
-                    np.save("lons", lons)
-                    np.save("lats", lats)
+                    np.save("/tmp/lons", lons)
+                    np.save("/tmp/lats", lats)
             t2 = (t2 * units("degK")).to(units("degF")).magnitude
-            current = np.where(t2 < 0, current + 1, 0)
-            maxhours = np.where(current > maxhours, current, maxhours)
-            print(f"{now} max: {np.max(maxhours):.1f}")
+            hours = np.where(t2 < 32, hours + 1, hours)
+            minval = np.where(t2 < minval, t2, minval)
+            print(f"{now} max: {np.max(hours):.1f}")
 
         now += interval
 
-    np.save("maxhours", maxhours)
+    np.save("/tmp/hours", hours)
+    np.save("/tmp/minval", minval)
 
 
 if __name__ == "__main__":
