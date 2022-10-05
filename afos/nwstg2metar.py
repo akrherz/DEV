@@ -1,6 +1,4 @@
 """
-Process the giant files from here:
-https://www.ncei.noaa.gov/has/HAS.FileAppRouter?datasetname=6431&subqueryby=STATION&applname=&outdest=FILE
 
 """
 # stdlb
@@ -9,44 +7,34 @@ import glob
 import tarfile
 import sys
 import os
+import re
 
 # third party
 from pyiem.util import noaaport_text
 
 HAS = "https://www.ncei.noaa.gov/pub/has"
+YYYYMMDD = re.compile("([\d]{8})")
 
 
 def main(argv):
     """Go Main Go."""
-    order = argv[1]
-    bigfn = argv[2]
-    subprocess.call(f"wget {HAS}/{order}/{bigfn}", shell=True)
-    subprocess.call(f"tar -xzf {bigfn}", shell=True)
-    base = bigfn[8:14]
-    for tarfn in glob.glob("*.tar"):
-        with tarfile.open(tarfn) as tarfp:
+    for tarz in glob.glob("*.tar.Z"):
+        subprocess.call(f"gunzip -c {tarz} > tmp", shell=True)
+        with tarfile.open("tmp") as tarfp:
             for member in tarfp.getmembers():
-                if member.name.startswith("TEXT_SA"):
-                    wmo = member.name[5:11]
+                if (
+                    member.name.find("UB") > -1
+                    or member.name.find("UACN") > -1
+                ):
+                    dt = YYYYMMDD.findall(member.name)[0]
                     data = (
                         tarfp.extractfile(member)
                         .read()
                         .decode("ascii", "ignore")
                     )
-                    tokens = data.split(wmo)
-                    for token in tokens:
-                        if len(token) < 20:
-                            continue
-                        # ' XXXX 00__'
-                        hr = token[8:10]
-                        saofn = f"{base}{hr}.sao"
-                        with open(saofn, "a", encoding="ascii") as fh:
-                            fh.write(noaaport_text(f"000 \r\r\n{wmo}{token}"))
-        os.unlink(tarfn)
-    subprocess.call(
-        f"rsync -a --remove-source-files {bigfn} mesonet@metl60:/stage/NWSTG/",
-        shell=True,
-    )
+                    with open(f"{dt}.txt", "a", encoding="ascii") as fh:
+                        fh.write(data)
+        subprocess.call(f"mv {tarz} processed/", shell=True)
 
 
 if __name__ == "__main__":
