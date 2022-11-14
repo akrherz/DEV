@@ -1,16 +1,17 @@
 """Review what ACIS says for unknown NWSLIs."""
 
-
 # Third Party
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn, logger, convert_value
 import requests
+from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn, logger, get_sqlalchemy_conn
 
 LOG = logger()
 
 
 def process(nwsli, row, data):
     """Do Some Magic."""
+    dbconn = get_dbconn("mesosite")
+    cursor = dbconn.cursor()
     for meta in data["meta"]:
         print("-------------------------------")
         print(nwsli)
@@ -18,19 +19,43 @@ def process(nwsli, row, data):
         print(meta["name"])
         print(meta["state"])
         print(meta.get("network"))
-        print(meta["ll"][1])
-        print(meta["ll"][0])
-        print(convert_value(meta["elev"], "feet", "meter"))
+    meta = data["meta"][0]
+    res = input(f"Enter City [{meta['name']}]: ")
+    city = meta["name"] if res == "" else res
+    network = input("Enter network: ")
+    res = input("Enter Country [US]: ")
+    country = res if res != "" else "US"
+    cursor.execute(
+        "INSERT into stations (id, name, network, country, plot_name, "
+        "state, elevation, online, metasite, geom) VALUES (%s, %s, %s, "
+        "%s, %s, %s, %s, %s, %s, 'SRID=4326;POINT(%s %s)')",
+        (
+            nwsli,
+            city,
+            network,
+            country,
+            city,
+            meta["state"],
+            -999,
+            True,
+            False,
+            meta["ll"][0],
+            meta["ll"][1],
+        ),
+    )
+    cursor.close()
+    dbconn.commit()
 
 
 def main():
     """Go Main Go."""
-    df = read_sql(
-        "SELECT nwsli, max(product) as product from unknown "
-        "where length(nwsli) = 5 GROUP by nwsli ORDER by nwsli ASC",
-        get_dbconn("hads"),
-        index_col="nwsli",
-    )
+    with get_sqlalchemy_conn("hads") as conn:
+        df = read_sql(
+            "SELECT nwsli, max(product) as product from unknown "
+            "where length(nwsli) = 5 GROUP by nwsli ORDER by nwsli ASC",
+            conn,
+            index_col="nwsli",
+        )
     LOG.info("Found %s unknown 5-char ids", len(df.index))
     for nwsli, row in df.iterrows():
         req = requests.post(
@@ -39,10 +64,11 @@ def main():
                 "meta": "name,ll,elev,state,network",
                 "sids": nwsli,
             },
+            timeout=60,
         )
         data = req.json()
-        if "meta" not in data:
-            LOG.info("Got status_code %s with no meta", req.status_code)
+        if "meta" not in data or not data["meta"]:
+            LOG.info("status_code %s no meta %s", req.status_code, nwsli)
             LOG.info(req.content)
             continue
         process(nwsli, row, data)
