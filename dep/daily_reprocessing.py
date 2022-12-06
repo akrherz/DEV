@@ -1,8 +1,11 @@
 """We need to reprocess things as that is what we are always doing."""
 import datetime
 import os
+import random
 import subprocess
 
+import pandas as pd
+from pyiem.dep import SOUTH, NORTH, EAST, WEST, get_cli_fname, read_cli
 from pyiem.util import logger, get_dbconn
 
 LOG = logger()
@@ -23,8 +26,8 @@ def env2database():
     subprocess.call(cmd, shell=True)
 
 
-def edit_clifiles():
-    """Now we edit files."""
+def pick_dates_by_database():
+    """Look in the database for dates of interest."""
     pgconn = get_dbconn("idep")
     cursor = pgconn.cursor()
     days = []
@@ -38,25 +41,49 @@ def edit_clifiles():
         GROUP by valid ORDER by count desc
     """
     )
-    for row in cursor:
+    return days
+
+
+def edit_clifiles():
+    """Now we edit files."""
+    # Pick a random CLI point outside the midwest, so to target dates.
+    attempt = 0
+    clifn = None
+    while attempt < 100:
+        attempt += 1
+        lon = WEST + 0.25 * random.randint(0, (EAST - WEST) * 4)
+        lat = SOUTH + 0.25 * random.randint(0, (NORTH - SOUTH) * 4)
+        if -103 < lon < -88 or 38 < lat < 49:
+            continue
+        clifn = get_cli_fname(lon, lat)
+        if os.path.isfile(clifn):
+            break
+    LOG.warning("Picking clifile: %s", clifn)
+    df = read_cli(clifn)
+    today = datetime.date.today()
+    # Find highest precip entries with only two breakpoints
+    df = df[df["bpcount"] == 2].sort_values("pcpn", ascending=False)
+    days = []
+    for dt, row in df.iterrows():
+        if dt >= pd.Timestamp(today):
+            continue
         # Review the date this was processed, so to not redo things recently
-        fn = f"/mnt/idep2/data/dailyprecip/{row[0]:%Y/%Y%m%d}.npy.gz"
+        fn = f"/mnt/idep2/data/dailyprecip/{dt:%Y/%Y%m%d}.npy.gz"
         # If this file was modified after 5 July 2022, we skip it
         if os.path.isfile(fn):
             mt = datetime.datetime.fromtimestamp(os.path.getmtime(fn))
             if mt > datetime.datetime(2022, 7, 5):
-                LOG.warning("Skipping %s as it was modified %s", row[0], mt)
+                LOG.warning("Skipping %s as it was modified %s", dt, mt)
                 continue
         LOG.warning(
-            "do %s max_delta: %.2f count: %.0f",
-            row[0],
-            row[2],
-            row[1],
+            "do %s precip: %.2f bpcount: %.0f",
+            dt,
+            row["pcpn"],
+            row["bpcount"],
         )
-        days.append(row[0])
+        days.append(dt)
         if len(days) >= 10:
             break
-    pgconn.close()
     # write a log file for what work we did
     with open(SAVEFILE, "w", encoding="utf-8") as fh:
         for day in days:
