@@ -5,11 +5,13 @@ automation here to help with manual dumping.
 import sys
 
 import pandas as pd
+import pytz
 from pyiem.util import get_dbconn, get_sqlalchemy_conn
 
 
 def process(engine, conn, row, station):
     """Do what we need to do here."""
+    delta = pd.Timedelta(hours=1)
     obs = pd.read_sql(
         "SELECT valid, tmpf, dwpf, feel, relh from alldata where "
         "station = %s and valid >= %s and valid <= %s and tmpf is not null "
@@ -17,13 +19,13 @@ def process(engine, conn, row, station):
         engine,
         params=(
             station,
-            row["valid1"] - pd.Timedelta(hours=2),
-            row["valid2"] + pd.Timedelta(hours=2),
+            row["start_valid_utc"].replace(tzinfo=pytz.UTC) - delta,
+            row["end_valid_utc"].replace(tzinfo=pytz.UTC) + delta,
         ),
         index_col=None,
     )
     print(obs.head(100))
-    res = input("List dumped obs or enter for noop: ")
+    res = input("List (space sep) dumped obs or enter for noop: ")
     if res == "":
         return
     cursor = conn.cursor()
@@ -44,12 +46,14 @@ def main(argv):
     network = argv[1]
     station = argv[2]
     hours = argv[3]
+    mydir = argv[4]
+    how = argv[5]
     url = (
-        "https://mesonet.agron.iastate.edu/plotting/auto/plot/169/"
+        "http://iem.local/plotting/auto/plot/169/"
         f"network:{network}::zstation:{station}::hours:{hours}::month:all::"
-        "dir:warm::_cb:1.csv"
+        f"dir:{mydir}::how:{how}::_cb:1.csv"
     )
-    df = pd.read_csv(url, parse_dates=["valid1", "valid2"])
+    df = pd.read_csv(url, parse_dates=["start_valid_utc", "end_valid_utc"])
 
     conn = get_dbconn("asos")
     with get_sqlalchemy_conn("asos") as engine:
