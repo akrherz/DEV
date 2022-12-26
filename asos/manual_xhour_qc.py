@@ -11,7 +11,7 @@ from pyiem.util import get_dbconn, get_sqlalchemy_conn
 
 def process(engine, conn, row, station):
     """Do what we need to do here."""
-    delta = pd.Timedelta(hours=1)
+    delta = pd.Timedelta(hours=3)
     obs = pd.read_sql(
         "SELECT valid, tmpf, dwpf, feel, relh from alldata where "
         "station = %s and valid >= %s and valid <= %s and tmpf is not null "
@@ -49,7 +49,7 @@ def main(argv):
     mydir = argv[4]
     how = argv[5]
     url = (
-        "http://iem.local/plotting/auto/plot/169/"
+        "https://mesonet.agron.iastate.edu/plotting/auto/plot/169/"
         f"network:{network}::zstation:{station}::hours:{hours}::month:all::"
         f"dir:{mydir}::how:{how}::_cb:1.csv"
     )
