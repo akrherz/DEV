@@ -12,7 +12,7 @@ def main():
             """
             with data as (
                 select distinct state, date from wpc_national_high_low
-                where n_x = 'N'
+                where n_x = 'X'
             )
             select state, count(*) from data GROUP by state ORDER by count asc
             """,
@@ -23,7 +23,7 @@ def main():
     mp = MapPlot(
         twitter=True,
         sector="conus",
-        title="Jul 2008 - 2022 Days Having Coolest WPC Temperature",
+        title="Jul 2008 - 2022 Days Having Warmest WPC Temperature",
         subtitle=(
             "Based on unoffical IEM archives, "
             "ties between states are double counted."
@@ -45,7 +45,7 @@ def main():
         labelbuffer=0,
     )
 
-    mp.postprocess(filename="wpc_min.png")
+    mp.postprocess(filename="wpc_max.png")
 
 
 if __name__ == "__main__":
