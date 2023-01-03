@@ -21,7 +21,7 @@ def main():
         df[f"iem_{col}"] = iem[col]
         df[f"iem_{col}_bias"] = df[f"iem_{col}"] - df[col]
     # df = df.dropna().resample("M").mean()
-    df = df.loc[pd.Timestamp("2005/01/01") : pd.Timestamp("2022/12/31")]
+    df = df.loc[pd.Timestamp("1981/01/01") : pd.Timestamp("2022/12/31")]
     # print(df.describe())
     print(df.sort_values("iem_low_bias", ascending=False).head(10))
 
@@ -37,6 +37,7 @@ def main():
     ax.grid(True)
     ax.set_title("High Temperature")
     ax.set_ylabel("IEM Bias [F]")
+    ax.set_ylim(-15, 25)
 
     ax = fig.add_axes([0.1, 0.1, 0.8, 0.32])
     dd = df[df["iem_low_bias"] >= 0]
@@ -46,6 +47,7 @@ def main():
     ax.grid(True)
     ax.set_title("Low Temperature")
     ax.set_ylabel("IEM Bias [F]")
+    ax.set_ylim(-15, 25)
 
     fig.savefig("/tmp/bias.png")
 
