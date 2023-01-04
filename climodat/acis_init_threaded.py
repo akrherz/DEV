@@ -23,7 +23,7 @@ def workflow(state):
     pgconn = get_dbconn("mesosite")
     cursor = pgconn.cursor()
     payload = {"state": state.lower()}
-    req = requests.post(SERVICE, json=payload)
+    req = requests.post(SERVICE, json=payload, timeout=60)
     j = req.json()
     meta = j["meta"]
     for entry in meta:

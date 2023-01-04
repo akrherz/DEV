@@ -17,7 +17,7 @@ def truncate(row, end):
     cursor = pgconn.cursor()
     # Go until the end of the month
     for i in range(32):
-        dt = end + timedelta(days=1)
+        dt = end + timedelta(days=i)
         if dt.month != end.month:
             break
     dt -= timedelta(days=1)
@@ -46,6 +46,7 @@ def do(row):
             "elems": "maxt,pcpn",
             "sids": acis_sid,
         },
+        timeout=60,
     )
     j = req.json()
     if not j["meta"]:

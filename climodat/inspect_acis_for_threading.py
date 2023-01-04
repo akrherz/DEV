@@ -25,7 +25,7 @@ def main():
                     {"name": "pcpn", "add": "t"},
                 ],
             }
-            req = requests.post(SERVICE, json=payload)
+            req = requests.post(SERVICE, json=payload, timeout=60)
             j = req.json()
             maxt = j["data"][0][1]
             maxtv = "X" if maxt[0] != "M" else " "

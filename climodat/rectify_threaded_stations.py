@@ -49,6 +49,7 @@ def get_threading_info(threadinfo, station):
         data = requests.post(
             "https://data.rcc-acis.org/StnMeta",
             json=payload,
+            timeout=60,
         ).json()
         # Does this id map back to a COOPish id (#2)
         candidates = []
@@ -167,7 +168,10 @@ def add_threading(mesosite, row, thrdf):
 
 def main():
     """Go Main Go."""
-    req = requests.get("https://threadex.rcc-acis.org/data/threads_dict.json")
+    req = requests.get(
+        "https://threadex.rcc-acis.org/data/threads_dict.json",
+        timeout=60,
+    )
     threadinfo = req.json()
     mesosite = get_dbconn("mesosite")
 

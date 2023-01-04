@@ -32,11 +32,7 @@ def process_state(state, data):
     known = 0
     dups = 0
     for meta in data["meta"]:
-        coops = [
-            s.split()[0]
-            for s in meta["sids"]
-            if s.find(f"{state2nwsli[state]} 7") > -1
-        ]
+        coops = [s.split()[0] for s in meta["sids"] if s.find(" 7") > -1]
         acis_sids = [s.split()[0] for s in meta["sids"] if s.endswith(" 2")]
         if not acis_sids:
             # LOG.info("failed to get 2-type station for %s", meta["sids"])
@@ -86,7 +82,27 @@ def process_state(state, data):
                 LOG.info("Ignoring %s as tracks %s[DCP]", clstation, nwsli)
                 continue
             else:
-                LOG.info("--------- Add COOP? %s", nwsli)
+                tracking = f"{nwsli}|{state}_COOP"
+                LOG.info("--------- Adding COOP %s", nwsli)
+                cursor.execute(
+                    "INSERT into stations(id, name, network, country, state, "
+                    "plot_name, online, metasite, geom, elevation) VALUES "
+                    "(%s, %s, %s, %s, %s, %s, %s, 't', "
+                    "'SRID=4326;POINT(%s %s)', %s) "
+                    "RETURNING iemid",
+                    (
+                        nwsli,
+                        meta["name"],
+                        f"{state}_COOP",
+                        "US",
+                        state,
+                        meta["name"],
+                        online,
+                        meta["ll"][0],
+                        meta["ll"][1],
+                        convert_value(meta.get("elev", -999), "feet", "meter"),
+                    ),
+                )
         if online and tracking is None:
             LOG.info(
                 "skipping add for online %s without station: %s",
@@ -139,6 +155,7 @@ def main(argv):
             "elems": "maxt,pcpn",
             "state": state,
         },
+        timeout=60,
     )
     data = req.json()
     if "meta" not in data:

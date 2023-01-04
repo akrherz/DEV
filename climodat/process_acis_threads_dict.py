@@ -5,7 +5,8 @@ import requests
 from pyiem.util import get_dbconn
 from pyiem.reference import ncei_state_codes
 
-code2state = dict([(v, k) for k, v in ncei_state_codes.items()])
+code2state = dict((v, k) for k, v in ncei_state_codes.items())
+URL = "https://threadex.rcc-acis.org/data/threads_dict.json"
 
 
 def main(argv):
@@ -13,7 +14,7 @@ def main(argv):
     lookfor = argv[1]
     pgconn = get_dbconn("mesosite")
     cursor = pgconn.cursor()
-    req = requests.get("https://threadex.rcc-acis.org/data/threads_dict.json")
+    req = requests.get(URL, timeout=60)
     data = req.json()
     for sid in data:
         if sid != lookfor:
