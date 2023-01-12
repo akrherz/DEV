@@ -1,83 +1,102 @@
 """A map of dots!"""
+import os
+import calendar
+
+from tqdm import tqdm
+from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot
-from pyiem.reference import Z_OVERLAY
-from pyiem.util import get_sqlalchemy_conn
-import cartopy.crs as ccrs
+from pyiem.reference import Z_OVERLAY, state_names
+from pyiem.util import get_dbconn
 import pandas as pd
+
+
+def get_data():
+    """Get data."""
+    conn = get_dbconn("coop")
+    cursor = conn.cursor()
+    data = []
+    progress = tqdm(state_names)
+    for state in progress:
+        progress.set_description(state)
+        nt = NetworkTable(f"{state}CLIMATE")
+        for sid in nt.sts:
+            if nt.sts[sid]["archive_begin"] is None:
+                continue
+            if (
+                nt.sts[sid]["archive_begin"].year > 1970
+                or nt.sts[sid]["archive_end"] is not None
+            ):
+                continue
+            cursor.execute(
+                "SELECT sum(precip) from ncei_climate91 where station = %s",
+                (nt.sts[sid]["ncei91"],),
+            )
+            climo = cursor.fetchone()[0]
+            cursor.execute(
+                """
+                with obs as (
+                    select year, extract(doy from day) as doy,
+                    sum(precip) OVER (PARTITION by year ORDER by day asc)
+                    from alldata where station = %s
+                ), agg as (
+                    select year, min(doy) from obs where
+                    sum >= %s group by year
+                )
+                select year, min from agg ORDER by min asc LIMIT 1
+                """,
+                (sid, climo),
+            )
+            if cursor.rowcount == 0:
+                continue
+            row = cursor.fetchone()
+            data.append(
+                {
+                    "sid": sid,
+                    "year": row[0],
+                    "doy": float(row[1]),
+                    "lat": nt.sts[sid]["lat"],
+                    "lon": nt.sts[sid]["lon"],
+                }
+            )
+    pd.DataFrame(data).to_csv("/tmp/data.csv", index=False)
 
 
 def main():
     """Go Main Go."""
-    with get_sqlalchemy_conn("iem") as conn:
-        df = pd.read_sql(
-            """SELECT ST_x(geom) as x, ST_y(geom) as y,
-        min(min_tmpf) as val, state, count(*) from
-        summary s JOIN stations t on (t.iemid = s.iemid) WHERE
-        s.day > '2020-09-01' and min_tmpf is not null and t.country = 'US' and
-        t.network ~* 'COOP' and t.state in ('IA', 'MN', 'ND', 'SD', 'NE',
-        'KS', 'MO', 'WI', 'IL', 'IN', 'OH', 'MI', 'KY') GROUP by y, x, state
-        ORDER by val ASC""",
-            conn,
-            index_col=None,
-        )
-    df = df[(df["count"] > 30)]
-
-    x3 = df[(df.val < 40) & (df.val >= 32)]
-    x2 = df[(df.val < 32) & (df.val >= 29)]
-    x1 = df[(df.val < 29) & (df.val >= 20)]
-    x0 = df[df.val < 20]
+    if not os.path.isfile("/tmp/data.csv"):
+        get_data()
+    df = pd.read_csv("/tmp/data.csv").sort_values("doy", ascending=False)
+    bins = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366]
+    # cmap = get_cmap("Paired")
+    # norm = mpcolors.Normalize(1, 366)
+    # colors = cmap(norm(df['doy'].values))
 
     mp = MapPlot(
-        title="Fall 2020 Minimum Temperature Reports",
+        title=(
+            "Min Year-To-Date Period for Site to Exceed "
+            "Yearly Precip Climatology"
+        ),
         axisbg="white",
-        subtitle=("Based on NWS Cooperative Observer Data, thru 27 Dec 2016"),
-        sector="midwest",
+        subtitle=(
+            "Based on NWS COOP Sites with 50+ years data, "
+            "NCEI 1991-2020 Climatology"
+        ),
+        sector="conus",
     )
-    mp.ax.scatter(
-        x3.x,
-        x3.y,
+    clevlabels = calendar.month_abbr[1:] + [""]
+    mp.scatter(
+        df["lon"].values,
+        df["lat"].values,
+        df["doy"].values,
+        bins,
         marker="o",
-        color="g",
         s=50,
         zorder=Z_OVERLAY,
-        label=r"32 to 40$^\circ$F",
-        transform=ccrs.PlateCarree(),
-    )
-    mp.ax.scatter(
-        x2.x,
-        x2.y,
-        marker="s",
-        color="b",
-        zorder=Z_OVERLAY,
-        s=50,
-        label=r"29 to 31$^\circ$F",
-        transform=ccrs.PlateCarree(),
-    )
-    mp.ax.scatter(
-        x1.x,
-        x1.y,
-        marker="+",
-        color="r",
-        s=50,
-        zorder=Z_OVERLAY + 1,
-        label=r"20 to 28$^\circ$F",
-        transform=ccrs.PlateCarree(),
-    )
-    mp.ax.scatter(
-        x0.x,
-        x0.y,
-        marker="v",
-        facecolor="w",
-        edgecolor="k",
-        s=50,
-        zorder=Z_OVERLAY + 2,
-        label=r"Sub 20$^\circ$F",
-        transform=ccrs.PlateCarree(),
+        extend="neither",
+        clevlabels=clevlabels,
     )
 
-    mp.ax.legend(loc=4, scatterpoints=1, ncol=4)
-
-    mp.postprocess(filename="test.png")
+    mp.postprocess(filename="230112.png")
 
 
 if __name__ == "__main__":
