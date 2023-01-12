@@ -1,12 +1,14 @@
 """A map of dots!"""
 import os
 import calendar
+import sys
 
+import numpy as np
 from tqdm import tqdm
 from pyiem.network import Table as NetworkTable
-from pyiem.plot import MapPlot
+from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_OVERLAY, state_names
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconn, get_sqlalchemy_conn
 import pandas as pd
 
 
@@ -32,28 +34,28 @@ def get_data():
                 (nt.sts[sid]["ncei91"],),
             )
             climo = cursor.fetchone()[0]
-            cursor.execute(
-                """
-                with obs as (
-                    select year, extract(doy from day) as doy,
-                    sum(precip) OVER (PARTITION by year ORDER by day asc)
-                    from alldata where station = %s
-                ), agg as (
-                    select year, min(doy) from obs where
-                    sum >= %s group by year
+            with get_sqlalchemy_conn("coop") as dbconn:
+                df = pd.read_sql(
+                    "SELECT day, precip from alldata WHERE station = %s "
+                    "ORDER by day asc",
+                    dbconn,
+                    params=(sid,),
+                    index_col="day",
                 )
-                select year, min from agg ORDER by min asc LIMIT 1
-                """,
-                (sid, climo),
-            )
-            if cursor.rowcount == 0:
-                continue
-            row = cursor.fetchone()
+            mindays = 1
+            days = 100
+            while (days - mindays) > 1:
+                res = df["precip"].rolling(days).sum() > climo
+                if res.sum() > 0:  # hit
+                    days -= max([int((days - mindays) / 2), 1])
+                    continue
+                mindays = days
+                days += 15
+
             data.append(
                 {
                     "sid": sid,
-                    "year": row[0],
-                    "doy": float(row[1]),
+                    "days": days,
                     "lat": nt.sts[sid]["lat"],
                     "lon": nt.sts[sid]["lon"],
                 }
@@ -65,16 +67,16 @@ def main():
     """Go Main Go."""
     if not os.path.isfile("/tmp/data.csv"):
         get_data()
-    df = pd.read_csv("/tmp/data.csv").sort_values("doy", ascending=False)
-    bins = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366]
-    # cmap = get_cmap("Paired")
+    df = pd.read_csv("/tmp/data.csv").sort_values("days", ascending=False)
+    # bins = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366]
+    bins = [1, 7, 21, 45, 90, 120, 180, 210, 240, 270, 300]
+    # cmap = get_cmap("jet")
     # norm = mpcolors.Normalize(1, 366)
     # colors = cmap(norm(df['doy'].values))
 
     mp = MapPlot(
         title=(
-            "Min Year-To-Date Period for Site to Exceed "
-            "Yearly Precip Climatology"
+            "Min Consec Day Period Whereby Site Accumulated Yearly Climatology"
         ),
         axisbg="white",
         subtitle=(
@@ -83,20 +85,22 @@ def main():
         ),
         sector="conus",
     )
-    clevlabels = calendar.month_abbr[1:] + [""]
+    # clevlabels = calendar.month_abbr[1:] + [""]
     mp.scatter(
         df["lon"].values,
         df["lat"].values,
-        df["doy"].values,
+        df["days"].values,
         bins,
+        # cmap=cmap,
         marker="o",
         s=50,
         zorder=Z_OVERLAY,
-        extend="neither",
-        clevlabels=clevlabels,
+        extend="max",
+        spacing="proportional",
+        # clevlabels=clevlabels,
     )
 
-    mp.postprocess(filename="230112.png")
+    mp.postprocess(filename="230113.png")
 
 
 if __name__ == "__main__":
