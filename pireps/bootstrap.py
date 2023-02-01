@@ -31,6 +31,8 @@ def main():
         geo = row.geometry
         if not geo.is_valid:
             geo = row.geometry.buffer(0)
+        if row.TYPE_CODE == "ARTCC" and row.LEVEL_ == "U":
+            continue
         key = f"{row.IDENT}_{row.TYPE_CODE}_{geo.area:.4f}"
         if key in dedup:
             continue
