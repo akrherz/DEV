@@ -40,7 +40,7 @@ def main():
     ax.legend()
 
     ax = axes[2]
-    for (one, two) in combinations([5, 10, 15], 2):
+    for one, two in combinations([5, 10, 15], 2):
         df["delta"] = df[f"T{one}_Avg"] - df[f"T{two}_Avg"]
         ax.plot(df["valid"], df["delta"], label=f"{one} - {two}")
         ax.set_ylabel("T107 Difference C")

@@ -157,7 +157,7 @@ def hours_above():
         hours = []
         dbconn = get_dbconn("asos")
         cursor = dbconn.cursor()
-        for (sts, ets) in FAIRS:
+        for sts, ets in FAIRS:
             if sts.year < 1973:
                 continue
             cursor.execute(

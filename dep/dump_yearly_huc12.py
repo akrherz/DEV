@@ -7,7 +7,6 @@ from pyiem.util import get_sqlalchemy_conn
 def main():
     """Go Main Go."""
     with get_sqlalchemy_conn("idep") as conn:
-
         df = pd.read_sql(
             """
             with data as (

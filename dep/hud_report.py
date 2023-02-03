@@ -49,7 +49,7 @@ def main():
         df["Hillslope Soil Loss (kg/m^2)"] * 4.463
     )
     hucs = []
-    for (name, huc12) in VALS:
+    for name, huc12 in VALS:
         hucs.append(huc12)
         df.at[huc12, "name"] = name
 

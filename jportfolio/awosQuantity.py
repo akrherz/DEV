@@ -18,7 +18,6 @@ now = s
 inter = mx.DateTime.RelativeDateTime(months=+1)
 
 while now < end:
-
     tbl = now.strftime("%Y_%m")
     rs = mydb.query(
         "select min(valid), count(valid), station \

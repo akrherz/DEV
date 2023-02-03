@@ -55,7 +55,7 @@ def main(argv):
     pts = []
     for lon, lat in zip(np.ravel(lons), np.ravel(lats)):
         pts.append(Point(lon, lat))
-    for (m1, m2) in [(1, 8), (9, 12)]:
+    for m1, m2 in [(1, 8), (9, 12)]:
         # iterate over days
         now = datetime.date(year, m1, 1)
         ets = datetime.date(year, m2, 31)

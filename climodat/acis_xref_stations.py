@@ -52,7 +52,7 @@ def main(argv):
             continue
         meta = meta[0]
         LOG.info("%s %s", sid, meta["sid_dates"])
-        for (entry, sid_start, sid_end) in meta["sid_dates"]:
+        for entry, sid_start, sid_end in meta["sid_dates"]:
             tokens = entry.split()
             if tokens[1] in ["3", "7"]:
                 to_track = tokens[0]

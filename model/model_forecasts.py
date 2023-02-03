@@ -26,7 +26,7 @@ def main():
     (fig, ax) = plt.subplots(1, 1)
     ys = 1.0
     ylabels = []
-    for (precip, snow, sts) in events:
+    for precip, snow, sts in events:
         sts = sts.replace(tzinfo=pytz.UTC)
         mcursor.execute(
             """

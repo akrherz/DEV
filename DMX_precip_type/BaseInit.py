@@ -21,7 +21,6 @@ import scipy
 
 
 class BaseInit(Forecaster):
-
     # From: BaseInit.__init__.py
     def __init__(self, srcName, dstName=None):
         Forecaster.__init__(self, srcName, dstName)
@@ -172,7 +171,6 @@ class BaseInit(Forecaster):
     #  zeros with the operation performed on the area of ones.
     #
     def alterArea(self, array, k):
-
         negative = 0
 
         if k < 0:
@@ -345,7 +343,6 @@ class BaseInit(Forecaster):
         isobaric,
         intersect,
     ):
-
         # -----------------------------------------------------------------------
         #  Adjust the height of this isobaric level
 
@@ -379,7 +376,6 @@ class BaseInit(Forecaster):
         #  layer cube, interpolate between the top of the BL and the isobaric
         #  level above this one
         if aboveBLcube.any():
-
             t_c[isobaric][aboveBLcube] = self.linear(
                 BLH[blLevel],
                 gh_c[isobaric + 1],
@@ -404,7 +400,6 @@ class BaseInit(Forecaster):
         #  layer cube, interpolate between the top of the BL and the isobaric
         #  level above this one
         if aboveBLcube.any():
-
             modelTd_c[isobaric][aboveBLcube] = self.linear(
                 BLH[blLevel],
                 gh_c[isobaric + 1],
@@ -432,7 +427,6 @@ class BaseInit(Forecaster):
     #  a list of Numeric/numpy masks through the fillMasks argument.
     # ===========================================================================
     def BI_applyTopoT(self, grid, stopo, topo):
-
         #  Define lapse rate of temperature per thousand feet (304.8 m)
         t_lapse_rate = 2.0 / 304.8
 
@@ -457,7 +451,6 @@ class BaseInit(Forecaster):
     #  curve defined at temperature (deg C) anchor points.
     # ===========================================================================
     def BI_baseSnowRatio(self, tGrid):
-
         #  Define temperature thresholds
         tThresh = [
             -30.0,
@@ -579,7 +572,6 @@ class BaseInit(Forecaster):
 
     # From: ../../methods/BI_calcDeltaZ/BI_calcDeltaZ.py
     def BI_calcDeltaZ(self, temp, dewPoint, pressure, deltaP):
-
         #  Ensure temperature inputs are in Kelvin
         temp[temp < 100] += 273.15
         dewPoint[dewPoint < 100] += 273.15
@@ -615,7 +607,6 @@ class BaseInit(Forecaster):
         minValue=0.0,
         filterValue=50.0,
     ):
-
         #  Filter out everything above filter value
         grid = where(greater(grid, filterValue), minValue, grid)
 
@@ -624,7 +615,6 @@ class BaseInit(Forecaster):
 
         #  If a mask was supplied
         if mask is not None:
-
             #  Apply it to data
             return where(mask, grid, maskValue)
 
@@ -647,7 +637,6 @@ class BaseInit(Forecaster):
         minValue=0.0,
         filterValue=50.0,
     ):
-
         #  Convert magnitude from m to ft - filtering out everything above
         #  filter value
         gridMag = where(greater(gridMag, filterValue), minValue, gridMag)
@@ -657,7 +646,6 @@ class BaseInit(Forecaster):
 
         #  If a mask was supplied
         if mask is not None:
-
             #  Apply it to data
             gridMag = where(mask, gridMag, maskValue)
             gridDir = where(mask, gridDir, 0)
@@ -676,10 +664,8 @@ class BaseInit(Forecaster):
     def BI_calcMaxT(
         self, T, MaxT, mtime, modelSfcT=None, modelMaxT=None, offset=0
     ):
-
         #  If we have raw model temperatures
         if modelSfcT is not None and modelMaxT is not None:
-
             #  Compute a difference between the temperatures we can apply
             #  to the previously downscaled temperature
             #  (don't forget we need to account for differences between
@@ -703,7 +689,6 @@ class BaseInit(Forecaster):
 
         #  If the MaxT grid is missing so far
         if MaxT is None:
-
             #  Use the current hourly T after applying any offset
             return T + diff + offset
 
@@ -714,10 +699,8 @@ class BaseInit(Forecaster):
     def BI_calcMinT(
         self, T, MinT, mtime, modelSfcT=None, modelMinT=None, offset=0
     ):
-
         #  If we have raw model temperatures
         if modelSfcT is not None and modelMinT is not None:
-
             #  Compute a difference between the temperatures we can apply
             #  to the previously downscaled temperature
             #  (don't forget we need to account for differences between
@@ -740,7 +723,6 @@ class BaseInit(Forecaster):
 
         #  If the MinT grid is missing so far
         if MinT is None:
-
             #  Use the current hourly T after applying any offset
             return T + diff - offset
 
@@ -759,13 +741,11 @@ class BaseInit(Forecaster):
     #    a list of Numeric/numpy masks through the fillMasks argument.
     # ===========================================================================
     def BI_calcMixHgt(self, T, t_FHAG2, p_SFC, topo, fillMasks=[], MSLP=0):
-
         #  Convert surface pressure to mb (100 hPa = 1 mb)
         sfcPressure = p_SFC / 100.0
 
         #  If the pressure passed in is a MSL pressure
         if MSLP == 1:
-
             #  Compute the station pressure instead
             sfcPressure = self.BI_stnPres(sfcPressure, t_FHAG2, topo)
 
@@ -827,7 +807,6 @@ class BaseInit(Forecaster):
     #  a list of Numeric/numpy masks through the fillMasks argument.
     # ===========================================================================
     def BI_calcMosWind(self, swind, stopo, topo, applyTopo=0, fillMasks=[]):
-
         #  Separate the surface wind into its polar coordinates
         (wmag, wdir) = swind
 
@@ -838,7 +817,6 @@ class BaseInit(Forecaster):
         #  If we are going to apply a topographic correction to the MOS
 
         if applyTopo:
-
             #  Define lapse rate of wind speed (KT) per thousand feet (304.8 m)
             spd_lapse_rate = self.BI_optionsDict["windLapseRate"]
 
@@ -871,7 +849,6 @@ class BaseInit(Forecaster):
     def BI_calcMosWindGust(
         self, gust, wmag, stopo, topo, applyTopo=0, fillMasks=[]
     ):
-
         #  Convert speed from m/s to to knots
         gust = self.convertMsecToKts(gust)
 
@@ -879,7 +856,6 @@ class BaseInit(Forecaster):
         #  If we are going to apply a topographic correction to the MOS
 
         if applyTopo:
-
             #  Define lapse rate of wind speed (KT) per thousand feet (304.8 m)
             spd_lapse_rate = self.BI_optionsDict["windLapseRate"]
 
@@ -908,7 +884,6 @@ class BaseInit(Forecaster):
     #  BI_calcPredHgtRH -
     # ===========================================================================
     def BI_calcPredHgtRH(self, gh_c, rh_c, topo):
-
         #  Define RH threhold which indicates a cloud for each level
         cloudRH = [
             98.0,
@@ -953,7 +928,6 @@ class BaseInit(Forecaster):
         # -----------------------------------------------------------------------
         #  Look through all the vertical levels (from bottom up)
         for index in xrange(gh_c.shape[0]):
-
             #  Get the height in feet and RH for this level
             height = gh_c[index] / self.convertFtToM(1)
             rh = rh_c[index]
@@ -992,7 +966,6 @@ class BaseInit(Forecaster):
     #    a list of Numeric/numpy masks through the fillMasks argument.
     # ===========================================================================
     def BI_calcQPF(self, qpf, fillMasks=[]):
-
         #  Remove really bad data
         qpf[qpf >= 1000.0] = 0.0
 
@@ -1014,7 +987,6 @@ class BaseInit(Forecaster):
     #  (both in K)
     # ===========================================================================
     def BI_calcRH(self, t, dpt, ctime):
-
         #  See if we are dealing with a cube, or a grid
         try:
             t[0, 0, 0]
@@ -1030,20 +1002,17 @@ class BaseInit(Forecaster):
             and self._rh_FHAG2 is not None
             and ctime == self.BLcubeTime
         ):
-
             #  Keep it as is
             return self._rh_FHAG2
 
         #  Otherwise, if this RH cube was likely already computed
         elif cube and self._rh_c is not None and ctime == self.BLcubeTime:
-
             #  Keep it as is
             return self._rh_c
 
         #  If we made it this far, compute the RH we need (surface or cube)
         #  (temperatures must be in degrees C - so convert from K)
         if not cube:
-
             #  Surface RH
             self._rh_FHAG2 = 100.0 * (
                 self.VAPR(dpt - 273.15) / self.VAPR(t - 273.15)
@@ -1053,7 +1022,6 @@ class BaseInit(Forecaster):
             #  time step
             return self._rh_FHAG2
         else:
-
             #  RH cube
             self._rh_c = 100.0 * (
                 self.VAPR(dpt - 273.15) / self.VAPR(t - 273.15)
@@ -1089,7 +1057,6 @@ class BaseInit(Forecaster):
         MSLP=0,
         fillMasks=[],
     ):
-
         #  Setup the boundary layer cube for this time - if needed
         self.BI_setupBLCube(
             blTemps,
@@ -1117,7 +1084,6 @@ class BaseInit(Forecaster):
 
         #  If the pressure passed in is a MSL pressure
         if MSLP == 1:
-
             #  Compute the station pressure instead
             tmpP_SFC = self.BI_stnPres(tmpP_SFC, blTemps[0], topo)
 
@@ -1227,7 +1193,6 @@ class BaseInit(Forecaster):
         thickness="925-700",
         fillMasks=[],
     ):
-
         #  We do not want any levels in the cubes at or below 925 mb - make
         #  copies of data we want to keep so as not to corrupt base cubes
         gh_c = gh_c[cutBelow:, :, :]
@@ -1366,7 +1331,6 @@ class BaseInit(Forecaster):
         MSLP=0,
         fillMasks=[],
     ):
-
         """T - use model sounding to get temperature at real topography instead of
         model topography
 
@@ -1485,7 +1449,6 @@ class BaseInit(Forecaster):
         MSLP=0,
         fillMasks=[],
     ):
-
         #  Setup the boundary layer cube for this time - if needed
         self.BI_setupBLCube(
             blTemps,
@@ -1567,7 +1530,6 @@ class BaseInit(Forecaster):
         MSLP=0,
         fillMasks=[],
     ):
-
         #  Setup the boundary layer cube for this time - if needed
         self.BI_setupBLCube(
             blTemps,
@@ -1666,7 +1628,6 @@ class BaseInit(Forecaster):
         MSLP=0,
         fillMasks=[],
     ):
-
         #  Setup the boundary layer cube for this time - if needed
         self.BI_setupBLCube(
             blTemps,
@@ -1691,7 +1652,6 @@ class BaseInit(Forecaster):
 
         #  Coding for mountain offices
         if self.BI_optionsDict["topoSite"]:
-
             #  Initialize wind components
             smag = self.newGrid(-1)
             sdir = smag
@@ -1705,7 +1665,6 @@ class BaseInit(Forecaster):
             #  we go through boundary layer data and interpolate the model
             #  winds to the real topography.
             for i in range(1, BLH.shape[0]):
-
                 #  Find areas which are within this layer
                 between = logical_and(
                     greater_equal(topo, BLH[i - 1]), less(topo, BLH[i])
@@ -1742,7 +1701,6 @@ class BaseInit(Forecaster):
 
         #  Coding for non-mountain offices
         else:
-
             sfcWind = blWinds[0]
             wmag = sfcWind[0] * 1.944
             wdir = clip(sfcWind[1], 0, 359.5)
@@ -1761,7 +1719,6 @@ class BaseInit(Forecaster):
     #  heights to the closest reportable value in 100s of feet.
     # ===========================================================================
     def BI_categorizeCloudHeight(self, height, convert=0):
-
         #  Convert visibility from meters to statue miles - if needed
         if convert:
             height = height * (3.28084 / 100.0)
@@ -1836,7 +1793,6 @@ class BaseInit(Forecaster):
     #  closest reportable value in statute miles.
     # ===========================================================================
     def BI_categorizeVsby(self, vsby, convert=0):
-
         #  Convert visibility from meters to statue miles - if needed
         if convert == 1:
             vsby = where(greater(vsby, 10.0), vsby / 1609.3, vsby)
@@ -2004,7 +1960,6 @@ class BaseInit(Forecaster):
     #  chances of measurable precipitation along topographic features.
     # ===========================================================================
     def BI_EnhanceTopoPoP(self, PoP, topo):
-
         #  Ensure topo can be passed through logarithm
         topo = where(less(topo, 1), 1, topo)
 
@@ -2035,7 +1990,6 @@ class BaseInit(Forecaster):
     #  the JSmartUtils equivalent on AWIPS2 instead
     # ===========================================================================
     def BI_fillEditArea(self, grid, fillMask):
-
         #  Get the coordinates of the "edge" points of the area to fill
         borderMask = self.BI_getMaskBorder(fillMask)
 
@@ -2070,7 +2024,6 @@ class BaseInit(Forecaster):
         )
 
         for i in range(2, 200, 1):
-
             zeroMask = where(equal(newGrid, 0.0), 0, 1)
             noPoints = minimum.reduce(minimum.reduce(zeroMask))
             if noPoints == 1:
@@ -2095,12 +2048,10 @@ class BaseInit(Forecaster):
     #    argument.
     # ===========================================================================
     def BI_fillScalar(self, scalar, fillMasks=[]):
-
         # -----------------------------------------------------------------------
         #  Fill in any data void areas
 
         for fillMask in fillMasks:
-
             scalar = self.BI_fillEditArea(scalar, fillMask)
 
             if self.BI_optionsDict["SMOOTH_AFTER_FILL"]:
@@ -2115,7 +2066,6 @@ class BaseInit(Forecaster):
     #    argument.
     # ===========================================================================
     def BI_fillVector(self, vector, fillMasks=[]):
-
         #  Separate this vector into its coordinates
         (coord1, coord2) = vector  #  could be either u-v or mag-dir
 
@@ -2123,7 +2073,6 @@ class BaseInit(Forecaster):
         #  Fill in any data void areas
 
         for fillMask in fillMasks:
-
             #  Fix each coordinate
             coord1 = self.BI_fillEditArea(coord1, fillMask)
             coord2 = self.BI_fillEditArea(coord2, fillMask)
@@ -2142,7 +2091,6 @@ class BaseInit(Forecaster):
     #   Algorithm provided by Harry Gerapetritis (WFO GSP).
     # ===========================================================================
     def BI_FixLowCloudHeights(self, PredHgt):
-
         # New routine to remove erronous low clouds
         gridsize = PredHgt.shape
         ##        mygrid = PredHgt
@@ -2207,7 +2155,6 @@ class BaseInit(Forecaster):
 
     # From: ../../methods/BI_gemRH/BI_gemRH.py
     def BI_gemRH(self, temp, dptd, ctime):
-
         # first find the dew point
         dwpt = temp - dptd
 
@@ -2228,7 +2175,6 @@ class BaseInit(Forecaster):
     #  can be made using topography.
     # ===========================================================================
     def BI_GeneralPoP1hr(self, QPF, topo, ctime):
-
         #  Use the PRISM data to downscale QPF at topography sites
         if self.BI_optionsDict["prismSite"] and len(self.climoQPFGrids) > 0:
             QPFPct = self.BI_getQPFPct(QPF, ctime)
@@ -2260,7 +2206,6 @@ class BaseInit(Forecaster):
     #  can be made using topography.
     # ===========================================================================
     def BI_GeneralPoP(self, QPF, topo, ctime):
-
         #  Use the PRISM data to downscale QPF at topography sites
         if self.BI_optionsDict["prismSite"] and len(self.climoQPFGrids) > 0:
             QPFPct = self.BI_getQPFPct(QPF, ctime)
@@ -2317,7 +2262,6 @@ class BaseInit(Forecaster):
         stime,
         gridLengthFactor=1,
     ):
-
         """general PoP PBL -  based strongly on QPF (since when model has one inch of
         precip the chance of getting 0.01 is pretty high).  However, there is a big
         difference between a place that model has 0.00 precip and is very close to
@@ -2424,7 +2368,6 @@ class BaseInit(Forecaster):
     #  to be valid at 00Z on the 16th of each month.
     # ===========================================================================
     def BI_getClimoQPF(self, ctime):
-
         #  First try to get it from the cache
         try:
             return self.climoQPF[ctime]
@@ -2522,10 +2465,8 @@ class BaseInit(Forecaster):
     #  computes a topo difference from the real topography
     # ===========================================================================
     def BI_getMosTopoDiff(self, stopo, topo):
-
         #  If we already have the model topography
         if stopo is not None:
-
             #  Return topography difference
             return topo - stopo
 
@@ -2569,13 +2510,11 @@ class BaseInit(Forecaster):
     #  Numeric/numpy masks through the fillMasks argument.
     # ===========================================================================
     def BI_calcMosT(self, grid, stopo, topo, applyTopo=0, fillMasks=[]):
-
         #  Fill in any data void areas
         grid = self.BI_fillScalar(grid, fillMasks)
 
         #  Coding for mountain offices
         if applyTopo:
-
             #  Apply topographic correction to MOS
             grid = self.BI_applyTopoT(grid, stopo, topo)
 
@@ -2937,7 +2876,6 @@ class BaseInit(Forecaster):
             t2 = t_c[pres.index(dd["t2Level"])]  #  t2 level
         except:
             if hainesLevel.upper() == "LOW":
-
                 #  Use the medium instead - next best thing
                 dd = dict["MEDIUM"]
                 t1 = t_c[pres.index(dd["t1Level"])]  #  t1 level
@@ -3127,7 +3065,6 @@ class BaseInit(Forecaster):
     def BI_LakeSnowParameter(
         self, T850, rh850, rh700, wind850, wind700, ctime
     ):
-
         spd850, dir850 = wind850
         spd700, dir700 = wind700
 
@@ -3279,7 +3216,6 @@ class BaseInit(Forecaster):
 
     # From: ../../methods/BI_lsppop/BI_lsppop.py
     def BI_lsppop(self, LSP, PoP, multiplier, ctime):
-
         lespop = (
             40.259 * LSP
         ) + 0.18  # just a simple linear regression to fit PoP to LSP
@@ -3334,7 +3270,6 @@ class BaseInit(Forecaster):
     #  Calculate Scale Height (m) given temp(C), dewpoint(C) and pressure(mb)
     # ===========================================================================
     def BI_SCLH(self, tmpc, dwpc, pres):
-
         rdgas = 287.058  #  J / kg * K - gas constant for dry air
         gravity = 9.80665  #  m / s^2
         sclh = (rdgas / gravity) * (self.BI_TVRT(tmpc, dwpc, pres) + 273.15)
@@ -3401,7 +3336,6 @@ class BaseInit(Forecaster):
             or len(blTemps) != len(blWinds)
             or len(blTemps) == 0
         ):
-
             #  Missing some data - we cannot continue safely
             LogStream.logEvent("Cannot setup BL cube - missing data")
             return
@@ -3445,7 +3379,6 @@ class BaseInit(Forecaster):
 
         #  If the pressure passed in is a MSL pressure
         if MSLP == 1:
-
             #  Compute the station pressure instead
             pSFCmb = self.BI_stnPres(pSFCmb, blTemps[0], stopo)
 
@@ -3499,7 +3432,6 @@ class BaseInit(Forecaster):
         #  Now that boundary layer is done, add in "significant" model levels.
         #
         for i in xrange(gh_c.shape[0]):
-
             h_list.append(gh_c[i])
             t_list.append(t_c[i])
             p_list.append(self.empty() + self.pres[i])
@@ -3532,9 +3464,7 @@ class BaseInit(Forecaster):
 
         #  Get the "correct" order of levels at each individual point
         sortedIndices = argsort(self.BI_BLP, axis=0)
-        sortedIndices = sortedIndices[
-            ::-1,
-        ]
+        sortedIndices = sortedIndices[::-1,]
         height, row, col = indices(self.BI_BLP.shape)
 
         # -------------------------------------------------------------------
@@ -3614,7 +3544,6 @@ class BaseInit(Forecaster):
         if prismdb is None:
             LogStream.logEvent("can't get PRISM db")
         else:
-
             #  Get the climo QPF
             climoQPFwe = prismdb.getItem("tp_SFC")
 
@@ -3979,7 +3908,6 @@ class BaseInit(Forecaster):
     #  MSL pressure (mb or Pa)
     # ===========================================================================
     def BI_stnPres(self, pmsl_SFC, t_SFC, topo):
-
         #  Convert MSL pressure to mb/hPa - if it is not already in those units
         pmsl_SFC = where(greater(pmsl_SFC, 1100.0), pmsl_SFC / 100.0, pmsl_SFC)
 

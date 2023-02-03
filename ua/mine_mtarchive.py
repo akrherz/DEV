@@ -75,7 +75,6 @@ def main():
         myraob = None
         for line in data.split("\n"):
             if line.strip()[:4] == "STID":
-
                 if myraob is not None:
                     print(str(myraob))
                     txn = POSTGIS.cursor()

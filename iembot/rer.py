@@ -7,7 +7,6 @@
 def main():
     """Go Main Go."""
     with open("insert.sql", "w", encoding="utf8") as o:
-
         for line in open("rer.txt", encoding="utf8"):
             (source, pil) = line.strip().split("|")
             source = source.strip()

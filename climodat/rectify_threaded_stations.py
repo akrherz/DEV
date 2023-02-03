@@ -53,7 +53,7 @@ def get_threading_info(threadinfo, station):
         ).json()
         # Does this id map back to a COOPish id (#2)
         candidates = []
-        for (sinfo, sdate, edate) in data["meta"][0]["sid_dates"]:
+        for sinfo, sdate, edate in data["meta"][0]["sid_dates"]:
             if not sinfo.endswith(" 2"):
                 continue
             candidates.append([sinfo.split()[0], sdate, edate])

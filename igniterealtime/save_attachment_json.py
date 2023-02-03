@@ -60,7 +60,6 @@ def main():
             if len(data["list"]) != 100:
                 startindex = -1
             for item in data["list"]:
-
                 save_attachments(item)
 
                 if "comments" in item["resources"]:

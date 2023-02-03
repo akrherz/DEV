@@ -24,7 +24,6 @@ def main():
 
 
 class NAM12(BaseInit.BaseInit):
-
     # From: NWS_NAM12.__init__.py
     def __init__(self, srcName="NAM12", dstName=None):
         BaseInit.BaseInit.__init__(self, srcName, dstName)
@@ -273,7 +272,6 @@ class NAM12(BaseInit.BaseInit):
         wind_c,
         ctime,
     ):
-
         """MixHgt - the height to which a parcel above a 'fire' would rise
         (in height) above ground level (in feet).
 
@@ -824,7 +822,6 @@ class NAM12(BaseInit.BaseInit):
         #  impossible to rerun a model SmartInit without wiping the QPF12 grids
         #  first.  Otherwise, the QPF12 will be doubled.
         if (forecastHR in [0, 12] and QPF12 is None) or QPF12 is None:
-
             #  Reset the value of the 12 hr QPF with the only precip we have
             return QPF
 
@@ -854,7 +851,6 @@ class NAM12(BaseInit.BaseInit):
         #  impossible to rerun a model SmartInit without wiping the QPF6 grids
         #  first.  Otherwise, the QPF6 will be doubled.
         if (forecastHR in [0, 6, 12, 18] and QPF6 is None) or QPF6 is None:
-
             #  Reset the value of the 6 hr QPF with the only precip we have
             return QPF
 
@@ -1033,7 +1029,6 @@ class NAM12(BaseInit.BaseInit):
         gh_MB600,
         gh_MB550,
     ):
-
         if not self.BI_checkT(T):
             return where(T, 0, 0)
 
@@ -1089,7 +1084,6 @@ class NAM12(BaseInit.BaseInit):
         wind_c,
         ctime,
     ):
-
         #  Construct lists of boundary layer data
         blTemps = [t_FHAG2, t_BL030, t_BL3060, t_BL6090, t_BL90120, t_BL120150]
         blRH = [
@@ -1159,7 +1153,6 @@ class NAM12(BaseInit.BaseInit):
         wind_c,
         ctime,
     ):
-
         #  Construct lists of boundary layer data
         blTemps = [t_FHAG2, t_BL030, t_BL3060, t_BL6090, t_BL90120, t_BL120150]
         blRH = [
@@ -1229,7 +1222,6 @@ class NAM12(BaseInit.BaseInit):
         wind_c,
         ctime,
     ):
-
         #  Construct lists of boundary layer data
         blTemps = [t_FHAG2, t_BL030, t_BL3060, t_BL6090, t_BL90120, t_BL120150]
         blRH = [
@@ -1332,7 +1324,6 @@ class NAM12(BaseInit.BaseInit):
         wind_c,
         ctime,
     ):
-
         # coding for mountain offices
         if self.BI_optionsDict["topoSite"]:
             # Enter some physical constants
