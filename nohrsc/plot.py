@@ -3,11 +3,11 @@
 https://www.nohrsc.noaa.gov/archived_data/instructions.html
 gdal_translate  us_ssmv11036tS__T0001TTNATS2019012305HP001.Hdr snowdepth.nc
 """
-from pyiem.plot import MapPlot, nwssnow
-from pyiem.util import get_dbconn
 import netCDF4
 import geopandas as gpd
 import cartopy.crs as ccrs
+from pyiem.plot import MapPlot, nwssnow
+from pyiem.util import get_dbconn
 
 LEVELS = [0.01, 1, 2, 3, 4, 6, 8, 12, 18, 24, 30, 36]
 

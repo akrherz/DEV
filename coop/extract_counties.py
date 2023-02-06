@@ -1,18 +1,16 @@
 """Extraction requested by Maciej"""
 import sys
 
-from pyiem.util import get_dbconn
 from metpy.units import units
 from tqdm import tqdm
-from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn
 import pandas as pd
 
 
 def dump(pgconn, sid, ncdc81, fips):
     """Go for this sid!"""
-    table = "alldata_%s" % (sid[:2],)
-    df = read_sql(
-        f"""
+    df = pd.read_sql(
+        """
         WITH avgs as (
             select to_char(valid, 'mmdd') as sday, high, low, precip
             from ncdc_climate81 where station = %s
@@ -22,7 +20,7 @@ def dump(pgconn, sid, ncdc81, fips):
         (case when o.precip < 0.009 then 0 else o.precip end) as obs_precip_mm,
         c.high as climo_high_c, c.low as climo_low_c,
         c.precip as climo_precip_mm
-        from {table} o JOIN avgs c on (o.sday = c.sday)
+        from alldata o JOIN avgs c on (o.sday = c.sday)
         WHERE o.station = %s and o.year >= 2006 and o.year < 2020
         ORDER by day ASC
         """,
@@ -40,16 +38,16 @@ def dump(pgconn, sid, ncdc81, fips):
     df["fips"] = fips
     df["iem_station"] = sid
     df["ncdc_station"] = ncdc81
-    fn = "data/%s_%s.csv" % (sid[:2], fips)
+    fn = f"data/{sid[:2]}_{fips}.csv"
     df.to_csv(fn, index=False, float_format="%.2f")
 
 
-def main(argv):
+def main(_argv):
     """Do Something"""
     pgconn = get_dbconn("postgis")
     cursor = pgconn.cursor()
     pgconn2 = get_dbconn("coop")
-    ugcs = read_sql(
+    ugcs = pd.read_sql(
         """
         SELECT ugc, ST_X(centroid) as lon, ST_Y(centroid) as lat
         from ugcs where substr(ugc,3,1) = 'C'
@@ -62,7 +60,7 @@ def main(argv):
     fips = pd.read_excel("/tmp/counties.xlsx", dtype={"Fips": str})
     progress = tqdm(fips.iterrows(), total=len(fips.index))
     for _idx, row in progress:
-        ugc = "%sC%s" % (row["ST"], row["Fips"][2:])
+        ugc = f"{row['ST']}C{row['Fips'][2:]}"
         progress.set_description(ugc)
         if ugcs.at[ugc, "done"] == 1:
             continue

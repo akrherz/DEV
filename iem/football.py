@@ -1,5 +1,9 @@
+"""Unsure."""
 import datetime
+import numpy as np
 from pyiem.util import get_dbconn
+import matplotlib.pyplot as plt
+
 
 data = """2002-09-14 17:05 S
 2003-09-13 11:30 I
@@ -16,59 +20,66 @@ data = """2002-09-14 17:05 S
 2014-09-13 15:30 S
 2015-09-12 15:45 I"""
 
-pgconn = get_dbconn("asos")
-cursor = pgconn.cursor()
 
-years = []
-tmpf = []
-sknt = []
-colors = []
-for line in data.split("\n"):
-    ts = datetime.datetime.strptime(line.strip()[:16], "%Y-%m-%d %H:%M")
-    sts = ts - datetime.timedelta(hours=1)
-    ets = ts + datetime.timedelta(minutes=30)
-    station = "AMW" if ts.year % 2 == 1 else "IOW"
-    cursor.execute(
-        """
-    SELECT tmpf, sknt from alldata where station = %s
-    and valid between %s and %s ORDER by valid DESC
-    """,
-        (station, sts, ets),
+def main():
+    """Go Main Go."""
+    pgconn = get_dbconn("asos")
+    cursor = pgconn.cursor()
+
+    years = []
+    tmpf = []
+    sknt = []
+    colors = []
+    for line in data.split("\n"):
+        ts = datetime.datetime.strptime(line.strip()[:16], "%Y-%m-%d %H:%M")
+        sts = ts - datetime.timedelta(hours=1)
+        ets = ts + datetime.timedelta(minutes=30)
+        station = "AMW" if ts.year % 2 == 1 else "IOW"
+        cursor.execute(
+            """
+        SELECT tmpf, sknt from alldata where station = %s
+        and valid between %s and %s ORDER by valid DESC
+        """,
+            (station, sts, ets),
+        )
+        row = cursor.fetchone()
+        years.append(ts.year)
+        tmpf.append(row[0])
+        sknt.append(row[1] * 1.15)
+        colors.append("k" if line[-1] == "I" else "#A71930")
+
+    (fig, ax) = plt.subplots(1, 1)
+    bars = ax.barh(np.array(years) - 0.4, tmpf)
+    irec = None
+    srec = None
+    for i, bar in enumerate(bars):
+        bar.set_facecolor(colors[i])
+        if colors[i] == "k":
+            irec = bar
+        else:
+            srec = bar
+        ax.text(tmpf[i] + 1, years[i], "%.0f" % (tmpf[i],), va="center")
+    n90 = [100] * len(years)
+    bars = ax.barh(np.array(years) - 0.4, sknt, left=n90)
+    for i, bar in enumerate(bars):
+        bar.set_facecolor(colors[i])
+        ax.text(sknt[i] + 101, years[i], "%.0f" % (sknt[i],), va="center")
+    ax.set_xticks([55, 60, 65, 70, 75, 80, 85, 90, 100, 105, 110, 115, 120])
+    ax.set_xticklabels([55, 60, 65, 70, 75, 80, 85, 90, 0, 5, 10, 15, 20])
+    ax.set_xlabel(
+        "Air Temperature [F]                          Wind Speed [mph]"
     )
-    row = cursor.fetchone()
-    years.append(ts.year)
-    tmpf.append(row[0])
-    sknt.append(row[1] * 1.15)
-    colors.append("k" if line[-1] == "I" else "#A71930")
+    ax.set_xlim(55, 125)
+    ax.grid(True)
+    ax.set_title(
+        "2002-2015 Iowa State vs Iowa Football Kickoff Weather\n"
+        "Closest Ob in Time, Ames (AMW) or Iowa City (IOW)"
+    )
+    ax.legend((irec, srec), ("Iowa Won", "Iowa State Won"), ncol=2)
+    ax.set_ylim(2001.5, 2017.5)
 
-import matplotlib.pyplot as plt
-import numpy as np
+    fig.savefig("test.png")
 
-(fig, ax) = plt.subplots(1, 1)
-bars = ax.barh(np.array(years) - 0.4, tmpf)
-irec = None
-srec = None
-for i, bar in enumerate(bars):
-    bar.set_facecolor(colors[i])
-    if colors[i] == "k":
-        irec = bar
-    else:
-        srec = bar
-    ax.text(tmpf[i] + 1, years[i], "%.0f" % (tmpf[i],), va="center")
-n90 = [100] * len(years)
-bars = ax.barh(np.array(years) - 0.4, sknt, left=n90)
-for i, bar in enumerate(bars):
-    bar.set_facecolor(colors[i])
-    ax.text(sknt[i] + 101, years[i], "%.0f" % (sknt[i],), va="center")
-ax.set_xticks([55, 60, 65, 70, 75, 80, 85, 90, 100, 105, 110, 115, 120])
-ax.set_xticklabels([55, 60, 65, 70, 75, 80, 85, 90, 0, 5, 10, 15, 20])
-ax.set_xlabel("Air Temperature [F]                          Wind Speed [mph]")
-ax.set_xlim(55, 125)
-ax.grid(True)
-ax.set_title(
-    "2002-2015 Iowa State vs Iowa Football Kickoff Weather\nClosest Ob in Time, Ames (AMW) or Iowa City (IOW)"
-)
-ax.legend((irec, srec), ("Iowa Won", "Iowa State Won"), ncol=2)
-ax.set_ylim(2001.5, 2017.5)
 
-fig.savefig("test.png")
+if __name__ == "__main__":
+    main()
