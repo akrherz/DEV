@@ -12,29 +12,28 @@ from matplotlib.colors import ListedColormap
 
 def plot():
     """Do plotting work"""
-    cmap1 = plt.get_cmap("terrain_r")
-    colors = list(cmap1(np.arange(11) / 12.0))
+    cmap1 = plt.get_cmap("rainbow")
+    colors = list(cmap1(np.arange(1, 7) / 7.0))
     # cmap2 = plt.get_cmap("Pastel1")
     # colors.extend(list(cmap2(np.arange(3) / 3.0)))
     cmap = ListedColormap(colors)
 
-    # cmap.set_under("tan")
+    cmap.set_over("yellow")
     cmap.set_under("white")
-    hours = np.load("/tmp/hours.npy")
-    minval = np.load("/tmp/minval.npy")
-    lons = np.load("/tmp/lons.npy")
-    lats = np.load("/tmp/lats.npy")
+    prev = np.load("maxval.npy")
+    today = np.load("maxval2.npy")
+    lons = np.load("lons.npy")
+    lats = np.load("lats.npy")
     mp = MapPlot(
         sector="custom",
-        south=40,
-        west=-100,
+        south=35,
+        west=-105,
         north=49,
-        east=-87,
-        twitter=True,
+        east=-82,
         continentalcolor="tan",
         # statebordercolor="white",
         title=(
-            r"6 PM 27 Sep - 12 PM 28 Sep 2022 :: Hours below 32$^\circ$F Air Temperature"
+            "Max Air Temperature April 12 vs January 1 through April 11 2023"
         ),
         subtitle="based on hourly NCEP Real-Time Mesoscale Analysis",
     )
@@ -43,20 +42,20 @@ def plot():
     # levels2 = list(range(24, 14 * 24 + 1, 48))
     # levels.extend(levels2)
     # levels = range(12, 145, 12)
-    levels = range(1, 9)
+    levels = range(1, 14, 2)
     mp.pcolormesh(
         lons,
         lats,
-        hours,
+        today - prev,
         levels,
         cmap=cmap,
         clip_on=False,
-        units="hours",
+        units=r"$^\circ$F",
         spacing="proportional",
         extend="both",
     )
     mp.drawcounties()
-    mp.postprocess(filename="220929.png")
+    mp.postprocess(filename="230413.png")
 
 
 def process():
