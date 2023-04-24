@@ -2,8 +2,6 @@
 Here we are, writing some selenium-based twitter bot.  This is not the life we
 wanted, but the life we got.
 
-TODO:
-  - Add crude message queue reading support.
 """
 import argparse
 from datetime import timedelta
@@ -12,9 +10,11 @@ import json
 from multiprocessing.pool import ThreadPool
 import os
 import random
+import tempfile
 import time
 import traceback
 
+import requests
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import ActionChains
@@ -30,17 +30,19 @@ XPATH_TWEETBOX = "//div[contains(@class, 'public-DraftStyleDefault-block')]"
 class TwitterWebSession:
     """A bot acting like a human on the twitters."""
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, interactive=False):
         """Constructor."""
         self.username = username
         self.password = password
         options = webdriver.ChromeOptions()
         options.add_argument("--disable-gpu")
-        options.add_argument("--headless")
+        if not interactive:
+            options.add_argument("--headless")
         options.add_argument(f"--user-data-dir=botdata/{username}/chrome")
         # Create a new instance of the Chrome driver.
         self.driver = webdriver.Chrome(options=options)
         self.authenticated = False
+        self.delqueue = []
 
     def log(self, msg):
         """Log something."""
@@ -119,20 +121,31 @@ class TwitterWebSession:
             try:
                 with open(filename, encoding="utf-8") as fp:
                     payload = json.load(fp)
-                self.tweet(payload["msg"], None)
+                self.tweet(payload["msg"], payload.get("media"))
             except Exception as exp:
                 self.log(exp)
                 traceback.print_exc()
             os.unlink(filename)
 
-    def tweet(self, msg, filename):
+    def tweet(self, msg, media):
         """Send a tweet."""
         self.log("Tweeting {msg}")
         elem = self.get_tweetbox()
         elem.send_keys(msg)
-        if filename is not None:
-            elem = self.driver.find_element(By.XPATH, "//input[@accept]")
-            elem.send_keys(filename)
+        if media is not None:
+            try:
+                # We are in a thread, so we should be able to block
+                req = requests.get(media, timeout=120)
+                with tempfile.NamedTemporaryFile(
+                    "wb", delete=False, suffix="png"
+                ) as tmpfp:
+                    tmpfp.write(req.content)
+                elem = self.driver.find_element(By.XPATH, "//input[@accept]")
+                elem.send_keys(tmpfp.name)
+                self.delqueue.append(tmpfp.name)
+            except Exception as exp:
+                self.log(exp)
+                self.log(media)
 
         btn = self.driver.find_element(
             By.XPATH, "//div[@data-testid='tweetButtonInline']"
@@ -140,7 +153,7 @@ class TwitterWebSession:
         btn.click()
 
 
-def bot(username, password):
+def bot(username, password, interactive):
     """Run a bot for a long time, in a thread even."""
     # Ensure we have a working directory
     os.makedirs(f"botdata/{username}/chrome", exist_ok=True)
@@ -149,7 +162,7 @@ def bot(username, password):
     # 2) Prevent a block from twitter, hopefully
     time.sleep(random.randint(1, 600))
     try:
-        iembot = TwitterWebSession(username, password)
+        iembot = TwitterWebSession(username, password, interactive)
         # This should bring us to the homepage
         iembot.login()
         # Park on a page without any network interaction
@@ -171,6 +184,10 @@ def bot(username, password):
             time.sleep(33)
             # Park on a page without any network interaction
             iembot.driver.get("https://twitter.com/en/tos")
+            while iembot.delqueue:
+                fn = iembot.delqueue.pop(0)
+                if os.path.isfile(fn):
+                    os.unlink(fn)
 
     except Exception as exp:
         iembot.log(exp)
@@ -209,7 +226,7 @@ def main():
             users.append(tokens)
     with ThreadPool(args.threads) as pool:
         for user in users:
-            pool.apply_async(bot, user)
+            pool.apply_async(bot, (*user, args.interactive))
         pool.close()
         pool.join()
 
