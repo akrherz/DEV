@@ -4,7 +4,7 @@ wanted, but the life we got.
 
 """
 import argparse
-from datetime import timedelta
+from datetime import timedelta, datetime, timezone
 import glob
 import json
 from multiprocessing.pool import ThreadPool
@@ -25,6 +25,7 @@ from selenium.webdriver.common.keys import Keys
 from pyiem.util import utc
 
 XPATH_TWEETBOX = "//div[contains(@class, 'public-DraftStyleDefault-block')]"
+LATENCY_THRES = timedelta(minutes=10)
 
 
 class TwitterWebSession:
@@ -119,9 +120,14 @@ class TwitterWebSession:
         # Process files written here
         for filename in filenames:
             try:
-                with open(filename, encoding="utf-8") as fp:
-                    payload = json.load(fp)
-                self.tweet(payload["msg"], payload.get("media"))
+                stamp = filename.split("_")[-1][:15]
+                ts = datetime.strptime(stamp, "%Y%m%dT%H%M%S")
+                if (utc() - ts.replace(tzinfo=timezone.utc)) < LATENCY_THRES:
+                    with open(filename, encoding="utf-8") as fp:
+                        payload = json.load(fp)
+                    self.tweet(payload["msg"], payload.get("media"))
+                else:
+                    self.log(f"Ignoring tweet {filename} as too old")
             except Exception as exp:
                 self.log(exp)
                 traceback.print_exc()
@@ -129,15 +135,28 @@ class TwitterWebSession:
 
     def tweet(self, msg, media):
         """Send a tweet."""
-        self.log("Tweeting {msg}")
+        self.log(f"Tweeting {msg}")
         elem = self.get_tweetbox()
-        elem.send_keys(msg)
+        # Wait for the element to be ready?
+        time.sleep(random.randint(1, 6))
+        # Try to get the entry box ready for action?
+        elem.send_keys(f"{utc():%f}" + Keys.BACKSPACE + Keys.BACKSPACE)
+        elem.send_keys(Keys.BACKSPACE + Keys.BACKSPACE + Keys.BACKSPACE)
+        time.sleep(random.randint(1, 6))
+        elem.send_keys(Keys.BACKSPACE + Keys.BACKSPACE + Keys.BACKSPACE)
+        # Slow down typing as something happens
+        for char in msg.replace("iem.local", "mesonet.agron.iastate.edu"):
+            elem.send_keys(char)
+            time.sleep(random.randint(0, 10) * 0.01)
+
+        time.sleep(random.randint(1, 3))
+
         if media is not None:
             try:
                 # We are in a thread, so we should be able to block
                 req = requests.get(media, timeout=120)
                 with tempfile.NamedTemporaryFile(
-                    "wb", delete=False, suffix="png"
+                    "wb", delete=False, suffix=".png"
                 ) as tmpfp:
                     tmpfp.write(req.content)
                 elem = self.driver.find_element(By.XPATH, "//input[@accept]")
@@ -150,17 +169,18 @@ class TwitterWebSession:
         btn = self.driver.find_element(
             By.XPATH, "//div[@data-testid='tweetButtonInline']"
         )
-        btn.click()
+        # This worksaround having some modal intercepting the click...
+        self.driver.execute_script("arguments[0].click();", btn)
 
 
-def bot(username, password, interactive):
+def bot(username, password, interactive, init_delay_max=600):
     """Run a bot for a long time, in a thread even."""
     # Ensure we have a working directory
     os.makedirs(f"botdata/{username}/chrome", exist_ok=True)
     # Initial jitter
     # 1) Prevent server-DOS invoking 160 instances of Chrome
     # 2) Prevent a block from twitter, hopefully
-    time.sleep(random.randint(1, 600))
+    time.sleep(random.randint(1, init_delay_max))
     try:
         iembot = TwitterWebSession(username, password, interactive)
         # This should bring us to the homepage
@@ -168,20 +188,22 @@ def bot(username, password, interactive):
         # Park on a page without any network interaction
         iembot.driver.get("https://twitter.com/en/tos")
         last_activity = utc()
-        # Main-loop iter will speed up and slow down based on usage
-        delay = 15  # seconds
+        delay = 15
         while True:
-            delay = min([3600, delay + 60])
+            # micro-optimization
+            delay = min([delay, 120])
             time.sleep(delay)
+            delay += 5
             # Wake up, do we have tweeting to do?
             if iembot.process_tweets():
                 last_activity = utc()
+                delay = 15
             if (utc() - last_activity) < timedelta(hours=2):
                 continue
             last_activity = utc()
             # Make some activity
             iembot.driver.get("https://twitter.com/")
-            time.sleep(33)
+            time.sleep(random.randint(20, 40))
             # Park on a page without any network interaction
             iembot.driver.get("https://twitter.com/en/tos")
             while iembot.delqueue:
@@ -224,9 +246,10 @@ def main():
             if args.user is not None and args.user != tokens[0]:
                 continue
             users.append(tokens)
+    init_delay_max = 600 if args.user is None else 2
     with ThreadPool(args.threads) as pool:
         for user in users:
-            pool.apply_async(bot, (*user, args.interactive))
+            pool.apply_async(bot, (*user, args.interactive, init_delay_max))
         pool.close()
         pool.join()
 
