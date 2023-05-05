@@ -1,117 +1,138 @@
 """
- Compute the difference between the 12 UTC 850 hPa temp and afternoon high
+Compute the difference between the 12 UTC 850 hPa temp and afternoon high
 """
-import datetime
+import calendar
+from datetime import timezone
 
-import numpy as np
-from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
+import seaborn as sns
+
+import pandas as pd
+from pyiem.plot import figure_axes
+from pyiem.util import get_sqlalchemy_conn
 
 
 def run():
     """Run()."""
-    ASOS = get_dbconn("asos")
-    acursor = ASOS.cursor()
-
-    POSTGIS = get_dbconn("postgis")
-    pcursor = POSTGIS.cursor()
-
-    pcursor.execute(
-        """
- select valid, max(case when p.pressure = 500 then height else 0 end) -
- min(case when p.pressure = 1000 then height else 9999 end) from
- raob_profile p JOIN raob_flights f on
- (p.fid = f.fid) where f.station in ('KOAX', 'KOVN', 'KOMA') and
- p.pressure in (1000,500)
- and extract(hour from valid at time zone 'UTC') in (0,12)
- GROUP by valid ORDER by valid ASC
-    """
-    )
-    for row in pcursor:
-        valid = row[0]
-        acursor.execute(
-            f"""SELECT tmpf, p01i, presentwx from t{valid.year}
-            WHERE station = 'OMA' and valid BETWEEN %s and %s
-            and presentwx is not null
+    # get 500 heights
+    with get_sqlalchemy_conn("raob") as conn:
+        h500 = pd.read_sql(
+            """
+        select valid at time zone 'UTC' as utc_valid,
+        max(p.height) as hght from
+        raob_profile p JOIN raob_flights f on
+        (p.fid = f.fid) where f.station in ('KOAX', 'KOVN', 'KOMA') and
+        p.pressure = 500
+        and extract(hour from valid at time zone 'UTC') in (0,12)
+        GROUP by utc_valid ORDER by utc_valid ASC
         """,
-            (
-                valid - datetime.timedelta(minutes=70),
-                valid + datetime.timedelta(minutes=70),
+            conn,
+        )
+    h500 = (
+        h500.assign(
+            utc_valid=lambda df_: df_["utc_valid"].dt.tz_localize(timezone.utc)
+        )
+        .set_index("utc_valid")
+        .pipe(
+            lambda df_: df_.reindex(
+                pd.date_range(
+                    df_.index.values[0],
+                    df_.index.values[-1],
+                    freq="12H",
+                    tz=timezone.utc,
+                )
+            )
+        )
+        .assign(next_hght=lambda df_: df_["hght"].shift(-1))
+        .assign(change=lambda df_: df_["next_hght"] - df_["hght"])
+    )
+    # Get obs
+    with get_sqlalchemy_conn("asos") as conn:
+        obs = pd.read_sql(
+            """
+            select valid at time zone 'UTC' as utc_valid, tmpf from alldata
+            where station = 'OMA' and array_to_string(wxcodes, '') ~* 'TS'
+            and report_type in (3, 4)
+            ORDER by valid ASC
+            """,
+            conn,
+        )
+    obs = (
+        obs.assign(
+            utc_valid=lambda df_: df_["utc_valid"].dt.tz_localize(
+                timezone.utc
+            ),
+            period=lambda df_: df_["utc_valid"].apply(
+                lambda x: x.replace(hour=12, minute=0)
             ),
         )
-        isnow = None
-        irain = None
-        for row2 in acursor:
-            if row2[2].find("SN") > -1:
-                isnow = row2[0]
-            if row2[2].find("RA") > -1:
-                irain = row2[0]
-
-        if isnow is not None:
-            snow500.append(row[1])
-            snowtmpf.append(isnow)
-        if irain is not None:
-            rain500.append(row[1])
-            raintmpf.append(irain)
-
-    rain500 = np.array(rain500)
-    snow500 = np.array(snow500)
-    snowtmpf = np.array(snowtmpf)
-    raintmpf = np.array(raintmpf)
-
-    np.save("snowtmpf", snowtmpf)
-    np.save("raintmpf", raintmpf)
-    np.save("snow500", snow500)
-    np.save("rain500", rain500)
+        .assign(
+            period=lambda df_: df_["period"].where(
+                df_["utc_valid"].dt.hour >= 12,
+                df_["utc_valid"].apply(lambda x: x.replace(hour=0, minute=0)),
+                axis=0,
+            )
+        )
+        .drop(columns=["utc_valid"])
+        .groupby("period")
+        .first()
+    )
+    (
+        h500.assign(tmpf=obs["tmpf"])
+        .reset_index()
+        .rename(columns={"index": "utc_valid"})
+        .to_csv("h500.csv")
+    )
 
 
 def main():
     """Go Main Go."""
+    df = pd.read_csv("h500.csv", parse_dates=["utc_valid"])
+    df = df[(df["change"] > -250) & (df["change"] < 250)]
+    df2 = df[pd.notna(df["tmpf"])]
 
-    rain500 = []
-    raintmpf = []
-    snow500 = []
-    snowtmpf = []
-    snowtmpf = np.load("snowtmpf.npy")
-    snow500 = np.load("snow500.npy")
-    rain500 = np.load("rain500.npy")
-    raintmpf = np.load("raintmpf.npy")
-
-    (fig, ax) = plt.subplots(2, 1, sharex=True)
-
-    ax[0].scatter(
-        snowtmpf, snow500, marker="*", color="b", label="Snow", zorder=1
+    (fig, ax) = figure_axes(
+        title="Omaha 500hPa 12 Hour Height Change + METAR Thunder (TS) Reported",
+        subtitle=(
+            f"{df2['utc_valid'].min():%Y/%m/%d} to "
+            f"{df['utc_valid'].max():%Y-%m-%d}, violin sides individually scaled"
+        ),
     )
-    ax[0].set_title(
-        "1961-2013 Omaha 1000-500 hPa Thickness and 2m Temps\n"
-        "When Rain/Snow is reported within 1 Hour of sounding"
+    df = df.assign(
+        month=lambda df_: df_["utc_valid"].dt.month,
+        hit=lambda df_: pd.notna(df_["tmpf"]),
     )
-    ax[0].set_ylim(4900, 6000)
-    ax[0].set_ylabel("1000-500 hPa Thickness [m]")
-    ax[0].axhline(5400, c="k")
-    ax[0].axvline(32, c="k")
-    ax[0].grid(True)
-    ax[0].legend(loc=2)
-    ax[0].text(33, 5050, r"32$^\circ$F")
-
-    ax[1].scatter(
-        raintmpf,
-        rain500,
-        facecolor="none",
-        edgecolor="g",
-        label="Rain",
-        zorder=2,
+    sns.violinplot(
+        df,
+        x="month",
+        y="change",
+        hue="hit",
+        ax=ax,
+        split=True,
     )
-    ax[1].set_ylim(4900, 6000)
-    ax[1].legend(loc=2)
-    ax[1].grid(True)
-    ax[1].set_xlabel("2 meter Air Temperature $^\circ$F")
-    ax[1].set_ylabel("1000-500 hPa Thickness [m]")
-    ax[1].axhline(5400, c="k")
-    ax[1].axvline(32, c="k")
-    ax[1].text(33, 5050, r"32$^\circ$F")
+    tt = ax.legend(title=None, ncol=2).get_texts()
+    tt[0].set_text("No Thunder")
+    tt[1].set_text("Thunder")
+    ax.set_xticklabels(calendar.month_abbr[1:])
+    ax.grid(True)
+    ax.set_ylabel("12 Hour Height Change [m]")
+    for month, df2 in df.groupby("month"):
+        val = (
+            len(df2[(df2["change"] < 0) & pd.notna(df2["tmpf"])].index)
+            / pd.notna(df2["tmpf"]).sum()
+            * 100.0
+        )
+        ax.text(
+            month - 1,
+            -320,
+            f"{val:.1f}%",
+            ha="center",
+            bbox={"color": "white"},
+        )
+    ax.set_xlabel(
+        "Percentage Labels indicate % of Thunder Events with decreasing height"
+    )
 
-    fig.savefig("test.png")
+    fig.savefig("230505.png")
 
 
 if __name__ == "__main__":
