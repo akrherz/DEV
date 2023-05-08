@@ -1,15 +1,16 @@
 """An old plot."""
+import calendar
 import datetime
 import os
-import calendar
 import subprocess
 
-from pyiem.util import get_dbconn
-from pyiem import reference
-import osgeo.gdal as gdal
 import numpy as np
-import matplotlib.pyplot as plt
+import osgeo.gdal as gdal
+
 import matplotlib.colors as mpcolors
+import matplotlib.pyplot as plt
+from pyiem import reference
+from pyiem.util import get_dbconn
 
 
 def lalo2pt(lon, lat):

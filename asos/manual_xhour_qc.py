@@ -4,8 +4,9 @@ automation here to help with manual dumping.
 """
 import sys
 
-import pandas as pd
 import pytz
+
+import pandas as pd
 from pyiem.util import get_dbconn, get_sqlalchemy_conn
 
 

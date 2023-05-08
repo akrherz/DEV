@@ -1,6 +1,7 @@
 """Generate a plot of the equation shown in the ASOS manual for the website"""
-from pyiem.plot.use_agg import plt
 import numpy as np
+
+from pyiem.plot.use_agg import plt
 
 
 def main():

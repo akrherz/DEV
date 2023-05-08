@@ -4,10 +4,11 @@ from io import StringIO
 
 import requests
 from tqdm import tqdm
-from pyiem.reference import state_names
+
+import pandas as pd
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot, get_cmap
-import pandas as pd
+from pyiem.reference import state_names
 
 
 def todate(val):

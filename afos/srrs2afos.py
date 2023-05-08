@@ -1,15 +1,16 @@
 """Ingest the SRRS text files into the AFOS IEM database"""
-import glob
 import datetime
-import tarfile
-import subprocess
-import re
-import sys
+import glob
 import os
+import re
+import subprocess
+import sys
+import tarfile
 
 import pytz
-from pyiem.util import noaaport_text, get_dbconn
+
 from pyiem.nws.product import TextProduct
+from pyiem.util import get_dbconn, noaaport_text
 
 BAD_CHARS = r"[^\na-zA-Z0-9:\(\)\%\.,\s\*\-\?\|/><&$=\+\@#]"
 DELIMITER = re.compile(r"[\*#]{4}[0-9]{9,10}[\*#]{4}")

@@ -5,11 +5,10 @@
 #
 ################################################################################
 
-from numpy import *
-from Init import *
-import sys
 
 import NWS_NAM12
+from Init import *
+from numpy import *
 
 #############################################
 # Add locally needed imports here
@@ -105,8 +104,8 @@ class Local_NAM12Forecaster(NWS_NAM12.NAM12):
         )
         BL3060_dewpt = tdBL3060 + 273.15
 
-        BL1_pres = p_SFC - 15.0
-        BL2_pres = p_SFC - 45.0
+        p_SFC - 15.0
+        p_SFC - 45.0
 
         #   calculate model wetbulb for lower 30 mb
         pSFC = (p_SFC - 15.0) / 100.0
@@ -191,7 +190,7 @@ class Local_NAM12Forecaster(NWS_NAM12.NAM12):
 
         BL030_mask = greater(tW030, 273.55)
         BL3060_mask = greater(tW3060, 273.55)
-        melting = logical_and(BL030_mask, BL3060_mask)
+        logical_and(BL030_mask, BL3060_mask)
         tW030 = self.convertKtoF(tW030)
         tW3060 = self.convertKtoF(tW3060)
 
@@ -321,9 +320,9 @@ class Local_NAM12Forecaster(NWS_NAM12.NAM12):
         MaxTAloft = zeros(gridShape, dtype=float)
         MaxTAloft = MaxTAloft - 50
         HeightMaxTAloft = zeros(gridShape, dtype=float)
-        HeightFreezingLevel = zeros(gridShape, dtype=float)
-        prevTemp = zeros(gridShape, dtype=float)
-        prevHeight = zeros(gridShape, dtype=float)
+        zeros(gridShape, dtype=float)
+        zeros(gridShape, dtype=float)
+        zeros(gridShape, dtype=float)
         height = zeros(gridShape, dtype=float)
 
         for i in xrange(len(t_c) - 1):  # for each pressure level

@@ -2,17 +2,19 @@
   Generate a simple scatter plot of power...
 """
 import datetime
+
 import matplotlib
 
 matplotlib.use("agg")
-import matplotlib.pyplot as plt
-import matplotlib.colors as mpcolors
-import matplotlib.colorbar as mpcolorbar
-import matplotlib.patheffects as PathEffects
-from pyiem.meteorology import uv
-from pyiem.datatypes import speed, direction
 import numpy as np
 import psycopg2
+
+import matplotlib.colorbar as mpcolorbar
+import matplotlib.colors as mpcolors
+import matplotlib.patheffects as PathEffects
+import matplotlib.pyplot as plt
+from pyiem.datatypes import direction, speed
+from pyiem.meteorology import uv
 
 PGCONN = psycopg2.connect(database="mec", host="127.0.0.1", port="5555")
 cursor = PGCONN.cursor()

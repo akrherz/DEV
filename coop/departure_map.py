@@ -1,10 +1,11 @@
 """Map of departures."""
 
 import numpy as np
+
 import pandas as pd
 from pandas.io.sql import read_sql
-from pyiem.plot.use_agg import plt
 from pyiem.plot import MapPlot
+from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn
 
 

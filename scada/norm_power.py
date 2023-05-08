@@ -1,4 +1,5 @@
 import psycopg2
+
 import matplotlib.pyplot as plt
 from pandas.io.sql import read_sql
 

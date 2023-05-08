@@ -1,11 +1,12 @@
 """Check over our SWAT files for irregularities."""
-import sys
-import datetime
 import calendar
+import datetime
+import sys
+
+import seaborn as sns
 
 import pandas as pd
 from pyiem.plot.use_agg import plt
-import seaborn as sns
 
 
 def main(argv):

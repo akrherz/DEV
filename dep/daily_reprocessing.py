@@ -5,8 +5,8 @@ import random
 import subprocess
 
 import pandas as pd
-from pyiem.dep import SOUTH, NORTH, EAST, WEST, get_cli_fname, read_cli
-from pyiem.util import logger, get_dbconn
+from pyiem.dep import EAST, NORTH, SOUTH, WEST, get_cli_fname, read_cli
+from pyiem.util import get_dbconn, logger
 
 LOG = logger()
 SAVEFILE = "/opt/dep/scripts/cligen/mydays.txt"

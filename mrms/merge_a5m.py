@@ -1,15 +1,16 @@
 """Merge the 0.01x0.01 Q3 24 hour precip data estimates"""
 import datetime
-import sys
-import os
 import gzip
+import os
+import sys
 import tempfile
 
 import numpy as np
 import pygrib
-from pyiem.mrms import fetch, WEST
+
 from pyiem import iemre
-from pyiem.util import ncopen, utc, logger
+from pyiem.mrms import WEST, fetch
+from pyiem.util import logger, ncopen, utc
 
 LOG = logger()
 TMP = "/mesonet/tmp"

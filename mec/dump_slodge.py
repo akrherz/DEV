@@ -1,6 +1,6 @@
-import psycopg2
-import pytz
 import datetime
+
+import psycopg2
 
 PGCONN = psycopg2.connect(database="mec", host="127.0.0.1", port="5555")
 cursor = PGCONN.cursor()

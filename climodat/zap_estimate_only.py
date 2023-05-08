@@ -7,7 +7,7 @@ for example.  This script will remove realtime status for such sites.
 
 from pandas.io.sql import read_sql
 from pyiem.reference import state_names
-from pyiem.util import get_sqlalchemy_conn, get_dbconn
+from pyiem.util import get_dbconn, get_sqlalchemy_conn
 
 
 def do(ccursor, mcursor, state):

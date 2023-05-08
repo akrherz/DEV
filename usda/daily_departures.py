@@ -2,11 +2,12 @@
 import calendar
 from datetime import date, timedelta
 
-from pyiem.util import get_dbconn
-from pyiem.plot.use_agg import plt
 import numpy as np
-from pandas.io.sql import read_sql
+
 import pandas as pd
+from pandas.io.sql import read_sql
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 
 
 def main():

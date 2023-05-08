@@ -1,7 +1,7 @@
 """Do some fun email stuff."""
-import imaplib
-import email
 import datetime
+import email
+import imaplib
 
 
 def monthly_emails():

@@ -2,10 +2,10 @@
 http://www.srh.noaa.gov/images/ffc/pdf/ta_htindx.PDF
 """
 import numpy
-import matplotlib.pyplot as plt
+
 import matplotlib.cm as cm
 import matplotlib.colors as mpcolors
-import psycopg2
+import matplotlib.pyplot as plt
 import pyiem.datatypes as dt
 from pyiem import meteorology
 from pyiem.util import get_dbconn
@@ -28,7 +28,7 @@ def main():
 
     otmpf = dt.temperature(numpy.array(otmpf), "F")
     odwpf = dt.temperature(numpy.array(odwpf), "F")
-    orelh = meteorology.relh(otmpf, odwpf)
+    meteorology.relh(otmpf, odwpf)
 
     tmpf = dt.temperature(numpy.arange(80, 110), "F")
     dwpf = dt.temperature(numpy.arange(40, 80), "F")

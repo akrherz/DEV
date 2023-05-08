@@ -2,7 +2,6 @@
 """
 import datetime
 import subprocess
-import os
 
 cols = {"Total Power": "power", "Turbines Online": "online_cnt"}
 data = {}

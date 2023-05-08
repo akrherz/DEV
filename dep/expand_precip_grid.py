@@ -1,10 +1,11 @@
 """A one-off expansion of the precip grid files."""
-import os
 import gzip
+import os
 
 import numpy as np
+
 import pandas as pd
-from pyiem.dep import SOUTH, NORTH, EAST, WEST
+from pyiem.dep import EAST, NORTH, SOUTH, WEST
 
 
 def main():

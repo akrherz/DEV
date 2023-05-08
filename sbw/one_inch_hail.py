@@ -1,6 +1,7 @@
 """Look for wind information in warnings."""
 
 import re
+
 from pyiem.util import get_dbconn
 
 

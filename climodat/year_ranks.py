@@ -3,6 +3,7 @@ import os
 
 from sqlalchemy import text
 from tqdm import tqdm
+
 import matplotlib.colors as mpcolors
 import pandas as pd
 from pyiem.plot import MapPlot

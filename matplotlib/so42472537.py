@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 from matplotlib import lines
 
-
 labels = ["LowPower Design", "Pareto Design", "HighPerf Design"]
 cats = [
     "q14",

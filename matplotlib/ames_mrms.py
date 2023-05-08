@@ -1,10 +1,11 @@
 """MRMS Plotting util for zoomed in areas"""
 import pygrib
 import shapefile
-from shapely.geometry import shape
+
 import cartopy.crs as ccrs
-from pyiem.plot import MapPlot, nwsprecip, Z_OVERLAY2
+from pyiem.plot import Z_OVERLAY2, MapPlot, nwsprecip
 from pyiem.util import get_dbconn, mm2inch
+from shapely.geometry import shape
 
 
 def get_data():

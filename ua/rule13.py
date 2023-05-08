@@ -1,12 +1,12 @@
 """
  Compute the difference between the 12 UTC 850 hPa temp and afternoon high
 """
-from calendar import month_abbr
 import datetime
+from calendar import month_abbr
 
 from pyiem.datatypes import temperature
-from pyiem.util import get_dbconn
 from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 
 
 def main():

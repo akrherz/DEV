@@ -2,11 +2,12 @@
 # VT 1135
 # R2 1660
 
-import pandas as pd
-from pyiem.util import get_dbconn
-from pyiem.plot.use_agg import plt
 import numpy as np
 from scipy import stats
+
+import pandas as pd
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 
 
 def main():
@@ -59,7 +60,6 @@ def main():
     h_slope, intercept, r_value, p_value, std_err = stats.linregress(
         years, yields
     )
-    barcolors = []
     departures = []
     for year in years:
         expected = h_slope * year + intercept
@@ -75,7 +75,7 @@ def main():
     ax[0].set_title("Iowa Corn Yield Departure from Trend & Wettest Month")
     ax[0].plot(years, h_slope * years + intercept)
 
-    bars = ax[1].scatter(
+    ax[1].scatter(
         df["wxdeparture"][df["month"] == 5],
         df["yielddeparture"][df.month == 5],
         marker="v",
@@ -83,7 +83,7 @@ def main():
         c="r",
         s=50,
     )
-    bars = ax[1].scatter(
+    ax[1].scatter(
         df["wxdeparture"][df["month"] == 6],
         df["yielddeparture"][df.month == 6],
         marker="+",
@@ -91,7 +91,7 @@ def main():
         c="b",
         s=50,
     )
-    bars = ax[1].scatter(
+    ax[1].scatter(
         df["wxdeparture"][df["month"] == 7],
         df["yielddeparture"][df.month == 7],
         marker="o",
@@ -99,7 +99,7 @@ def main():
         c="g",
         s=50,
     )
-    bars = ax[1].scatter(
+    ax[1].scatter(
         df["wxdeparture"][df["month"] == 8],
         df["yielddeparture"][df.month == 8],
         marker="s",

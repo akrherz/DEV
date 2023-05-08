@@ -1,9 +1,10 @@
 """How quickly are warnings killed off"""
 
-from pyiem.util import get_dbconn
-from pyiem.nws.vtec import VTEC_PHENOMENA
 import numpy as np
+
 import matplotlib.pyplot as plt
+from pyiem.nws.vtec import VTEC_PHENOMENA
+from pyiem.util import get_dbconn
 
 
 def get_counts(phenomena, significance):

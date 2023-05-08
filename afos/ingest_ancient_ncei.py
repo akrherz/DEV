@@ -1,10 +1,10 @@
 """Process really old files from NCEI."""
-import re
-import sys
-import string
 import datetime
+import re
+import string
+import sys
 
-from pyiem.util import utc, noaaport_text, get_dbconn
+from pyiem.util import get_dbconn, noaaport_text, utc
 
 WMO_RE = re.compile(
     "^(?P<ttaaii>[A-Z0-9]{4,6})\s+(?P<cccc>[A-Z]{4})\s+"

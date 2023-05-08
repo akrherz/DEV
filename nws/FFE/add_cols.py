@@ -1,7 +1,7 @@
 """Add columns."""
 
-from pyiem.util import get_dbconn
 import pandas as pd
+from pyiem.util import get_dbconn
 
 SAVECOLS = [
     "source",

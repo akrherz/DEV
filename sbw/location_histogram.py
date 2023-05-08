@@ -1,9 +1,10 @@
 """Make a spatial histogram of SBWs"""
 
-from pyiem.util import get_dbconn
 import numpy as np
+
 import matplotlib.pyplot as plt
 from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn
 
 
 def main():

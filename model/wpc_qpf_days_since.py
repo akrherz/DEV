@@ -2,10 +2,11 @@
 import datetime
 import os
 
-import pygrib
 import numpy as np
-from pyiem.plot.use_agg import plt
+import pygrib
+
 from pyiem.plot import MapPlot
+from pyiem.plot.use_agg import plt
 from pyiem.util import logger
 
 LOG = logger()

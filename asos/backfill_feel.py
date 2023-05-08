@@ -1,12 +1,13 @@
 """Fill in the hole of feel column."""
-import sys
 import datetime
+import sys
 
 import numpy as np
-from pyiem.util import get_dbconn, utc, get_sqlalchemy_conn
-from metpy.units import units
+
 import metpy.calc as mcalc
 import pandas as pd
+from metpy.units import units
+from pyiem.util import get_dbconn, get_sqlalchemy_conn, utc
 
 
 def not_nan(val):

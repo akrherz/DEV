@@ -2,9 +2,10 @@
 import datetime
 
 import numpy as np
+
 import pandas as pd
-from pyiem.util import get_sqlalchemy_conn
 from pyiem.plot.use_agg import plt
+from pyiem.util import get_sqlalchemy_conn
 
 
 def main():

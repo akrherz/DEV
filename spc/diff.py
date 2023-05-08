@@ -1,10 +1,11 @@
 """Some raster difference."""
 
-from geopandas import read_postgis
+import numpy as np
 from affine import Affine
 from rasterstats import zonal_stats
-import numpy as np
 from tqdm import tqdm
+
+from geopandas import read_postgis
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import get_dbconn
 

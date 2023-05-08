@@ -1,8 +1,9 @@
 """One off feature plot."""
 import numpy as np
-from pyiem.util import get_dbconn
-import matplotlib.pyplot as plt
+
 import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn
 
 
 def getsite(station, ocursor):

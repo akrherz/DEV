@@ -2,6 +2,7 @@ import math
 
 import mx.DateTime
 import numpy
+
 from pyiem.util import get_dbconn
 
 ASOS = get_dbconn("asos")

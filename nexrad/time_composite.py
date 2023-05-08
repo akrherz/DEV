@@ -1,11 +1,12 @@
 """An old plot."""
-import os
 import datetime
+import os
+
+import netCDF4
+import numpy
+import osgeo.gdal as gdal
 
 from pyiem import iemre
-import osgeo.gdal as gdal
-import numpy
-import netCDF4
 
 
 def lalo2pt(lat, lon):

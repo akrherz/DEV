@@ -1,7 +1,7 @@
 """Generic plotter"""
 
-from pyiem.plot.use_agg import plt
 from pyiem.plot import MapPlot
+from pyiem.plot.use_agg import plt
 
 data = """ ABQ |  5.43790849673202614379
  ABR |  4.45205479452054794521

@@ -1,14 +1,9 @@
 """Plot the scam that is DST"""
 
-import tqdm
-import numpy
 import ephem
 import mx.DateTime
-import matplotlib
+import tqdm
 
-import numpy as np
-import matplotlib.font_manager
-from pyiem.plot.use_agg import plt
 from pyiem.plot import MapPlot
 
 

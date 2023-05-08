@@ -1,8 +1,10 @@
 #  Need to be more precise with outage data
 #  Daryl Herzmann 8 Dec 2003
 
-import re, mx.DateTime
-from pyIEM import stationTable, iemdb
+import re
+
+import mx.DateTime
+from pyIEM import iemdb, stationTable
 
 i = iemdb.iemdb()
 st = stationTable.stationTable("/mesonet/TABLES/kcci.stns")

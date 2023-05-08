@@ -1,9 +1,10 @@
+import datetime
+
 import netCDF4
+import numpy as np
+
 from pyiem import iemre
 from pyiem.plot import MapPlot, nwsprecip
-import matplotlib.pyplot as plt
-import datetime
-import numpy as np
 
 nc = netCDF4.Dataset("/mesonet/data/iemre/2016_mw_mrms_daily.nc", "r")
 idx = iemre.daily_offset(datetime.date(2016, 7, 3))

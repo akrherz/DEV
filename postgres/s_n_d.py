@@ -4,8 +4,8 @@ Runs from the database server at 11:08 PM and does some work.
 """
 import datetime
 import os
-import subprocess
 import shutil
+import subprocess
 
 # don't want to assume pyIEM is isntalled
 import psycopg2

@@ -4,8 +4,8 @@
 """
 import sys
 
-from pyiem.util import ncopen, utc
 from pyiem import iemre
+from pyiem.util import ncopen, utc
 
 
 def main(argv):

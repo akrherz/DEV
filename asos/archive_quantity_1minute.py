@@ -1,8 +1,9 @@
 """ Create a simple prinout of observation quanity in the database """
+import datetime
 import sys
 
-import datetime
 import numpy as np
+
 from pyiem.util import get_dbconn
 
 BASEYEAR = 2000

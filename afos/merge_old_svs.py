@@ -2,11 +2,12 @@
 import sys
 from datetime import timedelta, timezone
 
-from pyiem.util import get_dbconn, noaaport_text
+from psycopg2.extras import DictCursor
+
+from geopandas import read_postgis
 from pyiem.nws.products.vtec import parser
 from pyiem.nws.vtec import VTEC
-from psycopg2.extras import DictCursor
-from geopandas import read_postgis
+from pyiem.util import get_dbconn, noaaport_text
 
 sys.path.insert(0, ".")
 from ingest_old_warnings import compute_until

@@ -1,8 +1,9 @@
 """State Fair Wx"""
-from datetime import date, timedelta
 import os
+from datetime import date, timedelta
 
 import numpy as np
+
 import pandas as pd
 from pyiem.plot import figure_axes
 from pyiem.plot.use_agg import plt

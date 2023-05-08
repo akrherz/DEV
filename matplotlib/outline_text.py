@@ -1,5 +1,5 @@
-import matplotlib.pyplot as plt
 import matplotlib.patheffects as PathEffects
+import matplotlib.pyplot as plt
 
 (fig, ax) = plt.subplots(1, 1)
 

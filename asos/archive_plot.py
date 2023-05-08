@@ -3,8 +3,8 @@ import datetime
 
 import matplotlib.pyplot as plt
 import pandas as pd
+from pyiem.datatypes import pressure, speed
 from pyiem.util import get_dbconnstr
-from pyiem.datatypes import speed, pressure
 
 
 def main():

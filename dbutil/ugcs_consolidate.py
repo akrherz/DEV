@@ -4,7 +4,7 @@ The pain is so bad with this, see akrherz/pyIEM#387
 """
 
 import pandas as pd
-from pyiem.util import get_dbconn, logger, get_sqlalchemy_conn
+from pyiem.util import get_dbconn, get_sqlalchemy_conn, logger
 
 LOG = logger()
 

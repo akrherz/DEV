@@ -1,6 +1,6 @@
 """Dump out a table."""
-from pyiem.util import get_sqlalchemy_conn
 from pandas.io.sql import read_sql
+from pyiem.util import get_sqlalchemy_conn
 
 VALS = [
     ("Headwaters Cedar Creek", "071000060202"),

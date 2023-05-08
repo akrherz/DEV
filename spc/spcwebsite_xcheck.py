@@ -2,9 +2,10 @@
 
 # Third party
 import requests
+
 import pandas as pd
-from pyiem.util import logger, utc, noaaport_text
 from pyiem.nws.product import TextProduct
+from pyiem.util import logger, noaaport_text, utc
 
 LOG = logger()
 

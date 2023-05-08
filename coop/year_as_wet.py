@@ -1,10 +1,10 @@
 """Year that was as wet as this."""
 
-from pyiem.plot.geoplot import MapPlot
-from pyiem.network import Table as NetworkTable
-from pyiem.util import get_dbconn
 import pandas as pd
 from pandas.io.sql import read_sql
+from pyiem.network import Table as NetworkTable
+from pyiem.plot.geoplot import MapPlot
+from pyiem.util import get_dbconn
 
 
 def main():

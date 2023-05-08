@@ -5,9 +5,10 @@ Take the Time Motion Location and create a MOS style polygon
 import math
 import sys
 
-from tqdm import tqdm
 import psycopg2.extras
 import pyproj
+from tqdm import tqdm
+
 from pyiem.util import get_dbconn
 
 P2163 = pyproj.Proj(init="epsg:2163")

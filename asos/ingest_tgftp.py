@@ -1,13 +1,14 @@
 """Process the METARs found at TGFTP."""
-from datetime import datetime
-import re
 import os
+import re
 import sys
+from datetime import datetime
 
-from psycopg2.extras import DictCursor
 import requests
-from pyiem.util import get_dbconn, logger, exponential_backoff
+from psycopg2.extras import DictCursor
+
 from pyiem.nws.products.metarcollect import METARReport
+from pyiem.util import exponential_backoff, get_dbconn, logger
 
 LOG = logger()
 URLBASE = "https://tgftp.nws.noaa.gov/data/observations/metar/cycles/"

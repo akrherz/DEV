@@ -1,9 +1,9 @@
 """Size Metrics"""
 import datetime
 
-from pyiem.util import get_dbconn
 import matplotlib.pyplot as plt
 from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn
 
 
 def get_polygon():

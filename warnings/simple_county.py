@@ -1,9 +1,10 @@
 """Map UGC stuff."""
-import sys
 import subprocess
+import sys
+
+import pytz
 
 from pandas.io.sql import read_sql
-import pytz
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import get_dbconn, utc
 

@@ -1,12 +1,13 @@
-import cartopy.crs as ccrs
 from scipy.interpolate import NearestNDInterpolator
 from scipy.signal import convolve2d
 
+import cartopy.crs as ccrs
 import matplotlib
 
 matplotlib.use("agg")
-import matplotlib.pyplot as plt
 import numpy as np
+
+import matplotlib.pyplot as plt
 
 
 def contourf(ax, lons, lats, vals, clevs):

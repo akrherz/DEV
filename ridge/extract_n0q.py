@@ -1,10 +1,11 @@
 """Extract N0Q values from the raw RIDGE images :)"""
 
-import osgeo.gdal as gdal
-import mx.DateTime
 import glob
 import os
 from xml.dom.minidom import parse
+
+import mx.DateTime
+import osgeo.gdal as gdal
 
 
 def parse_colorramp():

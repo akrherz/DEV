@@ -1,8 +1,8 @@
 """Reprocess junky data"""
 import sys
 
-from pyiem.util import noaaport_text, get_dbconn, logger
 from pyiem.nws.products.vtec import parser
+from pyiem.util import get_dbconn, logger, noaaport_text
 
 LOG = logger()
 

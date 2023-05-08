@@ -1,8 +1,9 @@
 """Dump ASOS wind data per year."""
 import sys
 
-from pyiem.util import get_dbconn
 from tqdm import tqdm
+
+from pyiem.util import get_dbconn
 
 
 def main(argv):

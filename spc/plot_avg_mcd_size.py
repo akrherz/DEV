@@ -1,9 +1,9 @@
 """Plot of Average MCD Size."""
 
 # third party
+from pandas import read_sql
 from pyiem.plot import figure_axes
 from pyiem.util import get_dbconnstr
-from pandas import read_sql
 
 
 def main():

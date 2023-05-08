@@ -1,11 +1,11 @@
 """The IEM summary table has a coop_valid column that tracks when the SHEF
 COOP report was valid.  This was not around in the database from day1, so we
 should backfill it"""
-import sys
 import datetime
+import sys
 
 import pandas as pd
-from pyiem.util import get_dbconn, logger, get_sqlalchemy_conn
+from pyiem.util import get_dbconn, get_sqlalchemy_conn, logger
 
 LOG = logger()
 IEM = get_dbconn("iem")

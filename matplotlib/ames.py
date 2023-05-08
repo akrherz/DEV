@@ -1,14 +1,11 @@
 """A one off."""
 
-import matplotlib.pyplot as plt
-from mpl_toolkits.basemap import Basemap
-from pyiem import reference
-from matplotlib.patches import Polygon
 import numpy as np
 import pygrib
-import Image
-from pyiem.plot import MapPlot
+
 import matplotlib.patheffects as PathEffects
+from matplotlib.patches import Polygon
+from pyiem.plot import MapPlot
 
 
 def main():

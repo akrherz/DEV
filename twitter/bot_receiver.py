@@ -5,7 +5,8 @@ import json
 import os
 
 from twisted.internet import reactor
-from twisted.web import server, resource
+from twisted.web import resource, server
+
 from pyiem.util import get_properties, utc
 
 

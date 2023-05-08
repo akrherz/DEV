@@ -1,15 +1,15 @@
 """playing."""
 import numpy as np
-from pyiem.plot.use_agg import plt
-from pyiem.plot import geoplot
-from pyiem.plot.colormaps import james, dep_erosion
-from pyiem.util import get_dbconn
-from pyiem.dep import RAMPS
-from matplotlib.patches import Polygon
+
+import cartopy.crs as ccrs
 import matplotlib.colors as mpcolors
 from geopandas import read_postgis
-import cartopy.crs as ccrs
-
+from matplotlib.patches import Polygon
+from pyiem.dep import RAMPS
+from pyiem.plot import geoplot
+from pyiem.plot.colormaps import dep_erosion, james
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 
 pgconn = get_dbconn("idep")
 df = read_postgis(

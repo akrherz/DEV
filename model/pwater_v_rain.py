@@ -1,8 +1,9 @@
 """An old plot."""
 
-from pyiem.util import get_dbconn
 import numpy.ma
+
 import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn
 
 
 def main():

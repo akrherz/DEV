@@ -1,11 +1,12 @@
 """Request for maps and data of products without SVS updates."""
 import calendar
 
-from pyiem.util import get_sqlalchemy_conn
+import seaborn as sns
+
+from pandas.io.sql import read_sql
 from pyiem.plot import get_cmap
 from pyiem.plot.use_agg import plt
-import seaborn as sns
-from pandas.io.sql import read_sql
+from pyiem.util import get_sqlalchemy_conn
 
 
 def main():

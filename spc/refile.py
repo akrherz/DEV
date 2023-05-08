@@ -1,6 +1,7 @@
 """Refile contents of the database."""
 
 from psycopg2.extras import RealDictCursor
+
 from pyiem.util import get_dbconn
 
 

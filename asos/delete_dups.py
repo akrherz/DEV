@@ -5,8 +5,9 @@ tough to resolve how these obs appeared in the database to begin with :(
 """
 
 from tqdm import tqdm
-from pyiem.util import get_dbconn
+
 from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn
 
 
 def do_year(year):

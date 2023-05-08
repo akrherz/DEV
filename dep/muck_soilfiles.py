@@ -1,6 +1,6 @@
 """Reintroduce a bug with the soils file."""
-import os
 import glob
+import os
 
 
 def main():

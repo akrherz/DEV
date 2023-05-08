@@ -2,6 +2,7 @@
 from datetime import timezone
 
 from tqdm import tqdm
+
 import geopandas as gpd
 from pyiem.util import get_dbconn
 

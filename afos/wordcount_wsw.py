@@ -1,8 +1,8 @@
 """Count Words."""
 
 # 3rd Party
-from pyiem.util import get_dbconn, noaaport_text
 import pandas as pd
+from pyiem.util import get_dbconn, noaaport_text
 
 
 def main():

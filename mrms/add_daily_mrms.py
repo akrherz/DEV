@@ -6,6 +6,7 @@ import datetime
 import sys
 
 import numpy as np
+
 from pyiem import iemre
 from pyiem.util import ncopen
 

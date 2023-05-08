@@ -1,8 +1,8 @@
 """Plot for Javed's paper"""
 from __future__ import print_function
 
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 from matplotlib.font_manager import FontProperties
 
 

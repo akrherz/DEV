@@ -1,9 +1,9 @@
 """Review our dual listed DCP and COOP sites."""
 import subprocess
 
+from pandas.io.sql import read_sql
 from pyiem.reference import state_names
 from pyiem.util import get_dbconn
-from pandas.io.sql import read_sql
 
 SCRIPT = "/opt/iem/scripts/dbutil/delete_station.py"
 

@@ -1,9 +1,9 @@
 """Create scenario CLI files for later editing."""
 import shutil
 
-from pyiem.util import get_dbconn
-from pyiem.dep import get_cli_fname
 from pandas.io.sql import read_sql
+from pyiem.dep import get_cli_fname
+from pyiem.util import get_dbconn
 
 
 def main():

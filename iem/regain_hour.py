@@ -1,10 +1,11 @@
 """Plot the time we are robbed of."""
 import datetime
 
-import numpy
 import ephem
-import matplotlib.pyplot as plt
+import numpy
+
 import matplotlib.font_manager
+import matplotlib.pyplot as plt
 
 
 def compute_sunrise(lat, long):

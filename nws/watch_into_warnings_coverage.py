@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import psycopg2
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
 

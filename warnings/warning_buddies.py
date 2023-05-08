@@ -1,10 +1,10 @@
 """Who do we share a warning with?"""
 import sys
 
-from pyiem.plot import MapPlot, plt
-from pyiem.util import get_sqlalchemy_conn
 import pandas as pd
 from pandas.io.sql import read_sql
+from pyiem.plot import MapPlot, plt
+from pyiem.util import get_sqlalchemy_conn
 
 
 def main(argv):

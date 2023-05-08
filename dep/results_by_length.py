@@ -1,10 +1,10 @@
 """Debug our flowpath length fun."""
 import sys
 
-from pyiem.util import get_dbconn
-from pyiem.dep import read_env
 import pandas as pd
 from pandas.io.sql import read_sql
+from pyiem.dep import read_env
+from pyiem.util import get_dbconn
 
 
 def main(argv):

@@ -2,10 +2,11 @@
 import datetime
 
 import pytz
-from pyiem.nws import vtec
-from pyiem.util import get_dbconn
+
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+from pyiem.nws import vtec
+from pyiem.util import get_dbconn
 
 
 def main():

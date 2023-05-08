@@ -2,7 +2,8 @@
 
 import numpy as np
 from tqdm import tqdm
-from pyiem.iemre import get_hourly_ncname, find_ij
+
+from pyiem.iemre import find_ij, get_hourly_ncname
 from pyiem.plot import MapPlot, get_cmap, pretty_bins
 from pyiem.util import ncopen
 

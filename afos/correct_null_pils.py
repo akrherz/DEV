@@ -1,7 +1,7 @@
 """Find afos database entries that have null PIL values"""
 
-from pyiem.util import noaaport_text, get_dbconn
 from pyiem.nws.product import TextProduct
+from pyiem.util import get_dbconn, noaaport_text
 
 
 def dotable(table):

@@ -2,7 +2,8 @@
 import sys
 
 import pytz
-from pyiem.nws.products.dsm import process, parser
+
+from pyiem.nws.products.dsm import parser, process
 from pyiem.util import get_dbconn
 
 

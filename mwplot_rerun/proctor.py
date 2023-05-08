@@ -2,9 +2,10 @@
 Drive the reprocessing of the MWcomp plot.  We are doing this since our
 data archives have more data than the stuff I previously got from NSSL
 """
-import subprocess
 import datetime
 import os
+import subprocess
+
 from pyiem.util import get_dbconn
 
 ASOS = get_dbconn("asos")

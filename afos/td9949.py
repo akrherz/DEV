@@ -3,14 +3,14 @@
 https://www1.ncdc.noaa.gov/pub/data/documentlibrary/tddoc/td9949.pdf
 
 """
-from io import BytesIO
-import re
-import os
-import struct
 import datetime
+import os
+import re
+import struct
 import sys
+from io import BytesIO
 
-from pyiem.util import utc, get_dbconn, noaaport_text
+from pyiem.util import get_dbconn, noaaport_text, utc
 
 # Copied from https://github.com/akrherz/iem
 sys.path.insert(0, "/opt/iem/scripts/util")

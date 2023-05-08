@@ -2,6 +2,7 @@
 import traceback
 
 import requests
+
 from pyiem.nws.product import TextProduct
 from pyiem.util import get_dbconn, noaaport_text
 

@@ -13,6 +13,7 @@ import datetime
 import sys
 
 from tqdm import tqdm
+
 from pyiem.util import get_dbconn
 
 

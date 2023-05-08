@@ -1,12 +1,13 @@
 """Create 2-D contour and see what it looks like?"""
-from datetime import timezone, timedelta
+from datetime import timedelta, timezone
 
-from pyiem.util import get_dbconn, utc
-from pyiem.plot.use_agg import plt
-from metpy.units import masked_array, units
-from backports.zoneinfo import ZoneInfo  # type: ignore
 import numpy as np
+from backports.zoneinfo import ZoneInfo  # type: ignore
+
+from metpy.units import masked_array, units
 from pandas.io.sql import read_sql
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn, utc
 
 
 def main():

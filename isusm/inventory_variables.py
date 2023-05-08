@@ -1,7 +1,7 @@
 """Figure out how much of a variable name mess we have."""
 import glob
-import sys
 import os
+import sys
 
 
 def runtype(name):

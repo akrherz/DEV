@@ -3,16 +3,15 @@
 https://wvs.earthdata.nasa.gov/
 """
 
+import numpy as np
+
+import matplotlib.image as mpimg
+from pandas import read_sql
+from pyiem.plot import MapPlot
 from pyiem.plot.use_agg import plt
 from pyiem.reference import Z_CLIP
 from pyiem.util import get_dbconnstr
-from pandas import read_sql
-import matplotlib.image as mpimg
-from pyiem.plot import MapPlot
 from shapely.wkb import loads
-import psycopg2
-import numpy as np
-import cartopy.crs as ccrs
 
 
 def main():

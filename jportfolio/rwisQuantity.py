@@ -1,6 +1,6 @@
 """Legacy cruft."""
-import mx.DateTime, pg
-from pyIEM import stationTable, iemdb
+import mx.DateTime
+from pyIEM import iemdb, stationTable
 
 i = iemdb.iemdb()
 mydb = i["rwis"]

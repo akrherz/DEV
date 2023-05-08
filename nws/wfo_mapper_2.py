@@ -1,17 +1,11 @@
 """Generic plotter"""
-import datetime
-from calendar import month_abbr
 
-import numpy as np
-import pandas as pd
-from pandas.io.sql import read_sql
 import matplotlib
+import pandas as pd
 
 matplotlib.use("agg")
 import matplotlib.pyplot as plt
 from pyiem.plot import MapPlot
-from pyiem.network import Table
-from pyiem.util import get_dbconn
 
 
 def main():

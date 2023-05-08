@@ -17,8 +17,8 @@ Redo:
 """
 import sys
 
-import requests
 import psycopg2
+import requests
 
 DIS = "https://discourse.igniterealtime.org"
 JIVEUSER = sys.argv[1]

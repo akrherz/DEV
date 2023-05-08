@@ -1,9 +1,6 @@
 """Simple stats"""
 import datetime
 
-from pyiem.plot.use_agg import plt
-import matplotlib.dates as mdates
-
 
 def main():
     """Plot"""
@@ -21,7 +18,7 @@ def main():
             bytes[ts.hour] += float(tokens[9])
         except ValueError:
             bad += 1
-        if not tokens[0] in ips[ts.hour]:
+        if tokens[0] not in ips[ts.hour]:
             ips[ts.hour].append(tokens[0])
     print(bad)
     for hr in range(24):

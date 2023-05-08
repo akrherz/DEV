@@ -1,6 +1,6 @@
 """Lapse."""
-import sys
 import datetime
+import sys
 
 import requests
 

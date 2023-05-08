@@ -6,19 +6,21 @@
 Updated to now: 1989 thru 2010
 """
 from __future__ import print_function
-import sys
-import os
+
 import datetime
+import os
+import sys
 from collections import namedtuple
 
-from tqdm import tqdm
 import netCDF4
 import numpy as np
 from affine import Affine
+from tqdm import tqdm
+
 import geopandas as gpd
+from pyiem.datatypes import temperature
 from pyiem.grid.zs import CachingZonalStats
 from pyiem.util import get_dbconn
-from pyiem.datatypes import temperature
 
 GRIDINFO = namedtuple("GridInfo", ["x0", "y0", "xsz", "ysz", "mask"])
 PROJSTR = "+proj=longlat +datum=WGS84 +no_defs"

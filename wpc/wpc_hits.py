@@ -1,8 +1,8 @@
 """Map of states with WPC glory."""
 
+import pandas as pd
 from pyiem.plot import MapPlot, get_cmap, pretty_bins
 from pyiem.util import get_sqlalchemy_conn
-import pandas as pd
 
 
 def main():

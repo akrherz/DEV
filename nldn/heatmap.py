@@ -1,12 +1,11 @@
 """See what our NLDN data has for a heatmap."""
 
 import geopandas as gpd
-
-from matplotlib.colorbar import ColorbarBase
 import matplotlib.colors as mpcolors
+from matplotlib.colorbar import ColorbarBase
+from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_FILL
 from pyiem.util import get_dbconn
-from pyiem.plot import MapPlot, get_cmap
 
 
 def main():

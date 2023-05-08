@@ -5,10 +5,11 @@ import datetime
 import os
 
 import numpy as np
+
 from pyiem import iemre
 from pyiem.datatypes import temperature
-from pyiem.util import utc, ncopen
 from pyiem.meteorology import gdd
+from pyiem.util import ncopen, utc
 
 
 def make_netcdf(fullpath, valid, west, south):

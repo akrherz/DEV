@@ -3,9 +3,9 @@
 Dedup some duplicated FFWs in the warnings table."""
 import sys
 
-from pyiem.util import get_dbconn
-from pyiem.nws.product import TextProduct
 from pandas.io.sql import read_sql
+from pyiem.nws.product import TextProduct
+from pyiem.util import get_dbconn
 
 
 def main(argv):

@@ -1,11 +1,12 @@
 """A corn planting daily feature"""
 
-from pyiem.util import get_dbconn
-from pyiem.plot.use_agg import plt
 import numpy as np
+
+import matplotlib.font_manager
 import pandas as pd
 from pandas.io.sql import read_sql
-import matplotlib.font_manager
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 
 
 def main():

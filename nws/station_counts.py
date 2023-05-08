@@ -1,8 +1,8 @@
 """Map of Station counts, maybe."""
 
+import pandas as pd
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import get_sqlalchemy_conn
-import pandas as pd
 
 
 def main():

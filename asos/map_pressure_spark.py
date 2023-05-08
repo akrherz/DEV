@@ -4,13 +4,14 @@ from zoneinfo import ZoneInfo
 
 import numpy as np
 from tqdm import tqdm
+
 import matplotlib.colors as mpcolors
+import pandas as pd
+from geopandas import read_postgis
 from matplotlib.colorbar import ColorbarBase
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_POLITICAL
 from pyiem.util import get_dbconnstr
-from geopandas import read_postgis
-import pandas as pd
 
 CST = ZoneInfo("America/Chicago")
 

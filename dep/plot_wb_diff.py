@@ -1,8 +1,7 @@
 """Plots."""
 import calendar
 
-import pandas as pd
-from pyiem.dep import read_wb, read_env
+from pyiem.dep import read_env, read_wb
 from pyiem.plot.use_agg import plt
 
 

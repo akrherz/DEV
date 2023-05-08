@@ -1,8 +1,8 @@
 """Plot an IEM NEXRAD Composite RASTER on a cartopy map"""
 
+import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 from matplotlib.image import imread
-import cartopy.crs as ccrs
 
 # wget https://mesonet.agron.iastate.edu/
 # archive/data/2017/08/19/GIS/uscomp/n0q_201708190300.png

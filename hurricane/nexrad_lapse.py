@@ -2,9 +2,10 @@
 import datetime
 
 import requests
-from pyiem.util import get_sqlalchemy_conn
+
 import geopandas as gpd
 import pandas as pd
+from pyiem.util import get_sqlalchemy_conn
 from shapely.geometry import Point
 
 

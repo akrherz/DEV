@@ -71,7 +71,7 @@ def create_nc():
     time.coordinate_defines = "point"
     # time.actual_range = 20471.0208333333, 20835.9791666667 ;
 
-    bnds = nc.createVariable("time_bnds", "d", ("time", "bnds"))
+    nc.createVariable("time_bnds", "d", ("time", "bnds"))
 
     pr = nc.createVariable("pr", "d", ("time", "lat", "lon"), fill_value=1e20)
     pr.units = "kg m-2 s-1"

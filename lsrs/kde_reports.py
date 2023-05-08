@@ -1,9 +1,10 @@
-from scipy import stats
 import numpy
+from scipy import stats
+
+import matplotlib.pyplot as plt
 from pyiem import reference
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn
-import matplotlib.pyplot as plt
 
 
 def main():

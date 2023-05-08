@@ -1,6 +1,7 @@
+import datetime
+
 import netCDF4
 import numpy as np
-import datetime
 
 with netCDF4.Dataset(
     "/mesonet/share/pickup/yieldfx/baseline/clim_0025_0045.tile.nc4"

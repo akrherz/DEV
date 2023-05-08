@@ -1,9 +1,10 @@
 """Old Plot."""
 import datetime
 
-from pyiem import reference
-import osgeo.gdal as gdal
 import numpy as np
+import osgeo.gdal as gdal
+
+from pyiem import reference
 
 
 def lalo2pt(lon, lat):

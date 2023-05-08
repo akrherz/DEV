@@ -1,13 +1,14 @@
 """Extract out a point time-series."""
 import datetime
 import gzip
-import tempfile
 import os
 import sys
+import tempfile
 
-from pyiem.util import utc
-from pyiem.mrms import fetch, WEST, NORTH
 import pygrib
+
+from pyiem.mrms import NORTH, WEST, fetch
+from pyiem.util import utc
 
 FN = sys.argv[1]
 LAT = float(sys.argv[3])

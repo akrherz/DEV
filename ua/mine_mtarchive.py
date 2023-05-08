@@ -1,10 +1,11 @@
 """Run to ingest gempak files from mtarchive"""
-import subprocess
 import datetime
+import subprocess
 
-import requests
 import pytz
+import requests
 from ingest_from_rucsoundings import RAOB
+
 from pyiem.util import get_dbconn
 
 POSTGIS = get_dbconn("raob")

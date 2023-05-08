@@ -1,8 +1,8 @@
 """Simple printing of values."""
 import datetime
 
-import requests
 import osgeo.gdal as gdal
+import requests
 
 
 def main():

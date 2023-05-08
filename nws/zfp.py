@@ -3,10 +3,12 @@
  Then the next day is index 2
 """
 import datetime
+
 import numpy
-from pyiem.util import get_dbconn
+
 from pyiem.nws.product import TextProduct, ugc
 from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 
 
 def run(ts, data):

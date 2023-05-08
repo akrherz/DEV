@@ -1,13 +1,14 @@
 """Suck in what WPC's website has to offer."""
+import os
 import zipfile
 from datetime import datetime, timezone
-import os
 
-from shapely.geometry import MultiPolygon
+import requests
+
 import geopandas as gpd
 import pandas as pd
-import requests
 from pyiem.util import get_dbconn, logger
+from shapely.geometry import MultiPolygon
 
 LOG = logger()
 COMBOS = [

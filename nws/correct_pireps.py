@@ -4,10 +4,11 @@ import datetime
 
 # Third Party
 from psycopg2.extras import RealDictCursor
+from pywwa.workflows.pirep_parser import LOCS, load_locs
+
 import pandas as pd
-from pywwa.workflows.pirep_parser import load_locs, LOCS
 from pyiem.nws.products.pirep import Pirep
-from pyiem.util import get_dbconn, utc, logger
+from pyiem.util import get_dbconn, logger, utc
 
 LOG = logger()
 

@@ -34,8 +34,8 @@
 import os
 import sys
 
-import requests
 import psycopg2
+import requests
 
 APIKEY = open("APIKEY.txt", "r").read().strip()
 DIS = "https://discourse.igniterealtime.org"

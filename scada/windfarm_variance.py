@@ -1,12 +1,10 @@
 import numpy as np
 import psycopg2
-import datetime
-import matplotlib.pyplot as plt
+
 import matplotlib.colors as mpcolors
-from pandas.io.sql import read_sql
-import matplotlib.colorbar as mpcolorbar  # NOPEP8
-import matplotlib.patheffects as PathEffects  # NOPEP8
+import matplotlib.pyplot as plt
 from matplotlib.mlab import griddata
+from pandas.io.sql import read_sql
 
 pgconn = psycopg2.connect(database="scada")
 

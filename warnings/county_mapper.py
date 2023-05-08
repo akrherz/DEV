@@ -1,9 +1,9 @@
 """Make county plots of stuff."""
 import datetime
 
+from matplotlib import cm
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn
-from matplotlib import cm
 
 
 def main():

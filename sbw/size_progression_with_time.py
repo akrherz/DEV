@@ -1,9 +1,10 @@
 """How are the sizes of the polygons changing with time"""
 from itertools import cycle
 
-from psycopg2.extras import DictCursor
 import numpy as np
+from psycopg2.extras import DictCursor
 from tqdm import tqdm
+
 import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
 

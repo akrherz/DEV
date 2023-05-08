@@ -1,13 +1,14 @@
 """Legacy stuff."""
 import datetime
 
-from rasterstats import zonal_stats
-from affine import Affine
-import geopandas as gpd
 import netCDF4
 import numpy as np
-from pyiem.util import get_dbconn
+from affine import Affine
+from rasterstats import zonal_stats
+
+import geopandas as gpd
 from pyiem.iemre import daily_offset
+from pyiem.util import get_dbconn
 
 
 def main():

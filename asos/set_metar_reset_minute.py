@@ -6,7 +6,7 @@ import sys
 
 import pandas as pd
 from pyiem.network import Table as NetworkTable
-from pyiem.util import get_sqlalchemy_conn, get_dbconn, logger
+from pyiem.util import get_dbconn, get_sqlalchemy_conn, logger
 
 LOG = logger()
 ATTR = "METAR_RESET_MINUTE"

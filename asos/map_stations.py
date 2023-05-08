@@ -1,8 +1,8 @@
 """map of dates."""
 
+from pandas.io.sql import read_sql
 from pyiem.plot import MapPlot
 from pyiem.util import get_sqlalchemy_conn
-from pandas.io.sql import read_sql
 
 
 def main():

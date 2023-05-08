@@ -1,6 +1,6 @@
 """Be able to merge a CSV file that IDOT provides"""
-import sys
 import datetime
+import sys
 
 import pandas as pd
 from pyiem.util import get_dbconn

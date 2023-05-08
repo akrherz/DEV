@@ -1,9 +1,10 @@
 """Generate a feature plot."""
 
-from PIL import Image
 import numpy as np
-from pyiem.plot import MapPlot, nwsprecip
+from PIL import Image
+
 from pyiem.network import Table as NetworkTable
+from pyiem.plot import MapPlot, nwsprecip
 from pyiem.util import get_dbconn
 
 

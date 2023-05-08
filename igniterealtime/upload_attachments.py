@@ -31,13 +31,13 @@
 <a class="attachment" href="/uploads/...txt">hello.txt</a> (12 Bytes)
 6. Put the new post
 """
-import json
 import glob
+import json
 import os
 import sys
 
-import requests
 import psycopg2
+import requests
 
 APIKEY = open("APIKEY.txt", "r").read().strip()
 DIS = "https://discourse.igniterealtime.org"

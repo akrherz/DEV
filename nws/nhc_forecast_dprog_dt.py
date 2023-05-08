@@ -1,9 +1,10 @@
 """uses basemap, so no longer functioning :/"""
 from mpl_toolkits.basemap import Basemap
-from pyiem.util import get_dbconn
+
+import matplotlib.font_manager
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
-import matplotlib.font_manager
+from pyiem.util import get_dbconn
 
 
 def main():
@@ -62,7 +63,6 @@ def main():
         print(row[1])
         track_x = []
         track_y = []
-        colors = []
         tokens = row[0].split("FORECAST POSITIONS AND MAX WINDS")
         for line in tokens[1].split("\n"):
             parts = line.replace("HR VT", "HR").strip().split()

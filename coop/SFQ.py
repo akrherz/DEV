@@ -1,10 +1,11 @@
 """exploritory look at 6 hourly snowfall."""
-from collections import OrderedDict
 import datetime
+from collections import OrderedDict
 
 import pytz
-from pyiem.util import get_dbconn
+
 from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 
 
 def main():

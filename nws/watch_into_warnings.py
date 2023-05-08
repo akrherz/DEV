@@ -2,6 +2,7 @@
 import datetime
 
 from tqdm import tqdm
+
 from pyiem.nws.vtec import VTEC_PHENOMENA
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn

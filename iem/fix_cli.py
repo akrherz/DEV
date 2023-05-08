@@ -1,9 +1,10 @@
 """Fix sky_coverage field."""
 import datetime
+
 import requests
 
-from pyiem.util import get_dbconn, noaaport_text
 from pyiem.nws.products.cli import parser
+from pyiem.util import get_dbconn, noaaport_text
 
 COLS = [
     "resultant_wind_speed",

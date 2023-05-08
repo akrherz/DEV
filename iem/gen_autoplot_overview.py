@@ -1,9 +1,10 @@
 """Create HTML and resources to drive an autoplot overview page."""
 from io import StringIO
 
+import requests
 from bs4 import BeautifulSoup
 from tqdm import tqdm
-import requests
+
 from pyiem.util import logger
 
 LOG = logger()

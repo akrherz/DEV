@@ -1,5 +1,6 @@
 """Pandas 1.2.0 bug."""
 from datetime import datetime, timezone
+
 import pandas as pd
 
 df = pd.DataFrame(range(31))

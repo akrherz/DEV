@@ -1,8 +1,8 @@
 """Figure out what our time domain is for our segments."""
 
-from pyiem.util import get_dbconn, get_sqlalchemy_conn
 import pandas as pd
 from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn, get_sqlalchemy_conn
 
 
 def main():

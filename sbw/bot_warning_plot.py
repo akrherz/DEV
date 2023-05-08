@@ -1,9 +1,9 @@
 """Make a plot of all the bot warnings"""
 
+import cartopy.crs as ccrs
 from geopandas import read_postgis
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn
-import cartopy.crs as ccrs
 
 
 def main():

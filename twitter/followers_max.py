@@ -1,9 +1,7 @@
 """Need to set a profile string for my bots."""
 import time
 
-from tqdm import tqdm
 import twitter
-from pyiem.plot import MapPlot, get_cmap
 from pyiem.network import Table as NetworkTable
 from pyiem.util import get_dbconn, get_properties
 
@@ -25,7 +23,6 @@ def main():
         access_token_key=row[0],
         access_token_secret=row[1],
     )
-    data = {}
     maxval = 0
     max10k = 0
     for wfo in list(nt.sts.keys())[:]:

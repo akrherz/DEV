@@ -1,11 +1,12 @@
 """Plot of LSR sources."""
 
 import numpy as np
-from pyiem.util import get_dbconn
+
+from matplotlib.patches import Rectangle
+from pandas.io.sql import read_sql
 from pyiem.plot import get_cmap
 from pyiem.plot.use_agg import plt
-from pandas.io.sql import read_sql
-from matplotlib.patches import Rectangle
+from pyiem.util import get_dbconn
 
 
 def main():

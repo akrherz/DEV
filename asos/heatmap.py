@@ -1,9 +1,10 @@
 """heatmap"""
 import calendar
 
+import seaborn as sns
+
 from pandas.io.sql import read_sql
 from pyiem.plot.use_agg import plt
-import seaborn as sns
 from pyiem.util import get_sqlalchemy_conn
 
 

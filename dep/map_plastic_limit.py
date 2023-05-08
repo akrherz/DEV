@@ -2,6 +2,7 @@
 
 import numpy as np
 from sqlalchemy import text
+
 import geopandas as gpd
 import matplotlib.colors as mpcolors
 from pyiem.plot import MapPlot, get_cmap

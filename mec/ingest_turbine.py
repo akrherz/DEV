@@ -1,9 +1,10 @@
 """
 """
 import datetime
-import subprocess
-import psycopg2
 import os
+import subprocess
+
+import psycopg2
 
 dbconn = psycopg2.connect(database="mec", host="192.168.0.23")
 cursor = dbconn.cursor()

@@ -6,9 +6,10 @@ uber script attempts to straighten out the mess.
 import datetime
 
 import requests
+
 import pandas as pd
 from pyiem.reference import ncei_state_codes
-from pyiem.util import get_sqlalchemy_conn, logger, get_dbconn
+from pyiem.util import get_dbconn, get_sqlalchemy_conn, logger
 
 code2state = dict((v, k) for k, v in ncei_state_codes.items())
 LOG = logger()

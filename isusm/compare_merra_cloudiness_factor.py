@@ -3,11 +3,12 @@ Plot a comparison of MERRA Cloudiness Factor
 """
 import datetime
 
-from pyiem.network import Table as NetworkTable
-from pyiem.util import get_dbconn
-from pyiem.plot.use_agg import plt
 import numpy
 from scipy import stats
+
+from pyiem.network import Table as NetworkTable
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 
 ISUAG = get_dbconn("isuag")
 icursor = ISUAG.cursor()

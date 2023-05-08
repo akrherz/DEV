@@ -1,6 +1,6 @@
+import geopandas as gpd
 import matplotlib.pyplot as plt
 from shapely.geometry import LineString
-import geopandas as gpd
 
 
 def main():

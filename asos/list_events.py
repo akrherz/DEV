@@ -1,6 +1,6 @@
 """List out some presentwx events."""
-from datetime import timedelta
 import sys
+from datetime import timedelta
 
 # Third Party
 from pyiem.util import get_dbconn

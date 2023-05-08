@@ -8,16 +8,15 @@
 #  Copy methods you wish to change into the Local_BaseInit module and make desired
 #  changes there.
 #
-from numpy import *
+import calendar
+import time
+
+import JSmartUtils
+import siteConfig
 
 # From: BaseInit.hdr
-
 from Init import *
-import time, sys, calendar, os
-import siteConfig
-import JSmartUtils
-import numpy as np
-import scipy
+from numpy import *
 
 
 class BaseInit(Forecaster):
@@ -642,7 +641,7 @@ class BaseInit(Forecaster):
         gridMag = where(greater(gridMag, filterValue), minValue, gridMag)
 
         #  Fill in any data void areas
-        grid = self.BI_fillVector((gridMag, gridDir), fillMasks)
+        self.BI_fillVector((gridMag, gridDir), fillMasks)
 
         #  If a mask was supplied
         if mask is not None:
@@ -916,10 +915,10 @@ class BaseInit(Forecaster):
         MaxCloudBase = 250
 
         #  Convert geopotential heights at all levels to be AGL
-        ghCube = gh_c - topo
+        gh_c - topo
 
         #  Mask the RH cube where it is below ground level
-        rhCube = where(less_equal(gh_c, 0), 0, rh_c)
+        where(less_equal(gh_c, 0), 0, rh_c)
 
         #  Get ready to find the cloud heights - start with max cloud level
         #  (in 100s of feet)
@@ -1076,7 +1075,6 @@ class BaseInit(Forecaster):
         #  Make local references to boundary layer data for shorter notation
         BLR = self.BI_BLR
         BLP = self.BI_BLP
-        BLH = self.BI_BLH
 
         #  Make a copy of surface pressure in millibars v. Pa
         tmpP_SFC = p_SFC.copy() / 100.0  # convert surfp to millibars
@@ -1201,10 +1199,6 @@ class BaseInit(Forecaster):
         pvv_c = pvv_c[cutBelow:, :, :]
 
         #  Define some parameters to alter algorithm
-        dryRH = 75.0  #  dry atmosphere below this value
-        lrMin = 10.0  #  lapse rate minimum
-        lrMax = 6.5  #  laspe rate maximum
-        lrMaxAdj = 0.3  #  max lapse rate adjustment value
 
         #  Make some grids we'll need for calculations later
         cubeShape = (len(t_c), t_c.shape[1], t_c.shape[2])
@@ -2008,7 +2002,7 @@ class BaseInit(Forecaster):
         """fills in climoQPF where PRISM provided no data"""
 
         # If a mask is not passed then fill areas that are zero
-        if zeroMask == None:
+        if zeroMask is None:
             zeroMask = where(equal(grid, 0.0), 0, 1)
 
         grid = where(zeroMask, grid, 0)
@@ -2701,7 +2695,7 @@ class BaseInit(Forecaster):
     #  calculate area above/below freezing in J/kg (m2/s2)
     # ===========================================================================
     def BI_getSoundingArea(self, hbot, tbot, htop, ttop):
-        tavg = (ttop + tbot) / 2.0
+        (ttop + tbot) / 2.0
         e1 = (ttop - 273.15) / 273.15
         e2 = (tbot - 273.15) / 273.15
         area = 9.8 * ((e1 + e2) / 2.0) * (htop - hbot)
@@ -3167,7 +3161,7 @@ class BaseInit(Forecaster):
                     u = uAvg_Single
                     v = vAvg_Single
                     RAD_TO_DEG = 57.296083
-                    avgMag = sqrt(u * u + v * v)
+                    sqrt(u * u + v * v)
                     dir = arctan2(u, v) * RAD_TO_DEG
                     dir = where(greater_equal(dir, 360), dir - 360, dir)
                     dir = where(less(dir, 0), dir + 360, dir)
@@ -4123,10 +4117,10 @@ class BaseInit(Forecaster):
 #
 
 import jep
+import numpy
 from com.raytheon.uf.common.dataplugin.gfe.util import (
     SmartUtils as JavaSmartUtils,
 )
-import numpy
 
 
 def __getMaskIndiciesForJava(mask):

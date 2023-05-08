@@ -1,8 +1,8 @@
 """Unsure of origin."""
 from io import StringIO
 
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 
 data = """num | cnt
    1 |   148

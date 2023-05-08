@@ -4,14 +4,12 @@ NOTE: DBF has a 256 column limit, so we dump twice here.
 """
 import datetime
 
-from shapely.geometry import Point
-import geopandas as gpd
-import numpy as np
 import netCDF4
-from pyiem import util
-from pyiem import iemre
-from pyiem import reference
-from pyiem.datatypes import distance
+import numpy as np
+
+import geopandas as gpd
+from pyiem import iemre, reference, util
+from shapely.geometry import Point
 
 
 def compute_bounds(nc):
@@ -31,7 +29,7 @@ def compute_bounds(nc):
 def main():
     """Go Main Go"""
     nc = netCDF4.Dataset("/mesonet/data/iemre/2021_iemre_daily.nc")
-    precip = nc.variables["p01d_12z"]
+    nc.variables["p01d_12z"]
     # Compute needed grid bounds
     #     y,  x
     # NW 678, 412

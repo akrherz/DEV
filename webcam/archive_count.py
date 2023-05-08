@@ -1,5 +1,6 @@
 """Count of images saved"""
 import numpy as np
+
 import matplotlib.pyplot as plt
 
 

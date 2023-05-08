@@ -1,8 +1,9 @@
 """Plot peaks."""
 
-import pytz
 import numpy as np
+import pytz
 from numpy.lib import stride_tricks
+
 import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn, utc
 

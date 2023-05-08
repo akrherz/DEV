@@ -1,6 +1,7 @@
 """Updates the database table denoting if station `HAS1MIN`"""
 
 import requests
+
 from pyiem.util import get_dbconn, logger
 
 LOG = logger()

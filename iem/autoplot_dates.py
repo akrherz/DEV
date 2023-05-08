@@ -2,8 +2,8 @@
 for file in $(git ls-files); do     HASH=$(git rev-list HEAD "$file" | tail -n 1);     DATE=$(git show -s --format="%ci" $HASH --);     printf "%-35s %s  %s\n" "$file" $HASH: "$DATE"; done
 """
 
-from pyiem.plot import figure_axes
 import pandas as pd
+from pyiem.plot import figure_axes
 
 
 def main():

@@ -1,9 +1,9 @@
 """consec days"""
 import datetime
 
-from pyiem.util import get_dbconn
-from pyiem.reference import state_names
 from pyiem.network import Table as NetworkTable
+from pyiem.reference import state_names
+from pyiem.util import get_dbconn
 
 
 def run_station(station):

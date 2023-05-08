@@ -1,8 +1,8 @@
 """Remove outlooks with in-error PTS."""
-import sys
 import datetime
+import sys
 
-from pyiem.util import logger, get_dbconn
+from pyiem.util import get_dbconn, logger
 
 LOG = logger()
 

@@ -3,9 +3,10 @@ import datetime
 
 import ephem
 import numpy as np
+
+import matplotlib.dates as mdates
 from pyiem.network import Table as NetworkTable
 from pyiem.plot.use_agg import plt
-import matplotlib.dates as mdates
 
 sun = ephem.Sun()
 nt = NetworkTable(("IA_ASOS", "AK_ASOS", "MI_ASOS", "FL_ASOS"))

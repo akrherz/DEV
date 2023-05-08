@@ -1,8 +1,9 @@
 """Legacy stuff here."""
 
-from pyiem.util import get_dbconn, utc
-from pyiem.network import Table as NetworkTable
 import numpy as np
+
+from pyiem.network import Table as NetworkTable
+from pyiem.util import get_dbconn, utc
 
 
 def main():

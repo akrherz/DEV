@@ -1,10 +1,11 @@
 """PIREPs"""
 
 import numpy as np
+
+from pandas.io.sql import read_sql
+from pyiem.plot import MapPlot
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn
-from pyiem.plot import MapPlot
-from pandas.io.sql import read_sql
 
 
 def main():

@@ -12,6 +12,7 @@ import sys
 
 import shapefile
 from tqdm import tqdm
+
 import pandas as pd
 from pyiem.util import get_dbconn
 

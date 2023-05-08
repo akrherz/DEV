@@ -1,11 +1,12 @@
 """Hovmoller plot."""
-import os
 import datetime
+import os
 
 import gdal
 import numpy as np
-import matplotlib.pyplot as plt
+
 import matplotlib.colors as mpcolors
+import matplotlib.pyplot as plt
 
 
 def main():

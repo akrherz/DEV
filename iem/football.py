@@ -1,9 +1,10 @@
 """Unsure."""
 import datetime
-import numpy as np
-from pyiem.util import get_dbconn
-import matplotlib.pyplot as plt
 
+import numpy as np
+
+import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn
 
 data = """2002-09-14 17:05 S
 2003-09-13 11:30 I

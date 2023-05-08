@@ -1,11 +1,12 @@
 """Deduplicate."""
-import sys
 import difflib
+import sys
 
 from tqdm import tqdm
-from pyiem.util import noaaport_text, get_dbconn
+
 import pandas as pd
 from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn, noaaport_text
 
 
 def dotable(date):

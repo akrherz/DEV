@@ -2,10 +2,11 @@
   Example script that uses IEM APIs to download raw RIDGE images from my
   archive
 """
-import urllib2
-import urllib
-import json
 import datetime
+import json
+import urllib
+
+import urllib2
 
 now = datetime.date(2009, 1, 1)
 ets = datetime.date(2014, 1, 1)

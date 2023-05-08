@@ -1,10 +1,10 @@
 import calendar
 
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
 import seaborn as sns
-from pyiem.plot.use_agg import plt
 
+from pandas.io.sql import read_sql
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 
 pgconn = get_dbconn("afos")
 df = read_sql(

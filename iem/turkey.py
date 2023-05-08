@@ -19,16 +19,17 @@ GRBI4
 """
 import datetime
 
-import pytz
-import pyproj
-from PIL import Image
 import numpy as np
-from pyiem.util import get_dbconnstr
-from pyiem.datatypes import distance
-from pyiem.plot.use_agg import plt
-from pyiem.plot import MapPlot, nwsprecip
-from pyiem.network import Table as NetworkTable
+import pyproj
+import pytz
+from PIL import Image
+
 import pandas as pd
+from pyiem.datatypes import distance
+from pyiem.network import Table as NetworkTable
+from pyiem.plot import MapPlot, nwsprecip
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconnstr
 
 p26915 = pyproj.Proj(init="EPSG:26915")
 central = pytz.timezone("America/Chicago")
@@ -101,7 +102,7 @@ def main():
         elev = nt.sts[station]["elevation"]
         if elev0 is None:
             elev0 = elev
-        drop = elev0 - elev
+        elev0 - elev
         elev0 = elev
         label = "%s %s %.1fh %.1fmph" % (station, name, offset, speed)
         ln = ax.plot(

@@ -1,11 +1,12 @@
 """Plot WPC"""
 import glob
 
-import pygrib
 import numpy as np
-from pyiem.plot.use_agg import plt
-from pyiem.plot import MapPlot
+import pygrib
+
 from pyiem import reference
+from pyiem.plot import MapPlot
+from pyiem.plot.use_agg import plt
 
 
 def main():

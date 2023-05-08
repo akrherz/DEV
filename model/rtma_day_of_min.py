@@ -1,13 +1,14 @@
 """Figure out the grid min date."""
 # stdlib
-import os
 import datetime
+import os
 
 # third party
 import numpy as np
 import pygrib
-from pyiem.plot.use_agg import plt
+
 from pyiem.plot import MapPlot
+from pyiem.plot.use_agg import plt
 
 
 def plot():

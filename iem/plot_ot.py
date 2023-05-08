@@ -1,11 +1,12 @@
 """Generate a plot of an OT station for feature purposes"""
 
-from pyiem.util import get_dbconn
 import numpy as np
 import pytz
-import matplotlib.pyplot as plt
+
 import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
 from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn
 
 
 def main():

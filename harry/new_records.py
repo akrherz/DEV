@@ -1,9 +1,10 @@
 """Figure out if we have new daily records set"""
-import sys
-import json
 import datetime
+import json
+import sys
 
 import psycopg2.extras
+
 from pyiem.util import get_dbconn
 
 COOP = get_dbconn("coop")

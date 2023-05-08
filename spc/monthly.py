@@ -2,8 +2,8 @@
 import calendar
 from io import StringIO
 
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 
 data = """month|word|count
  200101 | MAY  |    44

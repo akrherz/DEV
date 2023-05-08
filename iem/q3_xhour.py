@@ -1,15 +1,16 @@
 """Create a plot of the X Hour interval precipitation"""
-import os
-import sys
 import datetime
 import gzip
+import os
+import sys
 import tempfile
 
 import numpy as np
-import pytz
 import pygrib
-from pyiem.datatypes import distance
+import pytz
+
 import pyiem.mrms as mrms
+from pyiem.datatypes import distance
 from pyiem.plot import MapPlot, nwsprecip
 from pyiem.util import utc
 

@@ -2,7 +2,7 @@
 
 import pandas as pd
 from pyiem.plot import figure
-from pyiem.util import get_sqlalchemy_conn, c2f
+from pyiem.util import c2f, get_sqlalchemy_conn
 
 
 def main():

@@ -3,6 +3,7 @@ import datetime
 from datetime import timezone
 
 import numpy as np
+
 import pandas as pd
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn

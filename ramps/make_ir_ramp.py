@@ -1,6 +1,6 @@
 """Cruft."""
-from PIL import Image, ImageDraw, ImageFont
 import numpy as np
+from PIL import Image, ImageDraw, ImageFont
 
 TABLE = """127,14,123,-70
 121,21,137,-69

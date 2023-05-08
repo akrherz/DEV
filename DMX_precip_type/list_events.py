@@ -1,15 +1,15 @@
 """Dump events for our enjoyment"""
 from __future__ import print_function
-import sys
 
-import tqdm
 import numpy as np
+import tqdm
+
+import matplotlib.pyplot as plt
 import pandas as pd
 from pandas.io.sql import read_sql
-import matplotlib.pyplot as plt
+from pyiem.datatypes import temperature
 from pyiem.network import Table as NetworkTable
 from pyiem.util import get_dbconn
-from pyiem.datatypes import temperature
 
 
 def calc(T, Td):
@@ -149,11 +149,6 @@ def plot4():
     df["i_wetbulb"] = df["wetbulb"].astype("i")
     (fig, ax) = plt.subplots(1, 1)
 
-    labels = {
-        "i_wetbulb": "Wet Bulb",
-        "dwpf": "Dew Point",
-        "tmpf": "Air Temperature",
-    }
     for state in df["state"].unique():
         gdf = df[df["state"] == state].groupby("i_wetbulb").sum()
         total = gdf["snow"] + gdf["zr"] + gdf["rain"]

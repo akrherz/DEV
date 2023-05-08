@@ -1,9 +1,9 @@
 """Who do we share a watch with?"""
 import sys
 
+from pandas.io.sql import read_sql
 from pyiem.plot import MapPlot, plt
 from pyiem.util import get_sqlalchemy_conn
-from pandas.io.sql import read_sql
 
 
 def main(argv):

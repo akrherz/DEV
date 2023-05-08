@@ -1,11 +1,8 @@
 """Compute Longest Blizzard Criterion."""
 from datetime import timedelta
 
-import pytz
 import pandas as pd
 from pyiem.util import get_dbconn, get_sqlalchemy_conn
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 
 
 def main():

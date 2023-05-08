@@ -1,11 +1,12 @@
 """Unsure."""
-import os
 import datetime
+import os
 
-import pygrib
 import numpy as np
-from pyiem.plot import MapPlot
+import pygrib
+
 from pyiem.datatypes import temperature
+from pyiem.plot import MapPlot
 
 
 def do():

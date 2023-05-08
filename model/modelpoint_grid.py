@@ -3,10 +3,11 @@ import datetime
 
 import numpy.ma
 import pytz
-from pyiem.util import get_dbconn
-from pyiem.datatypes import distance
-import matplotlib.pyplot as plt
+
 import matplotlib.colors as mpcolors
+import matplotlib.pyplot as plt
+from pyiem.datatypes import distance
+from pyiem.util import get_dbconn
 
 
 def main():

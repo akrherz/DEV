@@ -1,5 +1,6 @@
 """Unsure."""
 import datetime
+
 import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
 

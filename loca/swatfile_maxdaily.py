@@ -1,22 +1,20 @@
 """Check over our SWAT files for irregularities."""
-import sys
+import datetime
 import glob
 import os
-import datetime
-import calendar
+import sys
 
-from tqdm import tqdm
-import geopandas as gpd
-import pandas as pd
 import numpy as np
-from matplotlib.patches import Polygon
-from pyiem.util import get_dbconn
-from pyiem.plot.use_agg import plt
-from pyiem.plot.colormaps import stretch_cmap
-import matplotlib.colors as mpcolors
-from pyiem.plot.geoplot import MapPlot
+from tqdm import tqdm
+
 import cartopy.crs as ccrs
-import seaborn as sns
+import geopandas as gpd
+import matplotlib.colors as mpcolors
+import pandas as pd
+from matplotlib.patches import Polygon
+from pyiem.plot.colormaps import stretch_cmap
+from pyiem.plot.geoplot import MapPlot
+from pyiem.util import get_dbconn
 
 
 def plot(argv):

@@ -6,11 +6,12 @@ import datetime
 
 import numpy as np
 from tqdm import tqdm
+
 import geopandas as gpd
-from pyiem.grid.zs import CachingZonalStats
 from pyiem import iemre
+from pyiem.datatypes import distance, temperature
+from pyiem.grid.zs import CachingZonalStats
 from pyiem.util import get_dbconn, ncopen
-from pyiem.datatypes import temperature, distance
 
 
 def main():

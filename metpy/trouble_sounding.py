@@ -1,8 +1,9 @@
 import datetime
 
-import pandas as pd
 from siphon.simplewebservice.iastate import IAStateUpperAir
-from metpy.calc import precipitable_water, surface_based_cape_cin
+
+import pandas as pd
+from metpy.calc import surface_based_cape_cin
 from metpy.units import units
 
 res = IAStateUpperAir.request_data(datetime.datetime(2018, 4, 7, 17), "KXMR")

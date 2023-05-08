@@ -1,8 +1,8 @@
 """Merge this info."""
 import sys
 
-from pyiem.util import get_dbconn, logger
 import pandas as pd
+from pyiem.util import get_dbconn, logger
 
 LOG = logger()
 SRC = (

@@ -1,8 +1,9 @@
 """UGC/Polygon WWA stats onimbus"""
 
 import numpy as np
-from rasterstats import zonal_stats
 from affine import Affine
+from rasterstats import zonal_stats
+
 import geopandas as gpd
 from pyiem.plot import get_cmap
 from pyiem.plot.geoplot import MapPlot

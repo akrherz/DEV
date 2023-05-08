@@ -1,13 +1,10 @@
 """Deduplicate."""
-import sys
 import re
+import sys
 from datetime import datetime
-import difflib
 
-from tqdm import tqdm
-from pyiem.util import noaaport_text, get_dbconn
 import pandas as pd
-from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn
 
 DATE_RE = re.compile("\d+/\d+/\d+")
 

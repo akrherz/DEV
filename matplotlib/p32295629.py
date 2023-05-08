@@ -1,5 +1,6 @@
-import matplotlib.pyplot as plt
 import numpy as np
+
+import matplotlib.pyplot as plt
 
 students = ["steve", "bob", "ralph"]
 progress = [[1, 3, 4, 4, 5], [2, 3, 4, 4, 5], [3, 3, 4, 5, 5]]

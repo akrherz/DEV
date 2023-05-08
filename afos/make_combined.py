@@ -1,7 +1,6 @@
-import glob
 import os
 import re
-import subprocess
+
 import pandas as pd
 from pyiem.util import noaaport_text
 

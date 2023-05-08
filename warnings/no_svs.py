@@ -1,9 +1,9 @@
 """Request for maps and data of products without SVS updates."""
 
-from pyiem.util import get_sqlalchemy_conn
+import pandas as pd
 from pyiem.plot import get_cmap
 from pyiem.plot.geoplot import MapPlot
-import pandas as pd
+from pyiem.util import get_sqlalchemy_conn
 
 
 def main():

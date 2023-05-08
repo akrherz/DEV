@@ -1,12 +1,13 @@
 """Map of precipitable water"""
 
 import numpy as np
-from pyiem.network import Table as NetworkTable
-from pyiem.plot.use_agg import plt
-from pyiem.plot.geoplot import MapPlot
-from pyiem.util import get_dbconn
+
 from metpy.units import units
 from pandas.io.sql import read_sql
+from pyiem.network import Table as NetworkTable
+from pyiem.plot.geoplot import MapPlot
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 
 
 def main():

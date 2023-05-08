@@ -4,7 +4,6 @@ Since ~2006. Directory changes format on 1 Jan 2009"""
 import glob
 import os
 import subprocess
-import sys
 
 import pandas as pd
 from pyiem.util import noaaport_text, utc

@@ -1,10 +1,10 @@
 """Plot what we are provided for HUC12s."""
 
-from geopandas import read_postgis
 import pandas as pd
+from geopandas import read_postgis
+from pyiem.plot.geoplot import MapPlot
 from pyiem.reference import Z_POLITICAL
 from pyiem.util import get_dbconn
-from pyiem.plot.geoplot import MapPlot
 
 
 def main():

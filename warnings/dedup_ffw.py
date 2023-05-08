@@ -1,12 +1,12 @@
 """see akrherz/iem#191
 
 Dedup some duplicated FFWs in the warnings table."""
-from datetime import timezone
 import sys
+from datetime import timezone
 
-from pyiem.util import get_dbconn, noaaport_text
-from pyiem.nws.product import TextProduct
 from pandas.io.sql import read_sql
+from pyiem.nws.product import TextProduct
+from pyiem.util import get_dbconn
 
 
 def dedup(pgconn, cursor, row):

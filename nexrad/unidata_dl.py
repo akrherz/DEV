@@ -1,11 +1,12 @@
 """Fetch NEXRAD from Unidata to repair IEM holes"""
+import datetime
 import glob
 import os
 import re
-import datetime
 
-from tqdm import tqdm
 import requests
+from tqdm import tqdm
+
 from pyiem.network import Table as NetworkTable
 from pyiem.util import exponential_backoff
 

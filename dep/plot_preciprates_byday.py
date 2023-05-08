@@ -10,10 +10,9 @@ rcParams.update(
     }
 )
 
+from metpy.units import units
 from pyiem.dep import read_cli
 from pyiem.plot import figure_axes
-from pyiem.plot.use_agg import plt
-from metpy.units import units
 
 
 def main():

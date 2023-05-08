@@ -1,8 +1,8 @@
 """Compute bias of avg_rh."""
-from pyiem.util import get_dbconn
-from pandas.io.sql import read_sql
 from metpy.calc import relative_humidity_from_dewpoint
 from metpy.units import units
+from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn
 
 
 def main():

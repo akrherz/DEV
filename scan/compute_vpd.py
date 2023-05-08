@@ -1,11 +1,11 @@
 """Compute water-yearly VPD"""
 
 import metpy.calc as mcalc
-from metpy.units import units
 import pandas as pd
+from metpy.units import units
+from pyiem import meteorology
 from pyiem.datatypes import temperature
 from pyiem.util import get_sqlalchemy_conn
-from pyiem import meteorology
 
 
 def main():

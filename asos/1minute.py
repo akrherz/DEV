@@ -5,11 +5,12 @@ TODO: roll this visualization into autoplot 211
 import datetime
 
 import pytz
-from matplotlib.patches import Rectangle
+
 import matplotlib.dates as mdates
+import pandas as pd
+from matplotlib.patches import Rectangle
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconnstr, utc
-import pandas as pd
 
 
 def shade(ax):

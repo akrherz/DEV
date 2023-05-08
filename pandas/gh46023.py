@@ -1,8 +1,9 @@
 """
 https://github.com/pandas-dev/pandas/issues/46023
 """
-import subprocess
 import os
+import subprocess
+
 import pandas as pd
 
 # Get process id of the current process

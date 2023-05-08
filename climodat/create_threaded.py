@@ -1,7 +1,7 @@
 """Oh boy, create a threaded site."""
 # stdlib
-import sys
 import json
+import sys
 
 # third party
 from pyiem.network import Table as NetworkTable

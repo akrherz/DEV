@@ -1,10 +1,11 @@
 """One Off."""
-import matplotlib.pyplot as plt
-from mpl_toolkits.basemap import Basemap
-from matplotlib.path import Path
-from matplotlib.patches import Polygon, PathPatch
 import numpy
+from mpl_toolkits.basemap import Basemap
 from scipy.interpolate import griddata
+
+import matplotlib.pyplot as plt
+from matplotlib.patches import PathPatch
+from matplotlib.path import Path
 
 
 def mask_outside_polygon(poly_verts, ax=None):

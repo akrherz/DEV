@@ -2,7 +2,8 @@
 # Daryl Herzmann 15 Jul 2002
 #  8 Jan 2003	Only include Sites offline messages
 
-import pg, stationTable
+import pg
+import stationTable
 
 st = stationTable.stationTable("/mesonet/TABLES/awos.stns")
 mydb = pg.connect("portfolio", "meteor.geol.iastate.edu", 5432)

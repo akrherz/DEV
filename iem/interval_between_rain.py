@@ -1,12 +1,13 @@
 """Period between rainfalls"""
 import datetime
 
-from pyiem import iemre, plot
-from pyiem.util import ncopen
-from pyiem.datatypes import distance
 import numpy as np
 import pytz
+
 import matplotlib.pyplot as plt
+from pyiem import iemre, plot
+from pyiem.datatypes import distance
+from pyiem.util import ncopen
 
 THRESHOLD = distance(0.25, "in").value("mm")
 

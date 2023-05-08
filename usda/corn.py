@@ -1,8 +1,9 @@
 # VT 1135
 # R2 1660
-import mx.DateTime
 import datetime
+
 import iemdb
+import mx.DateTime
 import numpy as np
 from scipy import stats
 
@@ -60,6 +61,7 @@ VTs = np.array(VTs)
 R2s = np.array(R2s)
 
 import numpy
+
 import matplotlib.pyplot as plt
 
 fig = plt.figure()

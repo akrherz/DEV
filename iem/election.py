@@ -1,4 +1,5 @@
 import numpy
+
 from pyiem.util import get_dbconn
 
 COOP = get_dbconn("coop")

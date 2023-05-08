@@ -1,15 +1,16 @@
 """Ingest the NWSTG text files into the AFOS IEM database
 """
-import glob
 import datetime
-import tarfile
-import subprocess
-import re
+import glob
 import os
+import re
+import subprocess
+import tarfile
 
 import pytz
-from pyiem.util import noaaport_text, get_dbconn
+
 from pyiem.nws.product import TextProduct
+from pyiem.util import get_dbconn, noaaport_text
 
 BAD_CHARS = r"[^\na-zA-Z0-9:\(\)\%\.,\s\*\-\?\|/><&$=\+\@]"
 

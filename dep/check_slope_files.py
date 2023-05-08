@@ -1,18 +1,19 @@
 """Review how much minute slopes we have."""
-import os
 import glob
+import os
 
-from pyiem.dep import read_slp
 import numpy as np
 from tqdm import tqdm
-from cartopy import crs as ccrs
-from pyiem.util import get_dbconn
-from pyiem.plot.use_agg import plt
-from pyiem.plot.geoplot import MapPlot
-from matplotlib.patches import Polygon
+
 import matplotlib.colors as mpcolors
-from geopandas import read_postgis
 import pandas as pd
+from cartopy import crs as ccrs
+from geopandas import read_postgis
+from matplotlib.patches import Polygon
+from pyiem.dep import read_slp
+from pyiem.plot.geoplot import MapPlot
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 
 
 def plot():

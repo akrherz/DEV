@@ -1,10 +1,10 @@
 """Make a map"""
 
-from pyiem.plot.use_agg import plt
-from pyiem.plot.geoplot import MapPlot
-from pyiem.util import get_dbconn
 import pandas as pd
 from pandas.io.sql import read_sql
+from pyiem.plot.geoplot import MapPlot
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 
 
 def get_data():

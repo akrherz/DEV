@@ -3,10 +3,11 @@ import json
 import sys
 
 import requests
+
 import pandas as pd
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
 from pyiem.network import Table as NetworkTable
+from pyiem.util import get_dbconn
 
 COLS = ["ob_pday", "daily_precip_in", "precip_delta", "prism_precip_in"]
 

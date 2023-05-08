@@ -1,6 +1,6 @@
 """Fix mismatch between levels count and actual levels found."""
-import os
 import glob
+import os
 
 
 def main():

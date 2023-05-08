@@ -1,10 +1,11 @@
 """Extraction requested by Maciej"""
 import sys
 
-from metpy.units import units
 from tqdm import tqdm
-from pyiem.util import get_dbconn
+
 import pandas as pd
+from metpy.units import units
+from pyiem.util import get_dbconn
 
 
 def dump(pgconn, sid, ncdc81, fips):

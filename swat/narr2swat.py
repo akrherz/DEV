@@ -5,13 +5,14 @@ https://psl.noaa.gov/data/gridded/data.narr.html
 import logging
 from collections import namedtuple
 
-from tqdm import tqdm
 import numpy as np
 from affine import Affine
 from sqlalchemy import text
+from tqdm import tqdm
+
 import geopandas as gpd
 from pyiem.grid.zs import CachingZonalStats
-from pyiem.util import get_sqlalchemy_conn, ncopen, logger
+from pyiem.util import get_sqlalchemy_conn, logger, ncopen
 
 LOG = logger()
 LOG.setLevel(logging.INFO)

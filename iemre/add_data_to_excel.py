@@ -1,9 +1,10 @@
 """A util script to dump IEMRE json service to csv files"""
 
 import requests
-from pyiem.util import get_dbconn
-from pandas.io.sql import read_sql
+
 import pandas as pd
+from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn
 
 
 def workflow(gid, lat, lon):

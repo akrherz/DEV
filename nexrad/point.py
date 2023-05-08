@@ -2,8 +2,8 @@
 import datetime
 import os
 
-import osgeo.gdal as gdal
 import numpy
+import osgeo.gdal as gdal
 
 
 def run(x, y):

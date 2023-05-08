@@ -3,8 +3,9 @@ import datetime
 import subprocess
 
 from tqdm import tqdm
-from pyiem.util import get_dbconn, noaaport_text
+
 import pandas as pd
+from pyiem.util import get_dbconn, noaaport_text
 
 
 def main():

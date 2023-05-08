@@ -25,8 +25,8 @@ with data as (
 """
 import sys
 
-from pyiem.util import get_dbconn
 from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn
 
 # Pull in the standardized conversion
 sys.path.insert(0, "/opt/iem/scripts/util")

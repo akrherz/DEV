@@ -1,15 +1,10 @@
 """Generate a feature plot."""
 
-from PIL import Image
-import numpy as np
-import pygrib
-import geopandas as gpd
 import cartopy.crs as ccrs
+import geopandas as gpd
 import matplotlib.colors as mpcolors
-from pyiem.mrms import XAXIS, YAXIS
+from pyiem.plot import MapPlot
 from pyiem.plot.use_agg import plt
-from pyiem.plot import MapPlot, nwsprecip
-from pyiem.network import Table as NetworkTable
 from pyiem.util import get_dbconn
 
 

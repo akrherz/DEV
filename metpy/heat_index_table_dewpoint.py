@@ -1,14 +1,14 @@
 """Create a pretty table."""
 
 import numpy as np
-from pyiem.plot.use_agg import plt
 import seaborn as sns
+
 import matplotlib.colors as mpcolors
-from matplotlib.font_manager import FontProperties
 from matplotlib import patches
+from matplotlib.font_manager import FontProperties
 from metpy.calc import heat_index, relative_humidity_from_dewpoint
 from metpy.units import units
-from metpy.plots import add_metpy_logo
+from pyiem.plot.use_agg import plt
 
 COLORS = ["#ffff02", "#ffcc00", "#fe6500", "#cc0001"]
 LEVELS = [0, 91, 103, 126, 200]

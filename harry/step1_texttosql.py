@@ -2,13 +2,14 @@
 Harry Hillaker kindly provides a monthly file of his QC'd COOP observations
 This script processes them into something we can insert into the IEM database
 """
-import sys
-import re
 import datetime
+import re
+import sys
+
 import pandas as pd
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
 from pyiem.reference import TRACE_VALUE
+from pyiem.util import get_dbconn
 
 # This is not good, but necessary.  We translate some sites into others, so to
 # maintain a long term record.

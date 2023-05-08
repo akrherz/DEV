@@ -1,9 +1,9 @@
 """Extract what we want to long term archive."""
 # stdlib
-from datetime import datetime
-import sys
 import os
+import sys
 import zipfile
+from datetime import datetime
 
 CONUS_FIELDS = (
     "GaugeCorr_QPE_01H,GaugeCorr_QPE_24H,GaugeCorr_QPE_72H,MESH,"

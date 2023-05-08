@@ -2,16 +2,17 @@
 
 1981 thru 2017
 """
-import os
 import datetime
+import os
 from collections import namedtuple
 
-from tqdm import tqdm
 import netCDF4
 import numpy as np
 from affine import Affine
+from tqdm import tqdm
+
 import geopandas as gpd
-from metpy.units import units, masked_array
+from metpy.units import masked_array, units
 from pyiem.grid.zs import CachingZonalStats
 from pyiem.util import get_dbconn
 

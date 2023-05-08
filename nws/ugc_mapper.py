@@ -1,10 +1,9 @@
 """simple map with counties filled"""
 
 import cartopy.feature as cfeature
-from pyiem.plot import maue, Z_POLITICAL
-from pyiem.util import get_dbconn
-from pyiem.plot import MapPlot
 from pandas.io.sql import read_sql
+from pyiem.plot import Z_POLITICAL, MapPlot, maue
+from pyiem.util import get_dbconn
 
 
 def main():

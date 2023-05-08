@@ -2,9 +2,10 @@
 import calendar
 
 import seaborn as sns
+
 import pandas as pd
-from pyiem.util import get_dbconnstr
 from pyiem.plot import figure_axes
+from pyiem.util import get_dbconnstr
 
 
 def main():

@@ -1,5 +1,6 @@
 """Cheap script to get stats"""
 from __future__ import print_function
+
 import sys
 
 import requests

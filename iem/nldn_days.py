@@ -1,11 +1,12 @@
 """attempt a NLDN plot of days since"""
 import datetime
 
-from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
+import numpy as np
+
 from pyiem import reference
 from pyiem.plot import MapPlot
-import numpy as np
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 
 GX = 0.05
 

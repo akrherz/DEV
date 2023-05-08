@@ -1,7 +1,7 @@
 """Shrug."""
 
-from pyiem.util import get_dbconn
 import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn
 
 
 def main():

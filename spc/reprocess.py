@@ -1,9 +1,11 @@
 """Look for missed PTS products."""
 import subprocess
 
+import requests
+
 # third party
 from tqdm import tqdm
-import requests
+
 from pyiem.util import get_dbconn
 
 

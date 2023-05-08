@@ -1,9 +1,9 @@
 """The 30 minute shot clock."""
 import datetime
 
-from pyiem.util import get_sqlalchemy_conn
-from pyiem.plot import figure_axes
 import pandas as pd
+from pyiem.plot import figure_axes
+from pyiem.util import get_sqlalchemy_conn
 
 JACK_TRICE = [-93.6379, 42.0140]
 KINNICK = [-91.55106, 41.65863]

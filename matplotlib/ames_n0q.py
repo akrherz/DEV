@@ -1,12 +1,8 @@
-import matplotlib.pyplot as plt
-from mpl_toolkits.basemap import Basemap
-from pyiem import reference
-from matplotlib.patches import Polygon
-import numpy as np
-import pygrib
 import Image
+import numpy as np
+
+from matplotlib.patches import Polygon
 from pyiem.plot import MapPlot
-import matplotlib.patheffects as PathEffects
 
 m = MapPlot(
     "ames",

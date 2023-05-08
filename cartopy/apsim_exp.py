@@ -1,7 +1,8 @@
 import netCDF4
 import numpy as np
-import matplotlib.pyplot as plt
+
 import cartopy.crs as ccrs
+import matplotlib.pyplot as plt
 
 nc = netCDF4.Dataset("NoBCNoRR.nc4")
 data = nc.variables["SOC030_kgha"][30, 0, 0, :, :]

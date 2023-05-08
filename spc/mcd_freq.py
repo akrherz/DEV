@@ -14,6 +14,7 @@ SELECT d, count(*) from data GROUP by d ORDER by d
 """
 
 import numpy as np
+
 import matplotlib.pyplot as plt
 
 

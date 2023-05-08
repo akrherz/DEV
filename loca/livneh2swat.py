@@ -3,13 +3,15 @@
 1989 thru 2010
 """
 from __future__ import print_function
-import os
+
 import datetime
+import os
 from collections import namedtuple
 
-from tqdm import tqdm
 import numpy as np
 from affine import Affine
+from tqdm import tqdm
+
 import geopandas as gpd
 from pyiem.grid.zs import CachingZonalStats
 from pyiem.util import get_dbconn, ncopen

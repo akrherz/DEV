@@ -1,13 +1,14 @@
 """Review what ACIS says for potential climate sites."""
 # stdlib
-from datetime import datetime, date, timedelta
 import sys
+from datetime import date, datetime, timedelta
 
 # Third Party
 import requests
+
 from pyiem.network import Table as NetworkTable
-from pyiem.util import get_dbconn, logger, convert_value
 from pyiem.reference import nwsli2state
+from pyiem.util import convert_value, get_dbconn, logger
 
 LOG = logger()
 state2nwsli = dict((value, key) for key, value in nwsli2state.items())

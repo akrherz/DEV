@@ -1,5 +1,6 @@
-from pyiem.plot import MapPlot
 import numpy as np
+
+from pyiem.plot import MapPlot
 
 lats = []
 lons = []

@@ -1,9 +1,10 @@
 """Make a GeoTIFF."""
 
 import numpy as np
-import pandas as pd
 import rasterio
 from rasterio.transform import from_origin
+
+import pandas as pd
 
 
 def main():

@@ -4,9 +4,10 @@ from datetime import datetime, timedelta
 
 # Third Party
 import requests
+
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn, logger, convert_value
 from pyiem.reference import ncei_state_codes
+from pyiem.util import convert_value, get_dbconn, logger
 
 LOG = logger()
 

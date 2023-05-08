@@ -1,8 +1,9 @@
 """Plot GFS."""
-import pygrib
 import numpy as np
-from pyiem.plot import MapPlot, get_cmap
+import pygrib
+
 from pyiem.datatypes import temperature
+from pyiem.plot import MapPlot, get_cmap
 
 
 def main():

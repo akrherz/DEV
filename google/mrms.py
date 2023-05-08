@@ -1,8 +1,9 @@
 """A frontend to allow scraping of the Google Drive MRMS folder."""
 import re
 
-from pyiem.cscap_utils import get_driveclient, get_config
 from paste.request import parse_formvars
+
+from pyiem.cscap_utils import get_config, get_driveclient
 
 RESOURCE_REGEX = re.compile(
     "^20[0-9][0-9]/[0-1][0-9]/[0-3][0-9]/20[0-9][0-9][0-1][0-9][0-3][0-9]"

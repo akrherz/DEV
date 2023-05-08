@@ -1,7 +1,9 @@
 """Review mesowest station file for differences"""
 import os
-import pandas as pd
+
 import requests
+
+import pandas as pd
 
 
 def cache_file():

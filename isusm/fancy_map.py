@@ -1,7 +1,7 @@
 """Make something pretty."""
 
-from pyiem.plot import MapPlot
 from pyiem.network import Table as NetworkTable
+from pyiem.plot import MapPlot
 
 
 def main():

@@ -35,22 +35,23 @@ SFLAG31    269-269   Character
     TMAX = Maximum temperature (tenths of degrees C)
     TMIN = Minimum temperature (tenths of degrees C)
 """
-import os
 import datetime
-import sys
+import os
 import re
+import sys
 
-import requests
-import pandas as pd
 import numpy as np
-from pyiem.reference import TRACE_VALUE, state_names
+import requests
+
+import pandas as pd
 from pyiem.network import Table as NetworkTable
+from pyiem.reference import TRACE_VALUE, state_names
 from pyiem.util import (
+    c2f,
+    exponential_backoff,
     get_dbconn,
     get_dbconnstr,
-    exponential_backoff,
     logger,
-    c2f,
     mm2inch,
 )
 

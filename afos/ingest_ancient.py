@@ -1,13 +1,13 @@
 """Process really old stuff."""
-import os
-import sys
-import re
 import datetime
+import os
+import re
+import sys
 
 from tqdm import tqdm
-from pyiem.util import noaaport_text
+
 from pyiem.nws.product import TextProduct
-from pyiem.util import utc, get_dbconn
+from pyiem.util import get_dbconn, noaaport_text, utc
 
 # Copied from iem/scripts/util/poker2afos.py
 sys.path.insert(0, "/opt/iem/scripts/util")

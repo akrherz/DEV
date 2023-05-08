@@ -1,7 +1,8 @@
-import psycopg2
-import pytz
 import datetime
 import sys
+
+import psycopg2
+import pytz
 
 sts = datetime.datetime(2010, int(sys.argv[1]), 1)
 ets = sts + datetime.timedelta(days=35)

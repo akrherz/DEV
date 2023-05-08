@@ -1,14 +1,15 @@
 """Figure out the grid max/min values"""
-import os
 import datetime
+import os
 
 import numpy as np
 import pygrib
-from pyiem.plot.use_agg import plt
-from pyiem.plot import MapPlot
-from metpy.units import units
-from metpy.calc import windchill
+
 from matplotlib.colors import ListedColormap
+from metpy.calc import windchill
+from metpy.units import units
+from pyiem.plot import MapPlot
+from pyiem.plot.use_agg import plt
 
 
 def plot():

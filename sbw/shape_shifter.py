@@ -2,12 +2,13 @@
 import math
 import re
 
-from pyiem.util import get_dbconn
-from pyiem.plot.use_agg import plt
-from psycopg2.extras import DictCursor
-import numpy
 import mx.DateTime
+import numpy
 import pyproj
+from psycopg2.extras import DictCursor
+
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 
 
 def rotate(x, y, rad):
@@ -38,20 +39,8 @@ def main():
     pcursor = postgis.cursor(cursor_factory=DictCursor)
     pcursor2 = postgis.cursor(cursor_factory=DictCursor)
 
-    warnX = []
-    warnY = []
-    lsrX = []
-    lsrY = []
     rlsrX = []
     rlsrY = []
-    polyX = []
-    polyY = []
-    majorX = []
-    minorX = []
-    minorY = []
-    majorY = []
-    deltaX = []
-    deltaY = []
     dT = []
     dXT = []
     dDist = []
@@ -73,9 +62,7 @@ def main():
     i = 0
     for row in pcursor:
         issue = mx.DateTime.strptime(str(row["issue"])[:16], "%Y-%m-%d %H:%M")
-        expire = mx.DateTime.strptime(
-            str(row["expire"])[:16], "%Y-%m-%d %H:%M"
-        )
+        mx.DateTime.strptime(str(row["expire"])[:16], "%Y-%m-%d %H:%M")
         i += 1
         if i % 1000 == 0:
             print(f"Done {i}")
@@ -181,7 +168,6 @@ def main():
 
     ax = fig.add_subplot(111)
     # maxV = max([max(rlsrX),0-min(rlsrX),max(rlsrY),0-min(rlsrX)])
-    maxV = 60.0 * 60  # one hour
     # H2, xedges, yedges = numpy.histogram2d(numpy.array(dDist), numpy.array(dT),
     #                                       range=[[0,60],[0,60]], bins=(60, 60))
     # H2, xedges, yedges = numpy.histogram2d(numpy.array(offsetX), numpy.array(offsetY),

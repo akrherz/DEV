@@ -1,8 +1,9 @@
 """Old plot."""
 import datetime
 
-from pyiem.plot.use_agg import plt
 import numpy as np
+
+from pyiem.plot.use_agg import plt
 
 
 def make_y(ts):

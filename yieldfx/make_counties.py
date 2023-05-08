@@ -1,7 +1,8 @@
 """Write a hacky counties file, because this is my life."""
 
-from pyiem.util import get_dbconn
 import numpy as np
+
+from pyiem.util import get_dbconn
 
 
 def main():

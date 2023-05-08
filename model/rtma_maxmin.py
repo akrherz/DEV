@@ -1,18 +1,19 @@
 """Figure out the grid max/min values"""
-import os
 import datetime
+import os
+
+import numpy as np
+import pygrib
+from scipy import stats
 
 import matplotlib.colors as mpcolors
-import numpy as np
 import pandas as pd
-import pygrib
-from pyiem.plot.use_agg import plt
-from pyiem.plot import MapPlot
-from pyiem.plot.util import sector_setter, stretch_cmap
-from pyiem.reference import Z_FILL, LATLON, EPSG
-from pyiem.util import get_sqlalchemy_conn
-from scipy import stats
 from metpy.units import units
+from pyiem.plot import MapPlot
+from pyiem.plot.use_agg import plt
+from pyiem.plot.util import sector_setter, stretch_cmap
+from pyiem.reference import EPSG, LATLON, Z_FILL
+from pyiem.util import get_sqlalchemy_conn
 
 
 def plot():

@@ -1,8 +1,8 @@
 """ Attempt to compute the time of a record high temperature! """
 from calendar import month_abbr
 
-from pyiem.util import get_dbconn
 import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn
 
 
 def main():

@@ -1,11 +1,12 @@
 """NARR."""
 import os
 
-import numpy as np
 import netCDF4
+import numpy as np
 from tqdm import tqdm
+
+from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import get_dbconn
-from pyiem.plot import MapPlot, Z_FILL, get_cmap
 
 
 def main():
@@ -28,7 +29,7 @@ def main():
     xx = []
     files = 0
     for row in tqdm(cursor, total=cursor.rowcount):
-        uri = row[1].strftime(
+        row[1].strftime(
             "https://www.ncei.noaa.gov/thredds/ncss/model-narr-a-files/"
             "%Y%m/%Y%m%d/narr-a_221_%Y%m%d_1200_000.grb"
             "?var=Geopotential_height_isobaric&north=89&west=-134&"

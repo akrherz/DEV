@@ -1,13 +1,14 @@
 """Generate a plot of 1minute data."""
 
-from pyiem.plot import figure_axes
-from pyiem.util import get_dbconn, utc
 import pytz
+
 import matplotlib.dates as mdates
 from matplotlib.lines import Line2D
-from metpy.units import units
 from metpy.calc import dewpoint_from_relative_humidity
+from metpy.units import units
 from pandas.io.sql import read_sql
+from pyiem.plot import figure_axes
+from pyiem.util import get_dbconn, utc
 
 
 def main():

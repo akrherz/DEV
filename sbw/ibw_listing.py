@@ -10,9 +10,10 @@ Wants:
 from datetime import timezone
 
 from tqdm import tqdm
-from pyiem.util import get_dbconn
+
 import pandas as pd
 from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn
 
 
 def main():

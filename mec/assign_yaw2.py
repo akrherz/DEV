@@ -1,9 +1,11 @@
 """
 Update the database with the new yaw values!
 """
-import matplotlib.dates as mdates
-import numpy as np
 import warnings
+
+import numpy as np
+
+import matplotlib.dates as mdates
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn
 
@@ -87,7 +89,7 @@ def compute_correction(unitnumber, turbineid):
         (counts, xedges, yedges) = np.histogram2d(asos, turbine2, bins=36)
 
         x, correction = process(xedges, yedges, counts)
-        cor_stddev2 = np.std(correction)
+        np.std(correction)
 
     fig.colorbar(img, ax=ax[0])
     ax[0].set_xlabel("Storm Lake AWOS Wind Direction")

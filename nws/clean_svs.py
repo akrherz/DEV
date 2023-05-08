@@ -1,7 +1,9 @@
 """Our SVS dataset sometimes 'corrupts' with duplicated ETNs within a year"""
-import psycopg2
 import datetime
 import sys
+
+import psycopg2
+
 from pyiem.nws.products import parser
 
 POSTGIS = psycopg2.connect(database="postgis")
@@ -29,7 +31,7 @@ for row in cursor:
             continue
         try:
             p = parser(svs)
-        except Exception as _exp:
+        except Exception:
             continue
         times.append(p.valid)
         svss.append(svs)

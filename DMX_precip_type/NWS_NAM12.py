@@ -8,15 +8,14 @@
 #  Copy methods you wish to change into the Local_NAM12 module and make desired
 #  changes there.
 #
-from numpy import *
+import time
+
+import BaseInit
 
 # From: NWS_NAM12.hdr
-
 from Init import *
+from numpy import *
 from siteConfig import *
-
-import time, sys, calendar
-import BaseInit
 
 
 def main():
@@ -80,7 +79,6 @@ class NAM12(BaseInit.BaseInit):
 
     # From: ../../methods/probIceForTemp/probIceForTemp.py
     def probIceForTemp(self, temp):
-        probList = [30, 40, 50, 60, 70, 75, 80]
         if temp == 8:
             prob = 30
         elif temp == 9:
@@ -471,8 +469,6 @@ class NAM12(BaseInit.BaseInit):
         rh_BL030,
         rh_BL3060,
     ):
-        MaxCloudBase = 250
-
         dpt_BL030 = self.BI_dewFromTandRH(self.KtoF(t_BL030), rh_BL030)
         dpt_BL3060 = self.BI_dewFromTandRH(self.KtoF(t_BL3060), rh_BL3060)
 
@@ -591,9 +587,7 @@ class NAM12(BaseInit.BaseInit):
         rh_c = rh_c[1:, :, :]
         ProbIcePresent = self.empty()
 
-        temperatureList = [-8, -9, -10, -11, -12, -13, -14, -15]
         temperatureListAboveZero = [8, 9, 10, 11, 12, 13, 14, 15]
-        probList = [30, 40, 50, 60, 70, 75, 85, 100]
         # initialize the rhGrid array
         rhGrid = []
         for i in [0, 1, 2, 3, 4, 5, 6, 7]:
@@ -1331,18 +1325,11 @@ class NAM12(BaseInit.BaseInit):
             g = 9.80665
             R_d = 287.05
             R_v = 461.50
-            c_pd = 1005.7
             eps = R_d / R_v
 
             # Set up the model parameters
 
             num_bl = 5
-            bl_levs = ["BL030", "BL3060", "BL6090", "BL90120", "BL120150"]
-            sfc_wind_parm = "FHAG10"
-            sfc_thermo_parm = "FHAG2"
-            sfc_pres_parm = "SFC"
-            hght_parm = "gh"
-            isobaric = "N"
 
             # Define arrays for the boundary layer variables
 

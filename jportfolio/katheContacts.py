@@ -1,4 +1,5 @@
-import pg, stationTable
+import pg
+import stationTable
 
 st = stationTable.stationTable("/mesonet/TABLES/kcci.stns")
 mydb = pg.connect("portfolio", "meteor.geol.iastate.edu")

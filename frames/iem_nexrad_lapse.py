@@ -2,14 +2,13 @@
 import datetime
 from zoneinfo import ZoneInfo
 
-from matplotlib.colorbar import ColorbarBase
-import matplotlib.dates as mdates
-import matplotlib.colors as mpcolors
 import geopandas as gpd
+import matplotlib.colors as mpcolors
 import pandas as pd
-from pyiem.plot import MapPlot, get_cmap, geoplot
-from pyiem.util import utc, get_sqlalchemy_conn
-from pyiem.reference import Z_OVERLAY2, Z_FILL
+from matplotlib.colorbar import ColorbarBase
+from pyiem.plot import MapPlot, get_cmap
+from pyiem.reference import Z_OVERLAY2
+from pyiem.util import get_sqlalchemy_conn, utc
 
 CST = ZoneInfo("America/Chicago")
 # geoplot.MAIN_AX_BOUNDS = [0.05, 0.3, 0.89, 0.6]
@@ -69,7 +68,7 @@ def main():
     ncmap.set_over("white")
     nbins = list(range(0, 121, 10))
     nbins[0] = 1
-    nnorm = mpcolors.BoundaryNorm(nbins, ncmap.N)
+    mpcolors.BoundaryNorm(nbins, ncmap.N)
 
     while now < ets:
         mp = MapPlot(

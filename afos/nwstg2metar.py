@@ -2,15 +2,13 @@
 
 """
 # stdlb
-import subprocess
 import glob
-import tarfile
-import sys
-import os
 import re
+import subprocess
+import sys
+import tarfile
 
 # third party
-from pyiem.util import noaaport_text
 
 HAS = "https://www.ncei.noaa.gov/pub/has"
 YYYYMMDD = re.compile("([\d]{8})")

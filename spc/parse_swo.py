@@ -1,14 +1,16 @@
 """Glean out PTS style points from ancient SWO text products."""
 # stdlib
-from datetime import timezone
 import math
 import re
 import sys
+from datetime import timezone
+
 from backports.zoneinfo import ZoneInfo
+
+import pandas as pd
 
 # third party
 from metpy.units import units
-import pandas as pd
 from pyiem.util import get_dbconn, utc
 
 VERSION = "2021JUL08"

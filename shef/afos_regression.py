@@ -1,6 +1,5 @@
 """Feed some AFOS data through for regression testing."""
 
-from pyiem.exceptions import InvalidSHEFEncoding
 from pyiem.nws.products.shef import parser
 from pyiem.util import get_dbconn, logger
 

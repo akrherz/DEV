@@ -1,15 +1,13 @@
 """A map of dots!"""
 import os
-import calendar
-import sys
 
-import numpy as np
 from tqdm import tqdm
+
+import pandas as pd
 from pyiem.network import Table as NetworkTable
-from pyiem.plot import MapPlot, get_cmap
+from pyiem.plot import MapPlot
 from pyiem.reference import Z_OVERLAY, state_names
 from pyiem.util import get_dbconn, get_sqlalchemy_conn
-import pandas as pd
 
 
 def get_data():

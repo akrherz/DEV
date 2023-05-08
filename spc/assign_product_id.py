@@ -2,8 +2,9 @@
 
 # third party
 import requests
-from tqdm import tqdm
 from psycopg2.extras import RealDictCursor
+from tqdm import tqdm
+
 from pyiem.util import get_dbconn
 
 

@@ -1,9 +1,9 @@
 """Some products went in the database with some cruft."""
-import sys
 import re
+import sys
 
-from pyiem.util import get_dbconn, noaaport_text
 import pandas as pd
+from pyiem.util import get_dbconn, noaaport_text
 
 MYRE = re.compile("[A-Z0-9]{5,6} [A-Z]{4} [0-9]{5,6}")
 

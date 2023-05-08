@@ -1,15 +1,15 @@
 """Map of pressure fluctation."""
 from datetime import timedelta, timezone
 
+import numpy as np
+
 import matplotlib.colors as mpcolors
+import pandas as pd
+from geopandas import read_postgis
 from matplotlib.colorbar import ColorbarBase
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_POLITICAL
 from pyiem.util import get_dbconn
-from pandas.io.sql import read_sql
-from geopandas import read_postgis
-import pandas as pd
-import numpy as np
 
 
 def main():

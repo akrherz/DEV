@@ -4,24 +4,25 @@ wanted, but the life we got.
 
 """
 import argparse
-from datetime import timedelta, datetime, timezone
 import glob
 import json
-from multiprocessing.pool import ThreadPool
 import os
 import random
 import tempfile
 import time
 import traceback
+from datetime import datetime, timedelta, timezone
+from multiprocessing.pool import ThreadPool
 
 import requests
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
+
 from pyiem.util import utc
 
 XPATH_TWEETBOX = "//div[contains(@class, 'public-DraftStyleDefault-block')]"

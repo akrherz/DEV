@@ -1,7 +1,7 @@
 """Print out the largest outlooks"""
 
-from pyiem.util import get_dbconnstr
 from pandas import read_sql
+from pyiem.util import get_dbconnstr
 
 
 def main():

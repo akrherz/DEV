@@ -1,7 +1,11 @@
 #  Need to be more precise with outage data
 #  Daryl Herzmann 8 Dec 2003
 
-import pg, re, mx.DateTime, stationTable
+import re
+
+import mx.DateTime
+import pg
+import stationTable
 
 st = stationTable.stationTable("/mesonet/TABLES/awos.stns")
 mydb = pg.connect("portfolio", "meteor.geol.iastate.edu", 5432)

@@ -1,8 +1,9 @@
 """Plot my car's mileage"""
-import datetime
 import calendar
+import datetime
 
 import numpy as np
+
 import matplotlib.pyplot as plt
 
 

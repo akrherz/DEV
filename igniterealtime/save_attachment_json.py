@@ -1,7 +1,7 @@
 """Get details on attachments in SBS"""
-import sys
 import json
 import os
+import sys
 
 import requests
 

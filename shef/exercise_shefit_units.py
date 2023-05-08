@@ -1,9 +1,9 @@
 """Compare our unit conversions."""
 # Stdlib
 import os
-from string import ascii_uppercase
 import subprocess
 import sys
+from string import ascii_uppercase
 
 # Third Party
 from pyiem.nws.products.shef import process_message_a

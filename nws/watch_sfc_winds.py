@@ -2,8 +2,9 @@
 import math
 import random
 
-import matplotlib.pyplot as plt
 import numpy
+
+import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
 
 

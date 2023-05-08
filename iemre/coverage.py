@@ -3,12 +3,13 @@ import os
 
 import numpy as np
 import tqdm
-import pandas as pd
+
 import geopandas as gpd
+import pandas as pd
 from pyiem import iemre
 from pyiem.grid.zs import CachingZonalStats
 from pyiem.plot import figure_axes
-from pyiem.util import ncopen, get_sqlalchemy_conn
+from pyiem.util import get_sqlalchemy_conn, ncopen
 
 
 def get_data():

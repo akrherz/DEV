@@ -13,10 +13,9 @@ select distinct state, date(ts) from data3 ORDER by date ASC;
 """
 from io import StringIO
 
+import pandas as pd
 from pyiem.plot import MapPlot
 from pyiem.plot.use_agg import plt
-import pandas as pd
-
 
 txt = """ MI    | 2005-11-15
  KS    | 2005-11-27

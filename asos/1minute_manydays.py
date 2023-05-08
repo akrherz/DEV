@@ -1,9 +1,10 @@
 """Plot."""
 import datetime
 
-from pyiem.util import get_dbconn
 import numpy as np
+
 import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn
 
 ASOS = get_dbconn("asos1min")
 cursor = ASOS.cursor()

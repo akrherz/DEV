@@ -2,12 +2,10 @@
 import sys
 
 import numpy as np
+
 import pandas as pd
-from pyiem.plot.use_agg import plt
-from tqdm import tqdm
 from pyiem.plot import MapPlot, get_cmap
-from pyiem.network import Table as NetworkTable
-from pyiem.util import get_sqlalchemy_conn, drct2text
+from pyiem.util import get_sqlalchemy_conn
 
 
 def get_database_data(year):

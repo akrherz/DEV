@@ -1,7 +1,7 @@
 """Compute some groundhog statistics."""
 
-import pandas as pd
 import matplotlib.patches as mpatches
+import pandas as pd
 from pyiem.plot import figure
 from pyiem.util import get_dbconnstr
 

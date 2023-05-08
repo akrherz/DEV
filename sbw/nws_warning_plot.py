@@ -1,11 +1,11 @@
 """Make a plot of all the bot warnings"""
 
-from pyiem.plot import MapPlot
-from pyiem.util import get_dbconn
+import cartopy.crs as ccrs
+from geopandas import read_postgis
 from pyiem.network import Table as NetworkTable
 from pyiem.nws.vtec import VTEC_PHENOMENA
-from geopandas import read_postgis
-import cartopy.crs as ccrs
+from pyiem.plot import MapPlot
+from pyiem.util import get_dbconn
 
 
 def main():

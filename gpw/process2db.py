@@ -10,11 +10,12 @@ Notes
 - lazyly only storing the NW quadrant (1, 2) of the globe and Guam (4)
 
 """
-from functools import partial
 import sys
+from functools import partial
 
 import rasterio
 from tqdm import tqdm
+
 from pyiem.util import get_dbconn
 
 

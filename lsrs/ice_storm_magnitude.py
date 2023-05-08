@@ -1,8 +1,8 @@
 """LSR Magnitude is empty for ice-storm."""
 
-from pyiem.util import get_dbconnstr, get_dbconn
-from pyiem.nws.lsr import _icestorm_remark
 from pandas import read_sql
+from pyiem.nws.lsr import _icestorm_remark
+from pyiem.util import get_dbconn, get_dbconnstr
 
 
 def main():

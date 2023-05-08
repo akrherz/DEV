@@ -1,11 +1,12 @@
 """Generate a report of how many timesteps have all missing data"""
+import datetime
+import glob
 import os
 import sys
-import glob
-import datetime
 
 import numpy as np
-from pyiem.util import ncopen, logger
+
+from pyiem.util import logger, ncopen
 
 BASEDIR = "/mesonet/data/iemre"
 LOG = logger()

@@ -2,6 +2,7 @@
 from calendar import month_abbr
 
 import numpy as np
+
 import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
 

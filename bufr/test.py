@@ -1,21 +1,14 @@
 from eccodes import (
-    codes_bufr_keys_iterator_new,
-    codes_bufr_keys_iterator_next,
-    codes_bufr_keys_iterator_delete,
-    codes_bufr_keys_iterator_get_name,
-    codes_bufr_new_from_file,
-    codes_set,
-    codes_get,
     CodesInternalError,
-    codes_get_size,
-    codes_get_array,
+    codes_bufr_new_from_file,
+    codes_get,
     codes_release,
+    codes_set,
 )
 
 
 def main():
     """Try things."""
-    subset = 0
     keys = [
         "blockNumber",
         "stationNumber",

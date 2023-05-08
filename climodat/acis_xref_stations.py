@@ -2,9 +2,10 @@
 import sys
 
 import requests
-from pyiem.util import get_dbconn, logger
+
 from pyiem.network import Table as NetworkTable
 from pyiem.reference import ncei_state_codes
+from pyiem.util import get_dbconn, logger
 
 LOG = logger()
 SERVICE = "http://data.rcc-acis.org/StnMeta"

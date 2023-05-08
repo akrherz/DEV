@@ -1,7 +1,10 @@
 #  Need to be more precise with outage data
 #  Daryl Herzmann 8 Dec 2003
 
-import pg, re, mx.DateTime
+import re
+
+import mx.DateTime
+import pg
 from pyIEM import stationTable
 
 st = stationTable.stationTable("/mesonet/TABLES/awos.stns")

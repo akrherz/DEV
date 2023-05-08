@@ -1,9 +1,10 @@
 """Reorganize wind rose files."""
+import calendar
 import os
 import shutil
-import calendar
 
 from tqdm import tqdm
+
 from pyiem.util import get_dbconn
 
 OLDDIR = "/mesonet/share/windrose/climate"

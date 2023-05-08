@@ -1,8 +1,8 @@
 """Plot HG."""
 
-from pyiem.util import get_dbconn
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
+from pyiem.util import get_dbconn
 
 pgconn = get_dbconn("hads")
 cursor = pgconn.cursor()

@@ -1,8 +1,9 @@
 """See SQL.txt"""
-from io import StringIO
 import calendar
-import pandas as pd
+from io import StringIO
+
 import matplotlib.pyplot as plt
+import pandas as pd
 
 data = """month|word|count
  200011 |   0 |  115

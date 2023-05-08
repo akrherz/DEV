@@ -1,8 +1,8 @@
 """May be useful."""
 import calendar
 
-from pyiem.util import get_dbconn
 import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn
 
 pgconn = get_dbconn("postgis")
 pcursor = pgconn.cursor()

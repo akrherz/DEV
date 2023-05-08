@@ -1,5 +1,6 @@
 """Word Cloud of IEM Features"""
 from wordcloud import WordCloud
+
 import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
 

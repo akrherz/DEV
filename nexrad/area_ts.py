@@ -37,10 +37,11 @@ while (now < ets):
 
 """
 import datetime
+
 from backports.zoneinfo import ZoneInfo
 
-import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
 
 
 def main():

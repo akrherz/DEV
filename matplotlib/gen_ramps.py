@@ -1,7 +1,7 @@
 """generate ramps used by select2."""
 import numpy as np
-from pyiem.plot.use_agg import plt
 
+from pyiem.plot.use_agg import plt
 
 # https://matplotlib.org/stable/tutorials/colors/colormaps.html
 cmaps = [

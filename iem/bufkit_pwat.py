@@ -1,7 +1,7 @@
 """PWAT."""
+import datetime
 import os
 import re
-import datetime
 
 import matplotlib.pyplot as plt
 

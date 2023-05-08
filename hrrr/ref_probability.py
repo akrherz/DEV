@@ -2,12 +2,13 @@
 import datetime
 import os
 
+import numpy as np
+import pygrib
+import pytz
+import requests
+
 from pyiem.plot import MapPlot
 from pyiem.util import utc
-import requests
-import pytz
-import pygrib
-import numpy as np
 
 
 def dl(valid):

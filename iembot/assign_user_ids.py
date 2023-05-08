@@ -1,6 +1,6 @@
 """Update the database with the user's user_id."""
-from pyiem.util import get_dbconn, get_properties
 import twitter
+from pyiem.util import get_dbconn, get_properties
 
 
 def main():

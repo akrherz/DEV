@@ -1,13 +1,14 @@
 """Verify MCD watch confidence."""
 import datetime
 
-from tqdm import tqdm
 import pytz
-from pyiem.plot.use_agg import plt
-from pyiem.nws.products.mcd import parser
-from pyiem.util import get_dbconn
+from tqdm import tqdm
+
 import pandas as pd
 from pandas.io.sql import read_sql
+from pyiem.nws.products.mcd import parser
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 
 
 def get_mcds():

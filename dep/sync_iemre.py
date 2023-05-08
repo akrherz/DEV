@@ -4,14 +4,15 @@ Necessarily since we copied a current Iowa CLI file to all new places in
 the CONUS, which is not all that great for a hot start and it would take
 many moons to fix it via daily reprocessing.  This at least gets us ballpark.
 """
-from datetime import date
 import os
+from datetime import date
 
-import requests
 import numpy as np
-import pandas as pd
+import requests
 from tqdm import tqdm
-from pyiem.dep import NORTH, EAST, WEST, SOUTH, get_cli_fname
+
+import pandas as pd
+from pyiem.dep import EAST, NORTH, SOUTH, WEST, get_cli_fname
 from pyiem.util import convert_value
 
 

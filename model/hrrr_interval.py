@@ -1,9 +1,10 @@
 """Unsure."""
-import os
 import datetime
+import os
 
-import pygrib
 import numpy as np
+import pygrib
+
 from pyiem.plot import MapPlot
 
 

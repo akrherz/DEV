@@ -5,10 +5,10 @@ https://tgftp.nws.noaa.gov/SL.us008001/ST.opnl/DF.gr2/DC.ndfd/AR.conus/VP.001-00
 import datetime
 
 import numpy as np
-from pandas.io.sql import read_sql
-from pyiem.util import c2f, get_sqlalchemy_conn
-from pyiem.plot import MapPlot, get_cmap
 import pygrib
+
+from pyiem.plot import MapPlot, get_cmap
+from pyiem.util import c2f
 
 
 def main():

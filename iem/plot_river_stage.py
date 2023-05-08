@@ -1,13 +1,14 @@
 """Blah."""
 import math
 
-from pyiem.util import get_dbconn
-from pyiem.plot.use_agg import plt
-import pytz
 import numpy
+import pytz
+
 import matplotlib.dates as mdates
-import matplotlib.ticker
 import matplotlib.patches as patches
+import matplotlib.ticker
+from pyiem.plot.use_agg import plt
+from pyiem.util import get_dbconn
 
 
 def uv(sped, drct2):

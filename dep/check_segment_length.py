@@ -1,12 +1,13 @@
 """Review how long our segments are."""
+import glob
 import os
 import sys
-import glob
 
-from pyiem.dep import read_slp
 import numpy as np
 from tqdm import tqdm
+
 import pandas as pd
+from pyiem.dep import read_slp
 
 MYHUCS = [x.strip() for x in open("myhucs.txt")]
 

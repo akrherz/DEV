@@ -2,8 +2,8 @@
 Dump shapefiles for TML warnings.
 """
 
-from pyiem.util import get_dbconn
 from geopandas import read_postgis
+from pyiem.util import get_dbconn
 
 
 def main():

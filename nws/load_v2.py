@@ -1,9 +1,10 @@
 """Warning load by minute"""
 
 import pytz
-from pyiem.util import get_dbconn
-import matplotlib.pyplot as plt
+
 import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
+from pyiem.util import get_dbconn
 
 TZ = pytz.timezone("America/Chicago")
 PGCONN = get_dbconn("postgis")

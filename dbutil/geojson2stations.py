@@ -1,7 +1,8 @@
 """One off"""
 import requests
-from pyiem.reference import nwsli2country, nwsli2state
+
 from pyiem.datatypes import distance
+from pyiem.reference import nwsli2country, nwsli2state
 
 
 def main():

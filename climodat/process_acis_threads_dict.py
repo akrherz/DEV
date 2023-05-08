@@ -2,8 +2,9 @@
 import sys
 
 import requests
-from pyiem.util import get_dbconn
+
 from pyiem.reference import ncei_state_codes
+from pyiem.util import get_dbconn
 
 code2state = dict((v, k) for k, v in ncei_state_codes.items())
 URL = "https://threadex.rcc-acis.org/data/threads_dict.json"

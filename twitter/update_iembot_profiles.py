@@ -42,7 +42,7 @@ def main():
         ) % (location,)
         print("len(desc) = %s" % (len(desc),))
         profileURL = "https://mesonet.agron.iastate.edu/projects/iembot/"
-        twuser = api.UpdateProfile(
+        api.UpdateProfile(
             description=desc, profileURL=profileURL, location=location
         )
         # twuser.AsDict()['followers_count']

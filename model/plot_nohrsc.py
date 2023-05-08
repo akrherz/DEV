@@ -1,8 +1,9 @@
 """Plot WPC"""
 
 import netCDF4
-from pyiem.plot.use_agg import plt
+
 from pyiem.plot import MapPlot
+from pyiem.plot.use_agg import plt
 
 
 def main():

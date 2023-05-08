@@ -1,11 +1,11 @@
 """How quickly does an office issue the WCN after the WOU."""
 
-from pyiem.plot.geoplot import MapPlot
-from pyiem.plot import get_cmap
-from pyiem.nws.products.vtec import parser
-from pyiem.util import get_dbconn
 import pandas as pd
 from pandas.io.sql import read_sql
+from pyiem.nws.products.vtec import parser
+from pyiem.plot import get_cmap
+from pyiem.plot.geoplot import MapPlot
+from pyiem.util import get_dbconn
 
 
 def plotter():

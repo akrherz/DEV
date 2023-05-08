@@ -1,11 +1,12 @@
 """An old plot."""
 
-from pyiem.plot.use_agg import plt
+import numpy
+from scipy import stats
+
 from pyiem import reference
 from pyiem.plot import MapPlot
+from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn
-from scipy import stats
-import numpy
 
 
 def main():

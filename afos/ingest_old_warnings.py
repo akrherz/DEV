@@ -1,13 +1,14 @@
 """Ingest old AFOS data!"""
-import sys
 import re
-from datetime import timedelta, datetime, timezone
+import sys
+from datetime import datetime, timedelta, timezone
 
-from pyiem.util import get_dbconn
+from psycopg2.extras import DictCursor
+
+from pandas.io.sql import read_sql
 from pyiem.nws.products.vtec import parser
 from pyiem.nws.vtec import VTEC
-from psycopg2.extras import DictCursor
-from pandas.io.sql import read_sql
+from pyiem.util import get_dbconn
 
 FMT = "%y%m%dT%H%MZ"
 UNTIL = re.compile(

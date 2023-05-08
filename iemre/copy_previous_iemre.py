@@ -2,9 +2,10 @@
 import glob
 import os
 
-import numpy as np
 import netCDF4
+import numpy as np
 from tqdm import tqdm
+
 from pyiem import iemre
 
 

@@ -3,10 +3,10 @@
 Whilst the database does track emergencies, it does not explicitly list when
 an event came in and out of emergency status.  We shall try that here."""
 
-from pyiem.util import get_dbconn
-from pyiem.nws.products.vtec import parser
 import pandas as pd
 from pandas.io.sql import read_sql
+from pyiem.nws.products.vtec import parser
+from pyiem.util import get_dbconn
 
 FFE = "FLASH FLOOD EMERGENCY"
 BASE = "https://mesonet.agron.iastate.edu/p.php"

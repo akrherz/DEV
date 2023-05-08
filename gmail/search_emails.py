@@ -1,9 +1,8 @@
 """Search emails for a given subject for NCEI"""
-import sys
 import email
 import getpass
-
 import imaplib
+import sys
 
 
 def main(argv):

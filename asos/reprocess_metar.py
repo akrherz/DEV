@@ -4,8 +4,9 @@
 import datetime
 
 from metar.Metar import Metar
+
 from pyiem.reference import TRACE_VALUE
-from pyiem.util import get_dbconn, utc, logger
+from pyiem.util import get_dbconn, logger, utc
 
 LOG = logger()
 

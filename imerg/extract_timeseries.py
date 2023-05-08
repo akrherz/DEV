@@ -1,10 +1,11 @@
 """Create simple timeseries files."""
 import os
 
+import osgeo.gdal as gdal
 from tqdm import tqdm
+
 import pandas as pd
 from pyiem.util import logger
-import osgeo.gdal as gdal
 
 LOG = logger()
 FMT = "%Y-%m-%d %H:%M"

@@ -1,8 +1,9 @@
 """Example using the Cow API to generate a shapefile."""
-from io import BytesIO
 import json
+from io import BytesIO
 
 import requests
+
 import geopandas as gpd
 
 

@@ -1,12 +1,13 @@
 """Days with threshold based on prism"""
 import datetime
 
-import numpy as np
 import netCDF4
+import numpy as np
+
+import matplotlib.pyplot as plt
 from pyiem.datatypes import temperature
 from pyiem.iemre import daily_offset
 from pyiem.plot.geoplot import MapPlot
-import matplotlib.pyplot as plt
 
 THRESHOLD = temperature(90, "F").value("C")
 

@@ -1,6 +1,7 @@
-import iemdb
 import re
 import sys
+
+import iemdb
 
 POSTGIS = iemdb.connect("postgis", bypass=True)
 pcursor = POSTGIS.cursor()

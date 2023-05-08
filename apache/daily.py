@@ -1,8 +1,8 @@
 """barplot of daily requests"""
 import datetime
 
-from pyiem.plot.use_agg import plt
 import matplotlib.dates as mdates
+from pyiem.plot.use_agg import plt
 
 
 def main():

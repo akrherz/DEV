@@ -1,8 +1,9 @@
 """ Process the sampled data into the database
 """
 import datetime
-import subprocess
 import os
+import subprocess
+
 from pyiem.util import get_dbconn
 
 dbconn = get_dbconn("mec", user="mesonet")

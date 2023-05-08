@@ -1,11 +1,13 @@
 """Histogram of Road anagles"""
 from __future__ import print_function
+
 import math
 
 import numpy as np
 import psycopg2
-from shapely.wkb import loads
+
 import matplotlib.pyplot as plt
+from shapely.wkb import loads
 
 
 def makedir(u, v):

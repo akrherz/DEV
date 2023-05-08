@@ -2,10 +2,11 @@
 import datetime
 
 import numpy as np
-import matplotlib.pyplot as plt
+
 import matplotlib.font_manager
+import matplotlib.pyplot as plt
+from pyiem.datatypes import humidity, temperature
 from pyiem.meteorology import dewpoint
-from pyiem.datatypes import temperature, humidity
 
 txt2drct = {
     "N": "360",

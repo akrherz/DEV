@@ -1,8 +1,9 @@
 """Pull in the met_tower dataset """
-import psycopg2
+import datetime
 import glob
 import os
-import datetime
+
+import psycopg2
 
 
 def make_none(val):

@@ -1,11 +1,12 @@
 """Compare IEM vs SPC, to see who is better!"""
-import subprocess
 import datetime
+import subprocess
 
-import requests
-import pandas as pd
-import geopandas as gpd
 import pytz
+import requests
+
+import geopandas as gpd
+import pandas as pd
 from pyiem.util import get_dbconnstr, logger, utc
 
 LOG = logger()

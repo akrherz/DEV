@@ -34,6 +34,7 @@ wind.append(8)
 years.append(2011)
 
 import numpy
+
 import matplotlib.pyplot as plt
 
 years = numpy.array(years)

@@ -1,8 +1,8 @@
 """Compute the size of the polygon warnings as we load up on events, tricky."""
-import sys
 
-import numpy
 import mx.DateTime
+import numpy
+
 from pyiem.util import get_dbconn
 
 
@@ -24,10 +24,10 @@ def main():
             "SELECT issue, expire, area(transform(geom,2163)) / 1000000.0 as area from sbw_2009 WHERE wfo = '%s' and phenomena IN ('SV','TO') and status = 'NEW' ORDER by issue ASC"
             % (wfo,)
         ).dictresult()
-        previous = mx.DateTime.DateTime(2000, 1, 1)
+        mx.DateTime.DateTime(2000, 1, 1)
         for j in range(len(rs2)):
             sts = mx.DateTime.strptime(rs2[j]["issue"][:16], "%Y-%m-%d %H:%M")
-            ets = mx.DateTime.strptime(rs2[j]["expire"][:16], "%Y-%m-%d %H:%M")
+            mx.DateTime.strptime(rs2[j]["expire"][:16], "%Y-%m-%d %H:%M")
             # Look around in time
             events = 0
             for k in range(j - 10, j + 10):

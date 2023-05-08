@@ -2,10 +2,11 @@
 from datetime import timedelta, timezone
 
 import fiona
-import pandas as pd
+
 import geopandas as gpd
-from matplotlib.colorbar import ColorbarBase
 import matplotlib.colors as mpcolors
+import pandas as pd
+from matplotlib.colorbar import ColorbarBase
 from matplotlib.patches import Rectangle
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import get_sqlalchemy_conn, utc

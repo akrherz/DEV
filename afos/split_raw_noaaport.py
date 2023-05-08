@@ -1,11 +1,12 @@
 """Split archived noaaport files"""
-import os
 import datetime
+import os
 import subprocess
 
 import tqdm
-from pyiem.util import utc
+
 from pyiem.nws.product import TextProduct
+from pyiem.util import utc
 
 
 def main():

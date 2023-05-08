@@ -1,7 +1,7 @@
 """DEV."""
+import matplotlib.colorbar as mpcolorbar
 import matplotlib.colors as mpcolors
 import matplotlib.pyplot as plt
-import matplotlib.colorbar as mpcolorbar
 
 
 def main():
@@ -53,7 +53,7 @@ def main():
         print(c, norm(c), cmap(norm(c)))
 
     (fig, ax) = plt.subplots(1, 1)
-    cb2 = mpcolorbar.ColorbarBase(
+    mpcolorbar.ColorbarBase(
         ax,
         cmap=cmap,
         norm=norm,

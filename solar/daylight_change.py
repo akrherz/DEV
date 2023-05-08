@@ -1,10 +1,11 @@
 """Cruft."""
 
 import ephem
+import netCDF4
 import numpy as np
+
 from pyiem import iemre
 from pyiem.plot import MapPlot
-import netCDF4
 
 sun = ephem.Sun()
 

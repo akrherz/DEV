@@ -1,8 +1,8 @@
 """See akrherz/iem#183"""
 import sys
 
-from pyiem.util import get_dbconn, noaaport_text
 from pyiem.nws.products.vtec import parser
+from pyiem.util import get_dbconn, noaaport_text
 
 
 def main(argv):

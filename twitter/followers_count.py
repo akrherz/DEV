@@ -1,10 +1,11 @@
 """Need to set a profile string for my bots."""
 
 from tqdm import tqdm
-import twitter
+
 import pandas as pd
+import twitter
 from pyiem.network import Table as NetworkTable
-from pyiem.plot import MapPlot, get_cmap, pretty_bins
+from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import get_dbconn, get_properties, get_sqlalchemy_conn
 
 

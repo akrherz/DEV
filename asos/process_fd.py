@@ -1,6 +1,7 @@
 """Ingest the KWNO FD Product."""
 
 from tqdm import tqdm
+
 from pyiem.nws.products.fd import parser
 from pyiem.util import get_dbconn
 

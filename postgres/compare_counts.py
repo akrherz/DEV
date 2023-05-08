@@ -6,10 +6,12 @@ Port 5556 is the old, Port 5557 is the new
 ssh -L 5556:192.168.1.251:5432 -L 5557:192.168.1.233:5432 mesonet@mesonet
 """
 from __future__ import print_function
+
 import sys
 
-from pyiem.util import get_dbconn
 import tqdm
+
+from pyiem.util import get_dbconn
 
 
 def main(argv):

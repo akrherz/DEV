@@ -1,5 +1,8 @@
 """Dmx."""
-import datetime, os, shutil, urllib2, json
+import datetime
+import json
+
+import urllib2
 
 # Generate series of images between 0z and 12z on the 3rd of August
 

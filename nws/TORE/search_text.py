@@ -1,7 +1,8 @@
 """Send products from AFOS database to pyWWA"""
 
 from tqdm import tqdm
-from pyiem.util import noaaport_text, get_dbconn
+
+from pyiem.util import get_dbconn, noaaport_text
 
 AFOS = get_dbconn("afos")
 acursor = AFOS.cursor()
