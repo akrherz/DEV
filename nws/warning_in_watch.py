@@ -21,71 +21,86 @@ agg as (
 
 """
 import calendar
+from io import StringIO
 
-import matplotlib.pyplot as plt
+import pandas as pd
+from pyiem.plot import figure_axes
 
 
 def main():
     """Go Main."""
-    # TOR
-    data = """    1 | 83.9884153909805
-        2 | 90.9427966101695
-        3 | 89.5486111111111
-        4 | 91.4988650508896
-        5 |  86.516322346633
-        6 | 80.6090739589807
-        7 | 70.3950499762018
-        8 | 63.6651870640457
-        9 |  71.568345323741
-    10 | 79.3103448275862
-    11 |   86.76293622142
-    12 | 84.8294786358291"""
+    tor_data = """1 | 81.52149448570786
+     2 | 88.65795724465558
+     3 | 89.48130976528542
+     4 | 90.17969076473047
+     5 |  84.2581554134605
+     6 | 78.24982132930994
+     7 | 68.69737493808816
+     8 |  65.5941794664511
+     9 | 71.06366755623333
+    10 | 74.43887961417177
+    11 | 83.61111111111111
+    12 | 83.34429103659873"""
 
-    # SVR
-    data = """    1 | 74.2490340271719
-        2 | 76.1897904816761
-        3 | 69.8463416385438
-        4 |  74.163173561752
-        5 | 63.3073466219098
-        6 |  57.577623971237
-        7 | 46.3328950612211
-        8 | 40.5505631543543
-        9 |  45.826030808966
-    10 | 62.7282491944146
-    11 | 71.5146645239052
-    12 | 71.7070142768467"""
+    svr_data = """1 |  74.14081606384349
+     2 |   71.6718031627343
+     3 |    70.499131351383
+     4 |  72.84464647236334
+     5 |  63.68342214798908
+     6 |  57.50500891927663
+     7 |  44.36958483448337
+     8 |    37.786470641473
+     9 | 40.992843860934244
+    10 | 60.481415043177165
+    11 |  66.83096315449257
+    12 |  69.15300964925716"""
 
-    x = range(1, 13)
-    y = []
-    for line in data.split("\n"):
-        tokens = line.strip().split(" | ")
-        y.append(float(tokens[1]))
+    sio = StringIO()
+    sio.write(tor_data)
+    sio.seek(0)
+    tor = pd.read_csv(sio, sep="|", names=["month", "freq"]).set_index("month")
+    sio = StringIO()
+    sio.write(svr_data)
+    sio.seek(0)
+    svr = pd.read_csv(sio, sep="|", names=["month", "freq"]).set_index("month")
 
-    (fig, ax) = plt.subplots(1, 1)
+    (fig, ax) = figure_axes(
+        title=(
+            "Percentage of NWS County Warnings Issued "
+            "Within a SPC Convective Watch"
+        ),
+        subtitle="Oct 2005 - 9 May 2023, based on unofficial IEM archives.",
+        figsize=(10.24, 7.68),
+    )
 
-    ax.bar(x, y, align="center", fc="yellow")
-    for x0, y0 in zip(x, y):
-        ax.text(x0, y0 + 3, f"{y0:.0f}%", ha="center")
-    ax.set_xlim(0.5, 12.5)
-    ax.grid(True)
-    ax.set_xticks(x)
+    ax.bar(
+        svr.index - 0.4,
+        svr["freq"],
+        align="edge",
+        width=0.4,
+        fc="#fec44f",
+        label="Severe TStorm Warning (57.0%)",
+    )
+    ax.bar(
+        tor.index,
+        tor["freq"],
+        align="edge",
+        width=0.4,
+        fc="red",
+        label="Tornado Warning (81.9%)",
+    )
+    for i in range(1, 13):
+        val = svr.at[i, "freq"]
+        ax.text(i - 0.01, val + 2, f"{val:.0f}%", ha="right")
+        val = tor.at[i, "freq"]
+        ax.text(i + 0.2, val + 2, f"{val:.0f}%", ha="center")
     ax.set_yticks([0, 5, 10, 25, 50, 75, 90, 95, 100])
+    ax.set_xticks(range(1, 13))
     ax.set_xticklabels(calendar.month_abbr[1:])
-    ax.set_title(
-        (
-            "Percentage of County Based Severe T'Storm Warnings within\n"
-            "a SPC Severe T'storm or Tornado Watch (Oct 2005-Aug 2016)"
-        )
-    )
+    ax.grid(True)
+    ax.legend(loc=(0.4, 0.95), ncol=2)
 
-    fig.text(
-        0.02,
-        0.02,
-        "@akrherz Iowa Environmental Mesonet 11 August 2016",
-        fontsize=10,
-    )
-
-    fig.savefig("test.png")
+    fig.savefig("230510.png")
 
 
 if __name__ == "__main__":
