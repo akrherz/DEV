@@ -16,7 +16,9 @@ def create_meta_alias(meta, oldid, newid):
             "INSERT INTO station_attributes (iemid, attr, value) "
             "VALUES (:newid, 'WAS', :oldid)"
         )
-        res = conn.execute(stmt, newid=meta.loc[newid, "iemid"], oldid=oldid)
+        res = conn.execute(
+            stmt, {"newid": meta.loc[newid, "iemid"], "oldid": oldid}
+        )
         print(f"{res.rowcount} rows inserted into WAS attr for {newid}")
 
 
@@ -45,7 +47,7 @@ def update_asosdb(oldid, newid):
         stmt = text(
             "UPDATE alldata SET station = :newid WHERE station = :oldid"
         )
-        res = conn.execute(stmt, newid=newid, oldid=oldid)
+        res = conn.execute(stmt, {"newid": newid, "oldid": oldid})
         # print the number of rows updated
         print(f"{res.rowcount} rows updated in asos db")
 
@@ -60,8 +62,10 @@ def update_iemaccess(meta, oldid, newid):
         )
         res = conn.execute(
             stmt,
-            oldiemid=meta.loc[oldid, "iemid"],
-            lastdate=meta.loc[oldid, "archive_end"],
+            {
+                "oldiemid": meta.loc[oldid, "iemid"],
+                "lastdate": meta.loc[oldid, "archive_end"],
+            },
         )
         print(f"{res.rowcount} rows deleted from summary for {oldid}")
         # Delete anything in the summary table that is before the new
@@ -72,8 +76,10 @@ def update_iemaccess(meta, oldid, newid):
         )
         res = conn.execute(
             stmt,
-            newiemid=meta.loc[newid, "iemid"],
-            lastdate=meta.loc[oldid, "archive_end"],
+            {
+                "newiemid": meta.loc[newid, "iemid"],
+                "lastdate": meta.loc[oldid, "archive_end"],
+            },
         )
         print(f"{res.rowcount} rows deleted from summary for {newid}")
         # Update the iemid for the new id
@@ -82,8 +88,10 @@ def update_iemaccess(meta, oldid, newid):
         )
         res = conn.execute(
             stmt,
-            newiemid=meta.loc[newid, "iemid"],
-            oldiemid=meta.loc[oldid, "iemid"],
+            {
+                "newiemid": meta.loc[newid, "iemid"],
+                "oldiemid": meta.loc[oldid, "iemid"],
+            },
         )
         print(f"{res.rowcount} rows summary rows updated {oldid} -> {newid}")
 
