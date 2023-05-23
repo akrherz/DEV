@@ -8,7 +8,7 @@ from pyiem.util import get_dbconn, noaaport_text
 
 def main():
     """Go Main Go."""
-    pgconn = get_dbconn("afos", user="akrherz")
+    pgconn = get_dbconn("afos")
     cursor = pgconn.cursor()
     while True:
         cursor.execute(

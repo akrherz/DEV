@@ -1,20 +1,34 @@
-"""Ingest old AFOS data!"""
+"""Ingest old AFOS data!
+
+-- Look for WFOs in 2003 with no entries compared with 2004
+with t2003 as (
+    select wfo, count(*) from sbw where
+    issue > '2003-01-01' and issue < '2004-01-01' and phenomena = 'SV'
+    group by wfo order by wfo),
+t2004 as (
+    select wfo, count(*) from sbw where issue > '2004-01-01'
+    and issue < '2005-01-01' and phenomena = 'SV' group by wfo order by wfo)
+select t.wfo, o.count, t.count from t2004 t LEFT JOIN t2003 o on
+(o.wfo = t.wfo);
+"""
 import re
 import sys
 from datetime import datetime, timedelta, timezone
 
 from psycopg2.extras import DictCursor
+from sqlalchemy import text
 
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.nws.products.vtec import parser
 from pyiem.nws.vtec import VTEC
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconn, get_sqlalchemy_conn
 
 FMT = "%y%m%dT%H%MZ"
 UNTIL = re.compile(
     r" (UNTIL|EXPIRE AT|TIL) ([0-9]+):?([0-5][0-9])? (AM|PM) ([A-Z]+)"
 )
-UNTIL2 = re.compile(r" (UNTIL|TIL|EXPIRE AT|THROUGH) ([0-9].*?)\.* ")
+UNTIL2 = re.compile(r" (UNTIL|TIL|EXPIRE AT|THROUGH) ([A-Z0-9].*?)\.* ")
+SOURCES = {"SV": "SVR", "TO": "TOR", "FF": "FFW"}
 
 
 def compute_until(v):
@@ -77,13 +91,17 @@ def compute_until(v):
     ).astimezone(timezone.utc)
 
 
-def create_event(dbconn, v, endts):
+def create_event(dbconn, v, endts, phenomena):
     """Create an event!"""
     cursor = dbconn.cursor(cursor_factory=DictCursor)
     cursor.execute(
         f"SELECT max(eventid) + 1 from warnings_{v.valid.year} "
-        "where phenomena = 'FF' and significance = 'W' and wfo = %s",
-        (v.source[1:],),
+        "where phenomena = %s and significance = %s and wfo = %s",
+        (
+            phenomena,
+            "W",
+            v.source[1:],
+        ),
     )
     newetn = cursor.fetchone()[0]
     if newetn is None:
@@ -97,7 +115,7 @@ def create_event(dbconn, v, endts):
                 "O",
                 "NEW",
                 v.source,
-                "FF",
+                phenomena,
                 "W",
                 newetn,
                 v.valid.strftime(FMT),
@@ -106,6 +124,9 @@ def create_event(dbconn, v, endts):
         )
     )
     v.segments[0].vtec[0].year = v.valid.year
+    # Yikes
+    v.segments[0].sbw = v.segments[1].sbw
+    v.segments[0].giswkt = v.segments[1].giswkt
     v.sql(cursor)
     print(f"{v.segments[0].vtec[0].get_id(None)} {v.valid} {endts}")
     cursor.close()
@@ -119,6 +140,7 @@ def create_event(dbconn, v, endts):
                 "eventid": newetn,
                 "issue": v.valid,
                 "expire": endts,
+                "phenomena": phenomena,
             }
         )
     return res
@@ -127,30 +149,35 @@ def create_event(dbconn, v, endts):
 def main(argv):
     """Go Main Go."""
     year = int(argv[1])
-    afosdb = get_dbconn("afos")
+    wfo = argv[2]
+    phenomena = argv[3]
+    # allows for local debugging
+    afosdb = get_dbconn("afos", host="172.16.170.1")
     postgisdb = get_dbconn("postgis")
-
-    events = read_sql(
-        "SELECT ugc, wfo, eventid, issue, expire "
-        f"from warnings_{year} "
-        "WHERE phenomena = 'FF' and significance = 'W' "
-        "ORDER by wfo, eventid",
-        postgisdb,
-        index_col=None,
-    )
+    with get_sqlalchemy_conn("postgis") as conn:
+        events = pd.read_sql(
+            text(
+                f"""
+            SELECT ugc, wfo, eventid, issue, expire
+            from warnings_{year}
+            WHERE phenomena = :ph and
+            significance = 'W' and wfo = :wfo ORDER by wfo, eventid
+            """
+            ),
+            conn,
+            params={"wfo": wfo, "ph": phenomena},
+            index_col=None,
+        )
     cursor = afosdb.cursor()
     cursor.execute(
-        "SELECT data, entered from products where substr(pil, 1, 3) = 'FFW' "
-        f"and entered > '{year}-01-01' and entered < '{year + 1}-01-01' "
-        " and (data ~* 'FLASH FLOOD EMERGENCY' or "
-        "data ~* 'FLASH FLOOD WARNING') "
-        "ORDER by entered ASC"
+        f"""
+        SELECT data, entered from products
+        where pil in ('{SOURCES[phenomena]}{wfo}')
+        and entered > '{year}-01-01' and entered < '{year + 1}-01-01'
+        ORDER by entered ASC
+        """
     )
     for row in cursor:
-        if row[0].find("TEST FLASH FLOOD WARNING") > -1:
-            continue
-        if row[0].find("TEST TEST") > -1:
-            continue
         try:
             v = parser(row[0], utcnow=row[1])
             endts = compute_until(v)
@@ -172,11 +199,11 @@ def main(argv):
             ]
             misses.append(df.empty)
         if any(misses):
-            res = create_event(postgisdb, v, endts)
+            res = create_event(postgisdb, v, endts, phenomena)
             if res is None:
                 continue
             # Add event to events so to prevent susequent dups
-            events = events.append(res)
+            events = pd.concat([events, pd.DataFrame(res)])
 
 
 if __name__ == "__main__":
