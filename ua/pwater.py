@@ -57,7 +57,7 @@ def main():
     df["pwater"] = df["pwater"] / 25.4
 
     (fig, ax) = figure_axes(
-        title="Omaha 7 PM Preciptable Water + Next 12 Hour Rainfall during May",
+        title="Omaha 7 PM Precipitable Water + Next 12 Hour Rainfall during May",
         subtitle=(f"{df['date'].min():%Y/%m/%d} to " "2023-05-23"),
         figsize=(8.0, 6.0),
     )
@@ -76,7 +76,7 @@ def main():
     ax2 = ax.twinx()
     ax2.plot(x, y, label="Mean Estimate", color="g")
     ax2.set_ylim(0, 60)
-    ax2.set_ylabel("Precent Days with Precip", color="g")
+    ax2.set_ylabel("Percent Days with Precip", color="g")
     ax.set_ylim(-0.02, 6)
     ax.legend()
     ax.grid(True)
