@@ -27,7 +27,7 @@ def main():
     """Go Main Go..."""
     futures = set()
     progress = tqdm()
-    with open("iemssl-20230526", encoding="utf-8") as fh:
+    with open("iem.log", encoding="utf-8") as fh:
         with ThreadPoolExecutor(max_workers=16) as executor:
             for line in fh:
                 tokens = line.split()
