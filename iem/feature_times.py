@@ -1,53 +1,41 @@
 """Feature analysis."""
 
-import numpy as np
-
-from pandas.io.sql import read_sql
-from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
+import pandas as pd
+from pyiem.plot import figure_axes
+from pyiem.util import get_sqlalchemy_conn
 
 
 def main():
     """GO Main Go."""
-    pgconn = get_dbconn("mesosite")
-
-    df = read_sql(
-        """
-        SELECT valid, good, bad, abstain,
-        extract(hour from valid) as hour,
-        extract(minute from valid) as minute from feature ORDER by valid
-    """,
-        pgconn,
-        index_col="valid",
-    )
+    with get_sqlalchemy_conn("mesosite") as conn:
+        df = pd.read_sql(
+            """
+            SELECT valid, good, bad, abstain,
+            extract(hour from valid) as hour,
+            extract(minute from valid) as minute from feature
+            where good > 0 ORDER by valid
+        """,
+            conn,
+            index_col="valid",
+        )
     df["minutes"] = df["hour"] * 60 + df["minute"]
     df["total"] = df["good"] + df["bad"] + df["abstain"]
     df["favorable"] = df["good"] / df["total"] * 100.0
 
-    (fig, ax) = plt.subplots(2, 1, sharex=True)
+    (fig, ax) = figure_axes(
+        title="IEM Daily Feature Favorable Voting Percentage",
+        figsize=(8, 6),
+    )
 
-    ax[0].scatter(df.index.values, df["minutes"].values)
-    ax[0].set_ylim(0, 24 * 60)
-    ax[0].set_yticks(np.arange(0, 8) * 180)
-    ax[0].set_yticklabels(
-        ["Mid", "3 AM", "6 AM", "9 AM", "Noon", "3 PM", "6 PM", "9 PM"]
-    )
-    ax[0].set_title(
-        ("4,500 IEM Daily Features :: %s - 21 Aug 2019")
-        % (df.index.values[0].strftime("%-d %b %Y"))
-    )
-    ax[0].grid(True)
-    ax[0].set_ylabel("Posted Time")
-
-    ax[1].scatter(
-        df.index.values, df["favorable"].values, color="b", label="Good"
-    )
-    # ax[1].scatter(dates2, abstain, color='tan', label="Abstain")
-    ax[1].set_ylim(0, 100)
-    ax[1].grid(True)
-    ax[1].set_ylabel("Good Votes (Percent of Total)")
-    ax[1].set_xlim(df.index.values[0], df.index.values[-1])
-    ax[1].set_xlabel(
+    y = df["favorable"].rolling(60).mean()
+    ax.plot(df.index.values, y, color="b", label="Trailing 60 day average")
+    ax.legend(loc=4)
+    ax.set_ylim(0, 100)
+    ax.set_yticks([0, 5, 10, 25, 50, 75, 90, 95, 100])
+    ax.grid(True)
+    ax.set_ylabel("Good Votes (Percent of Total)")
+    ax.set_xlim(df.index.values[0], df.index.values[-1])
+    ax.set_xlabel(
         (
             "Total Votes; Good: %s (%.1f%%) "
             "Bad: %s (%.1f%%) Abstain: %s (%.1f%%)"
@@ -62,7 +50,7 @@ def main():
         )
     )
 
-    fig.savefig("test.png")
+    fig.savefig("230616.png")
 
 
 if __name__ == "__main__":
