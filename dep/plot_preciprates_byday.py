@@ -2,6 +2,9 @@
 import calendar
 
 from matplotlib import rcParams
+from metpy.units import units
+from pyiem.dep import read_cli
+from pyiem.plot import figure_axes
 
 rcParams.update(
     {
@@ -9,10 +12,6 @@ rcParams.update(
         "font.sans-serif": ["Liberation Sans"],
     }
 )
-
-from metpy.units import units
-from pyiem.dep import read_cli
-from pyiem.plot import figure_axes
 
 
 def main():
@@ -26,7 +25,7 @@ def main():
         logo="dep",
         figsize=(8, 6),
         title=(
-            "DEP 2007-2020 Maximum Precipitation Rate\n"
+            "DEP 2007-2023 Maximum Precipitation Rate\n"
             "For Ames, Iowa (41.98N 93.61W), March thru July"
         ),
     )
