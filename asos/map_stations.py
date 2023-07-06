@@ -53,13 +53,13 @@ def main():
     i = 0
     for dt in pd.date_range(
         "2023/05/01",
-        "2023/05/22 20:00",
+        "2023/07/06 09:00",
         freq="1H",
         tz=ZoneInfo("America/Chicago"),
     ):
         print(dt)
         mp = run(dt)
-        mp.fig.savefig(f"frame{i:04.0f}.png")
+        mp.fig.savefig(f"frames/frame{i:04.0f}.png")
         mp.close()
         i += 1
 

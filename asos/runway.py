@@ -6,8 +6,8 @@ from pyiem.util import get_dbconn
 
 def main():
     """Go Main Go."""
-    ASOS = get_dbconn("asos")
-    acursor = ASOS.cursor()
+    pgconn = get_dbconn("asos")
+    acursor = pgconn.cursor()
 
     acursor.execute(
         "select valid, metar from alldata where station = 'DSM' and "

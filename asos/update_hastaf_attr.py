@@ -1,4 +1,4 @@
-"""Updates the database table denoting if station `HAS1TAF`"""
+"""Updates the database table denoting if station `HASTAF`"""
 
 from pyiem.util import get_dbconn, logger
 

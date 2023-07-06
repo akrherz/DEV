@@ -1,6 +1,6 @@
 """A table of comparables to extremes of 3 Oct 2018."""
 
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.network import Table as NetworkTable
 from pyiem.util import get_sqlalchemy_conn
 
@@ -9,7 +9,7 @@ def main():
     """Go!"""
     nt = NetworkTable("IA_ASOS")
     with get_sqlalchemy_conn("iem") as conn:
-        df = read_sql(
+        df = pd.read_sql(
             """
         SELECT id, valid, tmpf::int as tmpf, dwpf::int as dwpf,
         sknt from current_log c JOIN stations t
@@ -22,7 +22,7 @@ def main():
 
     for _, row in df.iterrows():
         with get_sqlalchemy_conn("asos") as conn:
-            df2 = read_sql(
+            df2 = pd.read_sql(
                 """
                 SELECT valid, tmpf, dwpf, sknt from alldata WHERE
                 station = %s and valid < '2018-10-03' and tmpf::int >= %s
