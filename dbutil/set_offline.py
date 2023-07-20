@@ -1,7 +1,7 @@
 """Trim back sites that are now offline."""
 
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn, logger
+import pandas as pd
+from pyiem.util import get_dbconn, get_sqlalchemy_conn, logger
 
 LOG = logger()
 IEM = get_dbconn("iem")
@@ -13,7 +13,7 @@ def workflow(iemid, row):
     icursor = IEM.cursor()
     # Double check that we have no data coming from other sources
     icursor.execute(
-        "SELECT count(*) from summary_2021 where iemid = %s and "
+        "SELECT count(*) from summary_2023 where iemid = %s and "
         "(max_tmpf is not null or min_tmpf is not null or pday is not null "
         "or snow is not null)",
         (iemid,),
@@ -36,7 +36,7 @@ def workflow(iemid, row):
 
     icursor = IEM.cursor()
     icursor.execute(
-        "DELETE from summary_2021 where iemid = %s",
+        "DELETE from summary_2023 where iemid = %s",
         (iemid,),
     )
     LOG.info(
@@ -51,15 +51,16 @@ def workflow(iemid, row):
 
 def main():
     """Go Main Go"""
-    df = read_sql(
-        """
-        SELECT s.iemid, id, network from stations s JOIN current c ON
-        (s.iemid = c.iemid) where c.valid < '2019-01-01' and
-        s.network ~* 'COOP' ORDER by id
-    """,
-        IEM,
-        index_col="iemid",
-    )
+    with get_sqlalchemy_conn("iem") as conn:
+        df = pd.read_sql(
+            """
+            SELECT s.iemid, id, network from stations s JOIN current c ON
+            (s.iemid = c.iemid) where c.valid < '2022-06-01' and
+            s.network ~* 'COOP' ORDER by id
+        """,
+            conn,
+            index_col="iemid",
+        )
     for iemid, row in df.iterrows():
         workflow(iemid, row)
 

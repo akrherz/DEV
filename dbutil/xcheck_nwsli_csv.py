@@ -1,7 +1,6 @@
 """See if we have metadata in a local CSV file."""
 import pandas as pd
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn, get_dbconnstr
+from pyiem.util import get_dbconn, get_sqlalchemy_conn
 
 CSVFN = "/home/akrherz/Downloads/nwsli_database.csv"
 
@@ -57,11 +56,12 @@ def dowork(df, nwsli):
 
 def main():
     """Go Main Go!"""
-    udf = read_sql(
-        "SELECT distinct nwsli, 1 as col from unknown ORDER by nwsli",
-        get_dbconnstr("hads"),
-        index_col="nwsli",
-    )
+    with get_sqlalchemy_conn("hads") as conn:
+        udf = pd.read_sql(
+            "SELECT distinct nwsli, 1 as col from unknown ORDER by nwsli",
+            conn,
+            index_col="nwsli",
+        )
     print(f"Found {len(udf.index)} unknown entries")
     df = pd.read_csv(CSVFN, low_memory=False)
     for nwsli, _row in udf.iterrows():
