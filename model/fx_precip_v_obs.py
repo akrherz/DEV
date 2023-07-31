@@ -1,12 +1,10 @@
 """An old plot."""
-import datetime
 
-import numpy
-import pytz
+import numpy as np
 
 import matplotlib.dates as mdates
-from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
+from pyiem.plot import figure
+from pyiem.util import get_dbconn, utc
 
 
 def main():
@@ -16,15 +14,17 @@ def main():
     MOS = get_dbconn("mos")
     mcursor = MOS.cursor()
 
-    jan1 = datetime.datetime(2013, 1, 1)
-    jan1 = jan1.replace(tzinfo=pytz.UTC)
-    now = datetime.datetime.utcnow()
-    now = now.replace(tzinfo=pytz.UTC)
-    hourly_obs = numpy.zeros((24 * 367), "f")
+    jan1 = utc(2023, 1, 1)
+    now = utc()
+    hourly_obs = np.zeros((24 * 367), "f")
 
+    icursor.execute("SET TIME ZONE 'UTC'")
     icursor.execute(
-        "SELECT valid, phour from hourly_2013 WHERE station = 'DVN' "
-        "and phour > 0"
+        """
+        SELECT valid, phour from hourly_2023 h JOIN stations t on
+        (h.iemid = t.iemid) WHERE t.id = 'DSM' and t.network = 'IA_ASOS'
+        and phour > 0
+        """
     )
     for row in icursor:
         delta = row[0] - jan1
@@ -37,8 +37,8 @@ def main():
     fx = []
     mcursor.execute(
         """
-    select runtime, sum(precip), max(ftime) from model_gridpoint_2013
-    WHERE station = 'KDVN'
+    select runtime, sum(precip), max(ftime) from model_gridpoint_2023
+    WHERE station = 'KDSM'
     and model = 'NAM' and precip < 100
     GROUP by runtime ORDER by runtime ASC
     """
@@ -59,28 +59,29 @@ def main():
             xvals.append(2.5)
             xbot.append(-1)
         else:
-            diffs.append((row[1] / 25.4) - numpy.sum(hourly_obs[idx:idx2]))
+            diffs.append((row[1] / 25.4) - np.sum(hourly_obs[idx:idx2]))
         dates.append(row[0])
         fx.append(row[1] / 25.4)
 
-    (fig, ax) = plt.subplots(2, 1, sharex=True)
-    ax[0].xaxis.set_major_locator(mdates.MonthLocator(interval=1))
-    ax[0].xaxis.set_major_formatter(mdates.DateFormatter("%-d %b\n%Y"))
-    ax[0].bar(dates, fx, width=0.25, fc="b", ec="b")
-    ax[0].set_ylabel("Model Forecast [inch]")
-    ax[0].set_title("NAM 96 Hour Gridded Precipitation Forecast for Davenport")
-    ax[0].grid(True)
+    print(dates)
+    fig = figure()
+    ax = fig.add_axes([0.1, 0.6, 0.8, 0.3])
+    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=1))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%-d %b\n%Y"))
+    ax.bar(dates, fx, width=0.25, fc="b", ec="b")
+    ax.set_ylabel("Model Forecast [inch]")
+    ax.set_title("NAM 96 Hour Gridded Precipitation Forecast for Davenport")
+    ax.grid(True)
 
-    bars = ax[1].bar(dates, diffs, width=0.25, ec="b", fc="b")
-    ax[1].bar(
-        xdates, xvals, bottom=xbot, width=0.25, ec="#EEEEEE", fc="#EEEEEE"
-    )
-    ax[1].set_ylabel("Model - Obs Difference [inch]")
+    ax = fig.add_axes([0.1, 0.1, 0.8, 0.3])
+    bars = ax.bar(dates, diffs, width=0.25, ec="b", fc="b")
+    ax.bar(xdates, xvals, bottom=xbot, width=0.25, ec="#EEEEEE", fc="#EEEEEE")
+    ax.set_ylabel("Model - Obs Difference [inch]")
     for i, mybar in enumerate(bars):
         if diffs[i] < 0:
             mybar.set_facecolor("r")
             mybar.set_edgecolor("r")
-    ax[1].grid(True)
+    ax.grid(True)
 
     fig.savefig("test.png")
 

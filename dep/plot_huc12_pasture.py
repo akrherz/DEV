@@ -41,10 +41,9 @@ def main():
             index_col="huc_12",
         )
     # ratio of Pasture OFEs to Pasture Acres
-    df["ratio"] = (df["pasture_count"] / df["ofe_count"]) / (
-        df["pasture_acres"] / df["ag_acres"]
+    df["ratio"] = df["pasture_count"] - (
+        df["ofe_count"] * (df["pasture_acres"] / df["ag_acres"])
     )
-    df["ratio"] = (df["pasture_acres"] / df["ag_acres"]) * 100.0
     print(df.sort_values("ratio", ascending=False).head(5))
     minx, miny, maxx, maxy = df.to_crs(4326)["simple_geom"].total_bounds
     mp = MapPlot(
@@ -54,7 +53,8 @@ def main():
         north=maxy,
         west=minx,
         east=maxx,
-        title=("Percentage of HUC12 ISAG Acres with Pasture Landuse"),
+        title=("Excessive number of Pasture OFEs per HUC12"),
+        subtitle=f"Domain Total: {df['ratio'].sum():.0f} OFEs",
         logo="dep",
         nocaption=True,
         continentalcolor="white",
@@ -63,8 +63,10 @@ def main():
     cmap = get_cmap("RdBu")
     cmap.set_bad("#000000")
     cmap.set_over("#ffff00")
+    cmap.set_under("#ff00ff")
     # bins = [0, 0.1, 0.2, 0.5, 0.7, 1, 1.2, 1.5, 2, 3, 5]
-    bins = [1, 5, 10, 25, 50, 75, 90, 95, 99]
+    # bins = [1, 5, 10, 25, 50, 75, 90, 95, 99]
+    bins = [-50, -25, -10, -5, 0, 5, 10, 25, 50]
     norm = mpcolors.BoundaryNorm(bins, cmap.N)
 
     df.to_crs(mp.panels[0].crs).plot(
@@ -73,7 +75,7 @@ def main():
         color=cmap(norm(df["ratio"])),
         zorder=Z_POLITICAL,
     )
-    mp.draw_colorbar(bins, cmap, norm, title="Percentage", extend="max")
+    mp.draw_colorbar(bins, cmap, norm, title="Count", extend="both")
 
     mp.fig.savefig("test.png")
 

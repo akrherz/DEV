@@ -17,13 +17,10 @@ def main():
             text(
                 """
                 with data as (
-                    select huc_12, sum(qc_precip) as precip,
-                    sum(avg_runoff) as runoff from results_by_huc12
-                    where scenario = 0 and valid in
-                    ('2023-02-26', '2023-02-27')
-                    GROUP by huc_12
+                    select huc_12, count(*) from flowpaths where
+                    scenario = 0 group by huc_12
                 )
-                select simple_geom, h.huc_12, precip, runoff from huc12 h
+                select simple_geom, h.huc_12, count from huc12 h
                 LEFT JOIN data d on (h.huc_12 = d.huc_12) WHERE h.scenario = 0
                 """
             ),
@@ -32,40 +29,37 @@ def main():
             index_col="huc_12",
         )
     # df = df.fillna(0)
-    df["ratio"] = df["runoff"] / df["precip"] * 100.0
-    df2 = df[df["precip"] >= 5]
-    minx, miny, maxx, maxy = df2.to_crs(4326)["simple_geom"].total_bounds
+    # df["ratio"] = df["runoff"] / df["precip"] * 100.0
+    # df2 = df[df["precip"] >= 5]
+    minx, miny, maxx, maxy = df.to_crs(4326)["simple_geom"].total_bounds
     mp = MapPlot(
         apctx={"_r": "43"},
-        sector="iowa",
+        sector="custom",
         south=miny,
         north=maxy,
         west=minx,
         east=maxx,
-        title=(
-            "26-27 Feb 2023 Daily Erosion Project (DEP) "
-            "Percent Runoff vs Precip"
-        ),
-        subtitle="for DEP HUC12s with at least 5mm of precipitation",
+        title=("26 Jul 2023 :: Flowpath counts by HUC12"),
+        # subtitle="for DEP HUC12s with at least 5mm of precipitation",
         logo="dep",
         nocaption=True,
         continentalcolor="white",
         stateborderwidth=3,
     )
-    cmap = get_cmap("RdBu")
+    cmap = get_cmap("jet")
     cmap.set_bad("#000000")
     cmap.set_over("#ffff00")
-    bins = np.arange(0, 100.1, 10.0)
+    bins = np.arange(0, 500.1, 50.0)
     norm = mpcolors.BoundaryNorm(bins, cmap.N)
 
-    df2.to_crs(mp.panels[0].crs).plot(
+    df.to_crs(mp.panels[0].crs).plot(
         aspect=None,
         ax=mp.panels[0].ax,
-        color=cmap(norm(df2["ratio"])),
+        color=cmap(norm(df["count"])),
         zorder=Z_POLITICAL,
     )
     mp.drawcounties()
-    mp.draw_colorbar(bins, cmap, norm, title="Percent Runoff", extend="max")
+    mp.draw_colorbar(bins, cmap, norm, title="count", extend="max")
 
     mp.fig.savefig("test.png")
 
