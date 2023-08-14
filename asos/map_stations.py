@@ -1,9 +1,9 @@
 """map of dates."""
 from datetime import timedelta
-from zoneinfo import ZoneInfo
 
 import numpy as np
 from sqlalchemy import text
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 from pyiem.plot import MapPlot, get_cmap

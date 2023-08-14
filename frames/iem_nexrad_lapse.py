@@ -1,5 +1,6 @@
 """Pretty things."""
 import datetime
+
 from zoneinfo import ZoneInfo
 
 import geopandas as gpd

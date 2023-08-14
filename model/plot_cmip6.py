@@ -1,8 +1,8 @@
 """A quick and dirty CMIP6 plot."""
 import datetime
-from zoneinfo import ZoneInfo
 
 import numpy as np
+from zoneinfo import ZoneInfo
 
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import ncopen, utc

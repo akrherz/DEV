@@ -1,9 +1,9 @@
 """Map of pressure fluctation."""
 from datetime import timedelta, timezone
-from zoneinfo import ZoneInfo
 
 import numpy as np
 from tqdm import tqdm
+from zoneinfo import ZoneInfo
 
 import matplotlib.colors as mpcolors
 import pandas as pd
