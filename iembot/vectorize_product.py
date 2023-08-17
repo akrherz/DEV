@@ -48,36 +48,27 @@ def main(argv):
             rooms.append(row[0])
         for rm in rooms:
             cursor.execute(
-                "INSERT into iembot_room_subscriptions (roomname, channel) "
-                "VALUES (%s,%s)",
+                """
+                select channel from iembot_room_subscriptions where
+                roomname = %s and channel = %s
+""",
                 (rm, channel),
             )
-            room_adds += 1
-
-    # Update twitter
-    twitter_adds = 0
-    for channel in add_channels:
-        cursor.execute(
-            "SELECT screen_name from iembot_twitter_subs WHERE channel = %s",
-            (channel[3:],),
-        )
-        pages = []
-        for row in cursor:
-            pages.append(row[0])
-        for page in pages:
-            cursor.execute(
-                "INSERT into iembot_twitter_subs (screen_name, channel) "
-                "VALUES (%s,%s)",
-                (page, channel),
-            )
-            twitter_adds += 1
+            if cursor.rowcount == 0:
+                cursor.execute(
+                    """
+                    INSERT into iembot_room_subscriptions (roomname, channel)
+                    VALUES (%s,%s)
+                    """,
+                    (rm, channel),
+                )
+                room_adds += 1
 
     LOG.info(
-        "%s channel_adds %s  room_adds %s twitter_adds %s",
+        "%s channel_adds %s  room_adds %s",
         awipsid,
         channel_adds,
         room_adds,
-        twitter_adds,
     )
     cursor.close()
     pgconn.commit()

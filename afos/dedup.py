@@ -5,35 +5,32 @@ import sys
 from tqdm import tqdm
 
 import pandas as pd
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn, noaaport_text
+from pyiem.util import get_dbconn, get_sqlalchemy_conn, noaaport_text
 
 
 def dotable(date):
     """Go main go"""
     ts1 = date.strftime("%Y-%m-%d 00:00+00")
     ts2 = date.strftime("%Y-%m-%d 23:59+00")
-    table = "products_%s_%s" % (
-        date.year,
-        "0106" if date.month < 7 else "0712",
-    )
+    table = f"products_{date.year}_{'0106' if date.month < 7 else '0712'}"
     pgconn = get_dbconn("afos")
     cursor = pgconn.cursor()
-    df = read_sql(
-        f"""
-        WITH data as (
-            SELECT entered, pil, source, count(*),
-            max(case when wmo = 'TTAAOO' then 'AAAA00' else wmo end) as
-            max_wmo from {table}
-            WHERE source is not null and wmo is not null and pil is not null
-            and entered >= %s and entered <= %s
-            GROUP by entered, pil, source)
-        select * from data where count > 1
-    """,
-        pgconn,
-        params=(ts1, ts2),
-        index_col=None,
-    )
+    with get_sqlalchemy_conn("afos") as conn:
+        df = pd.read_sql(
+            f"""
+            WITH data as (
+                SELECT entered, pil, source, count(*),
+                max(case when wmo = 'TTAAOO' then 'AAAA00' else wmo end) as
+                max_wmo from {table}
+                WHERE source is not null and wmo is not null and pil is not null
+                and entered >= %s and entered <= %s
+                GROUP by entered, pil, source)
+            select * from data where count > 1
+        """,
+            conn,
+            params=(ts1, ts2),
+            index_col=None,
+        )
     inserts = 0
     deletes = 0
     considered = 0
@@ -134,7 +131,7 @@ def dotable(date):
 def main(argv):
     """Do Main"""
     year = int(argv[1])
-    for date in pd.date_range(f"{year}/01/01", f"{year}/12/31"):
+    for date in pd.date_range(f"{year}/08/26", f"{year}/08/26"):
         dotable(date)
 
 
