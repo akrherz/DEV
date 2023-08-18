@@ -17,11 +17,15 @@ def main():
             text(
                 """
                 with data as (
-                    select huc_12, count(*) from flowpaths where
-                    scenario = 0 group by huc_12
+                    select huc12, sum(case when
+                    management = '11111111111111111' then acres else 0 end)
+                    , sum(acres) as total
+                    from fields where
+                    scenario = 0 and isag group by huc12
                 )
-                select simple_geom, h.huc_12, count from huc12 h
-                LEFT JOIN data d on (h.huc_12 = d.huc_12) WHERE h.scenario = 0
+                select simple_geom, h.huc_12, sum / total * 100 as percent
+                from huc12 h
+                LEFT JOIN data d on (h.huc_12 = d.huc12) WHERE h.scenario = 0
                 """
             ),
             conn,
@@ -39,7 +43,7 @@ def main():
         north=maxy,
         west=minx,
         east=maxx,
-        title=("26 Jul 2023 :: Flowpath counts by HUC12"),
+        title=("17 Aug 2023 :: Percentage of isAG acres in No-Till by HUC12"),
         # subtitle="for DEP HUC12s with at least 5mm of precipitation",
         logo="dep",
         nocaption=True,
@@ -49,17 +53,17 @@ def main():
     cmap = get_cmap("jet")
     cmap.set_bad("#000000")
     cmap.set_over("#ffff00")
-    bins = np.arange(0, 500.1, 50.0)
+    bins = np.arange(0, 100.1, 20.0)
     norm = mpcolors.BoundaryNorm(bins, cmap.N)
 
     df.to_crs(mp.panels[0].crs).plot(
         aspect=None,
         ax=mp.panels[0].ax,
-        color=cmap(norm(df["count"])),
+        color=cmap(norm(df["percent"])),
         zorder=Z_POLITICAL,
     )
     mp.drawcounties()
-    mp.draw_colorbar(bins, cmap, norm, title="count", extend="max")
+    mp.draw_colorbar(bins, cmap, norm, title="percent", extend="neither")
 
     mp.fig.savefig("test.png")
 
