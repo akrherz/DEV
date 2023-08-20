@@ -1,7 +1,5 @@
 """Shrug."""
-import datetime
 
-import matplotlib.pyplot as plt
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn
@@ -16,51 +14,62 @@ def main():
 
     cursor.execute(
         """
-    WITH lastdays as (
-    SELECT station, year, min(extract(doy from day)) from alldata_ia where
-    month > 7 and low <= 28 and year > 1950 and year < 2015
-    GROUP by station, year)
-
-    SELECT station, avg(min), count(*) from lastdays GROUP by station
+    with data as (
+        select station, max(case when high > 99 then day else null end),
+        max(day) as lob from alldata_ia GROUP by station order by max asc)
+    select station, max from data where lob > '2023-08-01'::date
+    and max is not null
     """
     )
 
     lats = []
     lons = []
     vals = []
-    dates = []
     sites = []
+    colors = []
+    mp = MapPlot(
+        title=r"Most Recent 100$^\circ$F Daily High Temperature",
+        subtitle="based on long term climate sites",
+        continentalcolor="white",
+    )
+    mp.ax.set_position([0.02, 0.07, 0.8, 0.8])
+    y = 0.87
+    mp.fig.text(0.83, y, "Selected Sites")
+    y -= 0.04
     for row in cursor:
         station = row[0]
-        if station == "IA0000" or station[2] == "C":
+        if station == "IA0000" or station[2] in ["C", "D"]:
             continue
         if station not in nt.sts:
-            continue
-        if station in ["IA3909", "IA0364", "IA3473", "IA1394"]:
             continue
         sites.append(station)
         lats.append(nt.sts[station]["lat"])
         lons.append(nt.sts[station]["lon"])
-        vals.append(float(row[1]))
-        d = datetime.date(2015, 1, 1) + datetime.timedelta(days=int(row[1]))
-        dates.append(d.strftime("%-d %b"))
+        vals.append(row[1].strftime("%-m/%d/%y"))
+        color = "k"
+        if row[1].year < 1993:
+            color = "r"
+        elif row[1].year < 2013:
+            color = "b"
+        colors.append(color)
 
-    rng = range(int(min(vals) - 2), int(max(vals) + 4), 4)
-    labels = []
-    for i in rng:
-        dt = datetime.date(2015, 1, 1) + datetime.timedelta(days=i)
-        labels.append(dt.strftime("%-d %b"))
+        def aa(sid):
+            return nt.sts[sid]["name"].replace(" Area", "")
 
-    mp = MapPlot(
-        title=r"Average First Date of Low Temperature At or Below 28$^\circ$F",
-        subtitle="based on stations with data between 1951-2014",
-    )
-    mp.contourf(
-        lons, lats, vals, rng, clevlabels=labels, cmap=plt.get_cmap("jet")
+        if station[2] == "T" or row[1].year < 2000:
+            mp.fig.text(0.83, y, f"{row[1]:%-m/%d/%y} {aa(station)}")
+            y -= 0.04
+
+    mp.plot_values(
+        lons,
+        lats,
+        vals,
+        labelbuffer=1,
+        color=colors,
     )
     mp.drawcounties()
     # m.plot_values(lons, lats, dates, fmt='%s', labels=sites)
-    mp.postprocess(filename="test.png")
+    mp.postprocess(filename="230821.png")
 
 
 if __name__ == "__main__":
