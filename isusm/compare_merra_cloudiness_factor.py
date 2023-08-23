@@ -34,9 +34,10 @@ def do(station):
     model = []
     minvalid = datetime.date(2013, 3, 1)
     maxvalid = datetime.date(1980, 1, 1)
+    # merra_srad cs is gone
     ccursor.execute(
-        """SELECT day, merra_srad, merra_srad_cs from
-      alldata_ia where merra_srad_cs > 0 and merra_srad > 0
+        """SELECT day, merra_srad from
+      alldata_ia where merra_srad > 0
       and station = %s """,
         (csite,),
     )

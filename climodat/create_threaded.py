@@ -84,10 +84,10 @@ def main(argv):
         cursor.execute(
             f"INSERT into {table}(station, day, high, low, precip, snow, "
             "sday, year, month, snowd, precip_estimated, narr_srad, "
-            "merra_srad, merra_srad_cs, hrrr_srad, temp_estimated, "
+            "merra_srad, hrrr_srad, temp_estimated, "
             "temp_hour, precip_hour) SELECT %s, day, high, low, precip, "
             "snow, sday, year, month, snowd, precip_estimated, narr_srad, "
-            "merra_srad, merra_srad_cs, hrrr_srad, temp_estimated, "
+            "merra_srad, hrrr_srad, temp_estimated, "
             f"temp_hour, precip_hour from {table} WHERE station = %s and "
             "day >= %s and day < %s",
             (
