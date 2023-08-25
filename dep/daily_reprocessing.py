@@ -49,11 +49,12 @@ def edit_clifiles():
     # Pick a random CLI point outside the midwest, so to target dates.
     attempt = 0
     clifn = None
-    while attempt < 100:
+    while attempt < 1000:
         attempt += 1
-        lon = WEST + 0.25 * random.randint(0, (EAST - WEST) * 4)
-        lat = SOUTH + 0.25 * random.randint(0, (NORTH - SOUTH) * 4)
-        if -103 < lon < -88 or 38 < lat < 49:
+        lon = WEST + 0.1 * random.randint(0, (EAST - WEST) * 10)
+        lat = SOUTH + 0.1 * random.randint(0, (NORTH - SOUTH) * 10)
+        # Focus on Texas and points east for now
+        if lon < -107 or lat > 37:
             continue
         clifn = get_cli_fname(lon, lat)
         if os.path.isfile(clifn):
@@ -62,7 +63,8 @@ def edit_clifiles():
     df = read_cli(clifn)
     today = datetime.date.today()
     # Find highest precip entries with only two breakpoints
-    df = df[df["bpcount"] == 2].sort_values("pcpn", ascending=False)
+    # df = df[df["bpcount"] == 2].sort_values("pcpn", ascending=False)
+    df = df.sort_values("rad", ascending=True)
     days = []
     for dt, row in df.iterrows():
         if dt >= pd.Timestamp(today):
@@ -72,17 +74,19 @@ def edit_clifiles():
         # If this file was modified after 5 July 2022, we skip it
         if os.path.isfile(fn):
             mt = datetime.datetime.fromtimestamp(os.path.getmtime(fn))
-            if mt > datetime.datetime(2022, 7, 5):
+            # Our floor for when previous reruns should still be valid
+            if mt > datetime.datetime(2023, 7, 1):
                 LOG.warning("Skipping %s as it was modified %s", dt, mt)
                 continue
         LOG.warning(
-            "do %s precip: %.2f bpcount: %.0f",
+            "do %s rad: %s precip: %.2f bpcount: %.0f",
             dt,
+            row["rad"],
             row["pcpn"],
             row["bpcount"],
         )
         days.append(dt)
-        if len(days) >= 10:
+        if len(days) >= 13:
             break
     # write a log file for what work we did
     with open(SAVEFILE, "w", encoding="utf-8") as fh:
