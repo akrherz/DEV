@@ -49,8 +49,8 @@ def main():
                             ),
                         ]
                     )
-                    fps[j][0].write("1980123118\n")
-                    fps[j][1].write("1980123118\n")
+                    fps[j][0].write("19810101,60,precipitation\n")
+                    fps[j][1].write("19810101,60,temperature\n")
 
             first_run = False
             for i in range(0, nc.variables["time"].shape[0]):
