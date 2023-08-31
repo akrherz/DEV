@@ -20,6 +20,7 @@ def create_meta_alias(meta, oldid, newid):
             stmt, {"newid": meta.loc[newid, "iemid"], "oldid": oldid}
         )
         print(f"{res.rowcount} rows inserted into WAS attr for {newid}")
+        conn.commit()
 
 
 def check_overlaps(oldid, newid):
@@ -50,6 +51,7 @@ def update_asosdb(oldid, newid):
         res = conn.execute(stmt, {"newid": newid, "oldid": oldid})
         # print the number of rows updated
         print(f"{res.rowcount} rows updated in asos db")
+        conn.commit()
 
 
 def update_iemaccess(meta, oldid, newid):
@@ -94,6 +96,7 @@ def update_iemaccess(meta, oldid, newid):
             },
         )
         print(f"{res.rowcount} rows summary rows updated {oldid} -> {newid}")
+        conn.commit()
 
 
 def main(argv):
