@@ -72,30 +72,31 @@ def update_iemaccess(meta, oldid, newid):
         print(f"{res.rowcount} rows deleted from summary for {oldid}")
         # Delete anything in the summary table that is before the new
         # archive_begin
-        stmt = text(
-            "DELETE FROM summary WHERE iemid = :newiemid and "
-            "day <= :lastdate"
-        )
-        res = conn.execute(
-            stmt,
-            {
-                "newiemid": meta.loc[newid, "iemid"],
-                "lastdate": meta.loc[oldid, "archive_end"],
-            },
-        )
-        print(f"{res.rowcount} rows deleted from summary for {newid}")
         # Update the iemid for the new id
-        stmt = text(
-            "UPDATE summary SET iemid = :newiemid WHERE iemid = :oldiemid"
-        )
-        res = conn.execute(
-            stmt,
-            {
-                "newiemid": meta.loc[newid, "iemid"],
-                "oldiemid": meta.loc[oldid, "iemid"],
-            },
-        )
-        print(f"{res.rowcount} rows summary rows updated {oldid} -> {newid}")
+        for tbl, col in zip(["summary", "hourly"], ["day", "valid"]):
+            stmt = text(
+                f"DELETE FROM {tbl} WHERE iemid = :newiemid and "
+                f"{col} <= :lastdate"
+            )
+            res = conn.execute(
+                stmt,
+                {
+                    "newiemid": meta.loc[newid, "iemid"],
+                    "lastdate": meta.loc[oldid, "archive_end"],
+                },
+            )
+            print(f"{res.rowcount} rows deleted from {tbl} for {newid}")
+            stmt = text(
+                f"UPDATE {tbl} SET iemid = :newiemid WHERE iemid = :oldiemid"
+            )
+            res = conn.execute(
+                stmt,
+                {
+                    "newiemid": meta.loc[newid, "iemid"],
+                    "oldiemid": meta.loc[oldid, "iemid"],
+                },
+            )
+            print(f"{res.rowcount} rows {tbl} rows updated {oldid} -> {newid}")
         conn.commit()
 
 
