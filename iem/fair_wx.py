@@ -235,47 +235,5 @@ def main():
     fig.savefig("test.png")
 
 
-def main2():
-    """Legacy"""
-    (fig, ax) = plt.subplots(2, 1, sharex=True)
-    bars = ax[0].bar(
-        np.arange(1880, 2016) - 0.4, avgH, edgecolor="r", facecolor="r"
-    )
-    for bar in bars:
-        if bar.get_height() < avgHH:
-            bar.set_facecolor("b")
-            bar.set_edgecolor("b")
-    ax[0].bar(
-        np.arange(1942, 1946),
-        [110, 110, 110, 110],
-        fc="#EEEEEE",
-        ec="#EEEEEE",
-    )
-    ax[0].set_xlim(1879.5, 2015.5)
-    ax[0].set_ylim(70, 100)
-    ax[0].grid(True)
-    ax[0].set_title("Iowa State Fair Average Daily Temps (Des Moines wx site)")
-    ax[0].set_ylabel("High Temperature $^{\circ}\mathrm{F}$")
-
-    bars = ax[1].bar(
-        numpy.arange(1880, 2016) - 0.4, avgL, edgecolor="r", facecolor="r"
-    )
-    for bar in bars:
-        if bar.get_height() < avgLL:
-            bar.set_facecolor("b")
-            bar.set_edgecolor("b")
-    ax[1].bar(
-        numpy.arange(1942, 1946),
-        [110, 110, 110, 110],
-        fc="#EEEEEE",
-        ec="#EEEEEE",
-    )
-    ax[1].set_ylim(50, 75)
-    ax[1].grid(True)
-    ax[1].set_ylabel("Low Temperature $^{\circ}\mathrm{F}$")
-
-    fig.savefig("test.png")
-
-
 if __name__ == "__main__":
     hours_above()

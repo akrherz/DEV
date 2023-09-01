@@ -2,11 +2,12 @@
 import datetime
 import os
 
-import gdal
 import numpy as np
+from osgeo import gdal
 
 import matplotlib.colors as mpcolors
 import matplotlib.pyplot as plt
+from pyiem.plot import MapPlot
 
 
 def main():
@@ -63,7 +64,7 @@ def main():
 
     (fig, ax) = plt.subplots(2, 1)
 
-    b = Basemap(
+    b = MapPlot(
         projection="merc",
         fix_aspect=False,
         urcrnrlat=NORTH,

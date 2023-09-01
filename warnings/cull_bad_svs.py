@@ -3,7 +3,7 @@
 Dedup some duplicated FFWs in the warnings table."""
 import sys
 
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.nws.product import TextProduct
 from pyiem.util import get_dbconn
 
@@ -16,7 +16,7 @@ def main(argv):
     pgconn = get_dbconn("postgis")
     cursor = pgconn.cursor()
     # Candidates have 2003 in their SVS
-    df = read_sql(
+    df = pd.read_sql(
         f"SELECT ctid, svs, issue from warnings_{year} WHERE "
         "phenomena = %s and significance = %s "
         "and svs ~* ' 2003'",

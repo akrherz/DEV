@@ -4,8 +4,11 @@ import datetime
 
 import iemdb
 import mx.DateTime
+import numpy
 import numpy as np
 from scipy import stats
+
+import matplotlib.pyplot as plt
 
 COOP = iemdb.connect("coop", bypass=True)
 ccursor = COOP.cursor()
@@ -60,10 +63,6 @@ for yr in range(1951, 2014):
 VTs = np.array(VTs)
 R2s = np.array(R2s)
 
-import numpy
-
-import matplotlib.pyplot as plt
-
 fig = plt.figure()
 ax = fig.add_subplot(211)
 bars = ax.bar(numpy.arange(1951, 2014) - 0.4, days)
@@ -72,7 +71,8 @@ for i, bar in enumerate(bars):
     bar.set_edgecolor(barcolors[i])
 ax.set_xlim(1950.5, 2013.5)
 ax.set_title(
-    "Ames [1951-2013, plant=1 May] Days between\n Corn VT (1135 GDD) and R2 (1660 GDD) Development Stage"
+    "Ames [1951-2013, plant=1 May] Days between\n"
+    "Corn VT (1135 GDD) and R2 (1660 GDD) Development Stage"
 )
 ax.set_ylabel("Days")
 ax.set_ylim(15, 35)

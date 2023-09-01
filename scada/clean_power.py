@@ -47,7 +47,6 @@ for row in cursor2:
     )
     (yaw, std_yaw) = cursor.fetchone()
     if yaw is None:
-        print "skipping", valid
         continue
     # find unshadowed turbines at this yaw
     turbines = unshadowed(yaw)
@@ -60,14 +59,13 @@ for row in cursor2:
     )
     row2 = cursor.fetchone()
     if row2[0] is None:
-        print "skipping", valid
         continue
     cursor.execute(
         """INSERT into cleanpower(valid, power, yawangle, windspeed)
     values (%s, %s, %s, %s)""",
         (valid, row2[0], yaw, row2[1]),
     )
-    print "%s %5.2f %6.2f %6.2f" % (valid, row2[0], yaw, row2[1])
+    print("%s %5.2f %6.2f %6.2f" % (valid, row2[0], yaw, row2[1]))
 
 
 cursor.close()

@@ -10,10 +10,6 @@ from pyiem.util import get_dbconn
 COOP = get_dbconn("coop")
 ccursor = COOP.cursor()
 
-# climate = {}
-# rs = coop.query("SELECT valid, high from climate where station = 'ia0200'").dictresult()
-# for i in range(len(rs)):
-#  climate[ rs[i]['valid'][5:] ] = rs[i]['high']
 
 days = []
 for yr in range(1880, 2013):
@@ -52,7 +48,8 @@ ax.set_xlim(1879.5, 2012.5)
 ax.set_ylim(20, 70)
 ax.set_ylabel(r"Average High Temperature $^{\circ}\mathrm{F}$")
 ax.set_title(
-    "Des Moines [1880-2012] Average High Temperature \n for week before Thanksgiving (inclusive)"
+    "Des Moines [1880-2012] Average High Temperature \n"
+    "for week before Thanksgiving (inclusive)"
 )
 ax.set_xlabel("* 2012 Warmest")
 # ax.set_xticks( numpy.arange(1895,2015,5) )

@@ -61,16 +61,6 @@ def main():
 
         f = Image.open("webcam.jpg")
         (w, h) = f.size
-        """
-        c = f.getcolors(w*h)
-
-        redish = 0
-        for i, (cnt, rgb) in enumerate(c):
-            hsv = colorsys.rgb_to_hsv(rgb[0]/255.0, rgb[1]/255.0, rgb[2]/255.0)
-            if hsv[0] > 0:
-                if (hsv[0] < 0.06 or hsv[0] > 0.94) and hsv[1] > 0.9 and hsv[2] > 0.9:
-                    redish += cnt
-        """
         (redish, g, b) = f.resize((1, 1), Image.ANTIALIAS).getpixel((0, 0))
 
         if redish > 120 and g < 110:  # Our arb thresholding
@@ -98,10 +88,6 @@ def main():
                 print(" ... MISS")
                 output.write("0\n")
 
-        """
-        if redish > 120 and g > 110:
-            shutil.copyfile('webcam.jpg', '/tmp/examples/%3f_%3f_%3f.jpg' % (redish,g,b))
-        """
         diff = (redish - g) + (redish - b)
         if diff > maxv:
             maxv = redish

@@ -51,14 +51,16 @@ def main():
     pcursor.execute(
         """
     SELECT x(ST_Centroid(ST_Transform(geom,2163))) as center_x,  
-        y(ST_Centroid(ST_Transform(geom,2163))) as center_y, *, ST_AsText(geom) as gtext,
+        y(ST_Centroid(ST_Transform(geom,2163))) as center_y, *,
+        ST_AsText(geom) as gtext,
         x(ST_CEntroid(geom)) as lon, y(ST_Centroid(geom)) as lat,
         ST_AsText(ST_Transform(geom,2163)) as projtext
         from warnings
-        WHERE issue > '2008-01-01' and issue < '2012-01-01' and gtype = 'P' and significance = 'W' and 
+        WHERE issue > '2008-01-01' and issue < '2012-01-01' and gtype = 'P'
+        and significance = 'W' and 
         phenomena in ('TO') and wfo = 'OAX'
     """
-    )  # and wfo = 'DMX' and eventid = 13 and phenomena= 'TO' and issue < '2009-01-01'
+    )
     i = 0
     for row in pcursor:
         issue = mx.DateTime.strptime(str(row["issue"])[:16], "%Y-%m-%d %H:%M")
@@ -67,7 +69,8 @@ def main():
         if i % 1000 == 0:
             print(f"Done {i}")
         tokens = re.findall(
-            r"TIME...MOT...LOC [0-9]{4}Z ([0-9]{1,3})DEG ([0-9]{1,3})KT ([0-9]+) ([0-9]+)",
+            r"TIME...MOT...LOC [0-9]{4}Z ([0-9]{1,3})"
+            r"DEG ([0-9]{1,3})KT ([0-9]+) ([0-9]+)",
             row["report"],
         )
         if len(tokens) == 0:
@@ -88,26 +91,12 @@ def main():
         y0 = row["center_y"]
         offsetX.append((x0 - xTML) / 1000.0)
         offsetY.append((y0 - yTML) / 1000.0)
-        # warnX.append(x0)
-        # warnY.append(y0)
-        # for pr in (row['projtext'].replace("MULTIPOLYGON(((", "").replace(")))", "")).split(","):
-        #    x,y = pr.split()
-        #    polyX.append(float(x))
-        #    polyY.append(float(y))
-        # Compute travel line!
-        # majorX.append( x0 - math.cos(angle)*smps*1800.)
-        # majorX.append( x0 + math.cos(angle)*smps*1800.)
-        # majorY.append( y0 - math.sin(angle)*smps*1800.)
-        # majorY.append( y0 + math.sin(angle)*smps*1800.)
-        # minorX.append( x0 - math.cos(angle+math.pi/2.)*smps*1800.)
-        # minorX.append( x0 + math.cos(angle+math.pi/2.)*smps*1800.)
-        # minorY.append( y0 - math.sin(angle+math.pi/2.)*smps*1800.)
-        # minorY.append( y0 + math.sin(angle+math.pi/2.)*smps*1800.)
 
         # Find LSRs
         pcursor2.execute(
             """
-        SELECT distinct *, x(ST_Transform(geom,2163)) as x, y(ST_Transform(geom,2163)) as y,
+        SELECT distinct *, x(ST_Transform(geom,2163)) as x,
+            y(ST_Transform(geom,2163)) as y,
             x(geom) as lon, y(geom) as lat
             from lsrs_%s w WHERE 
             geom && ST_Buffer(SetSrid(GeometryFromText('%s'),4326),0.01) and 
@@ -157,30 +146,16 @@ def main():
             # rlsrY.append(yP / 1000.)
             rlsrX.append(xP / smps)
             rlsrY.append(yP / smps)
-            # output.write("%.1f,%.1f\n" % (xP, yP))
-            # print 'X0: %.1f Y0: %.1f X: %.1f Y: %.1f DX: %.1f DY: %.1f Dir %.0f Rotation: %.1f xP: %.1f yP: %.1f' % (
-            #                                    x0, y0, lx, ly, deltax, deltay, dir, angle,
-            #                                                               xP, yP)
-    # output.close()
-    # sys.exit()
 
     fig = plt.figure()
 
     ax = fig.add_subplot(111)
-    # maxV = max([max(rlsrX),0-min(rlsrX),max(rlsrY),0-min(rlsrX)])
-    # H2, xedges, yedges = numpy.histogram2d(numpy.array(dDist), numpy.array(dT),
-    #                                       range=[[0,60],[0,60]], bins=(60, 60))
-    # H2, xedges, yedges = numpy.histogram2d(numpy.array(offsetX), numpy.array(offsetY),
-    #                                       range=[[-60,60],[-60,60]], bins=(60, 60))
     H2, xedges, yedges = numpy.histogram2d(
         numpy.array(dXT),
         numpy.array(dT),
         range=[[-60, 60], [0, 60]],
         bins=(60, 60),
     )
-    # H2, xedges, yedges = numpy.histogram2d(numpy.array(rlsrX), numpy.array(rlsrY),
-    #                                       range=[[0-maxV,maxV],[0-maxV,maxV]], bins=(60, 60))
-    # H2 = numpy.ma.array(H2)
     H2 = numpy.ma.array(H2.transpose())
     H2.mask = numpy.where(H2 < 1, True, False)
     extent = [xedges[0], xedges[-1], yedges[-1], yedges[0]]
@@ -194,7 +169,8 @@ def main():
     ax.set_xlabel("Distance from Moving Line along path [km]")
     ax.set_ylabel("Increasing Time [minutes]")
     ax.set_title(
-        "TOR Report Displacement from Tracking Line [OAX Only]\nfrom the moving TIME..MOT..LOC\n (1 Jan 2008-1 Jan 2012)"
+        "TOR Report Displacement from Tracking Line [OAX Only]\n"
+        "from the moving TIME..MOT..LOC\n (1 Jan 2008-1 Jan 2012)"
     )
     clr = fig.colorbar(res)
     clr.ax.set_ylabel("Reports")

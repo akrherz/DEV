@@ -1,4 +1,5 @@
 import datetime
+
 import urllib2
 
 sts = datetime.datetime(2013, 8, 23, 0, 0)
@@ -7,7 +8,7 @@ interval = datetime.timedelta(minutes=10)
 
 frame = 0
 while sts < ets:
-    print sts
+    print(sts)
     data = urllib2.urlopen(
         sts.strftime("http://iem.local/scada/map_power_%Y%m%d%H%M.png")
     )

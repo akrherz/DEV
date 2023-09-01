@@ -36,7 +36,10 @@ def main(argv):
             hits = len(gdf[pd.notnull(gdf["lwfo"])].index)
             total = len(gdf.index)
             data[gwfo] = hits / float(total) * 100.0
-        title = f"Percentage of Office's SVR 1+ Warning Days(*) Shared with NWS {name}"
+        title = (
+            "Percentage of Office's SVR 1+ Warning Days(*) "
+            f"Shared with NWS {name}"
+        )
     elif opt == 1:
         data = {}
         gdf = df[df["lwfo"] == wfo].groupby("ewfo").count()
@@ -51,7 +54,8 @@ def main(argv):
         sector="nws",
         title=title,
         subtitle=(
-            "2001 - 27 Jun 2020, * 12z-12z 'convective days'. based on unofficial IEM Archives"
+            "2001 - 27 Jun 2020, * 12z-12z 'convective days'."
+            " based on unofficial IEM Archives"
         ),
     )
     # maxval = df["count"].max()

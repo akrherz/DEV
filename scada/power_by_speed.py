@@ -1,12 +1,7 @@
-import numpy as np
 import psycopg2
-import datetime
+
 import matplotlib.pyplot as plt
-import matplotlib.colors as mpcolors
 from pandas.io.sql import read_sql
-import matplotlib.colorbar as mpcolorbar  # NOPEP8
-import matplotlib.patheffects as PathEffects  # NOPEP8
-from matplotlib.mlab import griddata
 
 pgconn = psycopg2.connect(database="scada")
 
@@ -19,7 +14,8 @@ def do(turbine_id):
      WHERE windspeed > 0 GROUP by valid)
 
     SELECT w.ws2::int as ws, (yawangle  / 5)::int * 5 as yaw, avg(power) as p
-    from data d JOIN wfavg w on (d.valid = w.valid) WHERE turbine_id = %s and yawangle is not null and power is not null
+    from data d JOIN wfavg w on (d.valid = w.valid) WHERE turbine_id = %s
+    and yawangle is not null and power is not null
     and windspeed is not null and alpha1 < 1 GROUP by ws, yaw ORDER by yaw ASC
     """,
         pgconn,
@@ -57,5 +53,4 @@ def do(turbine_id):
 
 
 for i in range(101, 184):
-    print i
     do(i)

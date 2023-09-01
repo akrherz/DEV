@@ -5,31 +5,32 @@ import seaborn as sns
 
 import pandas as pd
 from pyiem.plot import figure_axes
-from pyiem.util import get_dbconnstr
+from pyiem.util import get_sqlalchemy_conn
 
 
 def main():
     """Go Main Go."""
-    df = pd.read_sql(
-        """
-        with highs as (
-            SELECT date(valid) as date,
-            max(tmpf) as high,
-            min(tmpf) as low from alldata_1minute
-            WHERE station = 'DSM' and tmpf is not null
-            GROUP by date
-        ),
-        obs as (
-            SELECT valid from alldata_1minute o, highs h WHERE
-            o.station = 'DSM' and date(o.valid) = h.date and
-            o.tmpf >= h.high - 3 and valid < '2022-01-01'
-        )
+    with get_sqlalchemy_conn("asos1min") as conn:
+        df = pd.read_sql(
+            """
+            with highs as (
+                SELECT date(valid) as date,
+                max(tmpf) as high,
+                min(tmpf) as low from alldata_1minute
+                WHERE station = 'DSM' and tmpf is not null
+                GROUP by date
+            ),
+            obs as (
+                SELECT valid from alldata_1minute o, highs h WHERE
+                o.station = 'DSM' and date(o.valid) = h.date and
+                o.tmpf >= h.high - 3 and valid < '2022-01-01'
+            )
 
-        SELECT date(valid) as date, count(*) from obs GROUP by date
-    """,
-        get_dbconnstr("asos1min"),
-        index_col=None,
-    )
+            SELECT date(valid) as date, count(*) from obs GROUP by date
+        """,
+            conn,
+            index_col=None,
+        )
     df["date"] = pd.to_datetime(df["date"])
     df["doy"] = pd.to_numeric(df["date"].dt.strftime("%j"))
     df["month"] = df["date"].dt.month

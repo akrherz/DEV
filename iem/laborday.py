@@ -1,8 +1,12 @@
+"""Labor Day."""
+import mx.DateTime
+import numpy
+
+import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
 
 ASOS = get_dbconn("asos")
 acursor = ASOS.cursor()
-import mx.DateTime
 
 years = []
 wind = []
@@ -14,7 +18,8 @@ for yr in range(1971, 2011):
     )
     acursor.execute(
         """
-    SELECT avg(sknt), max(tmpf) from t%s WHERE station = 'DSM' and valid BETWEEN '%s 00:00' and '%s 00:00'
+    SELECT avg(sknt), max(tmpf) from t%s WHERE station = 'DSM'
+    and valid BETWEEN '%s 00:00' and '%s 00:00'
     and sknt >= 0
     """
         % (
@@ -33,10 +38,6 @@ highs.append(73)
 wind.append(8)
 years.append(2011)
 
-import numpy
-
-import matplotlib.pyplot as plt
-
 years = numpy.array(years)
 highs = numpy.array(highs)
 
@@ -49,14 +50,8 @@ ax.plot(
     [numpy.average(highs), numpy.average(highs)],
     color="r",
 )
-# for rect, label in zip(rects, labels):
-#  y = rect.get_height()
-#  x = rect.get_x()
-#  ax.text(x+0.3,y-5,label.strftime("%b %-d"), weight='bold', rotation=90, color='white')
 ax.set_xlim(1970.5, 2011.5)
 ax.set_ylim(50, 100)
-# ax.set_yticks((91,121,152))
-# ax.set_yticklabels(('Apr 1', 'May 1', 'Jun 1'))
 
 ax.set_ylabel("High Temperature [F]")
 # ax.set_xlabel("*2011 Total of 106 hours is the least")

@@ -9,14 +9,6 @@ from pyiem.util import get_dbconn
 COOP = get_dbconn("coop")
 ccursor = COOP.cursor()
 
-# climate = {}
-# rs = coop.query("SELECT valid, high from climate where station = 'ia0200'").dictresult()
-# for i in range(len(rs)):
-#  climate[ rs[i]['valid'][5:] ] = rs[i]['high']
-
-# total_error = [0]*7
-# total_rain = [0]*7
-# total_snow = [0]*7
 highs = []
 lows = []
 for yr in range(1978, 2010):
@@ -25,9 +17,11 @@ for yr in range(1978, 2010):
         weekday=(mx.DateTime.Thursday, 4)
     )
     sql = (
-        "SELECT day, high, low, case when precip > 0.005 THEN 1 else 0 end as precip, case when snow > 0.005 then 1 else 0 end as snow from alldata WHERE stationid = '%s' and day = '%s'"
-        % ("ia2203", turkey)
-    )
+        "SELECT day, high, low, "
+        "case when precip > 0.005 THEN 1 else 0 end as precip, "
+        "case when snow > 0.005 then 1 else 0 end as snow from alldata "
+        "WHERE stationid = '%s' and day = '%s'"
+    ) % ("ia2203", turkey)
     ccursor.execute(sql)
     row = ccursor.fetchone()
     highs.append(row[1])
@@ -38,7 +32,7 @@ lows.append(18)
 
 
 h = numpy.array(highs)
-l = numpy.array(lows)
+ll = numpy.array(lows)
 
 fig = plt.figure(1, figsize=(8, 8))
 ax = fig.add_subplot(111)
@@ -50,7 +44,9 @@ def mod_rects(rects):
             rect.set_facecolor("b")
 
 
-rects = ax.bar(numpy.arange(1978, 2011) - 0.4, h - l, bottom=l, facecolor="r")
+rects = ax.bar(
+    numpy.arange(1978, 2011) - 0.4, h - ll, bottom=ll, facecolor="r"
+)
 mod_rects(rects)
 ax.set_xlim(1977.5, 2010.5)
 ax.set_xlabel("Year, * 2010 Data Forecasted")

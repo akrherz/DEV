@@ -18,6 +18,16 @@ def main():
     ).dictresult()
 
     # Loop over them, doing verification
+    unverified = 0
+    verifsz = {}
+    sz = 0
+    small_only = 0
+    large_verif = 0
+    small_verif = 0
+    damage_verif = 0
+    wind_verif = 0
+    warnings = {}
+    mentioned = 0
     for i in range(len(rs)):
         r = rs[i]["report"].replace("\n", "")
         tokens = re.findall(r"([0-9]{1,3})\s+MPH", r)
@@ -32,7 +42,6 @@ def main():
                 ",".join(tokens),
             )
         )
-        continue
         sql = """"SELECT * from lsrs_2007 WHERE wfo = '%s' and
         valid >= '%s' and valid < '%s' and
         ((type = 'H' and magnitude >= 0.75) 

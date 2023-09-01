@@ -2,7 +2,6 @@
 
 NOTE: Code needs updated before it will run again!
 """
-import os
 import sys
 
 from pyiem.util import get_dbconn
@@ -32,17 +31,15 @@ def main():
     yr = sys.argv[1]
 
     touches = {}
-    if os.path.isfile("touches.pickle"):
-        touches = cPickle.load(open("touches.pickle", "rb"))
+    # if os.path.isfile("touches.pickle"):
+    #    touches = pickle.load(open("touches.pickle", "rb"))
 
     table = "warnings_%s" % (yr,)
 
     cursor.execute(
-        """
+        f"""
     SELECT oid, issue, expire, ugc, wfo, phenomena, significance
-    from """
-        + table
-        + """ WHERE
+    from {table} WHERE
     eventid is null ORDER by issue ASC
     """
     )
@@ -52,7 +49,7 @@ def main():
         if ugc not in touches:
             load_touches(pgconn, touches, ugc, wfo)
             f = open("touches.pickle", "wb")
-            cPickle.dump(touches, f, 2)
+            # cPickle.dump(touches, f, 2)
             f.close()
 
         print("%s %s" % (ugc, touches.get(ugc)))

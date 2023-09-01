@@ -13,8 +13,8 @@ def main(argv):
     cursor = pgconn.cursor()
     cursor2 = pgconn.cursor()
 
-    table = "sbw_%s" % (argv[1],)
-    table2 = "warnings_%s" % (argv[1],)
+    table = f"sbw_{argv[1]}"
+    table2 = f"warnings_{argv[1]}"
 
     cursor.execute(
         f"""
