@@ -3,22 +3,22 @@
 import requests
 from tqdm import tqdm
 
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
+from pyiem.util import get_sqlalchemy_conn
 
 
 def main():
     """Go Main Go."""
-    pgconn = get_dbconn("iem")
-    df = read_sql(
-        "SELECT id, max_tmpf, st_x(geom) as lon, st_y(geom) as lat from "
-        "summary_2020 s JOIN stations t on (s.iemid = t.iemid) WHERE "
-        "s.day = '2020-05-20' and t.network in ('IA_ASOS', 'AWOS') "
-        "ORDER by id asc",
-        pgconn,
-        index_col="id",
-    )
+    with get_sqlalchemy_conn("iem") as pgconn:
+        df = pd.read_sql(
+            "SELECT id, max_tmpf, st_x(geom) as lon, st_y(geom) as lat from "
+            "summary_2020 s JOIN stations t on (s.iemid = t.iemid) WHERE "
+            "s.day = '2020-05-20' and t.network in ('IA_ASOS', 'AWOS') "
+            "ORDER by id asc",
+            pgconn,
+            index_col="id",
+        )
     df["srad"] = 0
     progress = tqdm(df.iterrows(), total=len(df.index))
     for sid, row in progress:
@@ -27,7 +27,7 @@ def main():
             "https://mesonet.agron.iastate.edu/iemre/daily/2020-05-20/"
             f"{row['lat']}/{row['lon']}/json"
         )
-        data = requests.get(uri).json()
+        data = requests.get(uri, timeout=30).json()
         df.at[sid, "srad"] = data["data"][0]["srad_mj"]
 
     (fig, ax) = plt.subplots(1, 1)

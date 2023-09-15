@@ -5,9 +5,8 @@ import sys
 import requests
 
 import pandas as pd
-from pandas.io.sql import read_sql
 from pyiem.network import Table as NetworkTable
-from pyiem.util import get_dbconn
+from pyiem.util import get_sqlalchemy_conn
 
 COLS = ["ob_pday", "daily_precip_in", "precip_delta", "prism_precip_in"]
 
@@ -16,26 +15,25 @@ def main(argv):
     """Go Main Go"""
     station = argv[1]
     year = int(argv[2])
-    pgconn = get_dbconn("coop")
-
     nt = NetworkTable("IACLIMATE")
 
-    df = read_sql(
-        """
-        SELECT day, precip, high, low from alldata_ia
-        WHERE station = %s and year = %s
-        ORDER by day ASC
-    """,
-        pgconn,
-        params=(station, year),
-        index_col="day",
-    )
+    with get_sqlalchemy_conn("coop") as pgconn:
+        df = pd.read_sql(
+            """
+            SELECT day, precip, high, low from alldata WHERE station = %s and
+            year = %s ORDER by day ASC
+        """,
+            pgconn,
+            params=(station, year),
+            index_col="day",
+        )
 
     uri = (
-        "https://mesonet.agron.iastate.edu/iemre/multiday/%s-01-01/"
-        "%s-12-31/%.2f/%.2f/json"
-    ) % (year, year, nt.sts[station]["lat"], nt.sts[station]["lon"])
-    req = requests.get(uri)
+        f"https://mesonet.agron.iastate.edu/iemre/multiday/{year}-01-01/"
+        f"{year}-12-31/{nt.sts[station]['lat']:.2f}/"
+        f"{nt.sts[station]['lon']:.2f}/json"
+    )
+    req = requests.get(uri, timeout=30)
     j = json.loads(req.content)
 
     idf = pd.DataFrame(j["data"])
@@ -49,7 +47,7 @@ def main(argv):
     idf["high_delta"] = idf["ob_high"] - idf["daily_high_f"]
     idf["low_delta"] = idf["ob_low"] - idf["daily_low_f"]
     idf["precip_delta"] = idf["ob_pday"] - idf["daily_precip_in"]
-    idf.sort_values("precip_delta", inplace=True, ascending=True)
+    idf = idf.sort_values("precip_delta", ascending=True)
 
     print("IEMRE greater than Obs")
     print(idf[COLS].head())

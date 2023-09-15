@@ -3,8 +3,7 @@
 import requests
 
 import pandas as pd
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
+from pyiem.util import get_sqlalchemy_conn
 
 
 def workflow(gid, lat, lon):
@@ -16,7 +15,7 @@ def workflow(gid, lat, lon):
             "http://mesonet.agron.iastate.edu/iemre/multiday/"
             "%s-01-01/%s-12-31/%s/%s/json"
         ) % (year, year, lat, lon)
-        req = requests.get(uri)
+        req = requests.get(uri, timeout=30)
         for row in req.json()["data"]:
             res.append(row)
     df = pd.DataFrame(res)
@@ -28,13 +27,13 @@ def main():
     df = pd.read_excel("/tmp/dates.xlsx")
     df["high_temp_f"] = 0
     df["low_temp_f"] = 0
-    pgconn = get_dbconn("postgis")
-    counties = read_sql(
-        "SELECT name, ST_x(centroid) as lon, st_y(centroid) as lat from "
-        "ugcs where end_ts is null and substr(ugc, 1, 3) = 'IAC' "
-        "ORDER by name ASC",
-        pgconn,
-    )
+    with get_sqlalchemy_conn("postgis") as pgconn:
+        counties = pd.read_sql(
+            "SELECT name, ST_x(centroid) as lon, st_y(centroid) as lat from "
+            "ugcs where end_ts is null and substr(ugc, 1, 3) = 'IAC' "
+            "ORDER by name ASC",
+            pgconn,
+        )
     for idx, row in df.iterrows():
         df2 = counties[counties["name"] == row["Site"]]
         uri = (
