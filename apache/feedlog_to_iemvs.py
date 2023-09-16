@@ -1,4 +1,5 @@
 """Send *cough* real-traffic to iemvs webhost."""
+import re
 import sys
 import warnings
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
@@ -9,17 +10,23 @@ from urllib3.exceptions import InsecureRequestWarning
 
 warnings.simplefilter("ignore", InsecureRequestWarning)
 IPADDR = sys.argv[1]
+IGNORE = re.compile("^/(c|cache|archive|data)/")
 
 
 def fetch(url, ans):
     """Go get it."""
+    if IGNORE.match(url):
+        return
     req = requests.get(
         f"https://{IPADDR}{url}",
         headers={"Host": "mesonet.agron.iastate.edu"},
         verify=False,
         timeout=60,
     )
-    if req.status_code != ans and ans not in [302]:
+    # 503 is server too busy
+    if req.status_code == 503:
+        return
+    if req.status_code != ans and ans not in [302, 500]:
         print(f"{url} GOT {req.status_code} not {ans}")
 
 
