@@ -1,6 +1,9 @@
-#!/mesonet/python-2.3/bin/python
 # My first go around sucked, lets try again!
 # Daryl Herzmann 25 Oct 2004
+import math
+
+import libs
+import Numeric
 
 nx = 361
 ny = 64
@@ -11,8 +14,6 @@ lat0 = 20.0
 xbctype = "PERIODIC"
 ybctype = "RADIATIVE"
 HH = 1000.0
-
-import Numeric, math, libs
 
 
 def main():
@@ -31,6 +32,9 @@ def main():
     dhdt = h0.copy()
     dudt = h0.copy()
     dvdt = h0.copy()
+    dhdtls = None
+    dudtls = None
+    dvdtls = None
 
     dx = 360.0 * 110000.0 / (nx - 1)
     dy = dx
@@ -39,9 +43,6 @@ def main():
 
     XGW = math.sqrt(G * HH)
     CG = 1.0 * XGW
-    DHDTLS = 0.0
-    DUDTLS = 0.0
-    DVDTLS = 0.0
 
     ICENTX = nx / 2
     ICENTY = ny / 2
@@ -55,7 +56,7 @@ def main():
     OMEGA = 2.0 * math.pi / 86164.09
 
     ar = Numeric.arange(ny)
-    lats = lat0 + dy * ar / 111000
+    lat0 + dy * ar / 111000
     f = 2 * OMEGA * Numeric.sin(ar * D2R)
 
     for j in range(ny):
@@ -78,7 +79,7 @@ def main():
     for j in range(ny):
         for i in range(nx):
             G1 = (i - ICENTX) ** 2 + (j - ICENTY) ** 2
-            G2 = IWID ** 2
+            G2 = IWID**2
             h0[i, j] = h0[i, j] - AMP * math.exp(-G1 / G2)
 
     for j in range(1, ny - 1):
@@ -153,7 +154,7 @@ def main():
         u1 = libs.perbcx(u1, nx, ny)
 
     for tstep in range(tsteps):
-        print tstep
+        print(tstep)
 
         dhdt = Numeric.zeros((nx, ny), "f8")
         dudt = Numeric.zeros((nx, ny), "f8")

@@ -21,7 +21,9 @@ def main():
         wfo = rs[i]["wfo"]
         # Load up their history!
         rs2 = postgis.query(
-            "SELECT issue, expire, area(transform(geom,2163)) / 1000000.0 as area from sbw_2009 WHERE wfo = '%s' and phenomena IN ('SV','TO') and status = 'NEW' ORDER by issue ASC"
+            "SELECT issue, expire, area(transform(geom,2163)) / 1000000.0 "
+            "as area from sbw_2009 WHERE wfo = '%s' and "
+            "phenomena IN ('SV','TO') and status = 'NEW' ORDER by issue ASC"
             % (wfo,)
         ).dictresult()
         mx.DateTime.DateTime(2000, 1, 1)

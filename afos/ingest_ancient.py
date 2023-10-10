@@ -11,7 +11,7 @@ from pyiem.util import get_dbconn, noaaport_text, utc
 
 # Copied from iem/scripts/util/poker2afos.py
 sys.path.insert(0, "/opt/iem/scripts/util")
-from poker2afos import XREF_SOURCE  # type: ignore
+from poker2afos import XREF_SOURCE  # noqa
 
 
 def save(prod, cursor):

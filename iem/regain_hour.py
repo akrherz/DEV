@@ -32,10 +32,6 @@ def compute_sunrise(lat, long):
         _sunset = datetime.datetime.strptime(
             str(ames.next_setting(sun)), "%Y/%m/%d %H:%M:%S"
         )
-        # if set < rise:
-        #    ames.date = (now - interval).strftime("%Y/%m/%d")
-        #    rise = mx.DateTime.strptime(str(ames.next_rising(sun)), "%Y/%m/%d %H:%M:%S")
-        # arr.append( (set-rise).minutes / 60.0)
         offset = rise.hour * 60 + rise.minute
         if now.month == 3 and now.day == 11:
             findT = arr[-1]

@@ -21,7 +21,6 @@ ax = plt.axes(
 )
 ax.set_extent([-120, -60, 22, 53], crs=ccrs.PlateCarree())
 
-# wget http://mesonet.agron.iastate.edu/archive/data/2021/02/10/GIS/uscomp/n0q_202102100000.png
 im = np.asarray(Image.open("n0q_202102100000.png"))
 with rasterio.Env():
     src_aff = Affine(0.005, 0, -126, 0, -0.005, 50)
@@ -47,9 +46,6 @@ with rasterio.Env():
 cmap = plt.get_cmap("jet")
 cmap.set_under((0, 0, 0, 0))
 norm = mpcolors.BoundaryNorm(np.arange(1, 256), cmap.N)
-# 17.3s total
-# ax.imshow(im, extent=(-126, -65, 23, 50), transform=ccrs.PlateCarree(), cmap=cmap, norm=norm)
-# 1.9s total
 ax.imshow(
     res,
     extent=(px0, px1, py0, py1),

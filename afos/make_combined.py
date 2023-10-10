@@ -29,9 +29,10 @@ for dt in pd.date_range("2000/01/01", "2015/01/20"):
     cfn = f"combined/{dt:%Y%m%d}.txt"
     if os.path.isfile(cfn):
         os.remove(cfn)
-    for (
-        mydir
-    ) in "cybg  cyeg  cyka  cyqb  cyqu  cyrt  cyxt  cyyf  cyzf  kwbc cydf  cyev  cype  cyqr  cyqx  cyxj  cyxu  cyyr  cyzv  kmsc".split():
+    for mydir in (
+        "cybg  cyeg  cyka  cyqb  cyqu  cyrt  cyxt  cyyf  cyzf  kwbc cydf  "
+        "cyev  cype  cyqr  cyqx  cyxj  cyxu  cyyr  cyzv  kmsc"
+    ).split():
         fn = f"{mydir}/{dt:%Y%m%d}.txt"
         if not os.path.isfile(fn):
             continue

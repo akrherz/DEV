@@ -44,7 +44,8 @@ for i in range(len(rs)):
     avglen = rs1[0]["length"]
 
     rs2 = mydb.query(
-        "SELECT to_char(idnum, '999999999999999999999999999999999999') as idnum from dialog WHERE username = '"
+        "SELECT to_char(idnum, '999999999999999999999999999999999999') as "
+        "idnum from dialog WHERE username = '"
         + user
         + "' \
     and portfolio = 'gcp2005' and security = 'public' \
@@ -78,7 +79,8 @@ for i in range(len(rs)):
 
         # Pull in the number of responses this author did
     rs4 = mydb.query(
-        "SELECT to_char(idnum, '999999999999999999999999999999999999') as idnum from dialog \
+        "SELECT to_char(idnum, '999999999999999999999999999999999999') as "
+        "idnum from dialog \
     WHERE portfolio = 'gcp2005' \
     and username = '"
         + user

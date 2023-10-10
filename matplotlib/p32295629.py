@@ -17,9 +17,9 @@ ax.set_xticks(np.arange(0, len(progress[0]) + 0.01, dx), minor=True)
 ax.set_xticks(np.arange(1, len(progress[0]) + 1))
 labels = students * len(progress[0])
 week = 1
-for i, l in enumerate(labels):
-    if l == students[1]:
-        labels[i] = "%s\nWeek %s" % (l, week)
+for i, ll in enumerate(labels):
+    if ll == students[1]:
+        labels[i] = "%s\nWeek %s" % (ll, week)
         week += 1
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)

@@ -107,7 +107,7 @@ for station in st.ids:
                     100 * (1 - (Odur[station] / (e - s))),
                 )
             )
-        except:
+        except Exception:
             print(
                 "%s,%s,%s,%s,%s,%s,%s,%s,%s"
                 % (

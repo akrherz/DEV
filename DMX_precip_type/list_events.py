@@ -1,5 +1,4 @@
 """Dump events for our enjoyment"""
-from __future__ import print_function
 
 import numpy as np
 import tqdm
@@ -52,7 +51,7 @@ def calc(T, Td):
     #
     #    Solve for tW iteratively by attempting an energy balance
     #    Ten steps should be sufficient
-    for i in xrange(0, 10, 1):
+    for i in range(0, 10, 1):
         #
         #       convert to deg C
         tWC = tW - 273.15
@@ -63,7 +62,6 @@ def calc(T, Td):
         #       calculate difference values (after Iribarne and Godson (1981))
         de = (f * pSFC * (tK - tW)) - (ew - ed)
         #
-        #       take derivative of difference value w.r.t. Tw to find zero value of function
         der = (ew * (c1 - (c2 / tW**2))) - (f * pSFC)
         #
         #       calculate next guess of tW
@@ -81,6 +79,7 @@ def grouper():
     """Go Plot2"""
     df = pd.read_csv("events.csv")
     rows = []
+    decade = None
     for (tmpf, dwpf), gdf in df[
         ((df["vaid"].dt.year >= decade) & (df["vaid"].dt.year < (decade + 10)))
     ].groupby(["tmpf", "dwpf"]):

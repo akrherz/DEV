@@ -3,9 +3,6 @@
 """
 import datetime
 
-import matplotlib
-
-matplotlib.use("agg")
 import numpy as np
 import psycopg2
 
@@ -86,7 +83,8 @@ def do(valid, frame):
         lons, lats, c=vals2, vmin=-500, vmax=500, cmap=cmap, s=100, zorder=2
     )
     ax.set_title(
-        "Pomeroy Farm Turbine Power [kW] Diff from Farm Avg (1min sampled dataset)\nValid: %s"
+        "Pomeroy Farm Turbine Power [kW] Diff from Farm Avg "
+        "(1min sampled dataset)\nValid: %s"
         % (valid.strftime("%d %b %Y %I:%M %p"))
     )
     make_colorbar(clevs, norm, cmap)

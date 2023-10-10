@@ -16,7 +16,10 @@ for i, x in enumerate(range(idx, idx - 60, -1)):
 m = MapPlot(
     sector="iowa",
     title='NOAA MRMS Q3: Days since Calendar Day Precipitation over 0.5"',
-    subtitle="based on per calendar day estimated preciptation, GaugeCorr and RadarOnly products",
+    subtitle=(
+        "based on per calendar day estimated preciptation, "
+        "GaugeCorr and RadarOnly products"
+    ),
 )
 lon = np.append(nc.variables["lon"][:], [-80.5])
 lat = np.append(nc.variables["lat"][:], [49.0])
