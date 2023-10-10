@@ -1,7 +1,8 @@
 import psycopg2
+
 import matplotlib.pyplot as plt
-from pandas.io.sql import read_sql
 import pandas as pd
+from pandas.io.sql import read_sql
 
 pgconn = psycopg2.connect(database="scada")
 
@@ -74,5 +75,4 @@ def do(turbine_id):
 
 
 for i in range(101, 184):
-    print i
     do(i)

@@ -63,8 +63,13 @@ def main():
     else:
         df = pd.read_csv("/tmp/today.csv").sort_values("byear", ascending=True)
     mp = MapPlot(
-        title="Most Recent Mar 17-May 31 Date with as cold wind chill as 17-19 Mar 2023",
-        subtitle="Sites with '<' label indicate no comparables since start of obs",
+        title=(
+            "Most Recent Mar 17-May 31 Date with as cold wind chill as "
+            "17-19 Mar 2023"
+        ),
+        subtitle=(
+            "Sites with '<' label indicate no comparables since start of obs"
+        ),
         continentalcolor="white",
     )
     color = df["date"].apply(lambda x: "tan" if x.startswith("<") else "b")

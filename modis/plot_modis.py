@@ -3,6 +3,7 @@
 https://wvs.earthdata.nasa.gov/
 """
 
+import Basemap
 import numpy as np
 
 import matplotlib.image as mpimg
@@ -10,7 +11,7 @@ from pandas import read_sql
 from pyiem.plot import MapPlot
 from pyiem.plot.use_agg import plt
 from pyiem.reference import Z_CLIP
-from pyiem.util import get_dbconnstr
+from pyiem.util import get_dbconnc, get_dbconnstr
 from shapely.wkb import loads
 
 
@@ -67,9 +68,22 @@ def main():
 
 def main2():
     """GO."""
+    _conn, cursor = get_dbconnc("postgis")
+    ax = [None]
+    m = Basemap(
+        projection="cea",
+        llcrnrlat=40,
+        urcrnrlat=44,
+        llcrnrlon=-99,
+        urcrnrlon=-89,
+        resolution="i",
+        ax=ax[0],
+        fix_aspect=False,
+    )
     cursor.execute(
         """select ST_asEWKB(ST_Transform(simple_geom,4326)) from roads_base
-    WHERE segid in (select distinct segid from roads_2014_log where cond_code = 51 and valid > '2014-01-26')"""
+    WHERE segid in (select distinct segid from roads_2014_log where
+    cond_code = 51 and valid > '2014-01-26')"""
     )
     for row in cursor:
         if row[0] is None:
@@ -82,8 +96,10 @@ def main2():
 
     cursor.execute(
         """
-    SELECT ST_asEWKB(ST_Buffer(ST_Collect(geom),0)) from warnings_2014 where phenomena = 'BZ'
-    and significance = 'W' and issue > '2014-01-26' and wfo in ('DMX','DVN', 'ARX') and substr(ugc, 1,2) = 'IA'
+    SELECT ST_asEWKB(ST_Buffer(ST_Collect(geom),0)) from warnings_2014
+    where phenomena = 'BZ'
+    and significance = 'W' and issue > '2014-01-26' and
+    wfo in ('DMX','DVN', 'ARX') and substr(ugc, 1,2) = 'IA'
     """
     )
     row = cursor.fetchone()
@@ -94,16 +110,6 @@ def main2():
 
     (fig, ax) = plt.subplots(2, 1)
 
-    m = Basemap(
-        projection="cea",
-        llcrnrlat=40,
-        urcrnrlat=44,
-        llcrnrlon=-99,
-        urcrnrlon=-89,
-        resolution="i",
-        ax=ax[0],
-        fix_aspect=False,
-    )
     m2 = Basemap(
         projection="cea",
         llcrnrlat=40,

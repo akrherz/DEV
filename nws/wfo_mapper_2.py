@@ -1,10 +1,7 @@
 """Generic plotter"""
 
-import matplotlib
-import pandas as pd
-
-matplotlib.use("agg")
 import matplotlib.pyplot as plt
+import pandas as pd
 from pyiem.plot import MapPlot
 
 

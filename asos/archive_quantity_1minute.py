@@ -58,7 +58,8 @@ def main(argv):
 
     print("Observation Count For %s" % (stid,))
     print(
-        "YEAR    JAN    FEB    MAR    APR    MAY    JUN    JUL    AUG    SEP    OCT    NOV    DEC"
+        "YEAR    JAN    FEB    MAR    APR    MAY    JUN    JUL    AUG    "
+        "SEP    OCT    NOV    DEC"
     )
     output = False
     for i in range(years):

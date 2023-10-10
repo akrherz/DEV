@@ -1,9 +1,11 @@
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-import psycopg2
 import datetime
-from pandas.io.sql import read_sql
+
+import psycopg2
 import pytz
+
+import matplotlib.dates as mdates
+import matplotlib.pyplot as plt
+from pandas.io.sql import read_sql
 
 POSTGIS = psycopg2.connect(database="postgis", host="iemdb", user="nobody")
 pcursor = POSTGIS.cursor()
@@ -125,7 +127,7 @@ for i in range(1, len(valid)):
         ec="None",
     )
     ax.add_patch(rect)
-    print valid[i - 1] + datetime.timedelta(seconds=((days / 2.0) * 86400.0))
+    print(valid[i - 1] + datetime.timedelta(seconds=((days / 2.0) * 86400.0)))
     ax.text(
         valid[i - 1] + datetime.timedelta(seconds=((days / 2.0) * 86400.0)),
         35.5,
@@ -134,7 +136,7 @@ for i in range(1, len(valid)):
         va="center",
     )
 
-l = ""
+ll = ""
 ax.grid(True)
 ax.set_title(
     (

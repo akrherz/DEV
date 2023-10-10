@@ -54,7 +54,8 @@ def main():
         "Absolute Percentage Point Change (2020 - 2016)", fontsize=20
     )
     ax.set_title(
-        "2020 vs 2016 Trump Percentage Point Change\nAfter 3rd Party Percentage Point 2016-2020 Delta Equally Removed",
+        "2020 vs 2016 Trump Percentage Point Change\nAfter 3rd Party "
+        "Percentage Point 2016-2020 Delta Equally Removed",
         fontsize=16,
     )
     fig.text(0.05, 0.01, "@akrherz, 3 Dec 2020. Data: uselectionatlas.org")

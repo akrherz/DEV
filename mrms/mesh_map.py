@@ -18,7 +18,10 @@ def main():
         east=-91.1,
         south=40.4,
         north=41.6,
-        title="NOAA MRMS Max Estimated Size of Hail (MESH) + NWS Local Storm Reports (LSR)",
+        title=(
+            "NOAA MRMS Max Estimated Size of Hail (MESH) + "
+            "NWS Local Storm Reports (LSR)"
+        ),
         subtitle=(
             "Valid 12 PM 14 May - 3 AM 15 May 2020, plotted values are LSRs"
         ),

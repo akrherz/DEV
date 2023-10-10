@@ -1,5 +1,8 @@
 """
-for file in $(git ls-files); do     HASH=$(git rev-list HEAD "$file" | tail -n 1);     DATE=$(git show -s --format="%ci" $HASH --);     printf "%-35s %s  %s\n" "$file" $HASH: "$DATE"; done
+for file in $(git ls-files); do
+HASH=$(git rev-list HEAD "$file" | tail -n 1);
+DATE=$(git show -s --format="%ci" $HASH --);
+printf "%-35s %s  %s\n" "$file" $HASH: "$DATE"; done
 """
 
 import pandas as pd

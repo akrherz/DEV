@@ -2,6 +2,7 @@
 
 import glob
 import os
+import sys
 from xml.dom.minidom import parse
 
 import mx.DateTime
@@ -76,15 +77,15 @@ def main():
     ets = mx.DateTime.DateTime(2012, 4, 16)
     interval = mx.DateTime.RelativeDateTime(days=1)
     now = sts
-    while now < ets:
-        for scan in get_scans_for_date(now):
-            if imgx is None:
-                imgx, imgy = compute_xy(scan, lon, lat)
-                sys.exit()
-            val = get_value(scan, imgx, imgy)
-            output.write("%s,%.2f\n" % (scan, vals[val]))
-        now += interval
-    output.close()
+    with open("bah", "w", encoding="ascii") as output:
+        while now < ets:
+            for scan in get_scans_for_date(now):
+                if imgx is None:
+                    imgx, imgy = compute_xy(scan, lon, lat)
+                    sys.exit()
+                val = get_value(scan, imgx, imgy)
+                output.write("%s,%.2f\n" % (scan, vals[val]))
+            now += interval
 
 
 if __name__ == "__main__":

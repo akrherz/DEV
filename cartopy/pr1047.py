@@ -1,12 +1,8 @@
+import numpy as np
 from scipy.interpolate import NearestNDInterpolator
 from scipy.signal import convolve2d
 
 import cartopy.crs as ccrs
-import matplotlib
-
-matplotlib.use("agg")
-import numpy as np
-
 import matplotlib.pyplot as plt
 
 
