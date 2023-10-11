@@ -4,19 +4,20 @@ import datetime
 import matplotlib.pyplot as plt
 import pandas as pd
 from pyiem.datatypes import pressure, speed
-from pyiem.util import get_dbconnstr
+from pyiem.util import get_sqlalchemy_conn
 
 
 def main():
     """Go Main"""
-    df = pd.read_sql(
-        "SELECT valid, drct, sknt, gust, alti, tmpf, dwpf from t2019 "
-        "where station = %s and valid >= '2019-06-28 08:30' and "
-        "valid <= '2019-06-28 13:15' ORDER by valid ASC",
-        get_dbconnstr("asos"),
-        params=("MXO",),
-        index_col="valid",
-    )
+    with get_sqlalchemy_conn("asos") as conn:
+        df = pd.read_sql(
+            "SELECT valid, drct, sknt, gust, alti, tmpf, dwpf from t2019 "
+            "where station = %s and valid >= '2019-06-28 08:30' and "
+            "valid <= '2019-06-28 13:15' ORDER by valid ASC",
+            conn,
+            params=("MXO",),
+            index_col="valid",
+        )
     xticks = []
     xticklabels = []
     for valid in pd.date_range(df.index.min(), df.index.max(), freq="1min"):

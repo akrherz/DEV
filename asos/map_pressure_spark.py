@@ -11,7 +11,7 @@ from geopandas import read_postgis
 from matplotlib.colorbar import ColorbarBase
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_POLITICAL
-from pyiem.util import get_dbconnstr
+from pyiem.util import get_sqlalchemy_conn
 
 CST = ZoneInfo("America/Chicago")
 
@@ -36,7 +36,6 @@ def place_legend(mp, x, y, xsize, ymax):
 
 def main():
     """Go Main Go."""
-    pgconn = get_dbconnstr("asos1min")
     frame = 0
 
     cmap = get_cmap("RdBu")
@@ -50,22 +49,23 @@ def main():
     )
     for dt in progress:
         progress.set_description(dt.strftime("%Y-%m-%d %H:%M"))
-        df = read_postgis(
-            """
-            with data as (
-                select station, valid at time zone 'UTC' as valid,
-                pres1 from t202203_1minute where
-                valid > %s and valid <= %s and pres1 is not null
-                ORDER by station, valid
+        with get_sqlalchemy_conn("asos1min") as conn:
+            df = read_postgis(
+                """
+                with data as (
+                    select station, valid at time zone 'UTC' as valid,
+                    pres1 from t202203_1minute where
+                    valid > %s and valid <= %s and pres1 is not null
+                    ORDER by station, valid
+                )
+                select station, valid, pres1, geom from data JOIN stations on
+                (data.station = stations.id) WHERE stations.network ~* 'ASOS'
+                """,
+                conn,
+                index_col=None,
+                geom_col="geom",
+                params=(dt - timedelta(minutes=minutes), dt),
             )
-            select station, valid, pres1, geom from data JOIN stations on
-            (data.station = stations.id) WHERE stations.network ~* 'ASOS'
-            """,
-            pgconn,
-            index_col=None,
-            geom_col="geom",
-            params=(dt - timedelta(minutes=minutes), dt),
-        )
         localdt = (
             dt.to_pydatetime().astimezone(CST).strftime("%b %d %Y %-I:%M %p")
         )

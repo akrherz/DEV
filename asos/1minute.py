@@ -10,7 +10,7 @@ import matplotlib.dates as mdates
 import pandas as pd
 from matplotlib.patches import Rectangle
 from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconnstr, utc
+from pyiem.util import get_sqlalchemy_conn, utc
 
 
 def shade(ax):
@@ -34,16 +34,17 @@ def shade(ax):
 
 def main():
     """Go Main"""
-    df = pd.read_sql(
-        """
-    SELECT valid, pres1 from t202201_1minute
-    where station = %s and valid >= '2022-01-15 0:00' and
-    valid <= '2022-01-21 23:59' ORDER by valid ASC
-    """,
-        get_dbconnstr("asos1min"),
-        params=("AMW",),
-        index_col="valid",
-    )
+    with get_sqlalchemy_conn("asos1min") as conn:
+        df = pd.read_sql(
+            """
+        SELECT valid, pres1 from t202201_1minute
+        where station = %s and valid >= '2022-01-15 0:00' and
+        valid <= '2022-01-21 23:59' ORDER by valid ASC
+        """,
+            conn,
+            params=("AMW",),
+            index_col="valid",
+        )
     # Fill out the dataframe to have obs every minutes
     df = df.resample("1min").interpolate()
 

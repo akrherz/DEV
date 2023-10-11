@@ -4,13 +4,12 @@ import pytz
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
-from pyiem.util import get_dbconn
+from pyiem.util import get_dbconnc
 
 
 def main():
     """Go"""
-    pgconn = get_dbconn("iem")
-    cursor = pgconn.cursor()
+    pgconn, cursor = get_dbconnc("iem")
 
     cursor.execute(
         """
@@ -25,8 +24,9 @@ def main():
     xs = []
     ys = []
     for row in cursor:
-        xs.append(row[0])
-        ys.append(row[1])
+        xs.append(row["v"])
+        ys.append(row["count"])
+    pgconn.close()
 
     (fig, ax) = plt.subplots(1, 1)
     ax.bar(xs, ys, width=(1.0 / 24.0))
