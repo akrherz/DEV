@@ -25,7 +25,8 @@ def main():
         waiting = True
         while waiting:
             req = requests.get("http://iem.local" + uri, timeout=30)
-            if req.status_code == 200:
+            # Rumfields Known Knowns
+            if req.status_code in [200, 422, 503]:
                 waiting = False
                 continue
             res = input(f"Got {req.status_code} {req.text} Try again?([y]/n) ")
