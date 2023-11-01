@@ -9,7 +9,10 @@ def main():
     """Go Main Go"""
     fh = open("insert.sql", "w")
 
-    req = requests.get("http://www.weather.gov/source/aprfc/nrcs_swe.json")
+    req = requests.get(
+        "http://www.weather.gov/source/aprfc/nrcs_swe.json",
+        timeout=30,
+    )
     j = req.json()
     for feature in j["features"]:
         nwsli = feature["properties"]["lid"]

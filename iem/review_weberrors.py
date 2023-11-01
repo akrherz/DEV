@@ -29,6 +29,15 @@ def main():
             if req.status_code in [200, 422, 503]:
                 waiting = False
                 continue
+            # /api/ can emit 500 for a variety of reasons, ensure that we
+            # get a JSON response in this case and move along
+            if uri.startswith("/api/"):
+                try:
+                    req.json()
+                    waiting = False
+                    continue
+                except Exception:
+                    pass
             res = input(f"Got {req.status_code} {req.text} Try again?([y]/n) ")
             if res == "n":
                 waiting = False

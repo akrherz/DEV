@@ -4,7 +4,6 @@ import osgeo.gdal_array
 from osgeo.gdalconst import *
 import numpy as np
 import mx.DateTime, os, shutil
-import iemdb
 import math
 from pyiem import reference
 

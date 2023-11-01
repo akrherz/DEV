@@ -15,7 +15,9 @@ def main():
     unknown = []
     for row in acursor:
         unknown.append(row[0])
-    req = requests.get("https://weather.rap.ucar.edu/surface/stations.txt")
+    req = requests.get(
+        "https://weather.rap.ucar.edu/surface/stations.txt", timeout=30
+    )
     for line in req.text.split("\n"):
         if line.startswith("!") or len(line) < 80:
             continue

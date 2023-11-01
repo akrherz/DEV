@@ -3,14 +3,14 @@
 https://www.ncdc.noaa.gov/homr/reports
 """
 
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.util import get_dbconn
 
 
 def main():
     """Go Main Go!"""
     pgconn = get_dbconn("hads")
-    udf = read_sql(
+    udf = pd.read_sql(
         "SELECT distinct nwsli, 1 as col from unknown WHERE "
         "length(nwsli) = 5 ORDER by nwsli",
         pgconn,

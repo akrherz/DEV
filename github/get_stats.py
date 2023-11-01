@@ -1,6 +1,4 @@
 """Cheap script to get stats"""
-from __future__ import print_function
-
 import sys
 
 import requests
@@ -11,14 +9,13 @@ def main(argv):
     package = argv[1]
     release = argv[2]
     req = requests.get(
-        (
-            "https://api.github.com/repos/igniterealtime/%s/"
-            "releases/tags/v%s" % (package, release)
-        )
+        f"https://api.github.com/repos/igniterealtime/{package}/"
+        f"releases/tags/v{release}",
+        timeout=30,
     )
     j = req.json()
     total = 0
-    print("%s Download Stats for Release: %s" % (package, release))
+    print(f"{package} Download Stats for Release: {release}")
     for asset in j["assets"]:
         print("%38s %6i" % (asset["name"], asset["download_count"]))
         total += asset["download_count"]

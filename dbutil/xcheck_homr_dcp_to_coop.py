@@ -4,7 +4,7 @@ https://www.ncdc.noaa.gov/homr/reports
 """
 import sys
 
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.util import get_dbconn
 
 
@@ -12,7 +12,7 @@ def main():
     """Go Main Go!"""
     pgconn = get_dbconn("mesosite")
     cursor = pgconn.cursor()
-    df = read_sql(
+    df = pd.read_sql(
         """
         SELECT id, count(*), max(network) as network from stations
         WHERE network ~* 'COOP' or network ~* 'DCP'

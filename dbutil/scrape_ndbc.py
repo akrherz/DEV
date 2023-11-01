@@ -31,7 +31,7 @@ def compute_network(nwsli):
 def dowork(nwsli):
     """do work!"""
     uri = "http://www.ndbc.noaa.gov/station_page.php?station=%s" % (nwsli,)
-    req = requests.get(uri)
+    req = requests.get(uri, timeout=30)
     if req.status_code != 200:
         print("do(%s) failed with status code: %s" % (nwsli, req.status_code))
         return

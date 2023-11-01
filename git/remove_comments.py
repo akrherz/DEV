@@ -11,8 +11,6 @@ def main():
             dofile = False
             for line in open(localfn, encoding="utf8"):
                 if line.strip() == "*" and lastline.strip() == "/**":
-                    # if line.strip() == '-->' and lastline.strip() == '<!--':
-                    # print localfn, line, lastline
                     dofile = True
                 lastline = line.strip()
             if not dofile:
