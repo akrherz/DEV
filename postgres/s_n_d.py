@@ -30,7 +30,8 @@ def main():
     day2 = today + datetime.timedelta(days=2)
     sql = (
         f"INSERT into summary_{day2.year}(iemid, day) "
-        f"select iemid, '{day2:%Y-%m-%d}' from current"
+        f"select iemid, '{day2:%Y-%m-%d}' from stations "
+        "where online and not metasite"
     )
     atomic(pgconn, sql)
 
