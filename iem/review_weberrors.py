@@ -24,7 +24,7 @@ def main():
         print(uri)
         waiting = True
         while waiting:
-            req = requests.get("http://iem.local" + uri, timeout=30)
+            req = requests.get("http://iem.local" + uri, timeout=600)
             # Rumfields Known Knowns
             if req.status_code in [200, 422, 503]:
                 waiting = False

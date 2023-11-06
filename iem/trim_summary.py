@@ -20,8 +20,7 @@ def workflow(iemid, row):
         if df.empty:
             continue
         # drop two columns that have data
-        # and columns with bad data (zeros) < 2015
-        df = df.drop(columns=["iemid", "day", "max_sknt", "max_gust"])
+        df = df.drop(columns=["iemid", "day"])
         # Is this entire data frame null?
         if not df.isnull().values.all():
             print(f"Found data at year {year}, aborting")
