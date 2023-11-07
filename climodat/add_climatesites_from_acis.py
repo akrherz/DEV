@@ -11,6 +11,7 @@ from pyiem.reference import nwsli2state
 from pyiem.util import convert_value, get_dbconn, logger
 
 LOG = logger()
+THISYEAR = date.today().year
 state2nwsli = dict((value, key) for key, value in nwsli2state.items())
 
 
@@ -60,7 +61,7 @@ def process_state(state, data):
             known += 1
             continue
         (maxt, pcpn) = [make_dates(r) for r in meta["valid_daterange"]]
-        if (maxt[1] - maxt[0]) < timedelta(days=365) and (
+        if (maxt[1] - maxt[0]) < timedelta(days=365) or (
             pcpn[1] - pcpn[0]
         ) < timedelta(days=365):
             LOG.info("Skipping %s with too little data", clstation)
@@ -74,9 +75,12 @@ def process_state(state, data):
         elif coops:
             nwsli = coops[0]
         # This station is online if temp or precip last date is this year
-        online = date.today().year in [maxt[1].year, pcpn[1].year]
+        online = THISYEAR == maxt[1].year and THISYEAR == pcpn[1].year
+        if not online:
+            LOG.info("Skipping %s as not online", clstation)
+            continue
         tracking = None
-        if online and nwsli is not None:
+        if nwsli is not None:
             if nwsli in COOP_SITES.sts:
                 tracking = f"{nwsli}|{state}_COOP"
             elif nwsli in DCP_SITES.sts:
@@ -89,7 +93,7 @@ def process_state(state, data):
                     "INSERT into stations(id, name, network, country, state, "
                     "plot_name, online, metasite, geom, elevation) VALUES "
                     "(%s, %s, %s, %s, %s, %s, %s, 't', "
-                    "'SRID=4326;POINT(%s %s)', %s) "
+                    "ST_POINT(%s, %s, 4326), %s) "
                     "RETURNING iemid",
                     (
                         nwsli,
@@ -104,20 +108,20 @@ def process_state(state, data):
                         convert_value(meta.get("elev", -999), "feet", "meter"),
                     ),
                 )
-        if online and tracking is None:
+        if tracking is None:
             LOG.info(
                 "skipping add for online %s without station: %s",
                 clstation,
                 meta,
             )
             continue
-        LOG.info("Add %s online: %s %s", clstation, online, tracking)
+        LOG.info("*******  Add %s online: %s %s", clstation, online, tracking)
         CLIMATE_SITES.sts[clstation] = {}
         added.append(acis)
         cursor.execute(
             "INSERT into stations(id, name, network, country, state, "
             "plot_name, online, metasite, geom, elevation) VALUES "
-            "(%s, %s, %s, %s, %s, %s, %s, 't', 'SRID=4326;POINT(%s %s)', %s) "
+            "(%s, %s, %s, %s, %s, %s, %s, 't', ST_POINT(%s, %s, 4326), %s) "
             "RETURNING iemid",
             (
                 clstation,
@@ -134,12 +138,11 @@ def process_state(state, data):
         )
         iemid = cursor.fetchone()[0]
         # setup the tracking attribute
-        if tracking:
-            cursor.execute(
-                "INSERT into station_attributes(iemid, attr, value) "
-                "VALUES (%s, %s, %s)",
-                (iemid, "TRACKS_STATION", tracking),
-            )
+        cursor.execute(
+            "INSERT into station_attributes(iemid, attr, value) "
+            "VALUES (%s, %s, %s)",
+            (iemid, "TRACKS_STATION", tracking),
+        )
 
     cursor.close()
     pgconn.commit()
