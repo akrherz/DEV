@@ -2,7 +2,6 @@
  Loop over sites that we think are solely COOP, but report many times per day
  and so are likely DCP
 """
-import subprocess
 
 from pyiem.util import get_dbconn
 
@@ -30,25 +29,21 @@ def main():
         network = row[1]
         if row[2] < 5:
             continue
-        # Look for how many entries are in mesosite
-        mcursor.execute("SELECT network from stations where id = %s", (sid,))
-        if mcursor.rowcount == 1:
+        # Is there a DCP variant?
+        mcursor.execute(
+            "SELECT network from stations where id = %s and network = %s",
+            (sid, network.replace("_COOP", "_DCP")),
+        )
+        if mcursor.rowcount == 0:
             newnetwork = network.replace("_COOP", "_DCP")
             print(
                 "We shall switch %s from %s to %s" % (sid, network, newnetwork)
             )
             mcursor2.execute(
-                "UPDATE stations SET network = %s WHERE id = %s",
-                (newnetwork, sid),
+                "UPDATE stations SET network = %s "
+                "WHERE id = %s and network = %s",
+                (newnetwork, sid, network),
             )
-        if mcursor.rowcount == 2:
-            networks = []
-            for row2 in mcursor:
-                networks.append(row2[0])
-            if network.replace("_COOP", "_DCP") in networks:
-                print("Deleting COOP variant for sid: %s" % (sid,))
-                cmd = ("python delete_station.py %s %s") % (network, sid)
-                subprocess.call(cmd, shell=True)
 
     ipgconn.commit()
     icursor2.close()

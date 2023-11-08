@@ -2,7 +2,7 @@
 # Local
 import sys
 
-from pandas.io.sql import read_sql
+import pandas as pd
 
 # Third Party
 from pyiem.util import get_dbconn
@@ -11,7 +11,7 @@ from pyiem.util import get_dbconn
 def main(argv):
     """Go Main Go."""
     threshold = float(argv[1])
-    df = read_sql(
+    df = pd.read_sql(
         "SELECT station, year, month, "
         "sum(case when precip >= %s then 1 else 0 end) as days from "
         "alldata where substr(station, 3, 1) = 'C' "

@@ -84,7 +84,7 @@ def do(row):
         cursor.execute(
             "INSERT into stations(id, name, network, country, state, "
             "plot_name, online, metasite, geom, elevation) VALUES "
-            "(%s, %s, %s, %s, %s, %s, 't', 't', 'SRID=4326;POINT(%s %s)', %s) "
+            "(%s, %s, %s, %s, %s, %s, 't', 't', ST_POINT(%s,%s,4326), %s) "
             "RETURNING iemid",
             (
                 nwsli,
@@ -122,7 +122,7 @@ def main():
     """Go Main Go."""
     df = read_sql(
         "SELECT id, iemid from stations where network ~* 'CLIMATE' and "
-        "date(archive_end) = '2021-04-18' ORDER by id ASC",
+        "archive_end = '2021-04-18' ORDER by id ASC",
         get_dbconn("mesosite"),
         index_col=None,
     )

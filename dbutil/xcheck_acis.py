@@ -29,7 +29,7 @@ def process(nwsli, row, data):
     cursor.execute(
         "INSERT into stations (id, name, network, country, plot_name, "
         "state, elevation, online, metasite, geom) VALUES (%s, %s, %s, "
-        "%s, %s, %s, %s, %s, %s, 'SRID=4326;POINT(%s %s)')",
+        "%s, %s, %s, %s, %s, %s, ST_POINT(%s, %s, 4326))",
         (
             nwsli,
             city,

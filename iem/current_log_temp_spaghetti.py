@@ -31,7 +31,8 @@ def main():
     # ax.set_xlabel("Local Hour of Day [CDT]")
     # ax.set_ylabel("Air & Dew Point (dash) Temp [F]", fontsize=9)
     ax.set_title(
-        "21 March 2017 Temperature Time Series\nAububon and Des Moines Experienced Snow"
+        "21 March 2017 Temperature Time Series\n"
+        "Aububon and Des Moines Experienced Snow"
     )
     ax.set_ylabel("Temperature $^{\circ}\mathrm{F}$")
     axes[1].set_xlabel("CDT")
