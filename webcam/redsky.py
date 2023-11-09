@@ -64,7 +64,7 @@ def main():
         (redish, g, b) = f.resize((1, 1), Image.ANTIALIAS).getpixel((0, 0))
 
         if redish > 120 and g < 110:  # Our arb thresholding
-            print("RISE", sunrise, redish, w * h),
+            (print("RISE", sunrise, redish, w * h),)
             output.write("RISE,%s,%s," % (sunrise, redish))
             cursor.execute(
                 """SELECT sum(p01i) from t"""
@@ -115,7 +115,7 @@ def main():
         (redish, g, b) = f.resize((1, 1), Image.ANTIALIAS).getpixel((0, 0))
 
         if redish > 120 and g < 110:  # Our arb thresholding
-            print("SET", sunset, redish, w * h),
+            (print("SET", sunset, redish, w * h),)
             output.write("SET,%s,%s," % (sunset, redish))
             cursor.execute(
                 """SELECT sum(p01i) from t"""

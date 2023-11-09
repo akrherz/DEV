@@ -79,9 +79,7 @@ def main():
         SELECT id, x(geom) as lon, y(geom) as lat from stations s
         WHERE ST_Contains(ST_SetSrid(GeometryFromText('%s'),4326), s.geom) 
         and network ~* 'ASOS'
-        """ % (
-            row[2],
-        )
+        """ % (row[2],)
         mcursor.execute(sql)
         for row2 in mcursor:
             ids.append(row2[0])

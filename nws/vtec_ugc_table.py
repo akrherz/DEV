@@ -25,10 +25,12 @@ def main():
         )
         df1 = df[df["z"] == "C"]
         df2 = df[df["z"] == "Z"]
-        print(
-            "%s.%s %4i %4i"
-            % (phenomena, significance, len(df1.index), len(df2.index))
-        ),
+        (
+            print(
+                "%s.%s %4i %4i"
+                % (phenomena, significance, len(df1.index), len(df2.index))
+            ),
+        )
         if df2.empty or df1.empty:
             print
             continue
