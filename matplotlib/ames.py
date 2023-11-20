@@ -39,34 +39,6 @@ def main():
         poly = Polygon(seg, fc="None", ec="k", lw=1.5, zorder=3)
         m.ax.add_patch(poly)
 
-    """
-    img = Image.open('DMX_N1P_201006260459.png')
-    data = np.copy( np.asarray(img) )
-    data = data.astype(np.float32)
-
-
-    n1p = [0,0.01,0.1,0.3,0.5,0.8,1.0,1.3,1.5,1.8,2.0,2.5,3.0,4.0,6.0,8.0]
-    for i,v in enumerate(n1p):
-    data[data==i] = v
-    #ntp = [0,0.01,0.3,0.6,1.0,1.5,2.0,2.5,3.0,4.0,5.0,6.0,8.0,10.0,12.0,15.0]
-    #for i,v in enumerate(ntp):
-    #  data[data==i] = v
-
-    lons1x = np.arange(-96.615703, -96.615703 + 0.005785*1000.0, 0.005785)
-    lats1x = np.arange(44.623703, 44.623703 -  0.005785*1000.0, - 0.005785)
-
-    lons, lats = np.meshgrid( lons1x, lats1x)
-    res = m.pcolormesh(lons, lats, data, n1p, latlon=True, units='inch')
-
-    ys = np.digitize([41.965,42.085], lats1x)
-    xs = np.digitize([-93.7,-93.55], lons1x)
-    for x in range(xs[0], xs[1], 3):
-        for y in range(ys[1], ys[0], 3):
-            xx, yy = m.map(lons1x[x] + 0.0025, lats1x[y] - 0.0025)
-            txt = m.ax.text(xx, yy, "%s" % (data[y,x],) , zorder=5, ha='center',
-                va='center')
-            txt.set_path_effects([PathEffects.withStroke(linewidth=2, foreground="w")])
-    """
     grbs = pygrib.open("ST4.2010062605.01h.grib")
     g = grbs.message(1)
     data = g["values"] / 25.4

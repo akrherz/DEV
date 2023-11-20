@@ -28,7 +28,10 @@ def main():
     )
 
     fig = figure(
-        title="2023 Iowa Flood Center Grid Cell Backward Accumulation for Story County",
+        title=(
+            "2023 Iowa Flood Center Grid Cell Backward Accumulation for "
+            "Story County"
+        ),
         subtitle="based on 9492 0.004x0.004 degree grid cells covering county",
         figsize=(8, 6),
     )

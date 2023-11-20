@@ -54,10 +54,10 @@ def main():
     ax.set_title(
         "\n".join(
             [
-                "1 Jan 2004- 30 Nov 2020 Monthly Average Area Forecast Discussions"
-                " Word Count",
-                "Based on unofficial IEM Archives, excluding WMO/MND header and "
-                "any numbers found in the product.",
+                "1 Jan 2004- 30 Nov 2020 "
+                "Monthly Average Area Forecast Discussions Word Count",
+                "Based on unofficial IEM Archives, excluding WMO/MND header "
+                "and any numbers found in the product.",
             ]
         )
     )

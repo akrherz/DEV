@@ -57,7 +57,9 @@ def main():
     df["pwater"] = df["pwater"] / 25.4
 
     (fig, ax) = figure_axes(
-        title="Omaha 7 PM Precipitable Water + Next 12 Hour Rainfall during May",
+        title=(
+            "Omaha 7 PM Precipitable Water + Next 12 Hour Rainfall during May"
+        ),
         subtitle=(f"{df['date'].min():%Y/%m/%d} to " "2023-05-23"),
         figsize=(8.0, 6.0),
     )

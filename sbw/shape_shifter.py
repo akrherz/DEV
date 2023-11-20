@@ -100,7 +100,8 @@ def main():
             x(geom) as lon, y(geom) as lat
             from lsrs_%s w WHERE 
             geom && ST_Buffer(SetSrid(GeometryFromText('%s'),4326),0.01) and 
-            contains(ST_Buffer(SetSrid(GeometryFromText('%s'),4326),0.01), geom) 
+            contains(ST_Buffer(
+                SetSrid(GeometryFromText('%s'),4326),0.01), geom) 
             and  wfo = '%s' and
             ((type = 'M' and magnitude >= 34) or 
             (type = 'H' and magnitude >= 1) or type = 'W' or
@@ -141,7 +142,6 @@ def main():
             dT.append(deltat)
             dXT.append(deltax_t / 1000.0)
             dDist.append(((deltax_t * deltax_t + yP * yP) ** 0.5) / 1000.0)
-            # print 'DeltaT: %.1f DeltaTx: %.3f SMPS: %.1f' % (deltat, deltax_t, smps)
             # rlsrX.append(xP / 1000.)
             # rlsrY.append(yP / 1000.)
             rlsrX.append(xP / smps)

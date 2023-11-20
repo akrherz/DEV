@@ -30,8 +30,8 @@ def main():
     SELECT obs.year, obs.month, obs.sum - climo.sum as diff from obs
     JOIN climo on (obs.month = climo.month) )
 
-    SELECT year, month, diff, rank() OVER (PARTITION by year ORDER by diff DESC )
-    from combo
+    SELECT year, month, diff,
+    rank() OVER (PARTITION by year ORDER by diff DESC) from combo
     """
     )
     res = []

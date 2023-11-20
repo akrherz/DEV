@@ -91,10 +91,13 @@ def main():
     df2 = df[pd.notna(df["tmpf"])]
 
     (fig, ax) = figure_axes(
-        title="Omaha 500hPa 12 Hour Height Change + METAR Thunder (TS) Reported",
+        title=(
+            "Omaha 500hPa 12 Hour Height Change + METAR Thunder (TS) Reported"
+        ),
         subtitle=(
             f"{df2['utc_valid'].min():%Y/%m/%d} to "
-            f"{df['utc_valid'].max():%Y-%m-%d}, violin sides individually scaled"
+            f"{df['utc_valid'].max():%Y-%m-%d}, "
+            "violin sides individually scaled"
         ),
     )
     df = df.assign(

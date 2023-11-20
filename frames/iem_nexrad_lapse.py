@@ -232,16 +232,6 @@ def main():
             "Wind Gust [MPH]",
             loc="bottom",
         )
-        # ax.axvline(now, color="k", lw=1)
-        # ax.set_xlim(sts, ets)
-        # ax.xaxis.set_major_formatter(mdates.DateFormatter("%-I %p", tz=CST))
-        # ax.xaxis.set_major_locator(mdates.HourLocator(interval=1))
-        # ax.set_xlabel("15 Dec 2021 Central Standard Time, 5 minute bar width")
-        # ax.set_yticks(range(50, 101, 10))
-        # ax.set_ylim(50, 100)
-        # ax.set_ylabel("Wind Gust [MPH]")
-        # ax.set_title("NWS Thunderstorm Wind Gust Reports [MPH]")
-        # ax.grid(True)
         mp.drawcounties("k")
         mp.fig.savefig(f"images/{i:05d}.png")
         mp.close()

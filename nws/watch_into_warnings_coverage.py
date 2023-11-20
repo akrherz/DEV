@@ -69,11 +69,10 @@ for i, y in enumerate(ys):
 ax.set_xticks(range(len(xs)))
 ax.set_xticklabels(xs)
 ax.set_title(
-    (
-        "1 Oct 2005 - 28 Mar 2017 Svr Tstorm Watch into Svr Tstorm Warning Coverage\n"
-        "Frequency of watches with percentage of counties/parishes under...\n"
-        "Svr Tstorm Watch eventually receiving a Svr Tstorm Warning"
-    )
+    "1 Oct 2005 - 28 Mar 2017 "
+    "Svr Tstorm Watch into Svr Tstorm Warning Coverage\n"
+    "Frequency of watches with percentage of counties/parishes under...\n"
+    "Svr Tstorm Watch eventually receiving a Svr Tstorm Warning"
 )
 
 ax.grid(True)

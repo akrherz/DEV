@@ -22,8 +22,8 @@ def dotable(date):
                 SELECT entered, pil, source, count(*),
                 max(case when wmo = 'TTAAOO' then 'AAAA00' else wmo end) as
                 max_wmo from {table}
-                WHERE source is not null and wmo is not null and pil is not null
-                and entered >= %s and entered <= %s
+                WHERE source is not null and wmo is not null
+                and pil is not null and entered >= %s and entered <= %s
                 GROUP by entered, pil, source)
             select * from data where count > 1
         """,

@@ -52,7 +52,10 @@ def main():
             sector="conus",
             continentalcolor="white",
             twitter=True,
-            title=f"15 Minute Pressure Altimeter Change at {dt:%b %d %Y %H%M} UTC",
+            title=(
+                "15 Minute Pressure Altimeter Change "
+                f"at {dt:%b %d %Y %H%M} UTC"
+            ),
             subtitle="Data via NWS/MADIS",
         )
         df = df.to_crs(m.panels[0].crs)

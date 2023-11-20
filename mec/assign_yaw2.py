@@ -142,10 +142,9 @@ def update_database(unitnumber, turbineid, correction):
     """Apply this correction"""
     cursor2 = PGCONN.cursor()
     cursor2.execute(
-        """UPDATE sampled_data_"""
-        + unitnumber
-        + """ 
-        SET yaw3 = yaw + %s where valid between '2008-08-01' and '2008-09-01'""",
+        f"""UPDATE sampled_data_{unitnumber}
+        SET yaw3 = yaw + %s where valid between '2008-08-01' and '2008-09-01'
+        """,
         (correction,),
     )
     cursor2.execute(

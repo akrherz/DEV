@@ -30,7 +30,9 @@ def main():
     yestdf["freq"] = yestdf["count"] / yestdf["count"].sum() * 100.0
 
     fig = figure(
-        title="Des Moines NEXRAD Storm Attribute Direction Frequency [May-June]",
+        title=(
+            "Des Moines NEXRAD Storm Attribute Direction Frequency [May-June]"
+        ),
         subtitle="2000-2023 for storms traveling at least 5 knots speed",
         figsize=(10.24, 7.68),
     )

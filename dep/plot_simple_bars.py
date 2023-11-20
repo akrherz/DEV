@@ -16,7 +16,8 @@ def main():
     ax.set_title(
         (
             "Iowa DEP Future Precipitation Scenarios\n"
-            "Change in Hill Slope Soil Delivery by Linear Precipitation Adjustment"
+            "Change in Hill Slope Soil Delivery by Linear "
+            "Precipitation Adjustment"
         )
     )
     ax.set_xlabel('Precipitation Total Adjustment (baseline: 38.17")')
