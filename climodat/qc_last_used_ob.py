@@ -77,8 +77,8 @@ def main():
             st_x(geom) as lon, st_y(geom) as lat,
             s.name, l.value as tracks from stations S LEFT JOIN locs l on
             (s.iemid = l.iemid) WHERE s.network ~* 'CLIMATE' and
-            substr(s.id, 3, 4) != '0000' and
-            substr(s.id, 3, 1) != 'C' ORDER by s.id ASC
+            substr(s.id, 3, 4) != '0000' and online and
+            substr(s.id, 3, 1) not in ('C', 'D', 'T') ORDER by s.id ASC
             """,
             conn,
             index_col="id",
@@ -86,9 +86,9 @@ def main():
     for station, row in sdf.iterrows():
         if row["tracks"] is None:
             LOG.info("%s tracks no station, setting offline.", station)
-            set_offline(row["iemid"])
+            # set_offline(row["iemid"])
             continue
-        check_last(station, row)
+        # check_last(station, row)
 
 
 if __name__ == "__main__":

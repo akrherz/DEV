@@ -3,9 +3,11 @@
 We generally do not want to have climodat realtime stations that are purely
 estimated for one of the variables.  Some sites only report temp or precip
 for example.  This script will remove realtime status for such sites.
+
+Note: This is chunking a year at a time, attm.
 """
 
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.reference import state_names
 from pyiem.util import get_dbconn, get_sqlalchemy_conn
 
@@ -13,14 +15,16 @@ from pyiem.util import get_dbconn, get_sqlalchemy_conn
 def do(ccursor, mcursor, state):
     """Do great things."""
     with get_sqlalchemy_conn("coop") as conn:
-        df = read_sql(
-            "select station, "
-            "sum(case when temp_estimated then 1 else 0 end) as testimated, "
-            "sum(case when precip_estimated then 1 else 0 end) as pestimated, "
-            "count(*) as obs "
-            f"from alldata_{state} where day > now() - '1 year'::interval and "
-            "substr(station, 3, 1) not in ('T', 'C') and "
-            "substr(station, 3, 4) != '0000' GROUP by station",
+        df = pd.read_sql(
+            f"""
+            select station,
+            sum(case when temp_estimated then 1 else 0 end) as testimated,
+            sum(case when precip_estimated then 1 else 0 end) as pestimated,
+            count(*) as obs
+            from alldata_{state} where year = 2023 and
+            substr(station, 3, 1) not in ('T', 'C', 'D', 'K') and
+            substr(station, 3, 4) != '0000' GROUP by station
+            """,
             conn,
             index_col="station",
         )
@@ -28,14 +32,18 @@ def do(ccursor, mcursor, state):
     for station in df2.index.values:
         # Set online to false in mesosite
         mcursor.execute(
-            "UPDATE stations SET online = 'f' WHERE id = %s", (station,)
+            """
+            UPDATE stations SET online = 'f', archive_end = '2022-12-31'
+            WHERE id = %s and network = %s and online
+            """,
+            (station, f"{state}CLIMATE"),
         )
         # Truncate alldata for this station and year
         ccursor.execute(
-            f"DELETE from alldata_{state} WHERE station = %s and year = 2022",
+            "DELETE from alldata WHERE station = %s and year = 2023",
             (station,),
         )
-        print(f"Culling {ccursor.rowcount} rows for last data for {station}")
+        print(f"Culled {ccursor.rowcount} rows for {station}")
 
 
 def main():
@@ -50,16 +58,6 @@ def main():
         mcursor.close()
         coopdb.commit()
         mesositedb.commit()
-
-    # Now remove any COOP tracking status for removed sites
-    mcursor = mesositedb.cursor()
-    mcursor.execute(
-        "delete from station_attributes a USING stations t where "
-        "a.iemid = t.iemid and attr = 'TRACKS_STATION' and not t.online"
-    )
-    print(f"Removed {mcursor.rowcount} COOP tracking from attributes")
-    mcursor.close()
-    mesositedb.commit()
 
 
 if __name__ == "__main__":

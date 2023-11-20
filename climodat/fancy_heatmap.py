@@ -47,8 +47,8 @@ def main():
         with get_sqlalchemy_conn("coop") as conn:
             df = pd.read_sql(
                 """
-                SELECT day, sday, year, precip from alldata_ia where station = %s
-                and precip is not null and sday < '0919'
+                SELECT day, sday, year, precip from alldata_ia
+                where station = %s and precip is not null and sday < '0919'
                 ORDER by day ASC
             """,
                 conn,

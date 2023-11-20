@@ -94,7 +94,7 @@ def main():
             continue
         LOG.info("%s -> %s", row[1], tracks)
         cursor2.execute(
-            """insert into station_attributes values (%s, %s, %s)""",
+            "insert into station_attributes values (%s, %s, %s)",
             (row[1], "TRACKS_STATION", tracks),
         )
     cursor2.close()
