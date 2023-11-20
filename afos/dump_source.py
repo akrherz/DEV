@@ -10,17 +10,15 @@ def main():
 
     acursor.execute(
         """
-        SELECT pil, entered at time zone 'UTC', source, pil, data
+        SELECT pil, entered at time zone 'UTC', data
         from products
         WHERE source = 'TJSJ' and entered >= '2017-08-26'
         and entered < '2017-09-13'
     """
     )
     for row in acursor:
-        fn = "TJSJ/%s_%s.txt" % (row[0].strip(), row[1].strftime("%Y%m%d%H%M"))
-        with open(fn, "a") as fp:
-            fp.write(noaaport_text(row[4]))
-            fp.write("\r\r\n\003")
+        with open(f"TJSJ/{row[0].strip()}_{row[1]:%Y%m%d%H%M}.txt", "a") as fp:
+            fp.write(noaaport_text(row[2]))
 
 
 if __name__ == "__main__":
