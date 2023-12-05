@@ -1,8 +1,6 @@
 """Hack things around in the database for when an ASOS ID changes."""
-# Stlib
-import sys
 
-# third party
+import click
 from sqlalchemy import text
 
 import pandas as pd
@@ -29,10 +27,10 @@ def check_overlaps(oldid, newid):
         df = pd.read_sql(
             text(
                 "SELECT id, archive_begin, archive_end, iemid from stations "
-                "WHERE id in :ids and network ~* 'ASOS'"
+                "WHERE id = ANY(:ids) and network ~* 'ASOS'"
             ),
             conn,
-            params={"ids": tuple([oldid, newid])},
+            params={"ids": [oldid, newid]},
             index_col="id",
         )
     # Possible a new id change, so archive_end may not be set
@@ -100,16 +98,17 @@ def update_iemaccess(meta, oldid, newid):
         conn.commit()
 
 
-def main(argv):
+@click.command()
+@click.option("--oldid", help="Old ID")
+@click.option("--newid", help="New ID")
+def main(oldid, newid):
     """Do things."""
-    oldid = argv[1]
-    newid = argv[2]
     meta = check_overlaps(oldid, newid)
     update_asosdb(oldid, newid)
     update_iemaccess(meta, oldid, newid)
     create_meta_alias(meta, oldid, newid)
-    print("Considering running dbutil/delete_stations.py")
+    print("Considering SYNC_STATIONS.sh")
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()
