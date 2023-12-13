@@ -55,7 +55,7 @@ def plot():
         )
         dfs[scenario]["accum"] = dfs[scenario]["avg"].cumsum()
 
-    for i, sday in enumerate(dfs[0].index.values):
+    for i, _sday in enumerate(dfs[0].index.values):
         if i == 0:
             continue
         (fig, ax) = plt.subplots(1, 1)
