@@ -1,7 +1,12 @@
 """Ingest."""
 
+import click
+
 import pandas as pd
 from pyiem.database import get_dbconnc
+from pyiem.util import logger
+
+LOG = logger()
 
 
 def is_numeric(val):
@@ -45,43 +50,49 @@ def update_state_days():
     pgconn.commit()
 
 
-def main():
+@click.command()
+@click.option("--filename")
+@click.option("--sheetname")
+@click.option("--metric")
+def main(filename, sheetname, metric):
     """Go Main."""
-    df = pd.read_excel(
-        "PublicHISTORIC_IADAYS.xlsx", sheet_name="Dist Days_2012-", header=None
-    )
+    df = pd.read_excel(filename, sheet_name=sheetname, header=None)
 
     col = 0
+    inserts = 0
     pgconn, cursor = get_dbconnc("coop")
     while col < len(df.columns):
         # Look for Date in row 2
-        if df.iloc[2, col] != "Date":
+        if df.iloc[2, col] != "DATE":
             col += 1
             continue
         print("Found Date in column", col)
         for row in range(3, len(df.index)):
             dt = df.iloc[row, col]
-            vals = list(df.iloc[row, col + 1 : col + 10])
+            if dt is None:
+                continue
+            vals = list(df.iloc[row, col + 1 : col + 11])
             if not all(is_numeric(v) for v in vals):
                 print(dt, vals)
                 continue
             cursor.execute(
-                "delete from nass_iowa where valid = %s and "
-                "metric = 'days suitable'",
-                (dt,),
+                "delete from nass_iowa where valid = %s and " "metric = %s",
+                (dt, metric),
             )
             cursor.execute(
                 "INSERT into nass_iowa(valid, metric, nw, nc, ne, wc, c, ec, "
-                "sw, sc, se) "
-                "VALUES (%s, 'days suitable', %s, %s, %s, %s, %s,%s,%s,%s,%s)",
-                (dt, *vals),
+                "sw, sc, se, iowa) "
+                "VALUES (%s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                (dt, metric, *vals),
             )
+            inserts += 1
         col += 10
 
     cursor.close()
     pgconn.commit()
+    LOG.info("Inserted %s rows", inserts)
 
 
 if __name__ == "__main__":
-    # main()
-    update_state_days()
+    main()
+    # update_state_days()
