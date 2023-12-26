@@ -114,7 +114,7 @@ def main():
             for fn in glob.glob(f"/i/0/env/{huc8}/{huc4}/*.env"):
                 df = read_env(fn)
                 df = df[df["year"] < 2017]
-                current.append(df["av_det"].sum() * 4.163 / 10.0)  # T/a/yr
+                current.append(df["av_det"].sum() * 4.463 / 10.0)  # T/a/yr
 
             older = []
             for fn in glob.glob(f"/i/0_161205/env/{huc8}/{huc4}/*.env"):
@@ -124,7 +124,7 @@ def main():
                     print(exp, fn)
                     continue
                 df = df[df["year"] < 2017]
-                val = df["av_det"].sum() * 4.163 / 10.0  # T/a/yr
+                val = df["av_det"].sum() * 4.463 / 10.0  # T/a/yr
                 older.append(val)
             if not older:
                 print(f"No older data for {huc8}/{huc4}, aborting")
