@@ -11,8 +11,11 @@ def main():
     """Go Main Go."""
     with get_sqlalchemy_conn("mesosite") as conn:
         df = pd.read_sql(
-            "SELECT iemid, id, temp24_hour, precip24_hour from stations WHERE "
-            "network ~* 'CLIMATE' ORDER by id ASC",
+            """
+            SELECT iemid, id, temp24_hour, precip24_hour from stations WHERE
+            network ~* 'CLIMATE' and temp24_hour is null and online
+            ORDER by id ASC
+            """,
             conn,
             index_col="id",
         )
@@ -23,10 +26,10 @@ def main():
             for col in ["temp24_hour", "precip24_hour"]:
                 df2 = pd.read_sql(
                     f"""SELECT {col.replace('24', '')} as datum, count(*),
-                    min(day), max(day) from alldata_{sid[:2]} WHERE
+                    min(day), max(day) from alldata WHERE
                     station = %s and day > now() - '3 years'::interval and
                     {col.replace('24', '')} is not null and
-                    {col.replace('24_hour', '')}_estimated = 'f' GROUP by datum
+                    not {col.replace('24_hour', '')}_estimated GROUP by datum
                     ORDER by count DESC
                     """,
                     conn,
