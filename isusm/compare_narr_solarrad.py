@@ -1,83 +1,77 @@
 """
-Plot a comparison of NARR solar rad vs ISUAG
+Plot a comparison of IEMRE solar rad vs ISUSM
 """
 import datetime
 
-import numpy
+import click
+import httpx
 from scipy import stats
 
+import pandas as pd
 from pyiem.network import Table as NetworkTable
-from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
-
-ISUAG = get_dbconn("isuag")
-icursor = ISUAG.cursor()
-COOP = get_dbconn("coop")
-ccursor = COOP.cursor()
-
-nt = NetworkTable("ISUAG")
+from pyiem.plot import figure
+from pyiem.util import get_sqlalchemy_conn
 
 
-def do(station):
+def do(station, year):
     """Do as I Say."""
-    csite = nt.sts[station]["climate_site"]
-    data = {}
-    icursor.execute(
-        "SELECT valid, c80 from daily where c80 > 0 and station = %s",
-        (station,),
+    nt = NetworkTable("ISUSM")
+    # Fetch the IEMRE data to get the daily radiation values
+    req = httpx.get(
+        "http://iem.local/iemre/multiday/"
+        f"{year}-01-01/{year}-12-31/{nt.sts[station]['lat']}/"
+        f"{nt.sts[station]['lon']}/json"
     )
-    for row in icursor:
-        data[row[0]] = float(row[1])
-
-    obs = []
-    model = []
-    minvalid = datetime.date(2013, 3, 1)
-    maxvalid = datetime.date(1980, 1, 1)
-    ccursor.execute(
-        """SELECT day, merra_srad from alldata_ia where merra_srad > 0
-      and station = %s """,
-        (csite,),
+    iemre = pd.DataFrame(
+        req.json()["data"],
+        index=pd.date_range(f"{year}-01-01", f"{year}-12-31"),
     )
-    for row in ccursor:
-        if row[0] in data:
-            obs.append(data[row[0]])
-            model.append(float(row[1]))
-            if row[0] < minvalid:
-                minvalid = row[0]
-            if row[0] > maxvalid:
-                maxvalid = row[0]
 
-    if len(obs) < 10:
-        return
-    obs = numpy.array(obs)
-    model = numpy.array(model)
-
-    (fig, ax) = plt.subplots(1, 1)
-    bias = numpy.average((model - obs))
-    h_slope, intercept, h_r_value, _, _ = stats.linregress(model, obs)
-    ax.scatter(model, obs, color="tan", edgecolor="None")
-    ax.set_xlabel("MERRA Grid Extracted (langleys)")
-    ax.set_ylabel("ISUAG Observation (langleys)")
-    ax.set_title(
-        ("%s Daily Solar Radiation Comparison (%s-%s)")
-        % (
-            nt.sts[station]["name"],
-            minvalid.strftime("%-d %b %Y"),
-            maxvalid.strftime("%-d %b %Y"),
+    # Fetch the ISUAG data
+    with get_sqlalchemy_conn("isuag") as conn:
+        obs = pd.read_sql(
+            """
+        select valid, slrkj_tot_qc from sm_daily where station = %s
+        and valid >= %s and valid < %s ORDER by valid ASC
+            """,
+            conn,
+            params=(
+                station,
+                datetime.date(year, 1, 1),
+                datetime.date(year + 1, 1, 1),
+            ),
+            index_col="valid",
         )
+
+    iemre["obs"] = obs["slrkj_tot_qc"] / 1000.0
+    iemre["bias"] = iemre["solar_mj"] - iemre["obs"]
+
+    fig = figure(
+        title=f"{year} {nt.sts[station]['name']} Daily Solar Radiation Comp",
+        figsize=(8, 6),
     )
-    ax.plot([0, 800], [0, 800], lw=3, color="r", zorder=2, label="1to1")
+    ax = fig.add_axes([0.1, 0.1, 0.85, 0.4])
+    bias = iemre["bias"].mean()
+    h_slope, intercept, h_r_value, _, _ = stats.linregress(
+        iemre["obs"].values, iemre["solar_mj"].values
+    )
+    ax.scatter(iemre["obs"], iemre["solar_mj"], color="tan", edgecolor="None")
+    ax.set_ylabel(
+        f"IEMRE Grid Extracted mean:{iemre['solar_mj'].mean():.2f} (MJ/d)"
+    )
+    ax.set_xlabel(f"ISUSM Observation mean:{iemre['obs'].mean():.2f} (MJ/d)")
+    ax.plot([0, 40], [0, 40], lw=3, color="r", zorder=2, label="1to1")
     ax.plot(
-        [0, 800],
-        [0 - bias, 800 - bias],
+        [0, 40],
+        [0 - bias, 40 - bias],
         lw=3,
         color="k",
         zorder=2,
         label="model bias = %.1f" % (bias,),
     )
     ax.plot(
-        [0, 800],
-        [intercept, intercept + 800.0 * h_slope],
+        [0, 40],
+        [intercept, intercept + 40.0 * h_slope],
         color="g",
         lw=3,
         zorder=2,
@@ -86,11 +80,23 @@ def do(station):
     ax.legend(loc=2)
     ax.set_xlim(left=0)
     ax.set_ylim(bottom=0)
+    ax.grid(True)
 
-    fig.savefig("%s.png" % (nt.sts[station]["name"].replace(" ", "_"),))
-    del fig
-    print("%-20s %.1f %.2f" % (nt.sts[station]["name"], bias, h_r_value**2))
+    ax = fig.add_axes([0.1, 0.55, 0.85, 0.35])
+    ax.scatter(iemre.index, iemre["bias"], color="tan", edgecolor="None")
+    ax.set_ylabel("IEMRE - ISUSM (MJ/d)")
+    ax.grid(True)
+
+    fig.savefig("test.png")
 
 
-for sid in nt.sts.keys():
-    do(sid)
+@click.command()
+@click.option("--station", type=str)
+@click.option("--year", type=int)
+def main(station, year):
+    """Go Main Go."""
+    do(station, year)
+
+
+if __name__ == "__main__":
+    main()
