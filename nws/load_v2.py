@@ -1,75 +1,82 @@
 """Warning load by minute"""
-
-import pytz
+from zoneinfo import ZoneInfo
 
 import matplotlib.dates as mdates
-import matplotlib.pyplot as plt
-from pyiem.util import get_dbconn
+import pandas as pd
+from pyiem.database import get_sqlalchemy_conn
+from pyiem.plot import figure_axes
+from pyiem.util import utc
 
-TZ = pytz.timezone("America/Chicago")
-PGCONN = get_dbconn("postgis")
-
-
-def getp():
-    """Do Query"""
-    cursor = PGCONN.cursor()
-    cursor.execute(
-        """
-     WITH data as
-     (select distinct hvtec_nwsli,
-     generate_series(issue, expire, '1 minute'::interval) as t
-     from warnings_2019 where phenomena = 'FL' and significance = 'W'
-     and substr(ugc, 1, 2) = 'NE' and issue > '2019-03-01'),
-     agg as (
-         select t, count(*) from data GROUP by t
-     ),
-     ts as (select generate_series('2019-03-01',
-     '2020-01-01', '1 minute'::interval) as t)
-
-     SELECT ts.t, a.count from ts LEFT JOIN agg a on (ts.t = a.t)
-     ORDER by ts.t ASC
-    """
-    )
-    times = []
-    counts = []
-    for row in cursor:
-        times.append(row[0])
-        counts.append(row[1] if row[1] is not None else 0)
-
-    return times, counts
+TZ = ZoneInfo("America/Chicago")
 
 
 def main():
-    """Main"""
-    b_t, b_c = getp()
+    """Do Query"""
+    with get_sqlalchemy_conn("postgis") as conn:
+        df = pd.read_sql(
+            """
+        WITH data as (select w.ugc, u.area2163 * 0.386 as area,
+        generate_series(issue, expire, '1 minute'::interval) as ts from
+        warnings_2024 w JOIN ugcs u on (w.gid = u.gid)
+        where phenomena = 'FG' and significance = 'Y' and
+        issue > '2024-01-10' and substr(w.ugc, 1, 2) != 'AK')
+        SELECT ts, count(*), sum(area) / 3119884. * 100. as cus
+        from data GROUP by ts ORDER by ts ASC
+            """,
+            conn,
+            index_col=None,
+            parse_dates="ts",
+        )
 
-    (fig, ax) = plt.subplots(1, 1, figsize=(8, 6))
-
-    ax.fill_between(b_t, 0, b_c, zorder=1, color="teal")
-    ax.grid(True)
-    ax.xaxis.set_major_locator(mdates.DayLocator(bymonthday=[1], tz=TZ))
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%-d\n%b", tz=TZ))
-
-    ax.set_title("2019 Nebraska Active Flood Warnings")
-    ax.set_ylabel("Active Warning Count")
-    ax.set_ylim(bottom=0.1)
-    ax.set_xlim(b_t[0], b_t[-1])
-    first = None
-    last = None
-    for t, c in zip(b_t, b_c):
-        if c > 0 and first is None:
-            first = t
-        if c == 0 and first is not None and last is None:
-            last = t
-
-    fmt = "%d %b %Y %-I:%M %p"
-    ax.set_xlabel(
-        "Active Streak Duration %s - %s"
-        % (first.strftime(fmt), last.strftime(fmt))
+    (fig, ax) = figure_axes(
+        title="NWS Forecast Zones Under Dense Fog Advisory",
+        subtitle="Based on Unofficial IEM Archives, till 5 AM 26 Jan 2024",
+        figsize=(8, 6),
     )
-    # fig.text(0.01, 0.01, "@akrherz, generated 19 Dec 2019")
+    ax.set_position([0.1, 0.53, 0.8, 0.35])
+    ax.bar(df["ts"].values, df["count"].values, width=1 / 1440.0)
 
-    fig.savefig("test.png")
+    ax.grid(True)
+    ax.set_xlim(utc(2024, 1, 23), utc(2024, 1, 26, 11))
+    ax.xaxis.set_major_locator(mdates.HourLocator(byhour=[0, 12], tz=TZ))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%-I %p\n%-d %b", tz=TZ))
+
+    # Place a horinzontal line at the max value and label it
+    maxval = df["count"].max()
+    ax.axhline(maxval, lw=2, color="r", zorder=1)
+    ax.text(
+        utc(2024, 1, 26, 12),
+        maxval,
+        f"Max:\n{maxval}",
+        va="center",
+        ha="left",
+        color="r",
+    )
+
+    ax.set_ylabel("Number of Zones")
+    ax.set_ylim(bottom=0.1)
+
+    ax = fig.add_axes([0.1, 0.1, 0.8, 0.35])
+    ax.bar(df["ts"].values, df["cus"].values, width=1 / 1440.0)
+    ax.set_ylabel("Percent of Contiguous US")
+    ax.set_ylim(bottom=0)
+    ax.grid(True)
+    ax.set_xlim(utc(2024, 1, 23), utc(2024, 1, 26, 11))
+    ax.xaxis.set_major_locator(mdates.HourLocator(byhour=[0, 12], tz=TZ))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%-I %p\n%-d %b", tz=TZ))
+    ax.set_xlabel("Valid Time (America/Chicago)")
+    maxval = df["cus"].max()
+    ax.axhline(maxval, lw=2, color="r", zorder=1)
+    ax.text(
+        utc(2024, 1, 26, 12),
+        maxval,
+        f"Max:\n{maxval:.1f}%",
+        va="center",
+        ha="left",
+        color="r",
+    )
+
+    fig.savefig("240126.png")
 
 
 if __name__ == "__main__":
