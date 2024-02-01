@@ -60,7 +60,7 @@ def main(huc12):
     if not os.path.isfile(fn):
         compute(huc12)
     dfall = pd.read_csv(fn)
-    slope_classes = [0.0, 0.02, 0.02, 0.04, 0.06, 0.1, 0.12, 1.0]
+    slope_classes = [0.0, 0.02, 0.04, 0.06, 0.12, 1.0]
     prod = dfall[dfall["scenario"] == 0].set_index("fpath")
     df = dfall[dfall["scenario"] != 0]
 
@@ -74,15 +74,13 @@ def main(huc12):
             "colored by slope class"
         ),
         logo="dep",
-        figsize=(8, 6),
+        figsize=(10.24, 7.68),
     )
     ax = fig.add_axes([0.13, 0.1, 0.5, 0.8])
     colors = [
         "tan",
-        "lightgreen",
         "green",
         "blue",
-        "purple",
         "orange",
         "red",
     ]
@@ -113,13 +111,13 @@ def main(huc12):
         [
             "Baseline",
             "Pasture",
-            "No Till",
-            "Very High\nMulch\n(no Chisel)",
-            "Very High\nMulch",
-            "High\nMulch",
-            "Medium\nMulch",
-            "Low\nMulch",
-            "Moldboard\nPlow",
+            "T1. No Till",
+            "T1.5 Very High\nMulch\n(no Chisel)",
+            "T2. Very High\nMulch",
+            "T3. High\nMulch",
+            "T4. Medium\nMulch",
+            "T5. Low\nMulch",
+            "T6. Moldboard\nPlow",
         ]
     )
     ax.legend(title="Slope Class")
@@ -164,7 +162,7 @@ def main(huc12):
     ax2.grid()
     ax2.set_ylim(*ax.get_ylim())
 
-    fig.savefig("/tmp/test.png")
+    fig.savefig(f"/tmp/{huc12}_tillage_scenario_tracks.png")
 
 
 if __name__ == "__main__":
