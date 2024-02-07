@@ -3,10 +3,14 @@
 https://www.nohrsc.noaa.gov/archived_data/instructions.html
 gdal_translate  us_ssmv11036tS__T0001TTNATS2019012305HP001.Hdr snowdepth.nc
 """
+import os
+import subprocess
+
 import netCDF4
 
 import cartopy.crs as ccrs
 import geopandas as gpd
+import pandas as pd
 from pyiem.plot import MapPlot, nwssnow
 from pyiem.util import get_dbconn
 
@@ -71,8 +75,27 @@ def overlay(mp):
         #    zorder=11)
 
 
-def main():
+def workflow(i, valid):
     """Go Main Go."""
+    bilfn = f"snowdepth{valid:%Y%m%d}.bil"
+    if not os.path.isfile(bilfn):
+        # get tar file
+        subprocess.call(
+            [
+                "wget",
+                "-O",
+                "work.tar",
+                f"https://noaadata.apps.nsidc.org/NOAA/G02158/masked/{valid.year}/"
+                f"{valid:%m}_{valid:%b}/SNODAS_{valid:%Y%m%d}.tar",
+            ]
+        )
+        wantgz = f"us_ssmv11036tS__T0001TTNATS{valid:%Y%m%d}05HP001.dat.gz"
+        subprocess.call(["tar", "xvf", "work.tar", wantgz])
+        subprocess.call(["gunzip", wantgz])
+        os.rename(wantgz[:-3], bilfn)
+    subprocess.call(["cp", "snowdepth.hdr", f"snowdepth{valid:%Y%m%d}.hdr"])
+    subprocess.call(["gdal_translate", bilfn, "snowdepth.nc"])
+
     nc = netCDF4.Dataset("snowdepth.nc")
     lats = nc.variables["lat"][:]
     lons = nc.variables["lon"][:]
@@ -81,21 +104,27 @@ def main():
 
     mp = MapPlot(
         sector="custom",
-        west=-100.1,
-        east=-92,
-        south=40.7,
-        north=44.5,
-        title=(
-            r"20 Feb 2020 Morning Low Temperature ($^\circ$F) + Snow Cover"
-        ),
-        subtitle="12 AM 20 Feb 2020 NSIDC SNODAS Snow Depth Analysis",
+        west=-105.1,
+        east=-82,
+        south=36.7,
+        north=48.5,
+        title="NSIDC SNODAS Snow Depth Analysis (inch)",
+        subtitle=f"Valid: 12 AM {valid:%d %b %Y}",
     )
     cmap = nwssnow()
     cmap.set_under("white")
-    mp.pcolormesh(lons, lats, snowdepth, LEVELS, cmap=cmap, units="inch")
+    sm = mp.pcolormesh(lons, lats, snowdepth, LEVELS, cmap=cmap, units="inch")
     # overlay(mp)
-    overlay_lows(mp)
-    mp.postprocess(filename="200221.png")
+    # overlay_lows(mp)
+    mp.postprocess(filename=f"frame{i:02d}.png")
+    mp.close()
+    del sm
+
+
+def main():
+    """."""
+    for i, dt in enumerate(pd.date_range("2024/01/01", "2024/02/06"), start=0):
+        workflow(i, dt)
 
 
 if __name__ == "__main__":
