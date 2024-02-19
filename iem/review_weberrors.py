@@ -38,7 +38,7 @@ def main():
                     continue
                 except Exception:
                     pass
-            res = input(f"Got {req.status_code} {req.text} Try again?([y]/n) ")
+            res = input(f"Got {req.status_code} Try again?([y]/n) ")
             if res == "n":
                 waiting = False
 
