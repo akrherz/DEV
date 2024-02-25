@@ -101,13 +101,13 @@ def main(huc12, fbndid):
         fc="brown",
         zorder=Z_POLITICAL,
     )
-    fieldsdf.iloc[[fbndid]].to_crs(mp.panels[0].crs).plot(
+    fieldsdf.loc[[fbndid]].to_crs(mp.panels[0].crs).plot(
         aspect=None,
         ax=mp.panels[0].ax,
         ec="yellow",
         lw=3,
         fc="None",
-        zorder=Z_POLITICAL,
+        zorder=Z_POLITICAL + 1,
     )
     fpdf.to_crs(mp.panels[0].crs).plot(
         aspect=None,

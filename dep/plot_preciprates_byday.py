@@ -1,11 +1,12 @@
 """Generate a visual showing rainfall rates."""
 import calendar
 
+import click
 import numpy as np
+from pydep.io.wepp import read_cli
 
 from matplotlib import rcParams
 from metpy.units import units
-from pyiem.dep import read_cli
 from pyiem.plot import figure_axes
 
 rcParams.update(
@@ -16,19 +17,28 @@ rcParams.update(
 )
 
 
-def main():
+@click.command()
+@click.option(
+    "--clifn",
+    type=click.Path(exists=True, readable=True),
+    help="Path to input CLI file",
+)
+@click.option(
+    "--title",
+    type=str,
+    default="Iowa",
+    help="Title to use for the plot",
+)
+def main(clifn, title):
     """Go Main Go."""
-    df = read_cli("/i/0/cli/093x041/093.61x041.98.cli")
+    df = read_cli(clifn)
     df["jday"] = df.index.strftime("%j").astype("i")
     df["maxr"] = (df["maxr"].values * units("mm")).to(units("inch")).m
 
     (fig, ax) = figure_axes(
         logo="dep",
         figsize=(8, 6),
-        title=(
-            "DEP 2007-2023 Maximum Precipitation Rate\n"
-            "For Ames, Iowa (41.98N 93.61W)"
-        ),
+        title=("DEP 2007-2023 Maximum Precipitation Rate\n" f"{title}"),
     )
     print(df[df["jday"] > 330].sort_values("maxr", ascending=False))
     gdf = df[["jday", "maxr"]].groupby("jday").max()
@@ -66,7 +76,7 @@ def main():
     ax.set_ylim(-0.2, 6.01)
     ax.set_xlim(-2, 367)
     ax.set_xlabel("Day of Year")
-    fig.savefig("230703.png")
+    fig.savefig("/tmp/rates.png")
 
 
 if __name__ == "__main__":
