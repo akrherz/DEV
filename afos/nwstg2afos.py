@@ -1,5 +1,5 @@
-"""Ingest the NWSTG text files into the AFOS IEM database
-"""
+"""Ingest the NWSTG text files into the AFOS IEM database"""
+
 import datetime
 import glob
 import os

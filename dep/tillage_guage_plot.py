@@ -14,6 +14,7 @@ a subtitle of "Scenario: {scenario}".
 
 The gauge should be saved to the file "gauge.png".
 """
+
 import math
 
 import click

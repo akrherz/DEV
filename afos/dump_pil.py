@@ -1,4 +1,5 @@
 """Dump products to file."""
+
 import os
 import sys
 

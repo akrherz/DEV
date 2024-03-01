@@ -1,4 +1,5 @@
 """Warning load by minute"""
+
 import datetime
 
 import pytz

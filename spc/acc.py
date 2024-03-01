@@ -1,4 +1,5 @@
 """Unsure of origin."""
+
 from io import StringIO
 
 import matplotlib.pyplot as plt

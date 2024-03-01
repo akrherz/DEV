@@ -1,4 +1,5 @@
 """Map of pressure fluctation."""
+
 from datetime import timedelta, timezone
 
 import numpy as np

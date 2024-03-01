@@ -1,4 +1,5 @@
 """Plot WPC"""
+
 import datetime
 import os
 

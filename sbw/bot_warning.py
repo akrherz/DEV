@@ -2,6 +2,7 @@
 
 Take the Time Motion Location and create a MOS style polygon
 """
+
 import math
 import sys
 

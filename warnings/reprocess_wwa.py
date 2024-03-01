@@ -1,4 +1,5 @@
 """Reprocess junky data"""
+
 import sys
 
 from pyiem.nws.products.vtec import parser

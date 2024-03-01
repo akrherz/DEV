@@ -1,4 +1,5 @@
 """Find closest in time warning for a watch."""
+
 import datetime
 from datetime import timezone
 

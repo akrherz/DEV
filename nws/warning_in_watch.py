@@ -20,6 +20,7 @@ agg as (
   select week, sum / count::float * 100 from agg2 ORDER by week;
 
 """
+
 import calendar
 from io import StringIO
 

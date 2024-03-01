@@ -1,4 +1,5 @@
 """General consec analysis."""
+
 import sys
 
 from pyiem.util import get_dbconn

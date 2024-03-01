@@ -11,6 +11,7 @@ data3 as (SELECT o.state, o.ts from data2 o JOIN data t on (o.state = t.state
   and o.ts = t.ts))
 select distinct state, date(ts) from data3 ORDER by date ASC;
 """
+
 from io import StringIO
 
 import pandas as pd

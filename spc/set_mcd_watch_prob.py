@@ -1,4 +1,5 @@
 """Update database storage of watch_confidence."""
+
 import sys
 
 from pyiem.nws.products import mcd

@@ -1,6 +1,7 @@
 """
 Plot a comparison of IEMRE solar rad vs ISUSM
 """
+
 import datetime
 
 import click

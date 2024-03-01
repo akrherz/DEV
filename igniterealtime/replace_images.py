@@ -31,6 +31,7 @@
 <a class="attachment" href="/uploads/...txt">hello.txt</a> (12 Bytes)
 6. Put the new post
 """
+
 import os
 import sys
 

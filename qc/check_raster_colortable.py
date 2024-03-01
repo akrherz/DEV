@@ -1,5 +1,4 @@
-""" Verify that a RASTER's colortable matches documentation
-"""
+"""Verify that a RASTER's colortable matches documentation"""
 
 import numpy as np
 import requests

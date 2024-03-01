@@ -1,4 +1,5 @@
 """Update watches database entry."""
+
 import traceback
 
 import requests

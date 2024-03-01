@@ -1,4 +1,5 @@
 """Merge this info."""
+
 import sys
 
 import pandas as pd

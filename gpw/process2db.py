@@ -10,6 +10,7 @@ Notes
 - lazyly only storing the NW quadrant (1, 2) of the globe and Guam (4)
 
 """
+
 import sys
 from functools import partial
 

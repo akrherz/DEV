@@ -1,4 +1,5 @@
 """Daily departures from NASS."""
+
 import calendar
 from datetime import date, timedelta
 

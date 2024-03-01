@@ -2,6 +2,7 @@
 
 https://psl.noaa.gov/data/gridded/data.narr.html
 """
+
 import logging
 from collections import namedtuple
 

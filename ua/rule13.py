@@ -1,6 +1,7 @@
 """
- Compute the difference between the 12 UTC 850 hPa temp and afternoon high
+Compute the difference between the 12 UTC 850 hPa temp and afternoon high
 """
+
 import datetime
 from calendar import month_abbr
 

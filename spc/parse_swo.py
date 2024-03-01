@@ -1,4 +1,5 @@
 """Glean out PTS style points from ancient SWO text products."""
+
 # stdlib
 import math
 import re

@@ -1,4 +1,5 @@
 """Count Words."""
+
 # stdlib
 import string
 

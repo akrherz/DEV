@@ -1,4 +1,5 @@
 """Compute some metrics on precipitation washing out."""
+
 from datetime import date
 
 import numpy as np

@@ -1,6 +1,7 @@
 """
-  Add channels as we segregate out a product form the main XXX channel
+Add channels as we segregate out a product form the main XXX channel
 """
+
 import sys
 
 from pyiem.util import get_dbconn, logger

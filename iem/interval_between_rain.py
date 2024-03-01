@@ -1,4 +1,5 @@
 """Period between rainfalls"""
+
 import datetime
 
 import numpy as np

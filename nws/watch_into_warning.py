@@ -1,4 +1,5 @@
 """Some stats based on distance from issuance time to issue."""
+
 import sys
 
 from tqdm import tqdm

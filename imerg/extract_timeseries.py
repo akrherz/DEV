@@ -1,4 +1,5 @@
 """Create simple timeseries files."""
+
 import os
 
 import osgeo.gdal as gdal

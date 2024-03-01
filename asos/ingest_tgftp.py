@@ -1,4 +1,5 @@
 """Process the METARs found at TGFTP."""
+
 import os
 import re
 import sys

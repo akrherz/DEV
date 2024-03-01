@@ -1,4 +1,5 @@
 """Legacy cruft."""
+
 import mx.DateTime
 from pyIEM import iemdb, stationTable
 

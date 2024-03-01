@@ -1,4 +1,5 @@
 """First frost and moon phase."""
+
 import datetime
 
 import ephem

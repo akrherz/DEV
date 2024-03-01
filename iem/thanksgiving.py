@@ -1,4 +1,5 @@
 """Compute mean depatures at or around a holiday."""
+
 import sys
 
 import mx.DateTime

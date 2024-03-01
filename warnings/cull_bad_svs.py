@@ -1,6 +1,7 @@
 """see akrherz/iem#191
 
 Dedup some duplicated FFWs in the warnings table."""
+
 import sys
 
 import pandas as pd

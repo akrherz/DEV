@@ -1,4 +1,5 @@
 """Example using rasterio."""
+
 import numpy as np
 import rasterio
 from PIL import Image

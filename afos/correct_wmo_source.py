@@ -23,6 +23,7 @@ with data as (
  update products_2009_0106 t SET source = p.source
  FROM present p WHERE t.source is null and t.pil = p.pil;
 """
+
 import sys
 
 from pandas.io.sql import read_sql

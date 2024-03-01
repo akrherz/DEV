@@ -1,4 +1,5 @@
-""" Attempt to compute the time of a record high temperature! """
+"""Attempt to compute the time of a record high temperature!"""
+
 from calendar import month_abbr
 
 import matplotlib.pyplot as plt

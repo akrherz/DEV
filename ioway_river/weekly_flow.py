@@ -1,4 +1,5 @@
 """A one-off feature plot."""
+
 import datetime
 
 import numpy as np

@@ -1,4 +1,5 @@
 """Generate a visual showing rainfall rates."""
+
 import calendar
 
 import click
@@ -43,10 +44,9 @@ def main(clifn, title):
     print(df[df["jday"] > 330].sort_values("maxr", ascending=False))
     gdf = df[["jday", "maxr"]].groupby("jday").max()
     sgdf = gdf.rolling(28, center=True, min_periods=1).mean()
-    """
     ax.plot(
-        gdf.index - 14,
-        gdf["maxr"],
+        sgdf.index - 14,
+        sgdf["maxr"],
         color="k",
         lw=2,
         ls=":",
@@ -59,6 +59,7 @@ def main(clifn, title):
         color="tan",
         label="Daily Max",
     )
+    """
     ax.plot(
         sgdf.index,
         sgdf["maxr"],
@@ -71,10 +72,10 @@ def main(clifn, title):
     ax.legend()
     ax.set_ylabel(r"Precipitation Rate inch $h^{-1}$")
     ax.grid(True, color="k")
-    # ax.set_xlim(60, 213)
+    ax.set_xlim(60, 213)
     ax.set_yticks(np.arange(0, 6.1, 0.5))
-    ax.set_ylim(-0.2, 6.01)
-    ax.set_xlim(-2, 367)
+    ax.set_ylim(-0.2, 3.01)
+    # ax.set_xlim(-2, 367)
     ax.set_xlabel("Day of Year")
     fig.savefig("/tmp/rates.png")
 

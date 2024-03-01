@@ -1,4 +1,5 @@
 """Ingest the NWS provided netcdf file of COOP data"""
+
 import datetime
 import sys
 

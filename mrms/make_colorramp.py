@@ -1,4 +1,5 @@
 """Generate a color ramp image, please."""
+
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 

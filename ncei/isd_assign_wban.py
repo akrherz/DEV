@@ -1,6 +1,6 @@
 """Rip the WBAN number out of the ISD station files and add to database
 
-    ftp://ftp.ncdc.noaa.gov/pub/data/noaa/isd-history.txt
+ftp://ftp.ncdc.noaa.gov/pub/data/noaa/isd-history.txt
 """
 
 from pyiem.util import get_dbconn

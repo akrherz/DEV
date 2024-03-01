@@ -1,4 +1,5 @@
 """Parse what was dumped into more fun"""
+
 from functools import partial
 
 import pyproj

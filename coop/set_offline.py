@@ -1,4 +1,5 @@
 """Check for IEM online COOP sites without data."""
+
 import sys
 
 import requests

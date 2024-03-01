@@ -1,6 +1,7 @@
 """
-  Generate a simple scatter plot of power...
+Generate a simple scatter plot of power...
 """
+
 import datetime
 
 import numpy as np

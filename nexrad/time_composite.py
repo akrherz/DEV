@@ -1,4 +1,5 @@
 """An old plot."""
+
 import datetime
 import os
 

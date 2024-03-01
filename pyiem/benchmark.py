@@ -1,4 +1,5 @@
 """Why so slow."""
+
 import time
 
 from pyiem.plot.geoplot import MapPlot

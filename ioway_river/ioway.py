@@ -1,4 +1,5 @@
 """Plot squaw creek flows"""
+
 from calendar import month_abbr
 
 import numpy as np

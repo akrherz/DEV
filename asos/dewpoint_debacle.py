@@ -1,4 +1,5 @@
 """Le Sigh."""
+
 from zoneinfo import ZoneInfo
 
 import matplotlib.dates as mdates

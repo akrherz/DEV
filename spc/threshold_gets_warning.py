@@ -29,6 +29,7 @@ select threshold, max(expire), avg(ratio) from agg2
 GROUP by threshold ORDER by threshold;
 
 """
+
 import numpy as np
 
 import matplotlib.pyplot as plt

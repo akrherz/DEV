@@ -1,4 +1,5 @@
 """Exp plot."""
+
 from datetime import datetime
 from itertools import combinations
 

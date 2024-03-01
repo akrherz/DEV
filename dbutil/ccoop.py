@@ -1,6 +1,7 @@
 """
 We have something new, CCOOP, celluar COOP sites.
 """
+
 import geopandas as gpd
 from pyiem.database import get_dbconnc
 from pyiem.reference import nwsli2state

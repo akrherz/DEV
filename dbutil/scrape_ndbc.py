@@ -1,10 +1,11 @@
 """See if we can get metadata dynmically from NDBC
-      var currentstnlat = 29.789;
-      var currentstnlng = -90.42;
-      var currentstnname = '8762482 - West Bank 1, Bayou Gauche, LA';
+var currentstnlat = 29.789;
+var currentstnlng = -90.42;
+var currentstnname = '8762482 - West Bank 1, Bayou Gauche, LA';
 
-      <b>Site elevation:</b> sea level<br />
+<b>Site elevation:</b> sea level<br />
 """
+
 import requests
 
 from pyiem.reference import nwsli2country, nwsli2state

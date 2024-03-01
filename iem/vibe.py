@@ -1,4 +1,5 @@
 """Plot my car's mileage"""
+
 import calendar
 import datetime
 

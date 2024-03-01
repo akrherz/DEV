@@ -22,6 +22,7 @@ combo2 as (
   count(*) from combo2 GROUP by mo ORDER by mo ASC;
 
 """
+
 import calendar
 
 import numpy as np

@@ -1,4 +1,5 @@
 """Be able to merge a CSV file that IDOT provides"""
+
 import datetime
 import sys
 

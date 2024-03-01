@@ -1,4 +1,5 @@
 """Visualize when a station is the max/min."""
+
 from calendar import month_abbr
 
 import pandas as pd

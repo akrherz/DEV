@@ -1,4 +1,5 @@
 """Create scenario CLI files for later editing."""
+
 import shutil
 
 from pandas.io.sql import read_sql

@@ -1,4 +1,5 @@
 """May be useful."""
+
 import calendar
 
 import matplotlib.pyplot as plt

@@ -5,6 +5,7 @@
 loca
 https://cida.usgs.gov/thredds/ncss/loca/dataset.html
 """
+
 import os
 
 import requests

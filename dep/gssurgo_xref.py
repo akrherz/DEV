@@ -1,4 +1,5 @@
-""" Create table with xref between gssurgo values and file names """
+"""Create table with xref between gssurgo values and file names"""
+
 import dbflib
 
 from pyiem.util import get_dbconn

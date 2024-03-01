@@ -1,4 +1,5 @@
 """Process CLI."""
+
 from datetime import date
 
 from psycopg2.extras import DictCursor

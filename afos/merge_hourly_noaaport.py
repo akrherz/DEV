@@ -2,6 +2,7 @@
 
 http://idd.ssec.wisc.edu/native/nwstg/text/
 """
+
 from pyiem.nws.products import TextProduct
 from pyiem.util import get_dbconn, utc
 

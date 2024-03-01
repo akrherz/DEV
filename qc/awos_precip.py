@@ -1,4 +1,5 @@
 """Simple comparison of totals."""
+
 import sys
 
 import requests

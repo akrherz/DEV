@@ -1,6 +1,7 @@
 """
 Compute the difference between the 12 UTC 850 hPa temp and afternoon high
 """
+
 import calendar
 from datetime import timezone
 

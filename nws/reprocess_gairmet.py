@@ -2,6 +2,7 @@
 
 per akrherz/pyIEM#628
 """
+
 # stdlib
 import datetime
 

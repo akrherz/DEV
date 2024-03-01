@@ -1,4 +1,5 @@
 """Extract out a point time-series."""
+
 import datetime
 import gzip
 import os

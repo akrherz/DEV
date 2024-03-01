@@ -1,4 +1,5 @@
-""" git grep '$RCSfile' > todo"""
+"""git grep '$RCSfile' > todo"""
+
 import re
 
 

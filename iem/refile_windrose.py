@@ -1,4 +1,5 @@
 """Reorganize wind rose files."""
+
 import calendar
 import os
 import shutil

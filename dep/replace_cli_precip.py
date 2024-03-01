@@ -1,4 +1,5 @@
 """Forklift a CLI file's precip data."""
+
 from datetime import date
 
 import pytz

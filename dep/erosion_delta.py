@@ -1,4 +1,5 @@
 """Plot."""
+
 import calendar
 
 import numpy as np

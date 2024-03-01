@@ -1,4 +1,5 @@
 """Look for stations to expand climodat"""
+
 import sys
 
 import pandas as pd

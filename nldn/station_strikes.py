@@ -1,4 +1,5 @@
 """List out close proximity NLDN strikes."""
+
 import sys
 
 from pyiem.network import Table as NetworkTable

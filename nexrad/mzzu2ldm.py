@@ -3,6 +3,7 @@ script to send the MZZU data to LDM
 
 daryl herzmann akrherz@iastate.edu
 """
+
 import glob
 import os
 import subprocess

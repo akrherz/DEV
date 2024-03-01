@@ -1,4 +1,5 @@
 """Old plot."""
+
 import datetime
 
 import numpy as np

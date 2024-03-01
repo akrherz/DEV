@@ -1,4 +1,5 @@
 """Dump out a table."""
+
 from pandas.io.sql import read_sql
 from pyiem.util import get_sqlalchemy_conn
 

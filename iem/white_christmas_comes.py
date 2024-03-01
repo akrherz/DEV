@@ -1,4 +1,5 @@
 """When does White Christmas Apear?"""
+
 import datetime
 
 import numpy as np

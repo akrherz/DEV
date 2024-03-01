@@ -1,4 +1,5 @@
 """Debug printout of partitioned table speed within ASOS database"""
+
 import datetime
 import sys
 

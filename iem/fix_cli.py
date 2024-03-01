@@ -1,4 +1,5 @@
 """Fix sky_coverage field."""
+
 import datetime
 
 import requests

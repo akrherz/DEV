@@ -1,4 +1,5 @@
 """Check over our SWAT files for irregularities."""
+
 import datetime
 import glob
 import os

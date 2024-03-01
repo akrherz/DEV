@@ -1,5 +1,5 @@
-""" Process the sampled data into the database
-"""
+"""Process the sampled data into the database"""
+
 import datetime
 import os
 import subprocess

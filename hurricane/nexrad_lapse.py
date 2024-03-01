@@ -1,4 +1,5 @@
 """figure out US landfalls in hurdat2"""
+
 import datetime
 
 import requests

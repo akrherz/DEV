@@ -1,6 +1,5 @@
 """Generate a plot of 1minute srad."""
 
-
 import pandas as pd
 from pyiem.plot import figure
 from pyiem.util import get_sqlalchemy_conn

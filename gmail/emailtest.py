@@ -1,4 +1,5 @@
 """Do some fun email stuff."""
+
 import datetime
 import email
 import imaplib

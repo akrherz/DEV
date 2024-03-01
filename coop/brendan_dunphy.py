@@ -1,4 +1,5 @@
 """weekly data dump."""
+
 import datetime
 import sys
 

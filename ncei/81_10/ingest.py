@@ -1,14 +1,15 @@
 """
-  Process NCDC's 1981-2010 dataset into the IEM database for usage by
-  all kinds of apps
+Process NCDC's 1981-2010 dataset into the IEM database for usage by
+all kinds of apps
 
-  http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/station-inventories/temp-inventory.txt
-  http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/station-inventories/prcp-inventory.txt
-  http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/products/precipitation/ytd-prcp-normal.txt
-  http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/products/temperature/dly-tmin-normal.txt
-  http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/products/temperature/dly-tmax-normal.txt
+http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/station-inventories/temp-inventory.txt
+http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/station-inventories/prcp-inventory.txt
+http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/products/precipitation/ytd-prcp-normal.txt
+http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/products/temperature/dly-tmin-normal.txt
+http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/products/temperature/dly-tmax-normal.txt
 
 """
+
 import datetime
 import sys
 

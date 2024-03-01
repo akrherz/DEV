@@ -1,4 +1,5 @@
 """A quick and dirty CMIP6 plot."""
+
 import datetime
 from zoneinfo import ZoneInfo
 

@@ -1,4 +1,5 @@
 """Old products had no PILs."""
+
 import sys
 
 from pyiem.util import get_dbconn

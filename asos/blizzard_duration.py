@@ -1,4 +1,5 @@
 """Compute Longest Blizzard Criterion."""
+
 from datetime import timedelta
 
 import pandas as pd

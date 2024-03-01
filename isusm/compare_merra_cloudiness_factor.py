@@ -1,6 +1,7 @@
 """
 Plot a comparison of MERRA Cloudiness Factor
 """
+
 import datetime
 
 import numpy

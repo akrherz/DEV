@@ -1,4 +1,5 @@
 """Who do we share a watch with?"""
+
 import sys
 
 from pandas.io.sql import read_sql

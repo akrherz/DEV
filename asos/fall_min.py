@@ -1,4 +1,5 @@
 """Minimum Fall Temperature"""
+
 import datetime
 
 from pandas.io.sql import read_sql

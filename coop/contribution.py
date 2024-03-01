@@ -1,4 +1,5 @@
 """Shrug."""
+
 import numpy as np
 
 from pyiem.network import Table as NetworkTable

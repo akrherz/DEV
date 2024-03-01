@@ -1,6 +1,7 @@
 """
 https://github.com/Unidata/MetPy/discussions/3375
 """
+
 import numpy as np
 
 import pandas as pd

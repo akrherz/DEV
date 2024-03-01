@@ -1,4 +1,5 @@
 """Review our dual listed DCP and COOP sites."""
+
 import subprocess
 
 from pandas.io.sql import read_sql

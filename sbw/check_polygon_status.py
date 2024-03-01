@@ -2,6 +2,7 @@
 
 see akrherz/pyIEM#207
 """
+
 import sys
 
 from pandas.io.sql import read_sql

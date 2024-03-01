@@ -1,4 +1,5 @@
 """Generate a nice plot for a feature image of forecast."""
+
 import datetime
 import sys
 

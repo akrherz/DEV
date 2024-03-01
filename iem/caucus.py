@@ -1,4 +1,5 @@
 """Hawkeye Cauci."""
+
 import datetime
 
 import numpy as np

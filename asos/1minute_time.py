@@ -1,4 +1,5 @@
 """Time close to the high."""
+
 import calendar
 
 import seaborn as sns

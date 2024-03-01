@@ -1,4 +1,5 @@
 """What was the hour of the first fall temp min"""
+
 from datetime import timedelta
 
 from pandas.io.sql import read_sql

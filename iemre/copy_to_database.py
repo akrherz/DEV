@@ -1,7 +1,8 @@
 """Copy IEMRE data to the database.
 
-    Usage: python copy_to_database.py <hourly/daily> <YYYY> <mm> <dd> <HH24>
+Usage: python copy_to_database.py <hourly/daily> <YYYY> <mm> <dd> <HH24>
 """
+
 import sys
 
 from pyiem import iemre

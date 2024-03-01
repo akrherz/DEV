@@ -2,6 +2,7 @@
 
 See akrherz/iem#104
 """
+
 import sys
 
 import pandas as pd

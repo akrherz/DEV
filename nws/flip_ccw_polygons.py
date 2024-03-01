@@ -1,4 +1,5 @@
 """Tool shared with NWS to flip CCW polygons"""
+
 import re
 import sys
 

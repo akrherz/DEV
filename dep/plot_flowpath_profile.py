@@ -39,7 +39,7 @@ def main(huc12, flowpath):
         figsize=(8, 6),
     )
     # set ax aspect to linear so there is no distortion
-    ax.set_aspect("equal")
+    # ax.set_aspect("equal")
     start_point = None
     for ofe, row in ofedf.iterrows():
         if start_point is None:

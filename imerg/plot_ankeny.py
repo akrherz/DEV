@@ -1,4 +1,5 @@
 """Plot 30 June 2018 rates."""
+
 import datetime
 
 from pyiem.plot import figure_axes

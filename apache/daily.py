@@ -1,4 +1,5 @@
 """barplot of daily requests"""
+
 import datetime
 
 import matplotlib.dates as mdates

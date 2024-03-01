@@ -1,4 +1,5 @@
 """Lapse the USDM."""
+
 import datetime
 
 from pyiem.plot import MapPlot

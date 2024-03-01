@@ -1,4 +1,5 @@
 """plot."""
+
 import numpy as np
 
 import matplotlib.font_manager

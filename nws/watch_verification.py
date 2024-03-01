@@ -1,4 +1,5 @@
 """Crude Watch Verification."""
+
 from datetime import timezone
 
 from tqdm import tqdm

@@ -1,4 +1,5 @@
 """Create a plot to compare with NCEI."""
+
 import os
 
 from sqlalchemy import text

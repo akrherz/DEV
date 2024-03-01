@@ -1,4 +1,5 @@
 """Why so slow."""
+
 import datetime
 
 import pandas as pd

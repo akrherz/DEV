@@ -1,4 +1,5 @@
 """Plot timeseries of CLI data."""
+
 import matplotlib.dates as mdates
 from pandas.io.sql import read_sql
 from pyiem.plot.use_agg import plt

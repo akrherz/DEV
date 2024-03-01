@@ -1,4 +1,5 @@
 """consec days"""
+
 import datetime
 from io import StringIO
 

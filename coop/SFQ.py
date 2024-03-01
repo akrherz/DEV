@@ -1,4 +1,5 @@
 """exploritory look at 6 hourly snowfall."""
+
 import datetime
 from collections import OrderedDict
 

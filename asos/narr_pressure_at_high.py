@@ -1,4 +1,5 @@
 """NARR."""
+
 import os
 
 import netCDF4

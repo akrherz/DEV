@@ -1,4 +1,5 @@
 """Plot archive sizes."""
+
 import datetime
 
 import matplotlib.pyplot as plt

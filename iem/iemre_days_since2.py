@@ -1,4 +1,5 @@
 """Shrug."""
+
 import datetime
 
 import netCDF4

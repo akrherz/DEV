@@ -1,4 +1,5 @@
 """Plot the daily component of the yearly total."""
+
 from calendar import month_abbr
 
 import click

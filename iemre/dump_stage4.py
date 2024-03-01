@@ -1,4 +1,5 @@
 """Create a netcdf file with an given data point"""
+
 import datetime
 
 import netCDF4

@@ -1,4 +1,5 @@
 """Plot WPC"""
+
 import glob
 
 import numpy as np

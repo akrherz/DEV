@@ -1,4 +1,5 @@
 """Plot sub-minute data"""
+
 import datetime
 
 import numpy as np

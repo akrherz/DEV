@@ -1,4 +1,5 @@
 """Attempt to copy a color ramp."""
+
 from matplotlib.colors import rgb2hex
 
 

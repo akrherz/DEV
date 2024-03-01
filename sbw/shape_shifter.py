@@ -1,4 +1,5 @@
 """Poorly named, but interesting."""
+
 import math
 import re
 

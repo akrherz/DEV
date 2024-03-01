@@ -6,6 +6,7 @@ SELECT o.id, t.id, degrees(ST_Azimuth(o.geom, t.geom)) as az,
  ST_Distance(o.geom, t.geom) as dist from one o, two t
  WHERE o.id != t.id
 """
+
 import numpy as np
 import psycopg2
 

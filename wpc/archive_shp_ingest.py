@@ -1,4 +1,5 @@
 """Suck in what WPC's website has to offer."""
+
 import os
 import zipfile
 from datetime import datetime, timezone

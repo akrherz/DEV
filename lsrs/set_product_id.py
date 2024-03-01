@@ -1,6 +1,7 @@
 """
 Script to set/backfill the product_id field in the database.
 """
+
 import datetime
 from itertools import product
 

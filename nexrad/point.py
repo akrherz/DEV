@@ -1,4 +1,5 @@
 """Old extractor."""
+
 import datetime
 import os
 

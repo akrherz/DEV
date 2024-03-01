@@ -1,4 +1,5 @@
 """A lapse of accumulated erosion for a year."""
+
 import calendar
 
 import pandas as pd

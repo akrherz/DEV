@@ -1,4 +1,5 @@
 """Special."""
+
 import math
 
 from pyiem.plot.use_agg import plt

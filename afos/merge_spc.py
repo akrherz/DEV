@@ -1,4 +1,5 @@
 """Merge some dumps from SPC."""
+
 import os
 
 from pyiem.util import get_dbconn, noaaport_text, utc

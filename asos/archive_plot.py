@@ -1,4 +1,5 @@
 """Plot of archived data."""
+
 import datetime
 
 import matplotlib.pyplot as plt

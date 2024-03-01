@@ -15,6 +15,7 @@ Redo:
   Community Plugins at 100
 
 """
+
 import sys
 
 import psycopg2

@@ -1,4 +1,5 @@
 """Fancy bar plot for feature fun"""
+
 import datetime
 
 from matplotlib.font_manager import FontProperties

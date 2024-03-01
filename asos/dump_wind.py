@@ -1,4 +1,5 @@
 """Dump ASOS wind data per year."""
+
 import sys
 
 from tqdm import tqdm

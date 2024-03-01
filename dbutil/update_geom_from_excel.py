@@ -1,4 +1,5 @@
 """Read Excel info an update geometry of IEMDB."""
+
 import click
 
 import pandas as pd

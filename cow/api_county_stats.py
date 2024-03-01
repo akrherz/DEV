@@ -1,4 +1,5 @@
 """Generate stats."""
+
 import json
 from io import BytesIO
 

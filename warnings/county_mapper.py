@@ -1,4 +1,5 @@
 """Make county plots of stuff."""
+
 import datetime
 
 from matplotlib import cm

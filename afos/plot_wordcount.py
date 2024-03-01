@@ -1,4 +1,5 @@
 """Count Words."""
+
 # 3rd Party
 import pandas as pd
 from pandas.io.sql import read_sql

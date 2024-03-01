@@ -1,4 +1,5 @@
 """Some AWOSes are reporting 6 hour max/min, lets check that out!"""
+
 import datetime
 import sys
 

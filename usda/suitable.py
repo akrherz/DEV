@@ -1,4 +1,5 @@
 """Days Suitable for Fieldwork."""
+
 import calendar
 import itertools
 

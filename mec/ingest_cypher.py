@@ -1,12 +1,13 @@
 """
- farmname    | character varying(128) | 
- expansion   | character varying(24)  | 
- unitnumber  | character varying(16)  | 
- farmnumber  | character varying(16)  | 
- turbinename | character varying(16)  | 
- geom        | geometry(Point,4326)   | 
+farmname    | character varying(128) |
+expansion   | character varying(24)  |
+unitnumber  | character varying(16)  |
+farmnumber  | character varying(16)  |
+turbinename | character varying(16)  |
+geom        | geometry(Point,4326)   |
 
 """
+
 import psycopg2
 
 dbconn = psycopg2.connect(database="mec", host="192.168.0.23")

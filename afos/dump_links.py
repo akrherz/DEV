@@ -1,4 +1,5 @@
 """Dump links to products."""
+
 import re
 from datetime import timezone
 

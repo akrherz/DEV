@@ -1,4 +1,5 @@
 """Deduplicate."""
+
 import difflib
 import sys
 

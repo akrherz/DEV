@@ -1,4 +1,5 @@
 """Example using the Cow API to generate a shapefile."""
+
 import json
 from io import BytesIO
 

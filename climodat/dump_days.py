@@ -1,4 +1,5 @@
 """Dump something."""
+
 # Local
 import sys
 

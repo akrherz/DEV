@@ -1,4 +1,5 @@
 """Generic plotter"""
+
 import sys
 
 import numpy as np

@@ -1,6 +1,7 @@
 """The IEM summary table has a coop_valid column that tracks when the SHEF
 COOP report was valid.  This was not around in the database from day1, so we
 should backfill it"""
+
 import datetime
 import sys
 

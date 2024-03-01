@@ -1,4 +1,5 @@
 """One off feature plot."""
+
 import numpy as np
 
 import matplotlib.dates as mdates

@@ -1,4 +1,5 @@
 """Legacy stuff."""
+
 import datetime
 
 import netCDF4

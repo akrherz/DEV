@@ -1,4 +1,5 @@
 """webfarm hits"""
+
 import datetime
 
 import matplotlib.pyplot as plt

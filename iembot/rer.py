@@ -1,6 +1,6 @@
 """When RER was vectorized, I did not fill back the channels nor twitter subs
 
- select distinct source, pil from products where substr(pil, 1, 3) = 'RER';
+select distinct source, pil from products where substr(pil, 1, 3) = 'RER';
 """
 
 

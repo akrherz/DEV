@@ -1,4 +1,5 @@
 """Labor Day."""
+
 import mx.DateTime
 import numpy
 

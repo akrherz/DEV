@@ -1,6 +1,5 @@
-"""
+""" """
 
-"""
 # stdlb
 import glob
 import re

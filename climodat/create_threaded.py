@@ -1,4 +1,5 @@
 """Oh boy, create a threaded site."""
+
 # stdlib
 import json
 import sys

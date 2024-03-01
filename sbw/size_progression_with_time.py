@@ -1,4 +1,5 @@
 """How are the sizes of the polygons changing with time"""
+
 from itertools import cycle
 
 import numpy as np

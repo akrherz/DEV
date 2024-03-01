@@ -1,4 +1,5 @@
 """Search emails for a given subject for NCEI"""
+
 import email
 import getpass
 import imaplib

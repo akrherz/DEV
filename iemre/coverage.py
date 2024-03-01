@@ -1,4 +1,5 @@
 """Accumulated coverage over iemre."""
+
 import os
 
 import numpy as np

@@ -6,6 +6,7 @@ consumes those dbf files and places them in the database.
     python flowpath_importer.py <scenario> <path to dbf files in ../../data/>
 
 """
+
 import glob
 import os
 import sys

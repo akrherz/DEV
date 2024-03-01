@@ -1,4 +1,5 @@
 """Attempt to merge in old FFS,SVS data into warnings table!"""
+
 import sys
 from datetime import timedelta, timezone
 

@@ -1,4 +1,5 @@
 """The 30 minute shot clock."""
+
 import datetime
 
 import pandas as pd

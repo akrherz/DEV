@@ -1,4 +1,5 @@
 """Some products went in the database with some cruft."""
+
 import re
 import sys
 

@@ -1,4 +1,5 @@
 """consec days"""
+
 import datetime
 
 from pyiem.network import Table as NetworkTable

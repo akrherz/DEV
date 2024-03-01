@@ -1,4 +1,5 @@
 """Special."""
+
 from calendar import month_abbr
 
 from pyiem.plot.use_agg import plt

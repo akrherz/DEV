@@ -3,6 +3,7 @@
 NOTE: The present year may still have events active from the previous year,
 so that year's constraint may need to be more open ended.
 """
+
 import sys
 from datetime import timedelta
 

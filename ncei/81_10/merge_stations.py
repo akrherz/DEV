@@ -1,7 +1,7 @@
 """
-  Create IEM station entries
+Create IEM station entries
 
-  network: NCDC81
+network: NCDC81
 """
 
 from pyiem.util import get_dbconn

@@ -57,9 +57,12 @@ def main(huc12, fbndid):
             geom_col="geom",
             index_col="fpath",
         )
-    minx, miny, maxx, maxy = (
-        fieldsdf.loc[[fbndid]].to_crs(4326)["geom"].total_bounds
-    )
+    if fbndid is not None:
+        minx, miny, maxx, maxy = (
+            fieldsdf.loc[[fbndid]].to_crs(4326)["geom"].total_bounds
+        )
+    else:
+        minx, miny, maxx, maxy = fieldsdf.to_crs(4326)["geom"].total_bounds
     buffer = 0.001
     ff = (
         "Fields"
@@ -101,14 +104,15 @@ def main(huc12, fbndid):
         fc="brown",
         zorder=Z_POLITICAL,
     )
-    fieldsdf.loc[[fbndid]].to_crs(mp.panels[0].crs).plot(
-        aspect=None,
-        ax=mp.panels[0].ax,
-        ec="yellow",
-        lw=3,
-        fc="None",
-        zorder=Z_POLITICAL + 1,
-    )
+    if fbndid is not None:
+        fieldsdf.loc[[fbndid]].to_crs(mp.panels[0].crs).plot(
+            aspect=None,
+            ax=mp.panels[0].ax,
+            ec="yellow",
+            lw=3,
+            fc="None",
+            zorder=Z_POLITICAL + 1,
+        )
     fpdf.to_crs(mp.panels[0].crs).plot(
         aspect=None,
         ax=mp.panels[0].ax,

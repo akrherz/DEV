@@ -1,4 +1,5 @@
 """Verify MCD watch confidence."""
+
 import datetime
 
 import pytz

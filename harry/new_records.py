@@ -1,4 +1,5 @@
 """Figure out if we have new daily records set"""
+
 import datetime
 import json
 import sys

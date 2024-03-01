@@ -1,4 +1,5 @@
 """Lapse"""
+
 import datetime
 
 import requests

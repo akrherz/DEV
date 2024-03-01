@@ -1,4 +1,5 @@
 """Somehow we ended up with directions impossible in METAR."""
+
 import re
 
 from pyiem.util import get_dbconn

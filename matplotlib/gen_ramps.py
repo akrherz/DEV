@@ -1,4 +1,5 @@
 """generate ramps used by select2."""
+
 import numpy as np
 
 from pyiem.plot.use_agg import plt

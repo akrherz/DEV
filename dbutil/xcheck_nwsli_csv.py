@@ -1,4 +1,5 @@
 """See if we have metadata in a local CSV file."""
+
 import pandas as pd
 from pyiem.util import get_dbconn, get_sqlalchemy_conn
 

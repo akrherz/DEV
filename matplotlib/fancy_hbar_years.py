@@ -1,4 +1,5 @@
 """Fancy bar plot for feature fun"""
+
 import datetime
 
 import numpy as np

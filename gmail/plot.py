@@ -1,4 +1,5 @@
 """Make a plot."""
+
 import matplotlib.pyplot as plt
 
 

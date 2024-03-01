@@ -1,4 +1,5 @@
 """Report any climodat sites without recent observations."""
+
 # stdlib
 import datetime
 

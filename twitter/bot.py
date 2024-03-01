@@ -3,6 +3,7 @@ Here we are, writing some selenium-based twitter bot.  This is not the life we
 wanted, but the life we got.
 
 """
+
 import argparse
 import glob
 import json

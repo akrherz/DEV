@@ -1,4 +1,5 @@
 """Map UGC stuff."""
+
 import subprocess
 import sys
 

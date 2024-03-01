@@ -1,4 +1,5 @@
 """Make sure the AFOS database has the text before we delete."""
+
 import sys
 from datetime import timezone
 

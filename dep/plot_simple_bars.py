@@ -1,4 +1,5 @@
 """Simple plot of data."""
+
 from pyiem.plot.use_agg import plt
 
 DATA = [-49, -41, -32, -21, -12, 0, 9, 21, 33, 46, 58]

@@ -1,4 +1,5 @@
 """Warning load by minute"""
+
 from zoneinfo import ZoneInfo
 
 import matplotlib.dates as mdates

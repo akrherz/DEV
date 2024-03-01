@@ -2,8 +2,8 @@
 IEM Autoplot 169 encovers lots of data QC issues, so we have some quasi
 automation here to help with manual dumping.
 """
-import sys
 
+import click
 import pytz
 
 import pandas as pd
@@ -42,17 +42,19 @@ def process(engine, conn, row, station):
     conn.commit()
 
 
-def main(argv):
+@click.command()
+@click.option("--network")
+@click.option("--station")
+@click.option("--hours", type=int)
+@click.option("--mydir")
+@click.option("--how")
+@click.option("--varname", default="tmpf")
+def main(network, station, hours, mydir, how, varname):
     """Go Main Go."""
-    network = argv[1]
-    station = argv[2]
-    hours = argv[3]
-    mydir = argv[4]
-    how = argv[5]
     url = (
         "https://mesonet.agron.iastate.edu/plotting/auto/plot/169/"
         f"network:{network}::zstation:{station}::hours:{hours}::month:all::"
-        f"dir:{mydir}::how:{how}::_cb:1.csv"
+        f"dir:{mydir}::how:{how}::v:{varname}::_cb:1.csv"
     )
     df = pd.read_csv(url, parse_dates=["start_valid_utc", "end_valid_utc"])
 
@@ -63,4 +65,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()

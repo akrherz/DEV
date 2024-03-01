@@ -1,4 +1,5 @@
 """Edit News item."""
+
 import argparse
 import sys
 

@@ -1,4 +1,5 @@
 """Figure out the grid min date."""
+
 # stdlib
 import datetime
 import os

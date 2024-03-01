@@ -9,6 +9,7 @@ average daily precipitation, 4" soil temperature and high/low temperature
 
 1950 thru 2017
 """
+
 import datetime
 
 import numpy as np

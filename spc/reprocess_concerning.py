@@ -1,4 +1,5 @@
 """Update database storage of mpd/mcd concerning."""
+
 import sys
 
 from pyiem.nws.products import mcd

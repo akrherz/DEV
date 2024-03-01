@@ -1,4 +1,5 @@
 """Create the bot accounts."""
+
 import random
 import string
 

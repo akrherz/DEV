@@ -1,4 +1,5 @@
 """Cheap script to get stats"""
+
 import sys
 
 import requests

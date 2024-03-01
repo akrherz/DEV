@@ -1,4 +1,5 @@
 """Simple stats"""
+
 import datetime
 
 

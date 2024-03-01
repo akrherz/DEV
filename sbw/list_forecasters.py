@@ -1,4 +1,5 @@
 """A one off."""
+
 import pandas as pd
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn

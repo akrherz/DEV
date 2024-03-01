@@ -1,7 +1,5 @@
-"""Need to compute
+"""Need to compute"""
 
-
-"""
 import json
 import os
 

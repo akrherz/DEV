@@ -1,4 +1,5 @@
 """Create HTML and resources to drive an autoplot overview page."""
+
 from io import StringIO
 
 import requests

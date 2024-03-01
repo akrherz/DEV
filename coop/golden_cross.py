@@ -1,4 +1,5 @@
 """Stock Analysis."""
+
 import numpy
 
 import matplotlib.font_manager

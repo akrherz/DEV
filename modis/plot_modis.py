@@ -3,7 +3,6 @@
 https://wvs.earthdata.nasa.gov/
 """
 
-
 import matplotlib.colors as mpcolors
 from pandas import read_sql
 from pyiem.plot import MapPlot, get_cmap

@@ -1,4 +1,5 @@
 """See akrherz/iem#247"""
+
 import sys
 
 from tqdm import tqdm

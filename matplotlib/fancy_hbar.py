@@ -1,4 +1,5 @@
 """Fancy bar plot for feature fun"""
+
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 

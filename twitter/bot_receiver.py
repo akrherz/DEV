@@ -1,6 +1,7 @@
 """
 Receive bot messages and write to our hackish queue.
 """
+
 import json
 import os
 

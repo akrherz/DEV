@@ -1,4 +1,5 @@
 """Old stuff."""
+
 import datetime
 
 import ephem

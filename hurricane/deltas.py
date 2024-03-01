@@ -1,4 +1,5 @@
 """Plot things"""
+
 import datetime
 
 import numpy as np

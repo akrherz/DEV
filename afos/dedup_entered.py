@@ -4,6 +4,7 @@ Over the years, we had different timestamp storing logic, so sometimes
 products are duplicated by having one product with the old timestamp logic
 and a new one at the new logic.
 """
+
 import sys
 
 import pandas as pd

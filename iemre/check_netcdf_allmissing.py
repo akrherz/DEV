@@ -1,4 +1,5 @@
 """Generate a report of how many timesteps have all missing data"""
+
 import datetime
 import glob
 import os

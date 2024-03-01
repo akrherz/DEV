@@ -1,4 +1,5 @@
 """Plot GFS."""
+
 import numpy as np
 import pygrib
 

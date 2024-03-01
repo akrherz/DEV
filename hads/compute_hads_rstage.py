@@ -1,4 +1,5 @@
 """Compute daily rstage min and max, when necessary."""
+
 import datetime
 import sys
 

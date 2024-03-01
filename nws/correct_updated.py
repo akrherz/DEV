@@ -1,4 +1,5 @@
 """See akrherz/iem#183"""
+
 import sys
 
 from pyiem.nws.products.vtec import parser

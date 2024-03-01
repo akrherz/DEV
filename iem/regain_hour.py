@@ -1,4 +1,5 @@
 """Plot the time we are robbed of."""
+
 import datetime
 
 import ephem

@@ -11,6 +11,7 @@ t2004 as (
 select t.wfo, o.count, t.count from t2004 t LEFT JOIN t2003 o on
 (o.wfo = t.wfo);
 """
+
 import re
 import sys
 from datetime import datetime, timedelta, timezone

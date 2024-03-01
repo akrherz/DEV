@@ -1,4 +1,5 @@
 """Make sure our database storage of expiration time is right"""
+
 import sys
 
 from pyiem.nws.products.vtec import parser

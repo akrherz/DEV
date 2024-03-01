@@ -1,4 +1,5 @@
 """Get details on attachments in SBS"""
+
 import json
 import os
 import sys

@@ -1,4 +1,5 @@
 """White Christmas + White Thanksgiving."""
+
 import datetime
 
 from pandas import Timestamp

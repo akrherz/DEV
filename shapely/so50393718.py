@@ -2,6 +2,7 @@
 https://stackoverflow.com/questions/50393718
 
 """
+
 from shapely.geometry import LineString, Point, Polygon
 from shapely.ops import split
 

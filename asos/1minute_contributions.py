@@ -4,6 +4,7 @@ select precip, sum(precip), count(*) from alldata_1minute
 where station = 'DSM' and precip > 0 GROUP by precip ORDER by precip ASC;
 
 """
+
 from io import StringIO
 
 import pandas as pd

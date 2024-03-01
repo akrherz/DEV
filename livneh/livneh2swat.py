@@ -2,6 +2,7 @@
 
 1981 thru 2017
 """
+
 import datetime
 import os
 from collections import namedtuple

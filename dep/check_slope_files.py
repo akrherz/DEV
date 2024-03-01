@@ -1,4 +1,5 @@
 """Review how much minute slopes we have."""
+
 import glob
 import os
 

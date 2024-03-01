@@ -1,4 +1,5 @@
 """Diagnostic."""
+
 import netCDF4
 
 from pyiem.plot import MapPlot

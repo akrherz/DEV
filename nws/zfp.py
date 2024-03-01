@@ -1,7 +1,8 @@
 """
- We start with TONIGHT
- Then the next day is index 2
+We start with TONIGHT
+Then the next day is index 2
 """
+
 import datetime
 
 import numpy

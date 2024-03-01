@@ -1,4 +1,5 @@
 """Simple printing of values."""
+
 import datetime
 
 import osgeo.gdal as gdal

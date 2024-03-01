@@ -1,4 +1,5 @@
 """Look at our METAR archives for notations of runway vis length?"""
+
 import re
 
 from pyiem.util import get_dbconn

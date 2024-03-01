@@ -1,4 +1,5 @@
-""" Take a file of flight info and add METAR obs to it! """
+"""Take a file of flight info and add METAR obs to it!"""
+
 import datetime
 
 import psycopg2.extras

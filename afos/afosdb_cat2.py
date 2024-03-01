@@ -1,4 +1,5 @@
 """Dump products to file."""
+
 import sys
 
 from pyiem.util import get_dbconn, noaaport_text

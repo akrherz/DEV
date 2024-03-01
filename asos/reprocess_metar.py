@@ -1,6 +1,7 @@
 """
- Reprocess RAW METAR data stored in the database, so to include more fields
+Reprocess RAW METAR data stored in the database, so to include more fields
 """
+
 import datetime
 
 from metar.Metar import Metar

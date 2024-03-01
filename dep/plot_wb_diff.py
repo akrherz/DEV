@@ -1,4 +1,5 @@
 """Plots."""
+
 import calendar
 
 from pyiem.dep import read_env, read_wb

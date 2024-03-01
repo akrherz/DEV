@@ -1,4 +1,5 @@
 """Request for maps and data of products without SVS updates."""
+
 import calendar
 
 import seaborn as sns

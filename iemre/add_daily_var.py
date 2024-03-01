@@ -1,4 +1,5 @@
 """Add a variable"""
+
 import os
 
 import numpy as np

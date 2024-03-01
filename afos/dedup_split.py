@@ -1,4 +1,5 @@
 """Deduplicate."""
+
 import re
 import sys
 from datetime import datetime

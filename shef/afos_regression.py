@@ -1,4 +1,5 @@
 """Feed some AFOS data through for regression testing."""
+
 import re
 
 from pyiem.util import get_dbconn, logger

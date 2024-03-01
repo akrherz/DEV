@@ -1,6 +1,7 @@
 """
 http://www.srh.noaa.gov/images/ffc/pdf/ta_htindx.PDF
 """
+
 import numpy
 
 import matplotlib.cm as cm

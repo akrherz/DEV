@@ -1,4 +1,5 @@
 """Neat Plot."""
+
 import calendar
 
 import netCDF4

@@ -1,4 +1,5 @@
 """Simple."""
+
 import datetime
 
 import requests

@@ -1,4 +1,5 @@
 """A map of dots!"""
+
 import os
 
 from tqdm import tqdm

@@ -1,4 +1,5 @@
 """Compare with older DEP output."""
+
 # stdlib
 import glob
 import os

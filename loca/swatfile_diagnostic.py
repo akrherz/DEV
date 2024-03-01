@@ -1,4 +1,5 @@
 """Check over our SWAT files for irregularities."""
+
 import calendar
 import datetime
 import sys

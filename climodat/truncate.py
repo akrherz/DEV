@@ -1,4 +1,5 @@
 """Some stations have too much data."""
+
 # stdlib
 from datetime import datetime, timedelta
 

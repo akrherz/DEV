@@ -1,4 +1,5 @@
 """Yearly rank."""
+
 import calendar
 
 import pandas as pd

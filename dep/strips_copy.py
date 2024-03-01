@@ -1,6 +1,7 @@
 """
 Copy over the DEP files for the Strips sites.
 """
+
 import glob
 import os
 import shutil

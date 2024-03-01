@@ -1,4 +1,5 @@
 """start of coldest 91 day period."""
+
 import datetime
 
 from pyiem.network import Table as NetworkTable

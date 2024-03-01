@@ -2,6 +2,7 @@
 Drive the reprocessing of the MWcomp plot.  We are doing this since our
 data archives have more data than the stuff I previously got from NSSL
 """
+
 import datetime
 import os
 import subprocess
