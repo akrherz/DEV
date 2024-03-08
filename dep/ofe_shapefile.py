@@ -15,7 +15,8 @@ def main():
         ofe = gpd.read_postgis(
             text(
                 """
-            SELECT o.ofe, o.geom, f.huc_12, f.fpath from flowpaths f
+            SELECT o.ofe, o.geom, f.huc_12, f.fpath,
+            f.huc_12 || '_' || f.fpath || '_' || o.ofe as id from flowpaths f
             JOIN flowpath_ofes o on (f.fid = o.flowpath) WHERE
             f.scenario = 0 and f.huc_12 = ANY(:hucs)
             """
