@@ -2,15 +2,17 @@
 
 import datetime
 import os
-import random
 import subprocess
 
-import pandas as pd
-from pyiem.dep import EAST, NORTH, SOUTH, WEST, get_cli_fname, read_cli
+import click
+
+from pyiem.dep import read_cli
 from pyiem.util import get_dbconn, logger
 
+SIZE = 13
 LOG = logger()
 SAVEFILE = "/opt/dep/scripts/cligen/mydays.txt"
+THRESHOLD_DATE = datetime.datetime(2023, 9, 1)
 
 
 def env2database():
@@ -42,53 +44,34 @@ def pick_dates_by_database():
         GROUP by valid ORDER by count desc
     """
     )
+    for row in cursor:
+        mt = get_update_date(row[0])
+        if mt < THRESHOLD_DATE:
+            LOG.warning(
+                "Processing %s[mod:%s] with count: %s diff: %s",
+                row[0],
+                mt.date(),
+                row[1],
+                row[2],
+            )
+            days.append(row[0])
+        if len(days) > SIZE:
+            break
+    pgconn.close()
     return days
 
 
-def edit_clifiles():
+def get_update_date(dt):
+    """Filter days that should not be reprocessed."""
+    fn = f"/mnt/idep2/data/dailyprecip/{dt:%Y/%Y%m%d}.npy.gz"
+    mt = datetime.datetime(1970, 1, 1)
+    if os.path.isfile(fn):
+        mt = datetime.datetime.fromtimestamp(os.path.getmtime(fn))
+    return mt
+
+
+def edit_clifiles(days):
     """Now we edit files."""
-    # Pick a random CLI point outside the midwest, so to target dates.
-    attempt = 0
-    clifn = None
-    while attempt < 1000:
-        attempt += 1
-        lon = WEST + 0.1 * random.randint(0, (EAST - WEST) * 10)
-        lat = SOUTH + 0.1 * random.randint(0, (NORTH - SOUTH) * 10)
-        # Focus on Texas and points east for now
-        if lon < -107 or lat > 37:
-            continue
-        clifn = get_cli_fname(lon, lat)
-        if os.path.isfile(clifn):
-            break
-    LOG.warning("Picking clifile: %s", clifn)
-    df = read_cli(clifn)
-    today = datetime.date.today()
-    # Find highest precip entries with only two breakpoints
-    # df = df[df["bpcount"] == 2].sort_values("pcpn", ascending=False)
-    df = df.sort_values("rad", ascending=True)
-    days = []
-    for dt, row in df.iterrows():
-        if dt >= pd.Timestamp(today):
-            continue
-        # Review the date this was processed, so to not redo things recently
-        fn = f"/mnt/idep2/data/dailyprecip/{dt:%Y/%Y%m%d}.npy.gz"
-        # If this file was modified after 5 July 2022, we skip it
-        if os.path.isfile(fn):
-            mt = datetime.datetime.fromtimestamp(os.path.getmtime(fn))
-            # Our floor for when previous reruns should still be valid
-            if mt > datetime.datetime(2023, 7, 1):
-                LOG.warning("Skipping %s as it was modified %s", dt, mt)
-                continue
-        LOG.warning(
-            "do %s rad: %s precip: %.2f bpcount: %.0f",
-            dt,
-            row["rad"],
-            row["pcpn"],
-            row["bpcount"],
-        )
-        days.append(dt)
-        if len(days) >= 13:
-            break
     # write a log file for what work we did
     with open(SAVEFILE, "w", encoding="utf-8") as fh:
         for day in days:
@@ -102,12 +85,36 @@ def edit_clifiles():
         subprocess.call(cmd, shell=True)
 
 
-def main():
+@click.command()
+@click.option("--clifile", help="Review CLI file for dates to run.")
+@click.option("--dryrun", is_flag=True, default=False, help="Dry Run.")
+def main(clifile, dryrun):
     """Go Main Go."""
-    # We are fired up from cron, go look for the previous day's work
-    env2database()
-    # reprocess 10 previous dates
-    edit_clifiles()
+    if clifile:
+        clidf = read_cli(clifile).loc[: datetime.date.today()]
+        days = []
+        for dt, row in (
+            clidf[clidf["bpcount"] == 2]
+            .sort_values("pcpn", ascending=False)
+            .iterrows()
+        ):
+            mt = get_update_date(dt)
+            if mt < THRESHOLD_DATE:
+                LOG.warning(
+                    "Processing %s[mod:%s] with pcpn: %s",
+                    dt.date(),
+                    mt.date(),
+                    row["pcpn"],
+                )
+                days.append(dt)
+            if len(days) > SIZE:
+                break
+    else:
+        days = pick_dates_by_database()
+    if not dryrun:
+        env2database()
+        LOG.warning("Processing %s days", len(days))
+        edit_clifiles(days)
 
 
 if __name__ == "__main__":
