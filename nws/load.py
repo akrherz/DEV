@@ -1,39 +1,43 @@
-"""Warning load by minute"""
+"""Warning load by minute
+
+Moved to https://mesonet.agron.iastate.edu/plotting/auto/?q=251
+"""
 
 import datetime
-
-import pytz
+from zoneinfo import ZoneInfo
 
 import matplotlib.dates as mdates
-import matplotlib.pyplot as plt
-from pyiem.util import get_dbconn
+import pandas as pd
+from pyiem.database import get_dbconn
+from pyiem.nws.vtec import NWS_COLORS
+from pyiem.plot import figure_axes
 
-TZ = pytz.timezone("America/Chicago")
+TZ = ZoneInfo("America/Chicago")
 PGCONN = get_dbconn("postgis")
 
 
 def getp(phenomena, sts, ets):
     """Do Query"""
     cursor = PGCONN.cursor()
-    table = "sbw_%s" % (sts.year,)
-    print("%s %s %s" % (table, sts, ets))
+    print(f"{sts} {ets}")
     cursor.execute(
-        f"""
-     WITH data as
-     (SELECT t, count(*) from
-     (select phenomena,
-     generate_series(issue, expire, '1 minute'::interval) as t
-     from {table} where status = 'NEW' and issue > %s and
-     issue < %s and phenomena in %s) as foo
-     GROUP by t),
+        """
+     WITH data as (
+        select distinct wfo, eventid, phenomena,
+        generate_series(issue, expire, '1 minute'::interval) as t
+        from warnings where vtec_year = %s and issue > %s and
+        issue < %s and phenomena = %s and significance = 'W'),
+    agg as (
+        SELECT t, count(*) from data GROUP by t
+    ),
+     ts as (
+        select generate_series(%s, %s, '1 minute'::interval) as t
+    )
 
-     ts as (select generate_series(%s,
-      %s, '1 minute'::interval) as t)
-
-     SELECT ts.t, data.count from ts LEFT JOIN data on (data.t = ts.t)
+     SELECT ts.t, agg.count from ts LEFT JOIN agg on (ts.t = agg.t)
      ORDER by ts.t ASC
     """,
-        (sts, ets, phenomena, sts, ets),
+        (sts.year, sts, ets, phenomena, sts, ets),
     )
     times = []
     counts = []
@@ -48,35 +52,90 @@ def main(date):
     """Main"""
     sts = date - datetime.timedelta(hours=24)
     ets = date + datetime.timedelta(hours=24)
-    to_t, to_c = getp(("TO",), sts, ets)
-    b_t, b_c = getp(("SV", "TO"), sts, ets)
+    to_t, to_c = getp("TO", sts, ets)
+    _, sv_c = getp("SV", sts, ets)
+    _, ff_c = getp("FF", sts, ets)
+    df = pd.DataFrame(
+        {"t": to_t, "to_c": to_c, "sv_c": sv_c, "ff_c": ff_c}
+    ).set_index("t")
+    df["b_c"] = df["to_c"] + df["ff_c"]
+    df["a_c"] = df["to_c"] + df["sv_c"] + df["ff_c"]
+    df["sv_to"] = df["sv_c"] + df["to_c"]
 
-    (fig, ax) = plt.subplots(1, 1, figsize=(8, 6))
-
-    ax.fill_between(
-        b_t, 0, b_c, zorder=1, color="teal", label="Severe TStorm + Tornado"
+    (fig, ax) = figure_axes(
+        title=(
+            f"{date:%-d %b %Y} National Weather Service:: "
+            "Storm Based Warning Load"
+        ),
+        subtitle="Unofficial IEM Archives, presented as a stacked bar chart",
+        figsize=(8, 6),
     )
-    ax.fill_between(to_t, 0, to_c, zorder=2, color="r", label="Tornado")
+
+    ax.bar(
+        df.index,
+        df["a_c"],
+        width=1 / 1440.0,
+        color=NWS_COLORS["SV.W"],
+        label="Severe T'Storm",
+    )
+    ax.bar(
+        df.index,
+        df["b_c"],
+        width=1 / 1440.0,
+        color=NWS_COLORS["TO.W"],
+        label="Tornado",
+    )
+    ax.bar(
+        df.index,
+        df["ff_c"],
+        width=1 / 1440.0,
+        color="g",  # Eh
+        label="Flash Flood",
+    )
+    ax.plot(
+        df.index,
+        df["a_c"],
+        color="k",
+        drawstyle="steps-post",
+    )
+    ax.plot(
+        df.index,
+        df["b_c"],
+        color="k",
+        drawstyle="steps-post",
+    )
+    ax.plot(
+        df.index,
+        df["ff_c"],
+        color="k",
+        drawstyle="steps-post",
+    )
 
     ax.grid(True)
     ax.xaxis.set_major_locator(
-        mdates.HourLocator(byhour=[0, 6, 12, 18], tz=TZ)
+        mdates.HourLocator(byhour=[0, 3, 6, 9, 12, 15, 18, 21], tz=TZ)
     )
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%I %p\n%d %b", tz=TZ))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%-I %p", tz=TZ))
 
-    ax.set_title(
-        ("%s National Weather Service " "Storm Based Warning Load")
-        % (date.strftime("%-d %b %Y"),)
-    )
-    ax.set_ylabel("Active Warning Count")
-    ax.legend(loc="best", ncol=2)
-    ax.set_ylim(bottom=0.1)
-    ax.set_xlim(to_t[0], to_t[-1])
+    ax.set_ylabel("Total Warning Count (SVR+TOR+FFW)")
+    ax.legend(loc=1, ncol=2)
+    ax.set_ylim(bottom=0.1, top=df["a_c"].max() * 1.2)
+    ax.set_xlim(to_t[1080], to_t[1080 + 1440])
     ax.set_xlabel("Central Daylight Time")
-    fig.text(0.01, 0.01, "@akrherz, generated 27 Apr 2017")
+    ax.annotate(
+        f"TOR+SVR+FFW Max: {df['a_c'].max()} @{df['a_c'].idxmax():%-I:%M %p}"
+        f"\nTOR+SVR Max: {df['sv_to'].max()} @{df['sv_to'].idxmax():%-I:%M %p}"
+        f"\nTOR Max: {df['to_c'].max()} @{df['to_c'].idxmax():%-I:%M %p}"
+        f"\nSVR Max: {df['sv_c'].max()} @{df['sv_c'].idxmax():%-I:%M %p}"
+        f"\nFFW Max: {df['ff_c'].max()} @{df['ff_c'].idxmax():%-I:%M %p}",
+        xy=(0.01, 0.95),
+        xycoords="axes fraction",
+        bbox=dict(facecolor="white"),
+        ha="left",
+        va="top",
+    )
 
-    fig.savefig("%s.png" % (date.strftime("%Y%m%d"),))
-    plt.close()
+    fig.savefig(f"{date:%Y%m%d}.png")
 
 
 def work():
@@ -89,7 +148,7 @@ def work():
     for event in events.split(","):
         print(event)
         date = datetime.datetime.strptime(event.strip(), "%m/%d/%y")
-        date = date.replace(hour=12, tzinfo=pytz.utc)
+        date = date.replace(hour=12, tzinfo=ZoneInfo("UTC"))
         main(date)
 
 
