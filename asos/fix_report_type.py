@@ -3,76 +3,75 @@
 See akrherz/iem#104
 """
 
+import click
+
 import pandas as pd
-from pyiem.network import Table as NetworkTable
-from pyiem.util import get_dbconn, get_sqlalchemy_conn, logger
+from pyiem.database import get_dbconn, get_sqlalchemy_conn
+from pyiem.util import logger
 
 LOG = logger()
 ATTR = "METAR_RESET_MINUTE"
 
 
-def do(asosdb, pgconn, station, minute):
+def do(year, station, total):
     """Process this network."""
-    for year in range(1996, 2023):
-        # Look for trouble
-        df = pd.read_sql(
-            f"""
-            select date_trunc('hour', valid) as ts,
-            sum(case when report_type = 3 then 1 else 0 end) as routine_hits,
-            sum(case when report_type = 4 then 1 else 0 end) as special_hits
-            from t{year} WHERE station = %s and valid > '1996-07-01'
-            GROUP by ts
-            """,
-            pgconn,
-            params=(station,),
-        )
-        if len(df.index) < 100:
-            continue
-        # Require that 90% of hours have hits
-        if len(df[df["routine_hits"] == 0].index) < (len(df.index) * 0.1):
-            continue
-        # Construct a histogram for the station
-        df = pd.read_sql(
-            f"""
-            select extract(minute from valid)::int as minute, count(*)
-            from t{year} WHERE station = %s and valid > '1996-07-01'
-            GROUP by minute ORDER by count desc
-            """,
-            pgconn,
-            params=(station,),
-            index_col="minute",
-        )
-        newminute = df.index[0]
-        LOG.info("Missing  %s[%s] %s->%s", station, minute, year, newminute)
-        cursor = asosdb.cursor()
+    remaining = total
+    # Get the minute of the hour that the station resets
+    pgconn = get_dbconn("mesosite")
+    cursor = pgconn.cursor()
+    cursor.execute(
+        "select value from station_attributes a JOIN stations t "
+        "on (a.iemid = t.iemid) WHERE t.id = %s and a.attr = %s",
+        (station, ATTR),
+    )
+    minute = None
+    if cursor.rowcount == 0:
+        LOG.info("Missing %s", station)
+    else:
+        minute = cursor.fetchone()[0]
+    pgconn.close()
+
+    # Low hanging fruit first.
+    pgconn = get_dbconn("asos")
+    cursor = pgconn.cursor()
+    cursor.execute(
+        f"""
+        update t{year} SET report_type = 3 WHERE station = %s
+        and extract(minute from valid) = %s and report_type = 2
+        """,
+        (station, minute),
+    )
+    LOG.info("%s[%s] %s -> 2 to 3", station, year, cursor.rowcount)
+    remaining -= cursor.rowcount
+    if remaining > 0:
         cursor.execute(
-            f"UPDATE t{year} SET report_type = 3 where station = %s and "
-            "report_type = 4 and extract(minute from valid) = %s",
-            (station, newminute),
+            f"""
+            update t{year} SET report_type = 4 WHERE station = %s
+            and report_type = 2
+            """,
+            (station,),
         )
-        LOG.info("%s %s %s -> 4 to 3", cursor.rowcount, station, year)
-        asosdb.commit()
+        LOG.info("%s[%s] %s -> 2 to 4", station, year, cursor.rowcount)
+    cursor.close()
+    pgconn.commit()
+    pgconn.close()
 
 
-def main():
+@click.command()
+@click.option("--year", required=True, type=int, help="Year to process")
+def main(year):
     """Go Main Go."""
-    with get_sqlalchemy_conn("mesosite") as conn:
-        netdf = pd.read_sql(
-            "SELECT id from networks where id ~* '_ASOS'",
+    with get_sqlalchemy_conn("asos") as conn:
+        df = pd.read_sql(
+            "SELECT station, count(*) from alldata where valid >= %s and "
+            "valid < %s and report_type = 2 group by station",
             conn,
-            index_col=None,
+            index_col="station",
+            params=(f"{year}-01-01 00:00+00", f"{year+1}-01-01 00:00+00"),
         )
-    for network in netdf["id"].values:
-        if network.find("__") > -1:
-            continue
-        nt = NetworkTable(network, only_online=False)
-        asosdb = get_dbconn("asos")
-        for station in nt.sts:
-            minute = nt.sts[station]["attributes"].get(ATTR)
-            if minute is None:
-                continue
-            with get_sqlalchemy_conn("asos") as pgconn:
-                do(asosdb, pgconn, station, minute)
+    LOG.info("Found %s stations and %s rows", len(df.index), df["count"].sum())
+    for station in df.index:
+        do(year, station, df.at[station, "count"])
 
 
 if __name__ == "__main__":
