@@ -9,15 +9,14 @@ from pyiem.util import utc
 
 def main():
     """Go Main Go."""
-    sts = utc(2019, 11, 6, 2)
-    ets = utc(2019, 11, 6, 22)
-    interval = datetime.timedelta(minutes=5)
+    sts = utc(2024, 1, 1)
+    ets = utc(2025, 1, 1)
+    interval = datetime.timedelta(hours=24)
     i = 0
     now = sts
     while now < ets:
-        uri = now.strftime(
-            ("http://iem.local/roads/iem.php?trucks&valid=%Y-%m-%d%%20%H:%M")
-        )
+        t2 = now + datetime.timedelta(days=21)
+        uri = f"http://iem.local/plotting/auto/plot/21/csector:conus::date1:{now:%Y-%m-%d}::date2:{t2:%Y-%m-%d}::varname:precip::cmap:RdBu::_r:43::_cb:1.png"
         req = requests.get(uri)
         with open("images/%05i.png" % (i,), "wb") as fh:
             fh.write(req.content)
