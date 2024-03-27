@@ -1,84 +1,107 @@
-"""An old plot."""
+"""TVS."""
 
-import numpy
-from scipy import stats
+import numpy as np
 
+from matplotlib.colors import BoundaryNorm
+from pandas.io.sql import read_sql
 from pyiem import reference
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot
 from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
 
 
 def main():
     """Go Main Go."""
-    POSTGIS = get_dbconn("postgis")
-    cursor = POSTGIS.cursor()
+    # manual
+    west = -96.7
+    east = -90.1
+    south = 39.34
+    north = 44.6
+    with get_sqlalchemy_conn("radar") as conn:
+        df = read_sql(
+            """
+        SELECT ST_X(geom) as lon, ST_Y(geom) as lat,
+        valid from nexrad_attributes_log
+        where nexrad in ('DMX','ARX','DVN','OAX','FSD','EAX','MPX', 'LSX')
+        and tvs != 'NONE' and ST_X(geom) > %s and ST_X(geom) < %s
+        and ST_Y(geom) > %s and ST_Y(geom) < %s
+        """,
+            conn,
+            params=(
+                west,
+                east,
+                south,
+                north,
+            ),
+        )
+    # Create a heatmap of the data using a 100x100 grid over Iowa
+    x = np.linspace(west, east, 75)
+    y = np.linspace(south, north, 75)
+    df["i"] = np.digitize(df["lon"], x)
+    df["j"] = np.digitize(df["lat"], y)
+    Z = np.zeros((75, 75))
+    for idx, row in df.iterrows():
+        Z[row["j"], row["i"]] += 1
+    print(np.max(Z))
 
-    lons = []
-    lats = []
-    cursor.execute(
-        """
-    SELECT x(geom), y(geom), valid from nexrad_attributes_log
-    where nexrad in ('DMX','ARX','DVN','OAX','FSD','EAX','MPX')
-    and tvs != 'NONE'
-    """
-    )
-    minvalid = None
-    maxvalid = None
-    for row in cursor:
-        if minvalid is None or row[2] < minvalid:
-            minvalid = row[2]
-        if maxvalid is None or row[2] > maxvalid:
-            maxvalid = row[2]
-        lons.append(row[0])
-        lats.append(row[1])
-
-    X, Y = numpy.mgrid[
-        reference.IA_WEST : reference.IA_EAST : 100j,
-        reference.IA_SOUTH : reference.IA_NORTH : 100j,
-    ]
-    positions = numpy.vstack([X.ravel(), Y.ravel()])
-    values = numpy.vstack([lons, lats])
-    kernel = stats.gaussian_kde(values)
-    Z = numpy.reshape(kernel(positions).T, X.shape)
-
-    m = MapPlot(
-        sector="iowa",
+    mp = MapPlot(
+        sector="custom",
+        north=reference.IA_NORTH,
+        south=reference.IA_SOUTH,
+        east=reference.IA_EAST,
+        west=reference.IA_WEST,
         title="NEXRAD Tornado Vortex Signature Reports",
-        subtitle=("%s - %s, (TVS storm attribute present)")
-        % (minvalid.strftime("%d %b %Y"), maxvalid.strftime("%d %b %Y")),
+        subtitle=(
+            f"{df['valid'].min():%-d %b %Y} - "
+            f"{df['valid'].max():%-d %b %Y}, TVS storm attribute present, "
+            f"{len(df.index):,} attributes found."
+        ),
     )
 
-    # m.pcolormesh(X, Y, Z, numpy.arange(0,.11,.01), cmap=plt.cm.gist_earth_r,
-    #            latlon=True)
+    """
+    mp.plot_values(
+        df["lon"].values,
+        df["lat"].values,
+        ["x"] * len(df.index),
+        marker="+",
+        zorder=20,
+        s=40,
+        color="k",
+        labelbuffer=0,
+    )
+    """
 
-    xs, ys = m.map(
+    cmap = plt.get_cmap("plasma")
+    cmap.set_under("None")
+    Z = np.ma.masked_where(Z < 0.0001, Z)
+    clevs = np.arange(0, 31, 3)
+    clevs[0] = 1
+    norm = BoundaryNorm(clevs, cmap.N)
+    mp.ax.imshow(
+        Z,
+        interpolation="nearest",
+        norm=norm,
+        cmap=cmap,
+        origin="lower",
+        extent=[
+            west,
+            east,
+            south,
+            north,
+        ],
+        zorder=reference.Z_OVERLAY,
+    )
+    mp.drawcounties()
+    mp.plot_values(
         [-93.72, -96.37, -91.18, -90.57, -96.72],
         [41.72, 41.32, 43.82, 41.6, 43.58],
+        ["X", "X", "X", "X", "X"],
+        textsize=18,
+        color="r",
+        zorder=reference.Z_OVERLAY + 1,
     )
-    m.ax.scatter(xs, ys, marker="o", zorder=20, s=100, color="r")
-
-    xs, ys = m.map(lons, lats)
-    m.ax.scatter(xs, ys, marker="+", zorder=20, s=40, color="k")
-
-    m.drawcounties()
-    m.postprocess(filename="test.png")
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.imshow(
-        numpy.rot90(Z),
-        cmap=plt.get_cmap("gist_earth_r"),
-        extent=[
-            reference.IA_WEST,
-            reference.IA_EAST,
-            reference.IA_SOUTH,
-            reference.IA_NORTH,
-        ],
-    )
-    ax.plot(lons, lats, "k.", markersize=2)
-    ax.set_title("2013 Des Moines NEXRAD MESO Kernel Density Estimate")
-    fig.savefig("test.png")
+    mp.draw_colorbar(clevs, cmap, norm, title="Count")
+    mp.fig.savefig("240327.png")
 
 
 if __name__ == "__main__":
