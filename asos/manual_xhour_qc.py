@@ -43,11 +43,11 @@ def process(engine, conn, row, station):
 
 
 @click.command()
-@click.option("--network")
-@click.option("--station")
-@click.option("--hours", type=int)
-@click.option("--mydir")
-@click.option("--how")
+@click.option("--network", required=True)
+@click.option("--station", required=True)
+@click.option("--hours", type=int, default=24)
+@click.option("--mydir", required=True)  # warm or cool
+@click.option("--how", required=True)  # exact or over
 @click.option("--varname", default="tmpf")
 def main(network, station, hours, mydir, how, varname):
     """Go Main Go."""
