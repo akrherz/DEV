@@ -5,7 +5,12 @@ Review website_telemetry for errors.
 import requests
 
 import pandas as pd
-from pyiem.util import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn
+
+VHOST_MAPPER = {
+    "datateam.agron.iastate.edu": "datateam.local",
+    "weather.im": "weatherim.local",
+}
 
 
 def main():
@@ -13,18 +18,21 @@ def main():
     with get_sqlalchemy_conn("mesosite") as conn:
         df = pd.read_sql(
             """
-            select distinct request_uri from website_telemetry
+            select distinct vhost, request_uri from website_telemetry
             where status_code = 500
-            and valid > now() - '1 day'::interval
+            and valid > now() - '1 day'::interval and vhost != 'iem.local'
             """,
             conn,
         )
-    for uri in df["request_uri"]:
+    for _, row in df.iterrows():
+        vhost = row["vhost"]
+        uri = row["request_uri"]
         print("-------------------------------------------------")
-        print(uri)
+        print(f"[{vhost}] {uri}")
         waiting = True
         while waiting:
-            req = requests.get("http://iem.local" + uri, timeout=600)
+            vhost = VHOST_MAPPER.get(vhost, "iem.local")
+            req = requests.get(f"http://{vhost}{uri}", timeout=600)
             # Rumfields Known Knowns
             if req.status_code in [200, 422, 503]:
                 waiting = False
