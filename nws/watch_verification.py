@@ -5,7 +5,7 @@ from datetime import timezone
 from tqdm import tqdm
 
 import geopandas as gpd
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def main():
@@ -37,10 +37,9 @@ def main():
     df["month"] = df["utc_issue"].dt.month
     # Day,
     df["day"] = df["utc_issue"].dt.day
-    # Did it touch Iowa,
-    df["touches_iowa"] = df["states"].apply(lambda x: x.find("IA") > -1)
+    df["touches_alabama"] = df["states"].apply(lambda x: x.find("AL") > -1)
+    df = df[df["touches_alabama"]]
     # Did it touch Oklahoma,
-    df["touches_oklahoma"] = df["states"].apply(lambda x: x.find("OK") > -1)
     df["lsr_tornado_reports"] = 0
     df["tornado_warnings"] = 0
     for idx, row in tqdm(df.iterrows(), total=len(df.index)):

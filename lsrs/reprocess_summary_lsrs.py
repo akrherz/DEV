@@ -4,8 +4,9 @@ Reprocess Summary LSRs to update database schema.
 refs akrherz/pyWWA#150
 """
 
+from pyiem.database import get_dbconn
 from pyiem.nws.products.lsr import parser
-from pyiem.util import get_dbconn, logger
+from pyiem.util import logger
 
 LOG = logger()
 

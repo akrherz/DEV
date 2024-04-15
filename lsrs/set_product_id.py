@@ -6,8 +6,9 @@ import datetime
 from itertools import product
 
 import pandas as pd
+from pyiem.database import get_dbconn
 from pyiem.nws.products.lsr import parser
-from pyiem.util import get_dbconn, logger, utc
+from pyiem.util import logger, utc
 
 LOG = logger()
 
