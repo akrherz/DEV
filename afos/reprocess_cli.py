@@ -4,9 +4,10 @@ from datetime import date
 
 from psycopg2.extras import DictCursor
 
+from pyiem.database import get_dbconn
 from pyiem.network import Table as NetworkTable
 from pyiem.nws.products import cli
-from pyiem.util import get_dbconn, logger
+from pyiem.util import logger
 
 LOG = logger()
 FLOOR = date(1999, 12, 15)
