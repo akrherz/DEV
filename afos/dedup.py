@@ -6,7 +6,8 @@ import sys
 from tqdm import tqdm
 
 import pandas as pd
-from pyiem.util import get_dbconn, get_sqlalchemy_conn, noaaport_text
+from pyiem.database import get_dbconn, get_sqlalchemy_conn
+from pyiem.util import noaaport_text
 
 
 def dotable(date):
@@ -20,9 +21,7 @@ def dotable(date):
         df = pd.read_sql(
             f"""
             WITH data as (
-                SELECT entered, pil, source, count(*),
-                max(case when wmo = 'TTAAOO' then 'AAAA00' else wmo end) as
-                max_wmo from {table}
+                SELECT entered, pil, source, bbb, count(*) from {table}
                 WHERE source is not null and wmo is not null
                 and pil is not null and entered >= %s and entered <= %s
                 GROUP by entered, pil, source)

@@ -1,6 +1,7 @@
 """Dump products to file."""
 
-from pyiem.util import get_dbconnc, noaaport_text
+from pyiem.database import get_dbconnc
+from pyiem.util import noaaport_text
 
 
 def main():

@@ -35,7 +35,7 @@ def plot(nt, ts, i, sbw2):
     mp = MapPlot(
         sector="nws",
         title=(
-            "IEM Estimated NEXRAD III Latency during 2 April 2024 NWS "
+            "IEM Estimated NEXRAD III Latency during 16 April 2024 NWS "
             "Network Outage"
         ),
         subtitle=(
@@ -96,7 +96,7 @@ def main():
             """
             select geom, polygon_begin, polygon_end, phenomena from sbw
             where phenomena in ('TO', 'SV', 'FF') and significance ='W'
-            and polygon_begin > '2024-04-02' and polygon_begin < '2024-04-03'
+            and polygon_begin > '2024-04-16' and polygon_begin < '2024-04-17'
             """,
             conn,
             geom_col="geom",
@@ -105,10 +105,10 @@ def main():
     nt = NetworkTable("NEXRAD")
     progress = tqdm(
         pd.date_range(
-            "2024-04-02T08:30+00", "2024-04-02T10:30+00", freq="2min"
+            "2024-04-16T11:00+00", "2024-04-16T12:30+00", freq="2min"
         )
     )
-    for i, ts in enumerate(progress, start=90):
+    for i, ts in enumerate(progress, start=0):
         progress.set_description(str(ts))
         sbw2 = sbw[(sbw["polygon_begin"] <= ts) & (sbw["polygon_end"] >= ts)]
         plot(nt, ts, i, sbw2)

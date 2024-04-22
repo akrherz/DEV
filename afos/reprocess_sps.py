@@ -1,7 +1,8 @@
 """Process SPS again for new storage."""
 
+from pyiem.database import get_dbconn
 from pyiem.nws.products.sps import parser
-from pyiem.util import get_dbconn, logger
+from pyiem.util import logger
 
 LOG = logger()
 
