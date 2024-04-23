@@ -2,7 +2,7 @@
 
 import os
 
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 PILS = (
     "MWW|FWW|CFW|TCV|RFW|FFA|SVR|TOR|SVS|SMW|MWS|NPW|WCN|WSW|EWW|FLS|"

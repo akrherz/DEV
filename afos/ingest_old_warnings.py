@@ -20,9 +20,9 @@ from psycopg2.extras import DictCursor
 from sqlalchemy import text
 
 import pandas as pd
+from pyiem.database import get_dbconn, get_sqlalchemy_conn
 from pyiem.nws.products.vtec import parser
 from pyiem.nws.vtec import VTEC
-from pyiem.util import get_dbconn, get_sqlalchemy_conn
 
 FMT = "%y%m%dT%H%MZ"
 UNTIL = re.compile(

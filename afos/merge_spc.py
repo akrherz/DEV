@@ -2,7 +2,8 @@
 
 import os
 
-from pyiem.util import get_dbconn, noaaport_text, utc
+from pyiem.database import get_dbconn
+from pyiem.util import noaaport_text, utc
 
 
 def main():
@@ -25,7 +26,7 @@ def main():
         if cursor.rowcount == 0:
             print("%s is new" % (ts,))
         data = (
-            ts.strftime("000 \r\r\nWUUS01 KWNS %d%H%M\r\r\nPTSDY1\r\r\n\r\r\n")
+            ts.strftime("000 \nWUUS01 KWNS %d%H%M\nPTSDY1\n\n")
             + open(fn).read()
         )
         txt = noaaport_text(data)

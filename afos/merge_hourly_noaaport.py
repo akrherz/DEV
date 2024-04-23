@@ -3,8 +3,9 @@
 http://idd.ssec.wisc.edu/native/nwstg/text/
 """
 
+from pyiem.database import get_dbconn
 from pyiem.nws.products import TextProduct
-from pyiem.util import get_dbconn, utc
+from pyiem.util import utc
 
 
 def main():

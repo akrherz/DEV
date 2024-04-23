@@ -4,7 +4,8 @@ import re
 import sys
 
 import pandas as pd
-from pyiem.util import get_dbconn, noaaport_text
+from pyiem.database import get_dbconn
+from pyiem.util import noaaport_text
 
 MYRE = re.compile("[A-Z0-9]{5,6} [A-Z]{4} [0-9]{5,6}")
 

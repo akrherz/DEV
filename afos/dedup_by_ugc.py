@@ -8,7 +8,7 @@ from sqlalchemy import text
 
 import pandas as pd
 from pyiem.database import get_sqlalchemy_conn
-from pyiem.nws.product import TextProduct
+from pyiem.nws.product import TextProduct, TextProductException
 from pyiem.util import logger, utc
 
 LOG = logger()
@@ -36,9 +36,20 @@ def process(row):
         try:
             prod = TextProduct(row2["data"], utcnow=row["utc_valid"])
             if prod.segments[0].ugcexpire is None:
-                raise ValueError("ugcexpire is None")
+                LOG.info(
+                    "%s has no ugcexpire %s-%s-%s",
+                    row2["ctid"],
+                    row["utc_valid"],
+                    row["pil"],
+                    row["bbb"],
+                )
+                continue
+        except TextProductException as exp:
+            print("Swallowing", exp)
+            continue
         except Exception as exp:
-            print(exp, row)
+            print(exp)
+            print(row)
             return
         products.at[idx, "ugcs"] = ",".join(
             str(x) for x in prod.segments[0].ugcs
@@ -133,7 +144,6 @@ def main(year, pil):
                 "pil": pil,
             },
         )
-        # products = products[products["bbb"] != "COR"]
         if products.empty:
             LOG.info("No results found!")
             return

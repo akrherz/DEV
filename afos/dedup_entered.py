@@ -8,8 +8,9 @@ and a new one at the new logic.
 import sys
 
 import pandas as pd
+from pyiem.database import get_dbconn
 from pyiem.nws.product import TextProduct
-from pyiem.util import get_dbconn, noaaport_text
+from pyiem.util import noaaport_text
 
 
 def do(pgconn, date):

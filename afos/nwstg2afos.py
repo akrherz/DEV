@@ -9,8 +9,9 @@ import tarfile
 
 import pytz
 
+from pyiem.database import get_dbconn
 from pyiem.nws.product import TextProduct
-from pyiem.util import get_dbconn, noaaport_text
+from pyiem.util import noaaport_text
 
 BAD_CHARS = r"[^\na-zA-Z0-9:\(\)\%\.,\s\*\-\?\|/><&$=\+\@]"
 

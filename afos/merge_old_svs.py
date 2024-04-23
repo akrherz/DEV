@@ -7,9 +7,10 @@ from ingest_old_warnings import compute_until
 from psycopg2.extras import DictCursor
 
 from geopandas import read_postgis
+from pyiem.database import get_dbconn
 from pyiem.nws.products.vtec import parser
 from pyiem.nws.vtec import VTEC
-from pyiem.util import get_dbconn, noaaport_text
+from pyiem.util import noaaport_text
 
 FMT = "%y%m%dT%H%MZ"
 

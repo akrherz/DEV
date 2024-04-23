@@ -5,7 +5,7 @@ import sys
 from datetime import datetime
 
 import pandas as pd
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 DATE_RE = re.compile("\d+/\d+/\d+")
 

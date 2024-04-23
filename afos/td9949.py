@@ -11,7 +11,8 @@ import struct
 import sys
 from io import BytesIO
 
-from pyiem.util import get_dbconn, noaaport_text, utc
+from pyiem.database import get_dbconn
+from pyiem.util import noaaport_text, utc
 
 # Copied from https://github.com/akrherz/iem
 sys.path.insert(0, "/opt/iem/scripts/util")

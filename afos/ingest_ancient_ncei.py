@@ -4,9 +4,10 @@ import datetime
 import re
 import string
 
-from poker2afos import XREF_SOURCE
+from poker2afos import XREF_SOURCE  # noqa
 
-from pyiem.util import get_dbconn, noaaport_text, utc
+from pyiem.database import get_dbconn
+from pyiem.util import noaaport_text, utc
 
 WMO_RE = re.compile(
     "^(?P<ttaaii>[A-Z0-9]{4,6})\s+(?P<cccc>[A-Z]{4})\s+"

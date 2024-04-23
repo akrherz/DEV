@@ -2,7 +2,6 @@
 
 # 3rd Party
 import pandas as pd
-from pandas.io.sql import read_sql
 from pyiem.plot.use_agg import plt
 from pyiem.reference import wfo_dict
 from pyiem.util import get_dbconn
@@ -23,7 +22,7 @@ def main():
     for wfo in wfo_dict:
         wfos.append({"wfo": wfo, "region": wfo_dict[wfo]["region"]})
     wfos = pd.DataFrame(wfos)
-    df = read_sql(
+    df = pd.read_sql(
         "select to_char(entered, 'YYYYmm') as datum, "
         "substr(source, 2, 3) as wfo, "
         "count(*) as products, sum(wordcount) as words, "

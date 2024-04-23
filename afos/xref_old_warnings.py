@@ -41,6 +41,7 @@ def insert(prod, ugc, eventid):
         )
     if not entries.empty:
         print(entries)
+    return
     print(prod.text[:400])
     if input("Proceed? y/[n] ") in ["", "n"]:
         return None
@@ -168,9 +169,7 @@ def update_postgis(prod: TextProduct):
             conn.commit()
 
 
-@click.command()
-@click.option("--date", "dt", type=click.DateTime(), help="date to process")
-def main(dt):
+def do_date(dt):
     """Go Main Go."""
     # build a list of problematic products
     with get_sqlalchemy_conn("afos") as conn:
@@ -188,12 +187,14 @@ def main(dt):
                 "ets": utc(dt.year, dt.month, dt.day, 23, 59),
             },
         )
-    if products.empty:
-        LOG.info("No products found for date: %s", dt)
-        return
-    products["utc_valid"] = products["utc_valid"].dt.tz_localize(timezone.utc)
-    with get_sqlalchemy_conn("afos") as conn:
+        if products.empty:
+            LOG.info("No products found for date: %s", dt)
+            return
+        products["utc_valid"] = products["utc_valid"].dt.tz_localize(
+            timezone.utc
+        )
         for _, row in products.iterrows():
+            prod = None
             try:
                 prod = TextProduct(row["data"], utcnow=row["utc_valid"])
                 if prod.afos is None:
@@ -209,6 +210,8 @@ def main(dt):
             except Exception as exp:
                 LOG.info("%s Failed to parse product: %s", exp, row["ctid"])
                 continue
+            if prod is None:
+                continue
             if abs((prod.valid - row["utc_valid"]).total_seconds()) > 3600:
                 LOG.info(
                     "Major delta product at %s is not valid at %s %s",
@@ -218,6 +221,12 @@ def main(dt):
                 )
                 continue
             if prod.valid != row["utc_valid"]:
+                LOG.info(
+                    "Updating %s %s -> %s",
+                    prod.get_product_id(),
+                    row["utc_valid"],
+                    prod.valid,
+                )
                 conn.execute(
                     text(f"""
                     UPDATE {row['table']} SET entered = :valid
@@ -227,6 +236,18 @@ def main(dt):
                 )
                 conn.commit()
             update_postgis(prod)
+
+
+@click.command()
+@click.option("--date", "dt", type=click.DateTime(), help="date to process")
+@click.option("--year", type=int, help="year to process")
+def main(dt, year):
+    """Go Main."""
+    if year is not None:
+        for valid in pd.date_range(f"{year}/01/01", f"{year}/12/31"):
+            do_date(valid)
+    else:
+        do_date(dt)
 
 
 if __name__ == "__main__":

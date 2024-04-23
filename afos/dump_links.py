@@ -3,8 +3,9 @@
 import re
 from datetime import timezone
 
+from pyiem.database import get_dbconn
 from pyiem.nws.products import parser
-from pyiem.util import get_dbconn, noaaport_text
+from pyiem.util import noaaport_text
 
 PATTERN = re.compile(r"AT\s+THE\s+REQUEST\s+OF\s+(.*?)\.", re.M | re.S)
 
