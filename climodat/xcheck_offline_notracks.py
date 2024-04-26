@@ -3,19 +3,64 @@ Double check offline stations, maybe we can fix.
 """
 
 import requests
+from sqlalchemy import text
 
+from pyiem.database import get_dbconn, get_sqlalchemy_conn
 from pyiem.reference import ncei_state_codes
-from pyiem.util import get_dbconn, logger
+from pyiem.util import logger
 
 LOG = logger()
-SERVICE = "http://data.rcc-acis.org/StnMeta"
+SERVICE = "https://data.rcc-acis.org/StnMeta"
+
+
+def investigate(station):
+    """ACIS says online, IEM says otherwise."""
+    # Figure out who this station is tracking
+    sql = """
+    select value from stations t JOIN station_attributes a on
+    (t.iemid = a.iemid) WHERE t.id = :station and a.attr = 'TRACKS_STATION'
+    """
+    with get_sqlalchemy_conn("mesosite") as conn:
+        res = conn.execute(text(sql), {"station": station})
+        if res.rowcount == 0:
+            LOG.info("No TRACKS for %s", station)
+            return
+        (tracks_station, tracks_network) = res.fetchone()[0].split("|")
+    # Go look at IEM access for recent high AND precip data, we need both
+    sql = """
+    select max(day) from summary_2024 s JOIN stations t on
+    (s.iemid = t.iemid) where t.id = :station and t.network = :network
+    and max_tmpf is not null and pday is not null
+    """
+    with get_sqlalchemy_conn("iem") as conn:
+        res = conn.execute(
+            text(sql),
+            {"station": tracks_station, "network": tracks_network},
+        )
+        maxdate = res.fetchone()[0]
+    LOG.info(
+        "Station %s tracks %s %s, access maxdate: %s",
+        station,
+        tracks_network,
+        tracks_station,
+        maxdate,
+    )
+    if maxdate is None:
+        return
+    # Now we need to update the station to be online
+    sql = """
+    update stations SET online = 't', archive_end = null
+    WHERE id = :station and network ~* 'CLIMATE'
+    """
+    with get_sqlalchemy_conn("mesosite") as conn:
+        conn.execute(text(sql), {"station": station})
+        conn.commit()
 
 
 def main():
     """Go Main Go."""
     conn = get_dbconn("mesosite")
     cursor = conn.cursor()
-    cursor2 = conn.cursor()
     cursor.execute(
         """
         select id, iemid from stations where network ~* 'CLIMATE'
@@ -27,7 +72,11 @@ def main():
         state = station[:2]
         # Query ACIS
         acisid = f"{ncei_state_codes[state]}{station[2:]}"
-        payload = {"sids": acisid, "meta": "sid_dates"}
+        payload = {
+            "sids": acisid,
+            "meta": "valid_daterange",
+            "elems": "maxt,mint,pcpn",
+        }
         req = requests.post(SERVICE, json=payload, timeout=60)
         j = req.json()
         meta = j["meta"]
@@ -35,73 +84,19 @@ def main():
             LOG.info("ACIS lookup of %s failed, sid: %s", acisid, station)
             continue
         meta = meta[0]
-        LOG.debug("%s %s", station, meta["sid_dates"])
-        track_network = None
-        track_station = None
-        for entry, sid_start, sid_end in meta["sid_dates"]:
-            if not sid_end.startswith("9999"):
-                continue
-            tokens = entry.split()
-            if tokens[1] in ["3", "7"] and track_network is None:
-                if tokens[1] == "3" and len(tokens[0]) == 3:
-                    track_station = tokens[0]
-                    track_network = f"{state}_ASOS"
-                if tokens[1] == "7":
-                    track_station = tokens[0]
-                    track_network = f"{state}_COOP"
-        if track_network is None:
+        if any(not x for x in meta["valid_daterange"]):
+            LOG.info("ACIS says %s has no data for one var", station)
             continue
-        # Do we know about this station
-        cursor2.execute(
-            "SELECT iemid from stations where id = %s and network = %s",
-            (track_station, track_network),
-        )
-        if cursor2.rowcount == 0:
-            LOG.info(
-                "IEM_UNKNOWN %s %s %s %s",
-                station,
-                track_station,
-                track_network,
-                cursor2.rowcount,
-            )
-            if track_network.find("COOP") > -1:
-                # Likely a DCP we can replicate
-                LOG.info("Copying DCP to COOP %s", track_station)
-                cursor2.execute(
-                    """
-                insert into stations
-                    (id, network, name, state, country, geom, elevation)
-                select id, %s, name, state, country, geom, elevation from
-                stations where id = %s and network = %s
-                """,
-                    (
-                        track_network,
-                        track_station,
-                        track_network.replace("COOP", "DCP"),
-                    ),
-                )
-                tracks = f"{track_station}|{track_network}"
-                cursor2.execute(
-                    """insert into station_attributes values (%s, %s, %s)""",
-                    (row[1], "TRACKS_STATION", tracks),
-                )
-            else:
+        LOG.info("%s %s", station, meta["valid_daterange"])
+        for data_start, data_end in meta["valid_daterange"]:
+            if data_start.startswith(("9999", "0001")):
+                continue
+            if data_end > "2024-04-01":
                 LOG.info(
-                    "FAIL, %s[%s] is unknown", track_station, track_network
+                    "ACIS says online? %s %s", station, meta["valid_daterange"]
                 )
-                continue
-        continue
-        # Is this station being tracked by somebody else?
-        cursor2.execute(
-            "select iemid from station_attributes where value = %s",
-            (tracks,),
-        )
-        if cursor2.rowcount > 0:
-            LOG.info("FAIL %s already in use", tracks)
-            continue
-        LOG.info("%s -> %s", row[1], tracks)
-    cursor2.close()
-    conn.commit()
+                investigate(station)
+                break
 
 
 if __name__ == "__main__":

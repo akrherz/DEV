@@ -5,11 +5,12 @@ threading.  This script looks for trouble.
 
 import requests
 
+from pyiem.database import get_dbconn
 from pyiem.reference import ncei_state_codes
-from pyiem.util import get_dbconn, logger
+from pyiem.util import logger
 
 LOG = logger()
-SERVICE = "http://data.rcc-acis.org/StnMeta"
+SERVICE = "https://data.rcc-acis.org/StnMeta"
 
 
 def main():
