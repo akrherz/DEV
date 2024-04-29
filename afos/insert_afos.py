@@ -1,5 +1,6 @@
 """We have duplicated old data, one with a AFOS/AWIPS ID and one without."""
 
+import sys
 from datetime import timezone
 
 import click
@@ -56,6 +57,9 @@ def main(year, pil):
             )
             for prodrow in res.fetchall():
                 prodlines = prodrow[2].split("\n")
+                if len(prodlines) < 3:
+                    print(prodrow[0])
+                    sys.exit()
                 if prodlines[2].startswith(pil):
                     continue
                 prodlines.insert(2, row["pil"])

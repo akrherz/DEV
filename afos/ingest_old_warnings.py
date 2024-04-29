@@ -21,6 +21,7 @@ from sqlalchemy import text
 
 import pandas as pd
 from pyiem.database import get_dbconn, get_sqlalchemy_conn
+from pyiem.nws.product import TextProduct
 from pyiem.nws.products.vtec import parser
 from pyiem.nws.vtec import VTEC
 
@@ -32,7 +33,7 @@ UNTIL2 = re.compile(r" (UNTIL|TIL|EXPIRE AT|THROUGH) ([A-Z0-9].*?)\.* ")
 SOURCES = {"SV": "SVR", "TO": "TOR", "FF": "FFW"}
 
 
-def compute_until(v):
+def compute_until(v: TextProduct):
     """Figure out when this event ends!"""
     # Attempt to figure out the UNTIL time.
     tokens = UNTIL.findall(v.unixtext.replace("\n", " "))
@@ -66,6 +67,8 @@ def compute_until(v):
         else:
             ampm = "AM" if text.find("AM") > -1 else "PM"
             numbers = re.findall(r"\d+", text)
+            if not numbers:
+                return None
             if len(numbers[0]) > 2:
                 hr = int(numbers[0][:-2])
                 mi = int(numbers[0][-2:])

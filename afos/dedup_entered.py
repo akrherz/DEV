@@ -25,7 +25,7 @@ def do(pgconn, date):
         "0106" if date.month < 7 else "0712",
     )
     cursor.execute(
-        f"SELECT ctid, entered, data from {table} where "
+        f"SELECT ctid, entered, data, pil from {table} where "
         "entered >= %s and entered <= %s ORDER by entered ASC",
         (ts1, ts2),
     )
@@ -51,7 +51,7 @@ def do(pgconn, date):
             f"UPDATE {table} SET entered = %s, data = %s WHERE ctid = %s",
             (prod.valid, noaaport_text(row[2]), row[0]),
         )
-        print(f"{row[1]} -> {prod.valid} ({delta})")
+        print(f"{row[3]} {row[1]} -> {prod.valid} ({delta})")
     cursor2.close()
     pgconn.commit()
 
@@ -60,7 +60,7 @@ def main(argv):
     """Do Main"""
     pgconn = get_dbconn("afos")
     year = int(argv[1])
-    for date in pd.date_range(f"{year}/01/01", f"{year}/12/31"):
+    for date in pd.date_range(f"{year}/01/01", f"{year}/01/01"):
         do(pgconn, date)
 
 

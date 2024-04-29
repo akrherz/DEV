@@ -88,7 +88,7 @@ def main(year):
             select ctid, entered at time zone 'UTC' as utc_valid,
             tableoid::regclass as table,
             pil, bbb, data from products where entered >= :sts and
-            entered < :ets and substr(pil, 1, 3) in ('SVR', 'TOR', 'FFW')
+            entered < :ets and substr(pil, 1, 3) = 'SVS'
                  ORDER by entered asc
             """),
             conn,
