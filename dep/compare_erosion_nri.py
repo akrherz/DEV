@@ -6,8 +6,44 @@ import geopandas as gpd
 import matplotlib.colors as mpcolors
 import pandas as pd
 from pyiem.database import get_sqlalchemy_conn
-from pyiem.plot import MapPlot, get_cmap
+from pyiem.plot import MapPlot, figure, get_cmap
 from pyiem.reference import Z_OVERLAY2
+
+
+def plot_comparison(counties):
+    """Generate two xy plots comparing nri and dep, one normalized."""
+    fig = figure(
+        title="2008-2017 DEP vs NRI County Avg Yearly Erosion",
+        subtitle=(
+            f"NRI Avg: {counties['nri'].mean():.1f} T/a/yr, "
+            f"DEP Avg: {counties['dep'].mean():.1f} T/a/yr"
+        ),
+        logo="dep",
+        figsize=(8, 6),
+    )
+
+    # left side, direct x vs y
+    ax = fig.add_axes([0.1, 0.1, 0.35, 0.8])
+    ax.grid(True)
+    ax.set_xlabel("NRI Avg Erosion [T/a/yr]")
+    ax.set_ylabel("DEP Avg Erosion [T/a/yr]")
+    ax.scatter(counties["nri"], counties["dep"], s=25)
+    ax.plot([0, 15], [0, 15], color="r", lw=2)
+    ax.set_xlim(0, 15)
+    ax.set_ylim(0, 15)
+
+    # right side, plot dep number as percent of nri
+    ax = fig.add_axes([0.55, 0.1, 0.35, 0.8])
+    ax.grid(True)
+    ax.set_xlabel("NRI Avg Erosion [T/a/yr]")
+    ax.set_ylabel("DEP Avg Erosion [% of NRI]")
+    ax.scatter(
+        counties["nri"], (counties["dep"] / counties["nri"]) * 100.0, s=25
+    )
+    ax.set_xlim(0, 15)
+    ax.set_ylim(0, 100)
+
+    fig.savefig("nri_dep_scatter.png")
 
 
 def main():
@@ -67,12 +103,15 @@ def main():
         .groupby("cfips")["loss"]
         .mean()
     )
+    counties["dep_std"] = (
+        gpd.sjoin(counties, idep, predicate="intersects")
+        .groupby("cfips")["loss"]
+        .std()
+    )
+    plot_comparison(counties)
 
     mp = MapPlot(
-        title=(
-            "2008-2017 DEP County Average Erosion minus "
-            "NRI County Average Erosion"
-        ),
+        title=("2008-2017 NRI County Avg Yearly Erosion"),
         subtitle=(
             f"NRI Avg: {counties['nri'].mean():.1f} T/a/yr, "
             f"DEP Avg: {counties['dep'].mean():.1f} T/a/yr"
@@ -80,27 +119,33 @@ def main():
         logo="dep",
         caption="Daily Erosion Project",
     )
-    cmap = get_cmap("RdBu")
-    bins = np.arange(-5, 5.1, 1.0)
-    norm = mpcolors.BoundaryNorm(bins, cmap.N)
+    cmap = get_cmap("viridis")  # "RdBu")
+    bins = np.arange(0, 5.1, 1)  # -5, 5.1, 1.0)
+    bins[0] = 0.1
+    norm = mpcolors.BoundaryNorm(bins, cmap.N, extend="both")
     counties["diff"] = counties["dep"] - counties["nri"]
     counties.to_crs(mp.panels[0].crs).plot(
         aspect=None,
         ax=mp.panels[0].ax,
-        color=cmap(norm(counties["diff"])),
+        color=cmap(norm(counties["nri"])),
         zorder=Z_OVERLAY2,
+    )
+    counties["labels"] = counties.apply(
+        lambda row: f"{row['dep']:.1f}\n+/- {row['dep_std']:.1f}",
+        axis=1,
     )
     mp.plot_values(
         counties.centroid.x,
         counties.centroid.y,
-        counties["diff"].values,
+        counties["nri"].values,
         fmt="%.1f",
         labelbuffer=0,
+        textsize=10,
     )
 
     mp.draw_colorbar(bins, cmap, norm, units="T/a/yr", extend="both")
     mp.drawcounties()
-    mp.fig.savefig("test.png")
+    mp.fig.savefig("nri_yearly.png")
 
 
 if __name__ == "__main__":
