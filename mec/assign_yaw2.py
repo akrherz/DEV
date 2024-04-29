@@ -22,7 +22,7 @@ def process(xedges, yedges, counts):
     # For each AWOS Wind bin, lets find the index of max frequency
     x = []
     correction = []
-    for i, bin in enumerate(xedges[:-1]):
+    for i, _bin in enumerate(xedges[:-1]):
         x.append(xedges[i])
         if not np.isnan(np.nanmax(counts[i, :])):
             diff = yedges[np.nanargmax(counts[i, :])] - xedges[i]

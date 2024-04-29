@@ -42,7 +42,7 @@ def main(argv):
         if meta:
             meta = meta[0]
             online = False
-            for entry, sid_start, sid_end in meta["sid_dates"]:
+            for _entry, _sid_start, sid_end in meta["sid_dates"]:
                 if sid_end.startswith("9999"):
                     online = True
             if online:

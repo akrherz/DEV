@@ -52,7 +52,7 @@ def process(df):
         sys.exit()
 
     with get_sqlalchemy_conn("afos") as conn:
-        for idx, row in df.iterrows():
+        for _idx, row in df.iterrows():
             if not row["take"]:
                 conn.execute(
                     text(f"delete from {row['table']} WHERE ctid = :ctid"),

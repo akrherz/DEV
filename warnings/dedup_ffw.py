@@ -25,7 +25,7 @@ def dedup(pgconn, cursor, row):
             row["ugc"],
         ),
     )
-    for i, row2 in df.iterrows():
+    for _i, row2 in df.iterrows():
         utcnow = row2["issue"].astimezone(timezone.utc)
         tp = TextProduct(row2["report"], utcnow=utcnow)
         delta = (tp.valid - utcnow).total_seconds()

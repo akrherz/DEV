@@ -40,7 +40,7 @@ def main():
     df["i"] = np.digitize(df["lon"], x)
     df["j"] = np.digitize(df["lat"], y)
     Z = np.zeros((75, 75))
-    for idx, row in df.iterrows():
+    for _idx, row in df.iterrows():
         Z[row["j"], row["i"]] += 1
     print(np.max(Z))
 

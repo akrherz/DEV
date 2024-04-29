@@ -9,7 +9,7 @@ progress = [[1, 3, 4, 4, 5], [2, 3, 4, 4, 5], [3, 3, 4, 5, 5]]
 
 dx = 1.0 / len(progress)
 xoff = dx / 2.0
-for i, (name, data) in enumerate(zip(students, progress)):
+for _i, (name, data) in enumerate(zip(students, progress)):
     ax.plot(np.arange(len(data)) + xoff, data, label=name, marker="o")
     xoff += dx
 

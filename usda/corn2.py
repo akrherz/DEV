@@ -111,7 +111,7 @@ def main():
     ax[1].set_xlabel("Wettest Monthly Departure for Year [inch]")
     ax[1].set_ylabel("Yield Departure from Trendline [%]", fontsize=10)
     ax[1].grid(True)
-    for i, row in df.iterrows():
+    for _i, row in df.iterrows():
         if (
             row["wxdeparture"] > 4
             or row["yielddeparture"] < -20

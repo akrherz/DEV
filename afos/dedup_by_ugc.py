@@ -92,7 +92,7 @@ def process(row):
                 )
                 continue
             i = 0
-            for idx, row2 in gdf.iterrows():
+            for _idx, row2 in gdf.iterrows():
                 lines = row2["data"].split("\n")
                 if row["bbb"] is None:
                     lines[1] = lines[1] + f" {newbbb}"

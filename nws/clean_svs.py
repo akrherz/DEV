@@ -39,7 +39,7 @@ for row in cursor:
     if len(times) < 2:
         continue
     delta = times[-1] - times[0]
-    for i, time in enumerate(times):
+    for i, _time in enumerate(times):
         if i == 0:
             continue
         delta = times[i] - times[i - 1]

@@ -51,7 +51,7 @@ def calc(T, Td):
     #
     #    Solve for tW iteratively by attempting an energy balance
     #    Ten steps should be sufficient
-    for i in range(0, 10, 1):
+    for _i in range(0, 10, 1):
         #
         #       convert to deg C
         tWC = tW - 273.15

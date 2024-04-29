@@ -37,7 +37,7 @@ ROADCOND = {
 }
 
 df = pd.read_csv(sys.argv[1])
-for i, row in df.iterrows():
+for _i, row in df.iterrows():
     segid = xref[int(row["SEGMENT_ID"])]
     condcode = ROADCOND[row["HL_PAVEMENT_CONDITION"]]
     ts = datetime.datetime.strptime(

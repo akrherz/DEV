@@ -12,7 +12,7 @@ while sts < ets:
         sts.strftime("http://iem.local/mec/map_power_%Y%m%d%H%M_yaw2.png")
     )
     img = data.read()
-    for i in range(6):
+    for _i in range(6):
         o = open("power_movie/%05i.png" % (frame,), "wb")
         o.write(img)
         o.close()

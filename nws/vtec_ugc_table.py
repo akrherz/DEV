@@ -33,7 +33,6 @@ def main():
             ),
         )
         if df2.empty or df1.empty:
-            print
             continue
         if len(df2.index) < len(df1.index):
             print(" wfos using zones: %s" % (",".join(df2["wfo"].values),))

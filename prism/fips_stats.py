@@ -43,7 +43,7 @@ def main():
 
     # download()
     processed = []
-    for fips, info in tqdm(fips_info.items()):
+    for fips, _info in tqdm(fips_info.items()):
         jfn = "cache/%s.json" % (fips,)
         if not os.path.isfile(jfn):
             continue

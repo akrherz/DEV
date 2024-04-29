@@ -6,7 +6,7 @@ cursor = pgconn.cursor()
 
 df = pd.read_excel("/tmp/cars.xlsx")
 
-for i, row in df.iterrows():
+for _i, row in df.iterrows():
     cursor.execute(
         """SELECT segid from roads_base where longname = %s
         ORDER by segid DESC""",

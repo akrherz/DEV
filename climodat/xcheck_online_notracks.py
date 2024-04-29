@@ -45,7 +45,7 @@ def main():
         LOG.info("%s %s", station, meta["sid_dates"])
         track_network = None
         track_station = None
-        for entry, sid_start, sid_end in meta["sid_dates"]:
+        for entry, _sid_start, _sid_end in meta["sid_dates"]:
             tokens = entry.split()
             if tokens[1] in ["3", "7"] and track_network is None:
                 if tokens[1] == "3" and len(tokens[0]) == 3:

@@ -41,7 +41,7 @@ def main(year, pil):
             timezone.utc
         )
         LOG.info("Found %s rows to process", len(products.index))
-        for idx, row in products.iterrows():
+        for _idx, row in products.iterrows():
             bbbcomp = "bbb = :bbb" if row["bbb"] is not None else "bbb is null"
             res = conn.execute(
                 text(f"""
