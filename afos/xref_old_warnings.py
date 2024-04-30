@@ -201,6 +201,11 @@ def handle_afos_row(conn, row):
         prod = TextProduct(row["data"], utcnow=row["utc_valid"])
         if prod.afos is None:
             raise Exception("No AFOS")
+        for seg in prod.segments:
+            for ugc in seg.ugcs:
+                if ugc.state == "FL" and ugc.number == 25:
+                    print("Auto converting Maimi-Dade")
+                    ugc.number = 86
         if prod.segments[0].ugcexpire is None:
             raise Exception("No UGC Expire")
         # This is lame, but we need to be rectified
