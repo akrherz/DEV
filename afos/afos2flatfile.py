@@ -3,7 +3,8 @@
 import datetime
 import subprocess
 
-from pyiem.util import get_dbconn, logger, noaaport_text, utc
+from pyiem.database import get_dbconn
+from pyiem.util import logger, noaaport_text, utc
 
 LOG = logger()
 pgconn = get_dbconn("afos")

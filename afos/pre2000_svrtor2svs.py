@@ -18,7 +18,7 @@ LOG = logger()
 @click.option("--year", type=int, help="Year to process")
 def main(year):
     """Go Main Go."""
-    if year >= 2000:
+    if year >= 2001:
         LOG.warning("This script is only for pre-2000 data")
         return
     # build a list of problematic products

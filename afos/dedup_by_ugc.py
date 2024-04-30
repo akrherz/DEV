@@ -1,7 +1,6 @@
 """We got some entered, pil, bbb combos > 2, which need some help."""
 
-import sys
-from datetime import timezone
+from datetime import datetime, timezone
 
 import click
 from sqlalchemy import text
@@ -14,34 +13,18 @@ from pyiem.util import logger, utc
 LOG = logger()
 
 
-def process(row):
-    """Figure out what to do."""
-    bbbc = " and bbb = :bbb" if row["bbb"] is not None else " and bbb is null"
-    with get_sqlalchemy_conn("afos") as conn:
-        products = pd.read_sql(
-            text(f"""
-            select ctid, bbb, data, tableoid::regclass as table from
-            products where entered = :entered and
-            pil = :pil {bbbc}
-            """),
-            conn,
-            params={
-                "entered": row["utc_valid"],
-                "pil": row["pil"],
-                "bbb": row["bbb"],
-            },
-        )
+def compute_ugcs(products: pd.DataFrame, utc_valid: datetime):
+    """Figure out the UGCS for each product in the dataframe."""
     products["ugcs"] = None
     for idx, row2 in products.iterrows():
         try:
-            prod = TextProduct(row2["data"], utcnow=row["utc_valid"])
+            prod = TextProduct(row2["data"], utcnow=utc_valid)
+            products.at[idx, "product_id"] = prod.get_product_id()
             if prod.segments[0].ugcexpire is None:
                 LOG.info(
-                    "%s has no ugcexpire %s-%s-%s",
+                    "%s %s has no ugcexpire",
+                    prod.get_product_id(),
                     row2["ctid"],
-                    row["utc_valid"],
-                    row["pil"],
-                    row["bbb"],
                 )
                 continue
         except TextProductException as exp:
@@ -49,78 +32,32 @@ def process(row):
             continue
         except Exception as exp:
             print(exp)
-            print(row)
-            return
+            continue
         products.at[idx, "ugcs"] = ",".join(
             str(x) for x in prod.segments[0].ugcs
         ) + prod.segments[0].ugcexpire.strftime("%Y%m%d%H%M")
-    unicount = products["ugcs"].nunique()
-    for ugcs, gdf in products.groupby("ugcs"):
-        newbbb = None
-        with get_sqlalchemy_conn("afos") as conn:
-            for opt in ["RRA", "RRB", "RRC", "RRD", "RRE", "RRF"]:
-                if row["bbb"] is not None and row["bbb"] >= opt:
-                    continue
-                res = conn.execute(
-                    text(
-                        "select count(*) from products where "
-                        "entered = :entered and pil = :pil and bbb = :bbb"
-                    ),
-                    {
-                        "entered": row["utc_valid"],
-                        "pil": row["pil"],
-                        "bbb": opt,
-                    },
-                )
-                if res.fetchone()[0] == 0:
-                    LOG.info(
-                        "Inserting %s %s %s %s %s",
-                        row["utc_valid"],
-                        row["pil"],
-                        opt,
-                        ugcs,
-                        unicount,
-                    )
-                    newbbb = opt
-                    break
-            if newbbb is None:
-                LOG.info(
-                    "No newbbb found for %s %s %s",
-                    row["utc_valid"],
-                    row["pil"],
-                    ugcs,
-                )
-                continue
-            i = 0
-            for _idx, row2 in gdf.iterrows():
-                lines = row2["data"].split("\n")
-                if row["bbb"] is None:
-                    lines[1] = lines[1] + f" {newbbb}"
-                else:
-                    lines[1] = lines[1].replace(row["bbb"], newbbb)
-                newtext = "\n".join(lines)
-                print(repr(newtext[:50]))
-                if i == 0:
-                    res = conn.execute(
-                        text(
-                            f"UPDATE {row2['table']} SET bbb = :bbb, "
-                            "data = :data WHERE ctid = :ctid"
-                        ),
-                        {"bbb": newbbb, "data": newtext, "ctid": row2["ctid"]},
-                    )
-                else:
-                    res = conn.execute(
-                        text(
-                            f"DELETE from {row2['table']} WHERE ctid = :ctid"
-                        ),
-                        {"ctid": row2["ctid"]},
-                    )
-                i += 1
-                if res.rowcount != 1:
-                    LOG.info("Failed to update %s", row2["ctid"])
-                    sys.exit()
-            conn.commit()
-            return
+
+
+def process(row):
+    """Figure out what to do."""
+    # Find all entries for the given entered, pil
+    with get_sqlalchemy_conn("afos") as conn:
+        products = pd.read_sql(
+            text("""
+            select ctid, bbb, data, tableoid::regclass as table from
+            products where entered = :entered and
+            pil = :pil
+            """),
+            conn,
+            params={
+                "entered": row["utc_valid"],
+                "pil": row["pil"],
+            },
+        )
+    compute_ugcs(products, row["utc_valid"])
+    if products["ugcs"].isna().any():
+        return
+    # the previous logic was suboptimal and was removed
 
 
 @click.command()

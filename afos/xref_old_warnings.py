@@ -25,7 +25,7 @@ def print_other_warnings(prod):
     with get_sqlalchemy_conn("postgis") as conn:
         warnings = pd.read_sql(
             text("""
-    select ugc, issue at time zone 'UTC' as utc_issue,
+    select ugc, eventid, issue at time zone 'UTC' as utc_issue,
     expire at time zone 'UTC' as utc_expire from warnings
     where vtec_year = :year and issue >= :sts and issue < :ets and
     phenomena = :phenomena and significance = 'W' and wfo = :wfo
@@ -115,8 +115,8 @@ def insert(prod, ugclist, eventid):
             )
             gid = res.fetchone()[0]
             if gid is None:
-                print("Failed to insert")
-                sys.exit()
+                print("UGC %s is unknown, aborting!", ugc)
+                return
         conn.commit()
 
 
@@ -146,6 +146,9 @@ def update_postgis(prod: TextProduct):
                 "expire": prod.segments[0].ugcexpire,
             },
         )
+    if phenomena == "FF" and prod.text.find("FLASH ") == -1:
+        print(f"{prod.get_product_id()} Missing FLASH in FFW")
+        return
     # If no entries, start logic to insert one
     if warnings.empty:
         LOG.info(
@@ -194,7 +197,6 @@ def update_postgis(prod: TextProduct):
 
 def handle_afos_row(conn, row):
     """Process a single AFOS row."""
-    prod = None
     try:
         prod = TextProduct(row["data"], utcnow=row["utc_valid"])
         if prod.afos is None:
@@ -223,10 +225,9 @@ def handle_afos_row(conn, row):
             exp,
             row["ctid"],
         )
+        return
     except Exception as exp:
         LOG.info("%s Failed to parse product: %s", exp, row["ctid"])
-        return
-    if prod is None:
         return
     if abs((prod.valid - row["utc_valid"]).total_seconds()) > 3600:
         LOG.info(
