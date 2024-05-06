@@ -1,19 +1,18 @@
 """Simple comparison of totals."""
 
-import sys
-
-import requests
+import click
+import httpx
 
 import pandas as pd
-from pandas.io.sql import read_sql
-from pyiem.util import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn
 
 
-def main(argv):
+@click.command()
+@click.option("--year", required=True, type=int)
+def main(year):
     """Go Main Go."""
-    year = argv[1]
     with get_sqlalchemy_conn("iem") as conn:
-        obs = read_sql(
+        obs = pd.read_sql(
             "SELECT id, st_x(geom) as lon, st_y(geom) as lat, sum(pday) from "
             f"summary_{year} s "
             "JOIN stations t on (s.iemid = t.iemid) WHERE "
@@ -27,7 +26,7 @@ def main(argv):
     obs["mrms"] = -1.0
     obs["iemre"] = -1.0
     for sid, row in obs.iterrows():
-        r = requests.get(
+        r = httpx.get(
             f"https://mesonet.agron.iastate.edu/iemre/multiday/{year}-04-01/"
             f"{year}-12-31/{row['lat']}/{row['lon']}/json"
         )
@@ -41,4 +40,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()

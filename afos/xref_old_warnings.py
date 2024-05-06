@@ -17,6 +17,7 @@ PIL2PHENOM = {
     "SVR": "SV",
     "TOR": "TO",
     "FFW": "FF",
+    "SMW": "MA",
 }
 
 
@@ -271,7 +272,8 @@ def do_date(dt):
             select ctid, source, entered at time zone 'UTC' as utc_valid,
             pil, bbb, data, tableoid::regclass as table
             from products where entered >= :sts and
-            entered <= :ets and substr(pil, 1, 3) in ('SVR', 'FFW', 'TOR')
+            entered <= :ets and
+            substr(pil, 1, 3) in ('SVR', 'FFW', 'TOR', 'SMW')
             and strpos(data, '...TEST...') = 0
             ORDER by entered ASC
             """),
