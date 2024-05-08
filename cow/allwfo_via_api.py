@@ -1,6 +1,6 @@
 """Generate a file of Cow Stats via API calls."""
 
-import requests
+import httpx
 from tqdm import tqdm
 
 import pandas as pd
@@ -15,11 +15,15 @@ def main():
     for wfo in progress:
         progress.set_description(wfo)
         url = (
-            f"http://iem.local/api/1/cow.json?wfo={wfo}&"
-            "begints=2015-01-01T00:00Z&endts=2020-01-01T00:00Z&"
-            "phenomena=SV&lsrtype=SV&"
+            f"http://mesonet.agron.iastate.edu/api/1/cow.json?wfo={wfo}&"
+            "begints=2019-01-01T00:00Z&endts=2024-05-08T00:00Z&"
+            "phenomena=SV&phenomena=TO&"  # lsrtype=SV&"
         )
-        reg = requests.get(url, timeout=300)
+        try:
+            reg = httpx.get(url, timeout=300)
+        except Exception:
+            print("FAIL, try again")
+            reg = httpx.get(url, timeout=300)
         jsobj = reg.json()
         jsobj["stats"]["wfo"] = wfo
         res.append(jsobj["stats"])

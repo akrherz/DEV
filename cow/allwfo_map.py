@@ -11,22 +11,28 @@ def main():
     """Go Main Go."""
     df = pd.read_csv("allwfo.csv", index_col="wfo")
     mp = MapPlot(
-        sector="conus",
-        title="2015-2019 June-August Severe Thunderstorm Warning POD",
+        sector="nws",
+        title=(
+            "Tornado + Svr T'Storm Warning Polygon Shared Border "
+            "with County [%]"
+        ),
         subtitle=(
-            "based on unofficial IEM Cow stats using Local Storm Reports"
+            "1 Jan 2019 - 7 May 2024: based on unofficial IEM archives, "
+            "no accomodation for CWA border."
         ),
     )
-    cmap = plt.get_cmap("plasma")
+    cmap = plt.get_cmap("jet")
     mp.fill_cwas(
-        df["POD[1]"],
-        bins=np.arange(0, 1.01, 0.1),
+        df["shared_border[%]"],
+        bins=np.arange(0, 101, 10),
         cmap=cmap,
         extend="neither",
         ilabel=True,
-        lblformat="%.2f",
+        lblformat="%.0f",
+        labelbuffer=0,
+        units="%",
     )
-    mp.postprocess(filename="test.png")
+    mp.postprocess(filename="190101_240507_svrtor_shared_perimeter.png")
 
 
 if __name__ == "__main__":
