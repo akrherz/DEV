@@ -5,9 +5,9 @@ from tqdm import tqdm
 
 from matplotlib.ticker import FuncFormatter
 from pandas.io.sql import read_sql
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import figure
-from pyiem.util import get_sqlalchemy_conn
 
 
 def main():

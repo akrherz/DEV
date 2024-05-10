@@ -2,8 +2,9 @@
 
 from tqdm import tqdm
 
+from pyiem.database import get_dbconn
 from pyiem.nws.products.scp import parser
-from pyiem.util import get_dbconn, noaaport_text
+from pyiem.util import noaaport_text
 
 
 def do(table):

@@ -5,7 +5,8 @@ import pytz
 from numpy.lib import stride_tricks
 
 import matplotlib.pyplot as plt
-from pyiem.util import get_dbconn, utc
+from pyiem.database import get_dbconn
+from pyiem.util import utc
 
 
 def main():
