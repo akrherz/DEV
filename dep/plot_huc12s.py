@@ -1,24 +1,26 @@
-"""Plot what we have in myhucs.csv"""
+"""Plot something as a huc12 map."""
 
 import numpy as np
 from sqlalchemy import text
 
 import geopandas as gpd
 from matplotlib import colors as mpcolors
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_POLITICAL
-from pyiem.util import get_sqlalchemy_conn
 
 SQL = """
 with data as (
-    select huc12,
-    sum(case when substr(management, 1, 1) = '1' then acres else 0 end),
-    sum(acres) as total
-    from fields where scenario = 0 and
-    substr(landuse, 17, 1) in ('C', 'B') GROUP by huc12
+    select huc_12,
+    sum(case when extract(year from valid) = 2023 then avg_loss else 0 end)
+    as loss2023,
+    sum(case when extract(year from valid) = 2019 then avg_loss else 0 end)
+    as loss2019
+    from results_by_huc12 where scenario = 0 and
+    extract(year from valid) in (2023, 2019) group by huc_12
 )
-    select simple_geom, h.huc_12, sum as no_till_acres, total
-    from huc12 h LEFT JOIN data d on (h.huc_12 = d.huc12)
+    select simple_geom, h.huc_12, (loss2023 - loss2019) * 4.463 as loss
+    from huc12 h LEFT JOIN data d on (h.huc_12 = d.huc_12)
     WHERE h.scenario = 0 and h.states ~* 'IA'
 """
 
@@ -33,7 +35,7 @@ def main():
             index_col="huc_12",
         )
     # print(df)
-    df["percent"] = df["no_till_acres"] / df["total"] * 100.0
+    # df["percent"] = df["no_till_acres"] / df["total"] * 100.0
     # df = df.fillna(0)
     # df["ratio"] = df["runoff"] / df["precip"] * 100.0
     # df2 = df[df["precip"] >= 5]
@@ -46,31 +48,28 @@ def main():
         west=minx,
         east=maxx,
         title=(
-            "13 Dec 2023 :: Percentage of 2023 Corn/Soybean Acres in No-Till"
-        ),
-        subtitle=(
-            "Overall: "
-            f"{df['no_till_acres'].sum() / df['total'].sum() * 100.0:.1f}%"
+            "2023 Hillslope Soil Loss minus 2019 "
+            "Hillslope Soil Loss [T/a] by HUC12"
         ),
         logo="dep",
         nocaption=True,
         continentalcolor="white",
         stateborderwidth=3,
     )
-    cmap = get_cmap("jet")
-    cmap.set_bad("#000000")
-    cmap.set_over("#ffff00")
-    bins = np.arange(0, 100.1, 20.0)
+    cmap = get_cmap("PuOr_r")
+    # cmap.set_bad("#000000")
+    # cmap.set_over("#ffff00")
+    bins = np.arange(-5, 5.1, 1.0)
     norm = mpcolors.BoundaryNorm(bins, cmap.N)
 
     df.to_crs(mp.panels[0].crs).plot(
         aspect=None,
         ax=mp.panels[0].ax,
-        color=cmap(norm(df["percent"])),
+        color=cmap(norm(df["loss"])),
         zorder=Z_POLITICAL,
     )
     mp.drawcounties()
-    mp.draw_colorbar(bins, cmap, norm, title="percent", extend="neither")
+    mp.draw_colorbar(bins, cmap, norm, title="tons/acre", extend="both")
 
     mp.fig.savefig("test.png")
 

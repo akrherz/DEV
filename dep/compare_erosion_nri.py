@@ -108,10 +108,12 @@ def main():
         .groupby("cfips")["loss"]
         .std()
     )
-    plot_comparison(counties)
+    # plot_comparison(counties)
 
     mp = MapPlot(
-        title=("2008-2017 NRI County Avg Yearly Erosion"),
+        title=(
+            "2008-2017 DEP (All Till 1) minus NRI County Avg Yearly Erosion"
+        ),
         subtitle=(
             f"NRI Avg: {counties['nri'].mean():.1f} T/a/yr, "
             f"DEP Avg: {counties['dep'].mean():.1f} T/a/yr"
@@ -119,15 +121,15 @@ def main():
         logo="dep",
         caption="Daily Erosion Project",
     )
-    cmap = get_cmap("viridis")  # "RdBu")
-    bins = np.arange(0, 5.1, 1)  # -5, 5.1, 1.0)
-    bins[0] = 0.1
+    cmap = get_cmap("RdBu")
+    bins = np.arange(-5, 5.1, 1.0)
+    # bins[0] = 0.1
     norm = mpcolors.BoundaryNorm(bins, cmap.N, extend="both")
     counties["diff"] = counties["dep"] - counties["nri"]
     counties.to_crs(mp.panels[0].crs).plot(
         aspect=None,
         ax=mp.panels[0].ax,
-        color=cmap(norm(counties["nri"])),
+        color=cmap(norm(counties["diff"])),
         zorder=Z_OVERLAY2,
     )
     counties["labels"] = counties.apply(
@@ -137,7 +139,7 @@ def main():
     mp.plot_values(
         counties.centroid.x,
         counties.centroid.y,
-        counties["nri"].values,
+        counties["diff"].values,
         fmt="%.1f",
         labelbuffer=0,
         textsize=10,
@@ -145,7 +147,7 @@ def main():
 
     mp.draw_colorbar(bins, cmap, norm, units="T/a/yr", extend="both")
     mp.drawcounties()
-    mp.fig.savefig("nri_yearly.png")
+    mp.fig.savefig("nri_dep1.png")
 
 
 if __name__ == "__main__":

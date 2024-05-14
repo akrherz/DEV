@@ -20,7 +20,12 @@ from tqdm import tqdm
     default=1000,
     help="Number of lines to randomly sample",
 )
-def main(filename, size):
+@click.option(
+    "--status-only",
+    is_flag=True,
+    help="Only check status code, not content",
+)
+def main(filename, size, status_only):
     """Go Main Go."""
     with open(filename) as fh:
         lines = fh.readlines()[::-1]
@@ -40,6 +45,8 @@ def main(filename, size):
         dev_lines = len(req.text.split("\n"))
         if ans_status != dev_status or ans_lines != dev_lines:
             print(f"{uri} {ans_status}->{dev_status} {ans_lines}->{dev_lines}")
+            if status_only and ans_status == dev_status:
+                continue
             with open("local", "wb") as fh:
                 fh.write(req.content)
             with open("mesonet", "wb") as fh:

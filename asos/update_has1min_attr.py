@@ -1,13 +1,14 @@
 """Updates the database table denoting if station `HAS1MIN`"""
 
-import requests
+import httpx
 
-from pyiem.util import get_dbconn, logger
+from pyiem.database import get_dbconn
+from pyiem.util import logger
 
 LOG = logger()
 INV = (
-    "https://www1.ncdc.noaa.gov/pub/data/asos-onemin/"
-    "Inventory/Om2MonthInventory202206.Report2"
+    "https://www.ncei.noaa.gov/pub/data/asos-onemin/"
+    "Inventory/Om2MonthInventory202405.Report2"
 )
 HAS1MIN = "HAS1MIN"
 
@@ -16,7 +17,7 @@ def main():
     """Go Main Go."""
     pgconn = get_dbconn("mesosite")
     cursor = pgconn.cursor()
-    req = requests.get(INV)
+    req = httpx.get(INV)
     if req.status_code != 200:
         LOG.info("Ooops, got %s for %s", req.status_code, INV)
         return
