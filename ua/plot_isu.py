@@ -9,7 +9,7 @@ from metpy.units import units
 
 def main():
     """Go to main."""
-    df = pd.read_excel("2024-05-19_1535.sounding.xlsx")
+    df = pd.read_csv("2024-05-20_1813.sounding.csv")
     df = df.rename(
         columns={
             "Height (m AGL)": "z",
@@ -22,7 +22,7 @@ def main():
     )
     clean_data = {
         "site_info": {
-            "source": "ISU 2024-05-19 15:35:00",
+            "source": "ISU 2024-05-20 18:13:00",
             "state": "IA",
             "time": "2024-05-19 15:35:00",
             "elevation": 300,
