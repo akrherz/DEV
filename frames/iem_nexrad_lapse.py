@@ -17,15 +17,15 @@ CST = ZoneInfo("America/Chicago")
 
 def main():
     """Go Main Go."""
-    sts = utc(2022, 3, 5, 17)
-    ets = utc(2022, 3, 6, 4, 0)
+    sts = utc(2024, 5, 21, 15)
+    ets = utc(2024, 5, 22, 5, 0)
     interval = datetime.timedelta(minutes=5)
     i = 0
     now = sts
     with get_sqlalchemy_conn("postgis") as conn:
         df = pd.read_sql(
             "SELECT distinct ST_x(geom) as lon, ST_y(geom) as lat, typetext, "
-            "valid at time zone 'UTC' as valid, magnitude from lsrs_2022 "
+            "valid at time zone 'UTC' as valid, magnitude from lsrs_2024 "
             "where valid >= %s and valid < %s ORDER by magnitude ASC",
             conn,
             params=(sts, ets),
@@ -34,7 +34,7 @@ def main():
         print(df["magnitude"].describe())
         warndf = gpd.read_postgis(
             "SELECT phenomena, geom, issue at time zone 'UTC' as issue, "
-            "expire at time zone 'UTC' as expire from sbw_2022 where "
+            "expire at time zone 'UTC' as expire from sbw_2024 where "
             "status = 'NEW' and expire >= %s and issue <= %s and "
             "phenomena in ('TO', 'SV')",
             conn,
@@ -74,15 +74,16 @@ def main():
     while now < ets:
         mp = MapPlot(
             sector="custom",
-            west=-99.5,
-            east=-90,
+            west=-98.5,
+            east=-88,
             south=39.5,
-            north=43.5,
+            north=44.5,
             # dark gray color
             continentalcolor="#808080",
-            statebordercolor="white",
+            statebordercolor="k",
+            stateborderwitdth=2,
             title=(
-                f"5 March 2022 {now.astimezone(CST).strftime('%I:%M %p %Z')}"
+                f"21 May 2024 {now.astimezone(CST).strftime('%I:%M %p %Z')}"
             ),
             subtitle=("NWS NEXRAD, SVR+TORs, Unfiltered Local Storm Reports"),
             twitter=True,
