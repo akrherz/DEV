@@ -1,12 +1,12 @@
 """We have something from NRI to compare with."""
 
-import numpy as np
-
 import geopandas as gpd
 import matplotlib.colors as mpcolors
 import pandas as pd
 from pyiem.database import get_sqlalchemy_conn
-from pyiem.plot import MapPlot, figure, get_cmap
+from pyiem.dep import RAMPS
+from pyiem.plot import MapPlot, figure
+from pyiem.plot.colormaps import dep_erosion
 from pyiem.reference import Z_OVERLAY2
 
 
@@ -97,6 +97,9 @@ def main():
         .groupby("cfips")
         .mean()
     )
+    counties["nri_std"] = (
+        nri[nri["state"] == "Iowa"][["cfips", "se"]].groupby("cfips").last()
+    )
 
     counties["dep"] = (
         gpd.sjoin(counties, idep, predicate="intersects")
@@ -111,43 +114,41 @@ def main():
     # plot_comparison(counties)
 
     mp = MapPlot(
-        title=(
-            "2008-2017 DEP (All Till 1) minus NRI County Avg Yearly Erosion"
-        ),
+        title=("2008-2017 NRI County Avg Yearly Erosion"),
         subtitle=(
-            f"NRI Avg: {counties['nri'].mean():.1f} T/a/yr, "
-            f"DEP Avg: {counties['dep'].mean():.1f} T/a/yr"
+            f"NRI Avg: {counties['nri'].mean():.1f} T/a/yr "
+            # f"DEP Avg: {counties['dep'].mean():.1f} T/a/yr"
         ),
         logo="dep",
         caption="Daily Erosion Project",
     )
-    cmap = get_cmap("RdBu")
-    bins = np.arange(-5, 5.1, 1.0)
+    cmap = dep_erosion()
+    bins = RAMPS["english"][1]
     # bins[0] = 0.1
-    norm = mpcolors.BoundaryNorm(bins, cmap.N, extend="both")
+    norm = mpcolors.BoundaryNorm(bins, cmap.N)
     counties["diff"] = counties["dep"] - counties["nri"]
     counties.to_crs(mp.panels[0].crs).plot(
         aspect=None,
         ax=mp.panels[0].ax,
-        color=cmap(norm(counties["diff"])),
+        color=cmap(norm(counties["nri"])),
         zorder=Z_OVERLAY2,
     )
     counties["labels"] = counties.apply(
-        lambda row: f"{row['dep']:.1f}\n+/- {row['dep_std']:.1f}",
+        lambda row: f"{row['nri']:.1f}\n+/- {row['nri_std']:.1f}",
         axis=1,
     )
     mp.plot_values(
         counties.centroid.x,
         counties.centroid.y,
-        counties["diff"].values,
-        fmt="%.1f",
+        counties["labels"].values,
+        fmt="%s",
         labelbuffer=0,
         textsize=10,
     )
 
     mp.draw_colorbar(bins, cmap, norm, units="T/a/yr", extend="both")
     mp.drawcounties()
-    mp.fig.savefig("nri_dep1.png")
+    mp.fig.savefig("nri_yearly.png")
 
 
 if __name__ == "__main__":
