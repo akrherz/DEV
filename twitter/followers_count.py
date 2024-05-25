@@ -1,5 +1,7 @@
 """Need to set a profile string for my bots."""
 
+import os
+
 from tqdm import tqdm
 
 import pandas as pd
@@ -9,8 +11,8 @@ from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import get_dbconn, get_properties, get_sqlalchemy_conn
 
 
-def main():
-    """Go Main Go."""
+def get_followers_count():
+    """Do the work."""
     nt = NetworkTable("WFO")
     with get_sqlalchemy_conn("mesosite") as conn:
         df = pd.read_sql(
@@ -48,12 +50,23 @@ def main():
         except Exception:
             print(f"{wfo} failed")
     df = df.fillna(0)
+    return df
+
+
+def main():
+    """Go Main Go."""
+    if not os.path.isfile("followers.csv"):
+        df = get_followers_count()
+        df.to_csv("followers.csv")
+    df = pd.read_csv("followers.csv").set_index("screen_name")
+    df["is_wfo"] = df["is_wfo"] == "True"
     print(df)
     mp = MapPlot(
         sector="nws",
-        title="IEMBOT Followers Count (6 Jul 2022)",
+        title="IEMBot Followers Count (24 May 2024)",
         subtitle=f"Total: {df['count'].sum():,.0f}",
         twitter=True,
+        nocaption=True,
     )
     cmap = get_cmap("jet")
     levels = list(range(0, 1601, 200))
