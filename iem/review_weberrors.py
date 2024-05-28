@@ -34,7 +34,7 @@ def main():
             vhost = VHOST_MAPPER.get(vhost, "iem.local")
             req = requests.get(f"http://{vhost}{uri}", timeout=600)
             # Rumfields Known Knowns
-            if req.status_code in [200, 422, 503]:
+            if req.status_code in [200, 400, 422, 503]:
                 waiting = False
                 continue
             # /api/ can emit 500 for a variety of reasons, ensure that we
