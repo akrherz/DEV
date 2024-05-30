@@ -5,7 +5,7 @@ import requests
 from psycopg2.extras import RealDictCursor
 from tqdm import tqdm
 
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def main():

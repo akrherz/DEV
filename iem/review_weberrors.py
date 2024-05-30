@@ -29,6 +29,9 @@ def main():
         uri = row["request_uri"]
         print("-------------------------------------------------")
         print(f"[{vhost}] {uri}")
+        if uri.find("hads.py") > 0:
+            print("Skipping HADS request")
+            continue
         waiting = True
         while waiting:
             vhost = VHOST_MAPPER.get(vhost, "iem.local")
