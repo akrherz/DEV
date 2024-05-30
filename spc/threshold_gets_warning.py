@@ -32,8 +32,8 @@ GROUP by threshold ORDER by threshold;
 
 import numpy as np
 
-import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
+from pyiem.plot.use_agg import plt
 
 DATA = """
  0.02      | 2017-05-19 07:00:00-05 | 0.48018663597178

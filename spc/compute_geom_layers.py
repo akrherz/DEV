@@ -10,8 +10,8 @@ mix of layered vs cookie cutter geometries.
 import sys
 
 import geopandas as gpd
+from pyiem.database import get_dbconn, get_sqlalchemy_conn
 from pyiem.nws.products.spcpts import THRESHOLD_ORDER
-from pyiem.util import get_dbconn, get_sqlalchemy_conn
 from shapely.geometry import MultiPolygon
 
 

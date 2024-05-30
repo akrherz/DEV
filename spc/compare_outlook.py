@@ -8,7 +8,8 @@ import requests
 
 import geopandas as gpd
 import pandas as pd
-from pyiem.util import get_dbconnstr, logger, utc
+from pyiem.database import get_dbconnstr
+from pyiem.util import logger, utc
 
 LOG = logger()
 BASEURL = "https://www.spc.noaa.gov/products/outlook/archive"

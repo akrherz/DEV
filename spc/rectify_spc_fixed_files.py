@@ -6,8 +6,9 @@ These files need some further help to make them noaaportish.
 import glob
 import subprocess
 
+from pyiem.database import get_dbconn
 from pyiem.nws.product import TextProduct
-from pyiem.util import get_dbconn, logger
+from pyiem.util import logger
 
 LOG = logger()
 

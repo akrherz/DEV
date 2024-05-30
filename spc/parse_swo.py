@@ -5,14 +5,12 @@ import math
 import re
 import sys
 from datetime import timezone
-
-from backports.zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo
 
 import pandas as pd
-
-# third party
 from metpy.units import units
-from pyiem.util import get_dbconn, utc
+from pyiem.database import get_dbconn
+from pyiem.util import utc
 
 VERSION = "2021JUL08"
 CRCRLF = "\r\r\n"

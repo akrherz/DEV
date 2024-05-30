@@ -1,11 +1,10 @@
 """How quickly does an office issue the WCN after the WOU."""
 
 import pandas as pd
-from pandas.io.sql import read_sql
+from pyiem.database import get_dbconn
 from pyiem.nws.products.vtec import parser
 from pyiem.plot import get_cmap
 from pyiem.plot.geoplot import MapPlot
-from pyiem.util import get_dbconn
 
 
 def plotter():
@@ -72,7 +71,7 @@ def dump_data():
         if etn is None:
             continue
         # Go find in the database
-        df = read_sql(
+        df = pd.read_sql(
             "SELECT wfo, min(issue at time zone 'UTC') as wcn "
             f"from warnings_{wou_issue.year} "
             "where ugc in %s and phenomena = %s and significance = 'A' and "

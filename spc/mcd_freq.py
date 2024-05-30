@@ -1,16 +1,5 @@
 """
-with data as (
-    select
-substring(data from '\.\.\.([0-9]{1,3}) (PERCENT|percent)') as d from products
-    WHERE pil = 'SWOMCD' and entered > '2012-05-01')
-SELECT d, count(*) from data GROUP by d ORDER by d
- 20 |  1902
- 40 |  1450
- 5  |   860
- 60 |   717
- 80 |   656
- 95 |   313
-    |  4551
+Note the mcd table now explicitly stores this.
 """
 
 import numpy as np
