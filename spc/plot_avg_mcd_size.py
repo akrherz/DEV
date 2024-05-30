@@ -1,29 +1,35 @@
 """Plot of Average MCD Size."""
 
 # third party
-from pandas import read_sql
+from sqlalchemy import text
+
+import pandas as pd
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import figure_axes
-from pyiem.util import get_dbconnstr
 
 
 def main():
     """Go Main Go."""
-    df = read_sql(
-        "select year, "
-        "avg(ST_Area(geom::geography)) from mcd where issue > '2003-01-01' "
-        "and year < 2022 GROUP by year ORDER by year",
-        get_dbconnstr("postgis"),
-    )
-    df["norm"] = df["avg"] / df["avg"].max() * 100.0
+    with get_sqlalchemy_conn("postgis") as conn:
+        yearly = pd.read_sql(
+            text("""
+            select year, avg(ST_Area(geom::geography)) from mcd
+            where issue > '2003-01-01' GROUP by year order by year
+            """),
+            conn,
+            index_col="year",
+        )
+    print(yearly.loc[2008])
+    yearly["norm"] = yearly["avg"] / yearly["avg"].max() * 100.0
     title = (
         "Storm Prediction Center :: Mesoscale Discussion Area Size\n"
-        "Relative to year 2005 maximum of 86,000 sq km"
+        "Relative to year 2008 maximum of ~86,000 sq km"
     )
     (fig, ax) = figure_axes(title=title, apctx={"_r": "43"})
-    ax.bar(df["year"].values, df["norm"].values)
-    for _, row in df.iterrows():
+    ax.bar(yearly.index, yearly["norm"].values)
+    for year, row in yearly.iterrows():
         ax.text(
-            row["year"],
+            year,
             row["norm"] + 1,
             f"{row['norm']:.0f}%",
             ha="center",
@@ -33,9 +39,9 @@ def main():
     ax.set_ylim(60, 104)
     ax.set_yticks(range(60, 101, 5))
     ax.set_xticks(range(2004, 2024, 4))
-    ax.set_xlim(2002.2, 2021.7)
+    ax.set_xlim(2002.2, 2024.7)
     ax.set_xlabel(
-        "@akrherz, based on unofficial IEM archives, thru 31 Dec 2021"
+        "@akrherz, based on unofficial IEM archives, thru 29 May 2024"
     )
     fig.savefig("test.png")
 
