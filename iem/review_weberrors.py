@@ -10,6 +10,7 @@ from pyiem.database import get_sqlalchemy_conn
 VHOST_MAPPER = {
     "datateam.agron.iastate.edu": "datateam.local",
     "weather.im": "weatherim.local",
+    "mesonet-dep.agron.iastate.edu": "depbackend.local",
 }
 
 
@@ -34,7 +35,7 @@ def main():
             continue
         waiting = True
         while waiting:
-            vhost = VHOST_MAPPER.get(vhost, "iem.local")
+            vhost = VHOST_MAPPER.get(vhost, vhost)
             req = requests.get(f"http://{vhost}{uri}", timeout=600)
             # Rumfields Known Knowns
             if req.status_code in [200, 400, 422, 503]:
