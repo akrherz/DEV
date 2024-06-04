@@ -1,6 +1,6 @@
 import numpy
 
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 COOP = get_dbconn("coop")
 icursor = COOP.cursor()

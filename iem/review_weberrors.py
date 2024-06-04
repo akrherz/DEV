@@ -11,6 +11,7 @@ VHOST_MAPPER = {
     "datateam.agron.iastate.edu": "datateam.local",
     "weather.im": "weatherim.local",
     "mesonet-dep.agron.iastate.edu": "depbackend.local",
+    "mesonet.agron.iastate.edu": "iem.local",
 }
 
 

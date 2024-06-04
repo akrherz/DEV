@@ -2,8 +2,8 @@
 
 import matplotlib.patches as mpatches
 import pandas as pd
+from pyiem.database import get_dbconnstr
 from pyiem.plot import figure
-from pyiem.util import get_dbconnstr
 
 
 def main():

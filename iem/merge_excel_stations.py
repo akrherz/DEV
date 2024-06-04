@@ -2,8 +2,8 @@
 
 import pandas as pd
 from metpy.units import units as mpunits
+from pyiem.database import get_dbconn
 from pyiem.network import Table as NetworkTable
-from pyiem.util import get_dbconn
 
 
 def main():
