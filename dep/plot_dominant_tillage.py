@@ -2,17 +2,17 @@
 
 from sqlalchemy import text
 
-from geopandas import read_postgis
+import geopandas as gpd
 from matplotlib import colors as mpcolors
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot
 from pyiem.reference import Z_POLITICAL
-from pyiem.util import get_sqlalchemy_conn
 
 
 def main():
     """Go Main Go."""
     with get_sqlalchemy_conn("idep") as conn:
-        df = read_postgis(
+        df = gpd.read_postgis(
             text(
                 """
                 select huc_12, simple_geom, dominant_tillage from

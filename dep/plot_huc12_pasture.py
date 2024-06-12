@@ -6,9 +6,9 @@ from sqlalchemy import text
 
 import geopandas as gpd
 from matplotlib import colors as mpcolors
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_POLITICAL
-from pyiem.util import get_sqlalchemy_conn
 
 SQL = """
 WITH ofecounts as (

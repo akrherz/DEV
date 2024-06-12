@@ -5,9 +5,9 @@ from sqlalchemy import text
 import pandas as pd
 from geopandas import read_postgis
 from matplotlib import colors as mpcolors
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot
 from pyiem.reference import Z_POLITICAL
-from pyiem.util import get_sqlalchemy_conn
 
 
 def main():

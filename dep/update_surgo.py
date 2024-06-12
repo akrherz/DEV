@@ -1,6 +1,6 @@
 """Update the flowpath_points table with new info."""
 
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def main():
