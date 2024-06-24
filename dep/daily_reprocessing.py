@@ -6,8 +6,9 @@ import subprocess
 
 import click
 
+from pyiem.database import get_dbconn
 from pyiem.dep import read_cli
-from pyiem.util import get_dbconn, logger
+from pyiem.util import logger
 
 SIZE = 13
 LOG = logger()
@@ -64,7 +65,7 @@ def pick_dates_by_database():
 def get_update_date(dt):
     """Filter days that should not be reprocessed."""
     fn = f"/mnt/idep2/data/dailyprecip/{dt:%Y/%Y%m%d}.npy.gz"
-    mt = datetime.datetime(1970, 1, 1)
+    mt = datetime.datetime(2050, 1, 1)
     if os.path.isfile(fn):
         mt = datetime.datetime.fromtimestamp(os.path.getmtime(fn))
     return mt
