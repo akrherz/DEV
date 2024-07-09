@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
 DATES = """ 2011 |     9
+ 2024 |     6
  2006 |     5
  2005 |     5
  2003 |     5
  1998 |     5
- 2024 |     4
  2008 |     4
  2004 |     4
  1999 |     4"""
@@ -57,7 +57,7 @@ def main():
     plt.gcf().text(
         0.5,
         0.01,
-        "* based on unofficial archives maintained by the IEM, 7 May 2024",
+        "* based on unofficial archives maintained by the IEM, 8 Jul 2024",
         ha="center",
     )
     plt.gcf().savefig("test.png")
