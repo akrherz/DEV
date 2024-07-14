@@ -51,9 +51,9 @@ def update_state_days():
 
 
 @click.command()
-@click.option("--filename")
-@click.option("--sheetname")
-@click.option("--metric")
+@click.option("--filename", required=True)
+@click.option("--sheetname", required=True)
+@click.option("--metric", required=True)
 def main(filename, sheetname, metric):
     """Go Main."""
     df = pd.read_excel(filename, sheet_name=sheetname, header=None)
@@ -76,7 +76,7 @@ def main(filename, sheetname, metric):
                 print(dt, vals)
                 continue
             cursor.execute(
-                "delete from nass_iowa where valid = %s and " "metric = %s",
+                "delete from nass_iowa where valid = %s and metric = %s",
                 (dt, metric),
             )
             cursor.execute(
