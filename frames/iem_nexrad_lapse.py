@@ -3,46 +3,58 @@
 import datetime
 from zoneinfo import ZoneInfo
 
+from sqlalchemy import text
+from tqdm import tqdm
+
 import geopandas as gpd
 import matplotlib.colors as mpcolors
+import matplotlib.dates as mdates
 import pandas as pd
 from matplotlib.colorbar import ColorbarBase
-from pyiem.plot import MapPlot, get_cmap
+from pyiem.database import get_sqlalchemy_conn
+from pyiem.plot import MapPlot, geoplot, get_cmap
 from pyiem.reference import Z_OVERLAY2
-from pyiem.util import get_sqlalchemy_conn, utc
+from pyiem.util import utc
 
 CST = ZoneInfo("America/Chicago")
-# geoplot.MAIN_AX_BOUNDS = [0.05, 0.3, 0.89, 0.6]
+geoplot.MAIN_AX_BOUNDS = [0.05, 0.3, 0.89, 0.6]
 
 
 def main():
     """Go Main Go."""
-    sts = utc(2024, 5, 21, 15)
-    ets = utc(2024, 5, 22, 5, 0)
+    sts = utc(2024, 7, 15, 20)
+    ets = utc(2024, 7, 16, 6)
     interval = datetime.timedelta(minutes=5)
     i = 0
     now = sts
     with get_sqlalchemy_conn("postgis") as conn:
         df = pd.read_sql(
-            "SELECT distinct ST_x(geom) as lon, ST_y(geom) as lat, typetext, "
-            "valid at time zone 'UTC' as valid, magnitude from lsrs_2024 "
-            "where valid >= %s and valid < %s ORDER by magnitude ASC",
+            text(
+                "SELECT distinct ST_x(geom) as lon, ST_y(geom) as lat, "
+                "typetext, "
+                "valid at time zone 'UTC' as valid, magnitude from lsrs "
+                "where valid >= :sts and valid < :ets ORDER by magnitude ASC"
+            ),
             conn,
-            params=(sts, ets),
+            params={"sts": sts, "ets": ets},
         )
         df["valid"] = df["valid"].dt.tz_localize("UTC")
         print(df["magnitude"].describe())
         warndf = gpd.read_postgis(
-            "SELECT phenomena, geom, issue at time zone 'UTC' as issue, "
-            "expire at time zone 'UTC' as expire from sbw_2024 where "
-            "status = 'NEW' and expire >= %s and issue <= %s and "
-            "phenomena in ('TO', 'SV')",
+            text(
+                "SELECT phenomena, geom, issue at time zone 'UTC' as issue, "
+                "expire at time zone 'UTC' as expire from sbw_2024 where "
+                "status = 'NEW' and expire >= :sts and issue <= :ets and "
+                "phenomena in ('TO', 'SV', 'MA') and significance = 'W'"
+            ),
             conn,
-            params=(sts, ets),
+            params={"sts": sts, "ets": ets},
             geom_col="geom",
         )
+        print(f"Warnings found {len(warndf.index)}")
     warndf["color"] = "yellow"
     warndf.loc[warndf["phenomena"] == "TO", "color"] = "red"
+    warndf.loc[warndf["phenomena"] == "MA", "color"] = "green"
     warndf["issue"] = warndf["issue"].dt.tz_localize("UTC")
     warndf["expire"] = warndf["expire"].dt.tz_localize("UTC")
 
@@ -71,22 +83,22 @@ def main():
     nbins[0] = 1
     mpcolors.BoundaryNorm(nbins, ncmap.N)
 
-    while now < ets:
+    progress = tqdm(pd.date_range(sts, ets, freq=interval))
+    for now in progress:
+        progress.set_description(now.strftime("%Y-%m-%d %H:%M"))
         mp = MapPlot(
-            sector="custom",
-            west=-98.5,
-            east=-88,
-            south=39.5,
-            north=44.5,
+            sector="spherical_mercator",
+            west=-93.5,
+            east=-88.0,
+            south=38.5,
+            north=42.5,
             # dark gray color
             continentalcolor="#808080",
             statebordercolor="k",
             stateborderwitdth=2,
-            title=(
-                f"21 May 2024 {now.astimezone(CST).strftime('%I:%M %p %Z')}"
-            ),
-            subtitle=("NWS NEXRAD, SVR+TORs, Unfiltered Local Storm Reports"),
-            twitter=True,
+            title=(f"{now.astimezone(CST):%d %b %Y %I:%M %p %Z}"),
+            subtitle="NWS NEXRAD, SVR+TORs, Unfiltered Local Storm Reports",
+            figsize=(10.24, 7.68),
             caption="@akrherz",
         )
         """
@@ -118,8 +130,30 @@ def main():
         )
         """
         mp.overlay_nexrad(now)
-        # ax = mp.fig.add_axes([0.1, 0.1, 0.8, 0.15], facecolor="tan")
+        ax = mp.fig.add_axes([0.075, 0.1, 0.8, 0.15], facecolor="tan")
 
+        df2 = df[(df["valid"] <= now) & (df["typetext"] == "HAIL")]
+        if not df2.empty:
+            mp.plot_values(
+                df2["lon"].values,
+                df2["lat"].values,
+                df2["magnitude"].values,
+                color="darkgreen",
+                outlinecolor="lightgreen",
+                textsize=8,
+                labelbuffer=0,
+            )
+        df2 = df[(df["valid"] <= now) & (df["typetext"] == "TORNADO")]
+        if not df2.empty:
+            mp.plot_values(
+                df2["lon"].values,
+                df2["lat"].values,
+                ["T"] * len(df2.index),
+                color="r",
+                outlinecolor="yellow",
+                textsize=8,
+                labelbuffer=0,
+            )
         df2 = df[(df["valid"] <= now) & (df["typetext"] == "TSTM WND GST")]
         if not df2.empty:
             mp.scatter(
@@ -131,72 +165,20 @@ def main():
                 norm=norm,
                 draw_colorbar=False,
                 edgecolor="white",
-                # fmt="%.1f",
-                # color=df2["color"].to_list(),
-                # labeltextsize=8,
+                fmt="%.0f",
+                color=df2["color"].to_list(),
+                textsize=8,
                 labelbuffer=0,
             )
-        df2 = df[(df["valid"] <= now) & (df["typetext"] == "HAIL")]
-        if not df2.empty:
-            mp.plot_values(
-                df2["lon"].values,
-                df2["lat"].values,
-                df2["magnitude"].values,
-                color="darkgreen",
-                outlinecolor="lightgreen",
-                labeltextsize=14,
-                labelbuffer=0,
-            )
-        df2 = df[(df["valid"] <= now) & (df["typetext"] == "TORNADO")]
-        if not df2.empty:
-            mp.plot_values(
-                df2["lon"].values,
-                df2["lat"].values,
-                ["T"] * len(df2.index),
-                color="r",
-                outlinecolor="yellow",
-                labeltextsize=14,
-                labelbuffer=0,
-            )
-        """
-        df2 = df[(df["valid"] <= now) & (df["typetext"] == "TORNADO")]
-        if not df2.empty:
-            mp.panels[0].ax.scatter(
-                df2["lon"].values,
-                df2["lat"].values,
-                s=60,
-                marker="v",
-                facecolor="r",
-                edgecolor="white",
-                zorder=Z_OVERLAY2,
-            )
-            ax.scatter(
+            ax.bar(
                 df2["valid"].values,
-                [55] * len(df2.index),
-                facecolor="r",
-                edgecolor="white",
-                marker="v",
-                zorder=Z_OVERLAY2,
+                df2["magnitude"].values,
+                color=df2["color"].to_list(),
+                width=5 / 1440.0,  # 5 minutes
             )
-        ax.scatter(
-            [
-                0.024,
-            ],
-            [
-                0.93,
-            ],
-            facecolor="r",
-            edgecolor="k",
-            marker="v",
-            transform=ax.transAxes,
-        )
-        ax.text(
-            0.03, 0.96, "Tornado", transform=ax.transAxes, ha="left", va="top"
-        )
-        """
         df2 = warndf[(warndf["issue"] <= now) & (warndf["expire"] > now)]
         if not df2.empty:
-            df2.plot(
+            df2.to_crs(mp.panels[0].crs).plot(
                 ax=mp.panels[0].ax,
                 aspect=None,
                 edgecolor=df2["color"].to_list(),
@@ -206,15 +188,17 @@ def main():
             )
         mp.fig.text(
             0.92,
-            0.3,
+            0.34,
             "Tornado\nReports",
             color="r",
+            bbox=dict(color="white"),
         )
         mp.fig.text(
             0.92,
-            0.37,
+            0.41,
             "Hail (inch)\nReports",
             color="darkgreen",
+            bbox=dict(color="white"),
         )
         cax2 = mp.fig.add_axes(
             [0.91, 0.05, 0.02, 0.2],
@@ -234,11 +218,22 @@ def main():
             "Wind Gust [MPH]",
             loc="bottom",
         )
-        mp.drawcounties("k")
+        ax.axvline(now, color="k", lw=1)
+        ax.set_xlim(sts, ets)
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%-I %p", tz=CST))
+        ax.xaxis.set_major_locator(mdates.HourLocator(interval=1))
+        ax.set_xlabel(
+            "16-17 July 2024 Central Daylight Time, 5 minute bar width"
+        )
+        ax.set_yticks(range(50, 111, 10))
+        ax.set_ylim(50, 110)
+        ax.set_ylabel("Wind Gust [MPH]")
+        ax.set_title("NWS Thunderstorm Wind Gust Reports [MPH]")
+        ax.grid(True)
+        # mp.drawcounties("k")
         mp.fig.savefig(f"images/{i:05d}.png")
         mp.close()
         i += 1
-        now += interval
 
 
 if __name__ == "__main__":
