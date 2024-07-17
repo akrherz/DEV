@@ -1,5 +1,5 @@
 """
-Look for bad feels like temperature and do some culling.
+Manually review temperatures.
 """
 
 from zoneinfo import ZoneInfo
@@ -78,10 +78,11 @@ def process(conn, row, station, nt):
 @click.command()
 @click.option("--station", required=True)
 @click.option("--network", required=True)
+@click.option("--varname", default="feel")
 @click.option("--above", type=int, default=None)
 @click.option("--below", type=int, default=None)
 @click.option("--year", type=int, default=None)
-def main(station, network, above, below, year):
+def main(station, network, varname, above, below, year):
     """Go Main Go."""
     nt = NetworkTable(network, only_online=False)
     # Look for obs that are maybe bad
@@ -91,7 +92,7 @@ def main(station, network, above, below, year):
         obs = pd.read_sql(
             text(f"""
             select valid, tmpf, dwpf, relh, feel from {tbl}
-            where station = :station and feel {op} :t
+            where station = :station and {varname} {op} :t
             ORDER by feel desc
                 """),
             conn,
