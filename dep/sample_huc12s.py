@@ -7,7 +7,8 @@ with get_sqlalchemy_conn("idep") as conn:
         text("""
 with data as (select huc_12, mlra_id,
     rank() OVER (PARTITION by mlra_id ORDER by random() desc)
-        from huc12 where states in ('MN', 'IA')) select * from data where
+        from huc12 where states in ('MN', 'IA') and scenario = 0)
+    select * from data where
              rank < 100 order by mlra_id desc;
 """)
     )
