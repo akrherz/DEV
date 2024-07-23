@@ -12,6 +12,7 @@ VHOST_MAPPER = {
     "weather.im": "weatherim.local",
     "mesonet-dep.agron.iastate.edu": "depbackend.local",
     "mesonet.agron.iastate.edu": "iem.local",
+    "iem-web-services.agron.iastate.edu": "iem.local",
 }
 
 
@@ -21,7 +22,7 @@ def main():
         df = pd.read_sql(
             """
             select distinct vhost, request_uri from website_telemetry
-            where status_code = 500
+            where status_code >= 500
             and valid > now() - '1 day'::interval and vhost != 'iem.local'
             """,
             conn,
@@ -42,15 +43,6 @@ def main():
             if req.status_code in [200, 400, 422, 503]:
                 waiting = False
                 continue
-            # /api/ can emit 500 for a variety of reasons, ensure that we
-            # get a JSON response in this case and move along
-            if uri.startswith("/api/"):
-                try:
-                    req.json()
-                    waiting = False
-                    continue
-                except Exception:
-                    pass
             res = input(f"Got {req.status_code} Try again?([y]/n) ")
             if res == "n":
                 waiting = False
