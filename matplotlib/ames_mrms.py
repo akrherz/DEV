@@ -1,12 +1,12 @@
 """MRMS Plotting util for zoomed in areas"""
 
 import pygrib
-import shapefile
+from sqlalchemy import text
 
-import cartopy.crs as ccrs
-from pyiem.plot import Z_OVERLAY2, MapPlot, nwsprecip
-from pyiem.util import get_dbconn, mm2inch
-from shapely.geometry import shape
+from pyiem.database import get_sqlalchemy_conn
+from pyiem.plot import MapPlot, nwsprecip
+from pyiem.reference import Z_OVERLAY2
+from pyiem.util import mm2inch
 
 
 def get_data():
@@ -15,74 +15,50 @@ def get_data():
     lats = []
     vals = []
     labels = []
-    pgconn = get_dbconn("iem")
 
-    cursor = pgconn.cursor()
-    networks = ["IA_ASOS", "AWOS", "OT", "IA_DCP"]
-    cursor.execute(
-        """
-    SELECT id, st_x(geom), st_y(geom), sum(pday)
-    from summary_2021 s JOIN stations t
-    on (s.iemid = t.iemid) WHERE s.day = '2021-06-09'
-    and t.network in %s
-    and pday > 0 GROUP by id, st_x, st_y
-    ORDER by sum DESC
-    """,
-        (tuple(networks),),
-    )
-    for row in cursor:
-        lons.append(row[1])
-        lats.append(row[2])
-        vals.append("%.2f" % (row[3],))
-        labels.append(row[0])
+    networks = ["IACOCORAHS"]
+    with get_sqlalchemy_conn("iem") as conn:
+        res = conn.execute(
+            text("""
+        SELECT id, st_x(geom), st_y(geom), sum(pday)
+        from summary_2024 s JOIN stations t
+        on (s.iemid = t.iemid) WHERE s.day = '2024-07-23'
+        and t.network = ANY(:networks)
+        and pday > 0 GROUP by id, st_x, st_y
+        ORDER by sum DESC
+        """),
+            {"networks": networks},
+        )
+        for row in res:
+            lons.append(row[1])
+            lats.append(row[2])
+            vals.append("%.2f" % (row[3],))
+            labels.append(row[0])
     return lons, lats, vals, labels
 
 
 def main():
     """Go!"""
-    title = "NOAA MRMS Q3: RADAR + Guage Corrected Rainfall Estimates"
+    title = "NOAA MRMS: RADAR + Guage Corrected Rainfall Estimates"
     mp = MapPlot(
-        sector="custom",
+        sector="spherical_mercator",
         north=42.1,
         east=-93.55,
         south=41.95,
         west=-93.7,
-        axisbg="white",
         titlefontsize=14,
         title=title,
-        subtitle="Valid: 9 June 2021",
+        subtitle=(
+            "MRMS 24h Ending: 7 AM 23 July 2024, Morning CoCoRaHS Reports"
+        ),
     )
 
-    shp = shapefile.Reader("cities.shp")
-    for record in shp.shapeRecords():
-        geo = shape(record.shape)
-        mp.ax.add_geometries(
-            [geo],
-            ccrs.PlateCarree(),
-            zorder=Z_OVERLAY2,
-            facecolor="None",
-            edgecolor="brown",
-            lw=2,
-        )
-
-    shp = shapefile.Reader("high.shp")
-    for record in shp.shapeRecords():
-        geo = shape(record.shape)
-        mp.ax.add_geometries(
-            [geo],
-            ccrs.PlateCarree(),
-            zorder=Z_OVERLAY2,
-            edgecolor="k",
-            facecolor="None",
-            lw=2,
-        )
-
-    grbs = pygrib.open("RadarOnly_QPE_24H_00.00_20210610-010000.grib2")
+    grbs = pygrib.open("MultiSensor_QPE_24H_Pass2_00.00_20240723-120000.grib2")
     grb = grbs.message(1)
     pcpn = mm2inch(grb["values"])
     lats, lons = grb.latlons()
     lons -= 360.0
-    clevs = [0.01, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
+    clevs = [0.01, 0.05, 0.2, 0.5, 1, 1.5]
     cmap = nwsprecip()
     cmap.set_over("k")
 
@@ -95,21 +71,20 @@ def main():
         latlon=True,
         units="inch",
         spacing="proportional",
+        alpha=0.1,
     )
     mp.drawcounties()
-    """
-    lons, lats, vals, labels = get_data()
+    lons, lats, vals, _labels = get_data()
     mp.plot_values(
         lons,
         lats,
         vals,
         "%s",
-        labels=labels,
+        # labels=labels,
         labelbuffer=1,
+        zorder=Z_OVERLAY2,
         labelcolor="white",
     )
-    """
-    mp.drawcities(labelbuffer=5, minarea=0.2)
     mp.postprocess(filename="test.png")
 
 
