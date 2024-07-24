@@ -40,7 +40,7 @@ def main():
             vhost = VHOST_MAPPER.get(vhost, vhost)
             req = requests.get(f"http://{vhost}{uri}", timeout=600)
             # Rumfields Known Knowns
-            if req.status_code in [200, 400, 422, 503]:
+            if req.status_code in [200, 400, 404, 422, 503]:
                 waiting = False
                 continue
             res = input(f"Got {req.status_code} Try again?([y]/n) ")
