@@ -43,7 +43,7 @@ def process(conn, row, station, nt):
         "f": "feel",
     }
     for entry in res.split():
-        idx = int(entry[:1])
+        idx = int(entry[:-1])
         cullrow = obs.loc[idx]
         colval = entry[-1]
         col = mapper[colval]
