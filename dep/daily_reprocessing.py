@@ -81,9 +81,14 @@ def edit_clifiles(days):
     # Now we do some work!
     os.chdir("/opt/dep/scripts/cligen")
     for day in days:
-        cmd = f"python proctor_tile_edit.py 0 {day:%Y %m %d}"
-        LOG.info(cmd)
-        subprocess.call(cmd, shell=True)
+        cmd = [
+            "python",
+            "proctor_tile_edit.py",
+            "--scenario=0",
+            f"--date={day:%Y-%m-%d}",
+        ]
+        LOG.info(" ".join(cmd))
+        subprocess.call(cmd)
 
 
 @click.command()
