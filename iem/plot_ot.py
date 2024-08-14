@@ -5,14 +5,14 @@ import pytz
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.util import get_dbconn
 
 
 def main():
     """Go Main Go"""
     pgconn = get_dbconn("other")
-    df = read_sql(
+    df = pd.read_sql(
         """
     select valid, tmpf, sknt,
     drct from t2017 where station = 'OT0010'
