@@ -2,14 +2,13 @@
 
 import matplotlib.pyplot as plt
 import pandas as pd
-from pyiem.util import get_dbconn
-
-pgconn = get_dbconn("hads")
-cursor = pgconn.cursor()
+from pyiem.database import get_dbconn
 
 
 def get_station(station):
     """Get the data."""
+    pgconn = get_dbconn("hads")
+    cursor = pgconn.cursor()
     cursor.execute(
         """
         SELECT distinct valid, value from raw2015_07 where
