@@ -13,6 +13,11 @@ VHOST_MAPPER = {
     "mesonet-dep.agron.iastate.edu": "depbackend.local",
     "mesonet.agron.iastate.edu": "iem.local",
     "iem-web-services.agron.iastate.edu": "iem.local",
+    "www.mesonet.agron.iastate.edu": "iem.local",
+    "mesonet1.agron.iastate.edu": "iem.local",
+    "mesonet2.agron.iastate.edu": "iem.local",
+    "mesonet3.agron.iastate.edu": "iem.local",
+    "mesonet4.agron.iastate.edu": "iem.local",
 }
 
 
