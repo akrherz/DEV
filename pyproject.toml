@@ -10,3 +10,6 @@ select = [
     "F",
     "I",
 ]
+exclude = [
+    "**/*.ipynb",
+]
