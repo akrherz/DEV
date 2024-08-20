@@ -149,6 +149,8 @@ FAIRS = [
     # No 2020 Fair, COVID
     [date(2021, 8, 12), date(2021, 8, 22)],
     [date(2022, 8, 11), date(2022, 8, 21)],
+    [date(2023, 8, 10), date(2023, 8, 20)],
+    [date(2024, 8, 8), date(2024, 8, 18)],
 ]
 
 
@@ -167,7 +169,7 @@ def hours_above():
                 SELECT distinct
                 date_trunc('hour', valid + '10 minutes'::interval)
                 from alldata where station = 'DSM' and valid >= %s and
-                valid < %s and tmpf >= 79.5
+                valid < %s and tmpf >= 85.5 and report_type = 3
                 """,
                 (sts, ets + timedelta(hours=24)),
             )
@@ -176,25 +178,25 @@ def hours_above():
         pd.DataFrame({"years": years, "hours": hours}).to_csv("/tmp/data.csv")
     df = pd.read_csv("/tmp/data.csv")
     (fig, ax) = figure_axes(
-        title="Iowa State Fair:: Number of Hourly Observations >= 80$^\circ$F",
+        title="Iowa State Fair:: Number of Hourly Observations >= 86$^\circ$F",
         subtitle=(
             "based on hourly Des Moines Airport temperature reports "
-            "(1973-2022)"
+            "(1973-2024)"
         ),
         apctx={"_r": "43"},
     )
     ax.bar(df["years"], df["hours"])
     avgv = df["hours"].mean()
     ax.axhline(avgv, lw=2)
-    ax.text(2024, avgv, f"Avg:\n{avgv:.1f} hrs", va="center")
+    ax.text(2025, avgv, f"Avg:\n{avgv:.1f} hrs", va="center")
     ax.axvspan(1941.5, 1945.5, color="tan")
     ax.axvspan(2019.5, 2020.5, color="tan")
-    ax.set_xlim(1972.5, 2022.5)
-    ax.set_yticks(np.arange(0, 8 * 24 + 1, 24))
-    ax.set_xlabel("No State Fair in 2020")
+    ax.set_xlim(1972.5, 2024.5)
+    ax.set_yticks(np.arange(0, 9 * 12 + 1, 12))
+    ax.set_xlabel(f"No State Fair in 2020, 2024 Total: {df['hours'].iloc[-1]}")
     ax.set_ylabel("Total Hours")
     ax.grid(True)
-    fig.savefig("220822.png")
+    fig.savefig("240820.png")
 
 
 def main():
