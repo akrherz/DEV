@@ -14,21 +14,20 @@ from pyiem.util import get_dbconnstr
 def main():
     """Go Main Go."""
     mp = MapPlot(
-        title="27 November 2023 :: NOAA20 Corrected Reflectance True Color",
-        subtitle=(
-            "blue dots are reported snow cover, numbers are airport high temps"
+        title=(
+            "4 September 2024 :: Terra MODIS Corrected Reflectance True Color"
         ),
         sector="custom",
-        apctx={"_r": "43"},
-        west=-102.0,
-        east=-87.132,
-        south=36.775,
-        north=44.15,
+        apctx={"_r": "96"},
+        west=-97.6,
+        east=-89.5,
+        south=40.1,
+        north=42.95,
         stateborderwidth=2,
     )
 
-    img = plt.imread("/tmp/snapshot-2023-11-27.jpg")
-    with open("/tmp/snapshot-2023-11-27.jgw", encoding="ascii") as fh:
+    img = plt.imread("/tmp/snapshot-2024-09-04.jpg")
+    with open("/tmp/snapshot-2024-09-04.jgw", encoding="ascii") as fh:
         res = [float(x) for x in fh.readlines()]
     ulx = res[4]
     lrx = ulx + res[0] * img.shape[1]
@@ -80,7 +79,7 @@ def main():
         isolated=True,
     )
 
-    mp.fig.savefig("231127.png")
+    mp.fig.savefig("240905.png")
 
 
 if __name__ == "__main__":
