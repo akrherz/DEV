@@ -1,30 +1,47 @@
 """Unsure."""
 
 import datetime
+from io import StringIO
 
 import numpy as np
 
-import matplotlib.pyplot as plt
-from pyiem.util import get_dbconn
+import pandas as pd
+from matplotlib.ticker import MaxNLocator as mlocator
+from pyiem.database import get_dbconn
+from pyiem.plot import figure_axes
 
-data = """2002-09-14 17:05 S
-2003-09-13 11:30 I
-2004-09-11 11:05 I
-2005-09-10 14:30 S
-2006-09-16 11:00 I
-2007-09-15 12:30 S
-2008-09-13 11:00 I
-2009-09-12 11:00 I
-2010-09-11 14:30 I
-2011-09-10 11:00 S
-2012-09-08 14:42 S
-2013-09-14 17:00 I
-2014-09-13 15:30 S
-2015-09-12 15:45 I"""
+data = """2002-09-14 17:05 I I
+2003-09-13 11:30 S I
+2004-09-11 11:05 I I
+2005-09-10 14:30 S S
+2006-09-16 11:00 I I
+2007-09-15 12:30 S S
+2008-09-13 11:00 I I
+2009-09-12 11:00 S I
+2010-09-11 14:30 I I
+2011-09-10 11:00 S S
+2012-09-08 14:42 I S
+2013-09-14 17:00 S I
+2014-09-13 15:30 I S
+2015-09-12 15:45 S I
+2016-09-10 18:42 I I
+2017-09-09 11:01 S I
+2018-09-08 16:05 I I
+2019-09-14 15:11 S I
+2021-09-11 15:37 S I
+2022-09-10 15:05 I S
+2023-09-09 14:41 S I
+"""
 
 
 def main():
     """Go Main Go."""
+    games = pd.read_csv(
+        StringIO(data),
+        sep=" ",
+        names=["date", "time", "location", "winner"],
+    )
+    games["valid"] = pd.to_datetime(games["date"] + " " + games["time"])
     pgconn = get_dbconn("asos")
     cursor = pgconn.cursor()
 
@@ -32,26 +49,28 @@ def main():
     tmpf = []
     sknt = []
     colors = []
-    for line in data.split("\n"):
-        ts = datetime.datetime.strptime(line.strip()[:16], "%Y-%m-%d %H:%M")
-        sts = ts - datetime.timedelta(hours=1)
-        ets = ts + datetime.timedelta(minutes=30)
-        station = "AMW" if ts.year % 2 == 1 else "IOW"
+    for _, row in games.iterrows():
+        sts = row["valid"] - datetime.timedelta(hours=1)
+        ets = row["valid"] + datetime.timedelta(minutes=30)
+        station = "AMW" if row["location"] == "S" else "IOW"
         cursor.execute(
             """
         SELECT tmpf, sknt from alldata where station = %s
-        and valid between %s and %s ORDER by valid DESC
+        and valid between %s and %s and report_type = 3 ORDER by valid DESC
         """,
             (station, sts, ets),
         )
-        row = cursor.fetchone()
-        years.append(ts.year)
-        tmpf.append(row[0])
-        sknt.append(row[1] * 1.15)
-        colors.append("k" if line[-1] == "I" else "#A71930")
-
-    (fig, ax) = plt.subplots(1, 1)
-    bars = ax.barh(np.array(years) - 0.4, tmpf)
+        dbrow = cursor.fetchone()
+        years.append(row["valid"].year)
+        tmpf.append(dbrow[0])
+        sknt.append(0 if dbrow[1] is None else (dbrow[1] * 1.15))
+        colors.append("k" if row["winner"] == "I" else "#A71930")
+    (fig, ax) = figure_axes(
+        figsize=(8, 6),
+        title="2002-2023 Iowa State vs Iowa Football Kickoff Weather",
+        subtitle="Closest Ob in Time, Ames (AMW) or Iowa City (IOW)",
+    )
+    bars = ax.barh(np.array(years), tmpf, align="center")
     irec = None
     srec = None
     for i, bar in enumerate(bars):
@@ -62,7 +81,7 @@ def main():
             srec = bar
         ax.text(tmpf[i] + 1, years[i], "%.0f" % (tmpf[i],), va="center")
     n90 = [100] * len(years)
-    bars = ax.barh(np.array(years) - 0.4, sknt, left=n90)
+    bars = ax.barh(np.array(years), sknt, left=n90, align="center")
     for i, bar in enumerate(bars):
         bar.set_facecolor(colors[i])
         ax.text(sknt[i] + 101, years[i], "%.0f" % (sknt[i],), va="center")
@@ -73,14 +92,11 @@ def main():
     )
     ax.set_xlim(55, 125)
     ax.grid(True)
-    ax.set_title(
-        "2002-2015 Iowa State vs Iowa Football Kickoff Weather\n"
-        "Closest Ob in Time, Ames (AMW) or Iowa City (IOW)"
-    )
     ax.legend((irec, srec), ("Iowa Won", "Iowa State Won"), ncol=2)
-    ax.set_ylim(2001.5, 2017.5)
+    ax.set_ylim(2001.5, 2025.5)
+    ax.yaxis.set_major_locator(mlocator(integer=True))
 
-    fig.savefig("test.png")
+    fig.savefig("240906.png")
 
 
 if __name__ == "__main__":
