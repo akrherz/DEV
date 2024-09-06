@@ -3,9 +3,11 @@
 import datetime
 import os
 import subprocess
+from typing import Optional, Tuple
 
 import click
 
+import pandas as pd
 from pyiem.database import get_dbconn
 from pyiem.dep import read_cli
 from pyiem.util import logger
@@ -62,6 +64,19 @@ def pick_dates_by_database():
     return days
 
 
+def pick_dates_by_moddate() -> Tuple[str]:
+    """Find files to reprocess by their age."""
+    days = []
+    for dt in pd.date_range("2007/01/01", datetime.date.today()):
+        mt = get_update_date(dt)
+        if mt < THRESHOLD_DATE:
+            LOG.info("Processing %s[mod:%s]", dt.date(), mt.date())
+            days.append(dt)
+        if len(days) > SIZE:
+            break
+    return days
+
+
 def get_update_date(dt):
     """Filter days that should not be reprocessed."""
     fn = f"/mnt/idep2/data/dailyprecip/{dt:%Y/%Y%m%d}.npy.gz"
@@ -94,7 +109,13 @@ def edit_clifiles(days):
 @click.command()
 @click.option("--clifile", help="Review CLI file for dates to run.")
 @click.option("--dryrun", is_flag=True, default=False, help="Dry Run.")
-def main(clifile, dryrun):
+@click.option(
+    "--algo",
+    type=click.Choice(["database", "moddate"]),
+    default="database",
+    help="Algorithm to use",
+)
+def main(clifile: Optional[str], dryrun: bool, algo: str):
     """Go Main Go."""
     if clifile:
         clidf = read_cli(clifile).loc[: datetime.date.today()]
@@ -115,8 +136,10 @@ def main(clifile, dryrun):
                 days.append(dt)
             if len(days) > SIZE:
                 break
-    else:
+    elif algo == "database":
         days = pick_dates_by_database()
+    else:
+        days = pick_dates_by_moddate()
     if not dryrun:
         env2database()
         LOG.warning("Processing %s days", len(days))
