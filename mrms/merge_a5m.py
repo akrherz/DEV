@@ -26,8 +26,10 @@ def run(dt: date, fordep: bool):
     ullon = None
     total = None
     ncfn = iemre.get_daily_mrms_ncname(dt.year)
+    offset = iemre.daily_offset(dt)
     if fordep:
         ncfn = ncfn.replace("daily", "dep")
+        offset = offset - iemre.daily_offset(date(dt.year, 4, 11))
     while now < ets:
         now += timedelta(minutes=5)
         fn = fetch("PrecipRate", now)
@@ -61,7 +63,6 @@ def run(dt: date, fordep: bool):
         else:
             total += val
 
-    offset = iemre.daily_offset(dt)
     if ullon is None:
         LOG.warning("No data found for %s, using zeros", dt)
         with ncopen(ncfn, "a") as nc:
@@ -87,6 +88,9 @@ def run(dt: date, fordep: bool):
 @click.option("--fordep", is_flag=True, help="For dep")
 def main(dt: datetime, fordep: bool):
     """go main go"""
+    if fordep and (f"{dt:%m%d}" < "0411" or f"{dt:%m%d}" > "0615"):
+        LOG.info("DEP not needed for %s", dt)
+        return
     run(dt.date(), fordep)
 
 
