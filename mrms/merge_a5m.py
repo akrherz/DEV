@@ -1,31 +1,35 @@
 """Merge the 0.01x0.01 Q3 24 hour precip data estimates"""
 
-import datetime
 import gzip
 import os
-import sys
 import tempfile
+from datetime import date, datetime, timedelta
 
+import click
 import numpy as np
 import pygrib
 
 from pyiem import iemre
-from pyiem.mrms import WEST, fetch
+from pyiem.mrms import fetch
 from pyiem.util import logger, ncopen, utc
 
 LOG = logger()
 TMP = "/mesonet/tmp"
 
 
-def run(date):
+def run(dt: date, fordep: bool):
     """Run 6z to 6z."""
     # Data is in the rears
-    now = utc(date.year, date.month, date.day, 6)
-    ets = now + datetime.timedelta(hours=24)
-    lats = None
+    now = utc(dt.year, dt.month, dt.day, 6)
+    ets = now + timedelta(hours=18 if fordep else 24)
+    ullat = None
+    ullon = None
     total = None
+    ncfn = iemre.get_daily_mrms_ncname(dt.year)
+    if fordep:
+        ncfn = ncfn.replace("daily", "dep")
     while now < ets:
-        now += datetime.timedelta(minutes=5)
+        now += timedelta(minutes=5)
         fn = fetch("PrecipRate", now)
         if fn is None:
             LOG.info("No data for %s", now)
@@ -35,13 +39,15 @@ def run(date):
             with open(gribfn, "wb") as fh:
                 fh.write(fp.read())
         os.unlink(fn)
-        grbs = pygrib.open(gribfn)
-        grb = grbs[1]
-        if lats is None:
-            lats, _ = grb.latlons()
-        # mm / hr over 5 minutes to accum
-        val = grb.values
-        grbs.close()
+        with pygrib.open(gribfn) as grbs:
+            grb = grbs[1]
+            if ullat is None:
+                ullat = grb["latitudeOfFirstGridPointInDegrees"]
+                ullon = grb["longitudeOfFirstGridPointInDegrees"]
+                if ullon > 0:
+                    ullon -= 360
+            # mm / hr over 5 minutes to accum
+            val = grb.values
         os.unlink(gribfn)
         if hasattr(val, "mask"):
             val = np.where(val.mask, -3, val)
@@ -55,30 +61,34 @@ def run(date):
         else:
             total += val
 
-    offset = iemre.daily_offset(date)
-    if lats is None:
-        LOG.warning("No data found for %s, using zeros", date)
-        with ncopen(iemre.get_daily_mrms_ncname(date.year), "a") as nc:
-            ncprecip = nc.variables["p01d"]
-            ncprecip[offset, :, :] = 0
+    offset = iemre.daily_offset(dt)
+    if ullon is None:
+        LOG.warning("No data found for %s, using zeros", dt)
+        with ncopen(ncfn, "a") as nc:
+            nc.variables["p01d"][offset] = 0
         return
 
     # CAREFUL HERE!  The MRMS grid is North to South
     # set top (smallest y)
-    y0 = int((lats[0, 0] - iemre.NORTH) * 100.0)
-    y1 = int((lats[0, 0] - iemre.SOUTH) * 100.0)
-    x0 = int((iemre.WEST - WEST) * 100.0)
-    x1 = int((iemre.EAST - WEST) * 100.0)
-    with ncopen(iemre.get_daily_mrms_ncname(date.year), "a") as nc:
+    y0 = int((ullat - iemre.NORTH) * 100.0)
+    y1 = int((ullat - iemre.SOUTH) * 100.0)
+    x0 = int((iemre.WEST - ullon) * 100.0)
+    x1 = int((iemre.EAST - ullon) * 100.0)
+    with ncopen(ncfn, "a") as nc:
         ncprecip = nc.variables["p01d"]
+        LOG.info("Writing @%s[%s:%s, %s:%s]", offset, y0, y1, x0, x1)
         ncprecip[offset, :, :] = np.flipud(total[y0:y1, x0:x1])
 
 
-def main(argv):
+@click.command()
+@click.option(
+    "--date", "dt", type=click.DateTime(), help="Date", required=True
+)
+@click.option("--fordep", is_flag=True, help="For dep")
+def main(dt: datetime, fordep: bool):
     """go main go"""
-    date = datetime.date(int(argv[1]), int(argv[2]), int(argv[3]))
-    run(date)
+    run(dt.date(), fordep)
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()
