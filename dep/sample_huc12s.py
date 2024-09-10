@@ -1,6 +1,8 @@
+"""Random sampler."""
+
 from sqlalchemy import text
 
-from pyiem.util import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn
 
 with get_sqlalchemy_conn("idep") as conn:
     res = conn.execute(

@@ -15,20 +15,28 @@ from pyiem.util import logger
 LOG = logger()
 
 
-def process(conn, row, station, nt):
+def process(conn, row, station, nt, threshold: int):
     """Do what we need to do here."""
     delta = pd.Timedelta(hours=3)
     obs = pd.read_sql(
-        "SELECT valid, drct, sknt, gust, peak_wind_gust from alldata where "
-        "station = %s and valid >= %s and valid <= %s "
-        "ORDER by valid ASC",
+        text("""
+    SELECT valid, drct, sknt, gust, peak_wind_gust from alldata where
+    station = :station and valid >= :sts and valid <= :ets
+    ORDER by valid ASC
+        """),
         conn,
-        params=(
-            station,
-            row["valid"] - delta,
-            row["valid"] + delta,
-        ),
+        params={
+            "station": station,
+            "sts": row["valid"] - delta,
+            "ets": row["valid"] + delta,
+        },
     )
+    if len(obs.index) > 10:
+        obs = obs[
+            (obs["sknt"] >= threshold)
+            | (obs["gust"] >= threshold)
+            | (obs["peak_wind_gust"] >= threshold)
+        ]
     print(row["valid"])
     print(obs.head(100))
     res = input("Null space sep list (#s #g #p): ")
@@ -94,7 +102,7 @@ def main(station, network, threshold):
         LOG.info("Found %s rows", len(obs.index))
 
         for _, row in obs.iterrows():
-            process(conn, row, station, nt)
+            process(conn, row, station, nt, threshold)
 
 
 if __name__ == "__main__":
