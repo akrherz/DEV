@@ -5,7 +5,7 @@ products are duplicated by having one product with the old timestamp logic
 and a new one at the new logic.
 """
 
-import sys
+import click
 
 import pandas as pd
 from pyiem.database import get_dbconn
@@ -13,20 +13,21 @@ from pyiem.nws.product import TextProduct
 from pyiem.util import noaaport_text
 
 
-def do(pgconn, date):
+def do(pgconn, dt):
     """Go main go"""
     cursor = pgconn.cursor()
     cursor2 = pgconn.cursor()
     # Get all the products for the date!
-    ts1 = date.strftime("%Y-%m-%d 00:00+00")
-    ts2 = date.strftime("%Y-%m-%d 23:59+00")
+    ts1 = dt.strftime("%Y-%m-%d 00:00+00")
+    ts2 = dt.strftime("%Y-%m-%d 23:59+00")
     table = "products_%s_%s" % (
-        date.year,
-        "0106" if date.month < 7 else "0712",
+        dt.year,
+        "0106" if dt.month < 7 else "0712",
     )
     cursor.execute(
         f"SELECT ctid, entered, data, pil from {table} where "
-        "entered >= %s and entered <= %s ORDER by entered ASC",
+        "entered >= %s and entered <= %s and substr(pil, 1, 3) = 'LSR' "
+        "ORDER by entered ASC",
         (ts1, ts2),
     )
     for row in cursor:
@@ -56,13 +57,14 @@ def do(pgconn, date):
     pgconn.commit()
 
 
-def main(argv):
+@click.command()
+@click.option("--year", type=int, required=True)
+def main(year: int):
     """Do Main"""
     pgconn = get_dbconn("afos")
-    year = int(argv[1])
-    for date in pd.date_range(f"{year}/01/01", f"{year}/01/01"):
-        do(pgconn, date)
+    for dt in pd.date_range(f"{year}/01/01", f"{year}/12/31"):
+        do(pgconn, dt)
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()

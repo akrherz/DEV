@@ -45,22 +45,22 @@ def do(dt: datetime, cursor):
             tokens = row["product_id"].split("-")
             pil = tokens[3]
             bbb = None
-            bbbcomp = "bbb is null"
             if len(tokens) == 5:
                 bbb = tokens[4]
-                bbbcomp = "bbb = :bbb"
             entered = datetime.strptime(row["product_id"][:12], "%Y%m%d%H%M")
             entered = entered.replace(tzinfo=timezone.utc)
             ares = aconn.execute(
                 text(
-                    f"""select entered at time zone 'UTC' as utc_entered,
+                    """select entered at time zone 'UTC' as utc_entered,
                 source, wmo, pil, bbb from products
-                where pil = :pil and {bbbcomp} and
-                entered >= :sts and entered <= :ets ORDER by entered DESC"""
+                where pil = :pil and
+                entered >= :sts and entered <= :ets
+                and bbb is not distinct from :bbb
+                ORDER by entered DESC"""
                 ),
                 {
                     "sts": entered - timedelta(minutes=1),
-                    "ets": entered + timedelta(minutes=1),
+                    "ets": entered + timedelta(minutes=0),
                     "pil": pil,
                     "bbb": bbb,
                 },

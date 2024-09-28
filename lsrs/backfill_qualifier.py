@@ -38,42 +38,48 @@ def do(dt: datetime, cursor):
         for row in res.mappings():
             resp = httpx.get(
                 "https://mesonet.agron.iastate.edu/api/1/"
-                f"nwstext/{row['product_id']}"
+                f"nwstext/{row['product_id']}?nolimit=1"
             )
             if resp.status_code != 200:
                 LOG.info("Failed to fetch %s", row["product_id"])
                 continue
-            try:
-                prod = parser(resp.text)
-            except Exception as exp:
-                LOG.info("Failed to parse %s: %s", row["product_id"], exp)
-                continue
             found = False
-            for lsr in prod.lsrs:
-                if (
-                    lsr.magnitude_qualifier is None
-                    or lsr.magnitude_f is None
-                    or found
-                ):
+            for content in resp.text.split("\003"):
+                if content.strip() == "":
                     continue
-                if (
-                    lsr.valid == row["valid"]
-                    and lsr.wfo == row["wfo"]
-                    and abs(lsr.magnitude_f - float(row["magnitude"])) < 0.1
-                    and lsr.typetext == row["typetext"]
-                    and lsr.city == row["city"]
-                    and lsr.county == row["county"]
-                    and lsr.state == row["state"]
-                    and lsr.source == row["source"]
-                    and abs(lsr.get_lat() - row["lat"]) < 0.01
-                    and abs(lsr.get_lon() - row["lon"]) < 0.01
-                ):
-                    cursor.execute(
-                        f"UPDATE {table} SET qualifier = %s WHERE ctid = %s",
-                        (lsr.magnitude_qualifier, row["ctid"]),
-                    )
-                    fixed += 1
-                    found = True
+                try:
+                    prod = parser(content)
+                except Exception as exp:
+                    LOG.info("Failed to parse %s: %s", row["product_id"], exp)
+                    print(repr(content[:100]))
+                    continue
+                for lsr in prod.lsrs:
+                    if (
+                        lsr.magnitude_qualifier is None
+                        or lsr.magnitude_f is None
+                        or found
+                    ):
+                        continue
+                    if (
+                        lsr.valid == row["valid"]
+                        and lsr.wfo == row["wfo"]
+                        and abs(lsr.magnitude_f - float(row["magnitude"]))
+                        < 0.1
+                        and lsr.typetext == row["typetext"]
+                        and lsr.city == row["city"]
+                        and lsr.county == row["county"]
+                        and lsr.state == row["state"]
+                        and lsr.source == row["source"]
+                        and abs(lsr.get_lat() - row["lat"]) < 0.01
+                        and abs(lsr.get_lon() - row["lon"]) < 0.01
+                    ):
+                        cursor.execute(
+                            f"UPDATE {table} SET qualifier = %s "
+                            "WHERE ctid = %s",
+                            (lsr.magnitude_qualifier, row["ctid"]),
+                        )
+                        fixed += 1
+                        found = True
             if not found:
                 # if row["type"] == "S":
                 #    print(lsr)
