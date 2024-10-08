@@ -13,7 +13,7 @@ class MyEncoder(json.JSONEncoder):
 
 
 decoder = Decoder()
-with open("/tmp/one", "rb") as ins:
+with open("IU_2024100813.bufr", "rb") as ins:
     bufr_message = decoder.process(ins.read())
 
 DIRECTS = {
