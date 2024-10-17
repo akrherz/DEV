@@ -33,10 +33,11 @@ def main():
 
     for time in times:
         cursor.execute(
-            f"""
+            """
         SELECT valid + '10 minutes'::interval, skyc1, skyc2, skyc3, skyc4
-        from t{time.year}
-        WHERE station = 'AMW' and valid between %s and %s ORDER by valid ASC
+        from alldata
+        WHERE station = 'AMW' and valid between %s and %s
+        and report_type = 3 ORDER by valid ASC
         """,
             (
                 time - datetime.timedelta(hours=25),
@@ -49,8 +50,8 @@ def main():
             if x < 0 or x > 48:
                 continue
             clouds = row[1:]
-            vals = [lookup.get(cl) for cl in clouds]
-            data[y, x] = max(vals)
+            vals = [lookup.get(cl, np.nan) for cl in clouds]
+            data[y, x] = np.nanmax(np.array(vals))
 
     cmap = plt.get_cmap("gray_r")
     cmap.set_under("tan")
@@ -60,7 +61,7 @@ def main():
         interpolation="nearest",
         cmap=cmap,
         aspect="auto",
-        extent=(-24.5, 24.5, 2016.5, baseyear - 0.5),
+        extent=(-24.5, 24.5, 2024.5, baseyear - 0.5),
         vmin=0,
     )
     cb = fig.colorbar(res)
@@ -69,6 +70,7 @@ def main():
     ax.set_xlim(-23.5, 23.5)
     ax.grid(True)
     ax.set_ylabel("Year")
+    ax.set_yticks(range(2000, 2025, 5))
     ax.set_xlabel(
         (
             r"Hours from first fall sub 29$^\circ$F Temperature, "
@@ -76,12 +78,9 @@ def main():
         )
     )
     ax.set_title(
-        (
-            "Ames [AMW] Cloud Coverage Reports\n"
-            "%i-2016 for  +/- 24 hours around first fall "
-            r"sub 29$^\circ$F Temp"
-        )
-        % (baseyear,)
+        "Ames [AMW] Cloud Coverage Reports\n"
+        f"{baseyear}-2024 for  +/- 24 hours around first fall "
+        r"sub 29$^\circ$F Temp"
     )
     fig.savefig("test.png")
 
