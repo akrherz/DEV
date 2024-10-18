@@ -1,34 +1,56 @@
 """consec days"""
 
-from pyiem.util import get_dbconn
+from datetime import timedelta
+
+from tqdm import tqdm
+
+import pandas as pd
+from pyiem.database import get_dbconn, get_sqlalchemy_conn
 
 
 def main():
     """Go Main Go"""
+    with get_sqlalchemy_conn("coop") as conn:
+        threaded = pd.read_sql(
+            "select id from stations where "
+            "network ~* 'CLIMATE' and substr(id, 3, 1) = 'T'",
+            conn,
+        )
     pgconn = get_dbconn("coop")
     cursor = pgconn.cursor()
-    cursor.execute(
-        """
-    WITH climo as (
-        select sday, avg(high) from alldata_ia where station = 'IA2203'
-        GROUP by sday)
-    select day, high, c.avg from alldata_ia a JOIN climo c on (a.sday = c.sday)
-    WHERE a.station = 'IA2203' and month = 8 ORDER by day ASC
-    """
-    )
-
-    running = 0
-    maxrunning = 0
-    for row in cursor:
-        if row[1] < 80:
-            running += 1
-            if running > maxrunning:
-                print("maxrunning: %s date: %s" % (running, row[0]))
-                maxrunning = running
-            if row[0].day == 31:
+    maxduration = timedelta(days=1)
+    for sid in tqdm(threaded["id"]):
+        if sid == "AZTPHX":
+            continue
+        cursor.execute(
+            """
+        select sday, day, high, temp_estimated from
+        alldata where station = %s and high is not null
+        ORDER by day ASC
+        """,
+            (sid,),
+        )
+        por = None
+        records = {}
+        for dt in pd.date_range("2000/01/01", "2000/12/31"):
+            records[f"{dt:%m%d}"] = -99
+        running = 0
+        for row in cursor:
+            if por is None:
+                por = row[1]
+            if row[2] >= records[row[0]]:
+                if not row[3]:
+                    running += 1
+                else:
+                    running = 0
+                records[row[0]] = row[2]
+                if running >= 21:
+                    duration = row[1] - por
+                    if duration > maxduration:
+                        maxduration = duration
+                        print(f"{sid} {por} {row[1]} {duration}")
+            else:
                 running = 0
-        else:
-            running = 0
 
 
 if __name__ == "__main__":

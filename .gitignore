@@ -2,6 +2,7 @@
 /.pydevproject
 /ldm/*.log
 **/.ipynb_checkpoints
+**/*.bufr
 **/*.eps
 **/*.png
 **/*.jpg
