@@ -7,7 +7,6 @@ import mx.DateTime
 import numpy
 import pyproj
 from psycopg2.extras import DictCursor
-
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn
 

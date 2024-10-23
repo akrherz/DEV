@@ -8,9 +8,8 @@ import tempfile
 
 import numpy as np
 import pygrib
-import pytz
-
 import pyiem.mrms as mrms
+import pytz
 from pyiem.datatypes import distance
 from pyiem.plot import MapPlot, nwsprecip
 from pyiem.util import utc

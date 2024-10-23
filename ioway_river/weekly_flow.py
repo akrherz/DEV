@@ -2,9 +2,8 @@
 
 import datetime
 
-import numpy as np
-
 import matplotlib.colors as mpcolors
+import numpy as np
 from pyiem.plot import james
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn

@@ -6,7 +6,6 @@ import os
 import sys
 
 import numpy as np
-
 from pyiem.util import logger, ncopen
 
 BASEDIR = "/mesonet/data/iemre"

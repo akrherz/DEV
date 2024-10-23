@@ -2,13 +2,12 @@
 Investigate if we have too much pasture...
 """
 
-from sqlalchemy import text
-
 import geopandas as gpd
 from matplotlib import colors as mpcolors
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_POLITICAL
+from sqlalchemy import text
 
 SQL = """
 WITH ofecounts as (

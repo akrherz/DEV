@@ -5,12 +5,11 @@ import os
 import sys
 
 import numpy as np
-from tqdm import tqdm
-
 from metpy.units import units
 from pyiem import iemre
 from pyiem.meteorology import gdd
 from pyiem.util import convert_value, logger, ncopen
+from tqdm import tqdm
 
 LOG = logger()
 

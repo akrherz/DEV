@@ -1,9 +1,8 @@
 """Stock Analysis."""
 
-import numpy
-
 import matplotlib.font_manager
 import matplotlib.pyplot as plt
+import numpy
 from pyiem.util import get_dbconn
 
 

@@ -3,14 +3,13 @@
 Flash Flood Watches are by Zone and Flash Flood Warnings are by County!
 """
 
-from tqdm import tqdm
-
 import matplotlib.pyplot as plt
 import pandas as pd
 from pandas.io.sql import read_sql
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 
 def workflow(wfo):

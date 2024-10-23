@@ -3,12 +3,11 @@
 import sys
 from datetime import date
 
-import requests
-from sqlalchemy import text
-
 import pandas as pd
+import requests
 from pandas.io.sql import read_sql
 from pyiem.util import get_sqlalchemy_conn
+from sqlalchemy import text
 
 SITES = ("PRO", "BNW", "IKV", "GGI")
 

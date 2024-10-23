@@ -4,11 +4,10 @@ from datetime import timedelta
 from zoneinfo import ZoneInfo
 
 import numpy as np
-from sqlalchemy import text
-
 import pandas as pd
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import get_sqlalchemy_conn
+from sqlalchemy import text
 
 
 def run(dt):

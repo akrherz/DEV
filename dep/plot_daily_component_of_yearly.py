@@ -4,7 +4,6 @@ from calendar import month_abbr
 
 import click
 import numpy as np
-
 import pandas as pd
 from matplotlib.ticker import MaxNLocator
 from pyiem.database import get_sqlalchemy_conn

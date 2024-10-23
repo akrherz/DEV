@@ -4,7 +4,6 @@ import gzip
 import os
 
 import numpy as np
-
 import pandas as pd
 from pyiem.dep import EAST, NORTH, SOUTH, WEST
 

@@ -2,14 +2,13 @@
 
 import datetime
 
-import pytz
-from tqdm import tqdm
-
 import pandas as pd
+import pytz
 from pandas.io.sql import read_sql
 from pyiem.nws.products.mcd import parser
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 
 def get_mcds():

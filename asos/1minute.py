@@ -5,10 +5,9 @@ TODO: roll this visualization into autoplot 211
 
 import datetime
 
-import pytz
-
 import matplotlib.dates as mdates
 import pandas as pd
+import pytz
 from matplotlib.patches import Rectangle
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_sqlalchemy_conn, utc

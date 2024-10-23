@@ -8,12 +8,11 @@ Note: This is chunking a year at a time, attm.
 """
 
 import click
-from sqlalchemy import text
-
 import pandas as pd
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.network import Table as NetworkTable
 from pyiem.reference import state_names
+from sqlalchemy import text
 
 
 def do(sid: str):

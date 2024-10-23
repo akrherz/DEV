@@ -1,11 +1,10 @@
 """Print a HUC12 diagnostic."""
 
 import click
-from pydep.io.wepp import read_env
-from sqlalchemy import text
-
 import pandas as pd
+from pydep.io.wepp import read_env
 from pyiem.database import get_sqlalchemy_conn
+from sqlalchemy import text
 
 
 @click.command()

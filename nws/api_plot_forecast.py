@@ -3,10 +3,9 @@
 import datetime
 import sys
 
-import requests
-
 import matplotlib.dates as mdates
 import pandas as pd
+import requests
 from metpy.calc import windchill
 from metpy.units import units
 from pyiem.plot.use_agg import plt

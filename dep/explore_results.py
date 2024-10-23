@@ -5,11 +5,10 @@ import os
 
 import click
 import numpy as np
-from pydep.io.wepp import read_env, read_ofe
-from tqdm import tqdm
-
 import pandas as pd
+from pydep.io.wepp import read_env, read_ofe
 from pyiem.database import get_sqlalchemy_conn
+from tqdm import tqdm
 
 
 def compute_env(huc12):

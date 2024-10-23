@@ -8,7 +8,6 @@ import sys
 import warnings
 
 import numpy as np
-
 from pyiem.util import get_dbconn, logger
 
 LOG = logger()

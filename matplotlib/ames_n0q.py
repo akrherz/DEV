@@ -1,6 +1,5 @@
 import Image
 import numpy as np
-
 from matplotlib.patches import Polygon
 from pyiem.plot import MapPlot
 

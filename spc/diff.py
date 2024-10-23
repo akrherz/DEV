@@ -4,13 +4,12 @@ from datetime import date
 
 import numpy as np
 from affine import Affine
-from rasterstats import zonal_stats
-from sqlalchemy import text
-from tqdm import tqdm
-
 from geopandas import read_postgis
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot, get_cmap
+from rasterstats import zonal_stats
+from sqlalchemy import text
+from tqdm import tqdm
 
 GRIDDELTA = 0.2
 GRIDWEST = -139.2

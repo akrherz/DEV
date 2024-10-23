@@ -5,7 +5,6 @@ from io import StringIO
 from zoneinfo import ZoneInfo
 
 import httpx
-
 import pandas as pd
 from pyiem.database import get_dbconnc
 from pyiem.observation import Observation

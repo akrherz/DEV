@@ -1,8 +1,7 @@
 """Generate a plot of 1minute data."""
 
-import pytz
-
 import matplotlib.dates as mdates
+import pytz
 from matplotlib.lines import Line2D
 from metpy.calc import dewpoint_from_relative_humidity
 from metpy.units import units

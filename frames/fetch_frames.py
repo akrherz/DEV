@@ -3,7 +3,6 @@
 import datetime
 
 import requests
-
 from pyiem.util import utc
 
 

@@ -7,10 +7,9 @@ gdal_translate  us_ssmv11036tS__T0001TTNATS2019012305HP001.Hdr snowdepth.nc
 import os
 import subprocess
 
-import netCDF4
-
 import cartopy.crs as ccrs
 import geopandas as gpd
+import netCDF4
 import pandas as pd
 from pyiem.plot import MapPlot, nwssnow
 from pyiem.util import get_dbconn

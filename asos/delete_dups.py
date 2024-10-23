@@ -4,10 +4,9 @@ A stop gap hack to remove some bad data from the database.  Sadly, gonna be
 tough to resolve how these obs appeared in the database to begin with :(
 """
 
-from tqdm import tqdm
-
 from pandas.io.sql import read_sql
 from pyiem.database import get_dbconn
+from tqdm import tqdm
 
 
 def do_year(year):

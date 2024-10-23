@@ -3,9 +3,8 @@
 import datetime
 
 import ephem
-import numpy as np
-
 import matplotlib.dates as mdates
+import numpy as np
 from pyiem.network import Table as NetworkTable
 from pyiem.plot.use_agg import plt
 

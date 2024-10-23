@@ -4,9 +4,8 @@ import calendar
 import datetime
 import sys
 
-import seaborn as sns
-
 import pandas as pd
+import seaborn as sns
 from pyiem.plot.use_agg import plt
 
 

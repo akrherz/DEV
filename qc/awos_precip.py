@@ -2,7 +2,6 @@
 
 import click
 import httpx
-
 import pandas as pd
 from pyiem.database import get_sqlalchemy_conn
 

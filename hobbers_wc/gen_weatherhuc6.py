@@ -1,6 +1,5 @@
-import psycopg2
-
 import pandas as pd
+import psycopg2
 from pandas.io.sql import read_sql
 
 pgconn = psycopg2.connect(database="cscap")

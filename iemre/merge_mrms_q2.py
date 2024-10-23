@@ -5,10 +5,9 @@ import os
 import sys
 
 import numpy as np
+import pyiem.mrms as mrms
 import pytz
 from PIL import Image
-
-import pyiem.mrms as mrms
 from pyiem import iemre
 from pyiem.util import ncopen
 

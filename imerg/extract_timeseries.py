@@ -3,10 +3,9 @@
 import os
 
 import osgeo.gdal as gdal
-from tqdm import tqdm
-
 import pandas as pd
 from pyiem.util import logger
+from tqdm import tqdm
 
 LOG = logger()
 FMT = "%Y-%m-%d %H:%M"

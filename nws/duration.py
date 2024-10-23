@@ -1,8 +1,7 @@
 """Warning duration plot."""
 
-import numpy as np
-
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from pyiem.util import get_sqlalchemy_conn
 

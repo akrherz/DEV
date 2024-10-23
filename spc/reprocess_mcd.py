@@ -1,7 +1,6 @@
 """Update MCDs per corrections."""
 
 import httpx
-
 from pyiem.database import get_dbconnc
 from pyiem.nws.products import mcd
 

@@ -2,10 +2,9 @@
 
 import json
 
+import pandas as pd
 from pybufrkit.decoder import Decoder
 from pybufrkit.renderer import NestedJsonRenderer
-
-import pandas as pd
 from pyiem.util import convert_value, logger
 
 LOG = logger()

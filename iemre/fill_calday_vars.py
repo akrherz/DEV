@@ -5,7 +5,6 @@ totals.
 """
 
 import numpy as np
-
 from pyiem.iemre import get_daily_ncname
 from pyiem.util import ncopen
 

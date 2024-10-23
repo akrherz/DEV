@@ -1,11 +1,10 @@
 """Process TAFs again."""
 
-from tqdm import tqdm
-
 import pandas as pd
 from pyiem.database import get_dbconnc
 from pyiem.nws.products.cf6 import parser
 from pyiem.util import logger
+from tqdm import tqdm
 
 LOG = logger()
 

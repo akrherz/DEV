@@ -1,9 +1,8 @@
 """Can we deal with rasters?"""
 
 import numpy as np
-from rasterio.io import MemoryFile
-
 from pyiem.util import get_dbconn
+from rasterio.io import MemoryFile
 
 
 def main():

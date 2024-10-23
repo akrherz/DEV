@@ -2,11 +2,10 @@
 
 import calendar
 
-import netCDF4
-import numpy as np
-
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
+import netCDF4
+import numpy as np
 
 
 def main():

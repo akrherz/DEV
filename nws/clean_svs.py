@@ -4,7 +4,6 @@ import datetime
 import sys
 
 import psycopg2
-
 from pyiem.nws.products import parser
 
 POSTGIS = psycopg2.connect(database="postgis")

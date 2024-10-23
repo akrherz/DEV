@@ -1,8 +1,7 @@
 """How quickly are warnings killed off"""
 
-import numpy as np
-
 import matplotlib.pyplot as plt
+import numpy as np
 from pyiem.nws.vtec import VTEC_PHENOMENA
 from pyiem.util import get_dbconn
 

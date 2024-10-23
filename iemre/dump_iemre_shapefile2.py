@@ -5,10 +5,9 @@ NOTE: DBF has a 256 column limit, so we dump twice here.
 
 import datetime
 
+import geopandas as gpd
 import netCDF4
 import numpy as np
-
-import geopandas as gpd
 from pyiem import iemre, reference, util
 from shapely.geometry import Point
 

@@ -1,9 +1,8 @@
 """Labor Day."""
 
+import matplotlib.pyplot as plt
 import mx.DateTime
 import numpy
-
-import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
 
 ASOS = get_dbconn("asos")

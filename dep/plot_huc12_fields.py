@@ -1,13 +1,12 @@
 """Diagnostic"""
 
 import click
-from sqlalchemy import text
-
 import geopandas as gpd
 from matplotlib.patches import Rectangle
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot
 from pyiem.reference import Z_POLITICAL
+from sqlalchemy import text
 
 
 @click.command()

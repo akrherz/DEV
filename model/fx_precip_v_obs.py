@@ -1,8 +1,7 @@
 """An old plot."""
 
-import numpy as np
-
 import matplotlib.dates as mdates
+import numpy as np
 from pyiem.plot import figure
 from pyiem.util import get_dbconn, utc
 

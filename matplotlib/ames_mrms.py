@@ -1,12 +1,11 @@
 """MRMS Plotting util for zoomed in areas"""
 
 import pygrib
-from sqlalchemy import text
-
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot, nwsprecip
 from pyiem.reference import Z_OVERLAY2
 from pyiem.util import mm2inch
+from sqlalchemy import text
 
 
 def get_data():

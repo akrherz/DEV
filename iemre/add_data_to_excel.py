@@ -1,8 +1,7 @@
 """A util script to dump IEMRE json service to csv files"""
 
-import requests
-
 import pandas as pd
+import requests
 from pyiem.util import get_sqlalchemy_conn
 
 

@@ -9,13 +9,12 @@ from datetime import datetime, timedelta, timezone
 
 import click
 import httpx
-from sqlalchemy import text
-from tqdm import tqdm
-
 import pandas as pd
 from pyiem.database import get_dbconnc, get_sqlalchemy_conn
 from pyiem.nws.product import TextProduct
 from pyiem.util import noaaport_text
+from sqlalchemy import text
+from tqdm import tqdm
 
 
 def afos_fix(prod):

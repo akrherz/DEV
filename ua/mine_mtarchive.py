@@ -6,7 +6,6 @@ import subprocess
 import pytz
 import requests
 from ingest_from_rucsoundings import RAOB
-
 from pyiem.util import get_dbconn
 
 POSTGIS = get_dbconn("raob")

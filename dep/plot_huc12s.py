@@ -1,13 +1,12 @@
 """Plot something as a huc12 map."""
 
-import numpy as np
-from sqlalchemy import text
-
 import geopandas as gpd
+import numpy as np
 from matplotlib import colors as mpcolors
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_POLITICAL
+from sqlalchemy import text
 
 SQL = """
 with data as (

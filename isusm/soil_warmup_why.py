@@ -1,11 +1,10 @@
 """Look into day to day changes in soil temperature"""
 
 import numpy as np
-from scipy import stats
-
 from pandas.io.sql import read_sql
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn
+from scipy import stats
 
 
 def magic(ax, xvals, yvals):

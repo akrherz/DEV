@@ -3,9 +3,8 @@ Y= 21,612 + (-2.63*X) + (0.0002808*X^2)
 where Y = 50 dBZ height in ft AGL and X = Freezing Level in ft AGL
 """
 
-import numpy
-
 import matplotlib.pyplot as plt
+import numpy
 
 
 def main():

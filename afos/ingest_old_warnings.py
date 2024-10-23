@@ -16,14 +16,13 @@ import re
 import sys
 from datetime import datetime, timedelta, timezone
 
-from psycopg2.extras import DictCursor
-from sqlalchemy import text
-
 import pandas as pd
+from psycopg2.extras import DictCursor
 from pyiem.database import get_dbconn, get_sqlalchemy_conn
 from pyiem.nws.product import TextProduct
 from pyiem.nws.products.vtec import parser
 from pyiem.nws.vtec import VTEC
+from sqlalchemy import text
 
 FMT = "%y%m%dT%H%MZ"
 UNTIL = re.compile(

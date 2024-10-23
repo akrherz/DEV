@@ -4,7 +4,6 @@ import subprocess
 import sys
 
 import pytz
-
 from pandas.io.sql import read_sql
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import get_dbconn, utc

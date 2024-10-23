@@ -3,11 +3,10 @@
 import datetime
 import os
 
-import numpy as np
-from osgeo import gdal
-
 import matplotlib.colors as mpcolors
 import matplotlib.pyplot as plt
+import numpy as np
+from osgeo import gdal
 from pyiem.plot import MapPlot
 
 

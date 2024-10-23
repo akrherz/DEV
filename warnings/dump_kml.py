@@ -1,7 +1,6 @@
 """Dump TOR polys and SVR 70+"""
 
 import fiona
-
 import geopandas as gpd
 from geopandas import read_postgis
 from pyiem.util import get_dbconn

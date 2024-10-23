@@ -3,12 +3,11 @@
 import json
 import os
 
-import requests
-from tqdm import tqdm
-
 import pandas as pd
 import pyiem.reference as reference
+import requests
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 
 def main():

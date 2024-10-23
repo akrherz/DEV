@@ -1,12 +1,11 @@
 """Create a histogram of precip intensity."""
 
 import numpy as np
-import requests
-from tqdm import tqdm
-
 import pandas as pd
+import requests
 from pyiem.plot import figure_axes
 from pyiem.util import convert_value
+from tqdm import tqdm
 
 
 def plot():

@@ -6,7 +6,6 @@ from datetime import date, datetime, timedelta
 
 # Third Party
 import requests
-
 from pyiem.network import Table as NetworkTable
 from pyiem.reference import nwsli2state
 from pyiem.util import convert_value, get_dbconn, logger

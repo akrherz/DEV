@@ -12,14 +12,13 @@ average daily precipitation, 4" soil temperature and high/low temperature
 
 import datetime
 
-import numpy as np
-from affine import Affine
-from tqdm import tqdm
-
 import geopandas as gpd
+import numpy as np
 import pandas as pd
+from affine import Affine
 from pyiem.grid.zs import CachingZonalStats
 from pyiem.util import convert_value, get_sqlalchemy_conn, ncopen
+from tqdm import tqdm
 
 
 def step2():

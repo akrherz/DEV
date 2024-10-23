@@ -3,9 +3,8 @@
 import datetime
 import sys
 
-import numpy as np
-
 import metpy.calc as mcalc
+import numpy as np
 import pandas as pd
 from metpy.units import units
 from pyiem.util import get_dbconn, get_sqlalchemy_conn, utc

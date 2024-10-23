@@ -6,7 +6,6 @@ import datetime
 import os
 
 import numpy as np
-
 from pyiem import iemre
 from pyiem.datatypes import temperature
 from pyiem.meteorology import gdd

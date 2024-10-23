@@ -1,7 +1,6 @@
 """Length of warnings."""
 
 import numpy as np
-
 import pandas as pd
 from pyiem.nws.vtec import VTEC_PHENOMENA
 from pyiem.plot.use_agg import plt

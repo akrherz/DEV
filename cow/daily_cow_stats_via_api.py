@@ -1,7 +1,6 @@
 """Call IEM Cow API to get daily cow stats."""
 
 import httpx
-
 import pandas as pd
 
 

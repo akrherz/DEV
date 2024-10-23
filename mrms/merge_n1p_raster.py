@@ -5,7 +5,6 @@ from datetime import date, datetime, timedelta
 import click
 import numpy as np
 from osgeo import gdal
-
 from pyiem import iemre
 from pyiem.util import archive_fetch, logger, ncopen, utc
 

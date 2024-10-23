@@ -1,9 +1,8 @@
-import numpy
-
 import matplotlib.cm as cm
 import matplotlib.colors as mpcolors
 import matplotlib.mpl as mpl
 import matplotlib.pyplot as plt
+import numpy
 
 cpool = [
     "#e6e6e6",

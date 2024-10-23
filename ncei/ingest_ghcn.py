@@ -42,9 +42,8 @@ import re
 import sys
 
 import numpy as np
-import requests
-
 import pandas as pd
+import requests
 from pyiem.network import Table as NetworkTable
 from pyiem.reference import TRACE_VALUE, state_names
 from pyiem.util import (

@@ -1,12 +1,11 @@
 """Note, this does things the old and slow way"""
 
-import numpy as np
-from tqdm import tqdm
-
 import matplotlib.pyplot as plt
+import numpy as np
 from pyiem import reference
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 
 def main():

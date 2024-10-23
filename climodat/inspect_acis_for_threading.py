@@ -3,7 +3,6 @@
 from io import StringIO
 
 import requests
-
 from pyiem.reference import ncei_state_codes
 
 SERVICE = "http://data.rcc-acis.org/StnData"

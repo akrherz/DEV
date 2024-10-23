@@ -2,11 +2,10 @@
 
 import sys
 
-from tqdm import tqdm
-
 import pandas as pd
 from metpy.units import units
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 
 def dump(pgconn, sid, ncdc81, fips):

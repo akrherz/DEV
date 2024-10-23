@@ -3,9 +3,8 @@
 import json
 import sys
 
-import requests
-
 import pandas as pd
+import requests
 from pyiem.network import Table as NetworkTable
 from pyiem.util import get_sqlalchemy_conn
 

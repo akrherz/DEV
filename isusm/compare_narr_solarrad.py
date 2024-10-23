@@ -6,12 +6,11 @@ import datetime
 
 import click
 import httpx
-from scipy import stats
-
 import pandas as pd
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import figure
 from pyiem.util import get_sqlalchemy_conn
+from scipy import stats
 
 
 def do(station, year):

@@ -4,12 +4,11 @@ import glob
 import os
 
 import click
-from pydep.io.wepp import read_env
-from tqdm import tqdm
-
 import pandas as pd
+from pydep.io.wepp import read_env
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import figure
+from tqdm import tqdm
 
 # pasture, 1, 1.5, 2, 3, 4, 5, 6
 SCENARIOS = [165, 157, 164, 158, 159, 160, 161, 162]

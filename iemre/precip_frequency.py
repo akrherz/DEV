@@ -1,11 +1,10 @@
 """Create a plot of precip rate frequency per stage IV."""
 
 import numpy as np
-from tqdm import tqdm
-
 from pyiem.iemre import find_ij, get_hourly_ncname
 from pyiem.plot import MapPlot, get_cmap, pretty_bins
 from pyiem.util import ncopen
+from tqdm import tqdm
 
 
 def plot():

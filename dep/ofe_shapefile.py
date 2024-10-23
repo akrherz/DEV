@@ -2,10 +2,9 @@
 
 import datetime
 
-from sqlalchemy import text
-
 import geopandas as gpd
 from pyiem.util import get_sqlalchemy_conn
+from sqlalchemy import text
 
 
 def main():

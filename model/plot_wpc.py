@@ -4,7 +4,6 @@ import glob
 
 import numpy as np
 import pygrib
-
 from pyiem import reference
 from pyiem.plot import MapPlot
 from pyiem.plot.use_agg import plt

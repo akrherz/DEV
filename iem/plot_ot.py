@@ -1,11 +1,10 @@
 """Generate a plot of an OT station for feature purposes"""
 
-import numpy as np
-import pytz
-
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+import pytz
 from pyiem.util import get_dbconn
 
 

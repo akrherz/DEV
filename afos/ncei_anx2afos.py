@@ -5,12 +5,11 @@ https://www.ncei.noaa.gov/data/service-records-retention-system/access/
 
 import os
 
-from sqlalchemy import text
-
 import pandas as pd
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.nws.product import TextProduct
 from pyiem.util import logger
+from sqlalchemy import text
 
 LOG = logger()
 

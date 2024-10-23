@@ -7,10 +7,9 @@ import time
 
 import httpx
 from lxml import etree
-from sqlalchemy import text
-
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.util import logger
+from sqlalchemy import text
 
 LOG = logger()
 

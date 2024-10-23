@@ -4,12 +4,11 @@ from datetime import datetime
 
 import click
 import httpx
-from sqlalchemy import text
-
 import pandas as pd
 from pyiem.database import get_dbconn, get_sqlalchemy_conn
 from pyiem.nws.products.lsr import parser
 from pyiem.util import logger, utc
+from sqlalchemy import text
 
 LOG = logger()
 

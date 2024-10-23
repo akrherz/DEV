@@ -3,7 +3,6 @@
 from datetime import date
 
 from psycopg2.extras import DictCursor
-
 from pyiem.database import get_dbconn
 from pyiem.network import Table as NetworkTable
 from pyiem.nws.products import cli

@@ -15,9 +15,8 @@ import sys
 from functools import partial
 
 import rasterio
-from tqdm import tqdm
-
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 
 def filter1(_x, _y):

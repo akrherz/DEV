@@ -4,10 +4,9 @@ import calendar
 
 import click
 import numpy as np
-from pydep.io.wepp import read_cli
-
 from matplotlib import rcParams
 from metpy.units import units
+from pydep.io.wepp import read_cli
 from pyiem.plot import figure_axes
 
 rcParams.update(

@@ -31,7 +31,6 @@ GROUP by threshold ORDER by threshold;
 """
 
 import numpy as np
-
 from matplotlib.font_manager import FontProperties
 from pyiem.plot.use_agg import plt
 

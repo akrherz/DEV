@@ -1,7 +1,6 @@
 """Map of precipitable water"""
 
 import numpy as np
-
 from metpy.units import units
 from pandas.io.sql import read_sql
 from pyiem.network import Table as NetworkTable

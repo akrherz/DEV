@@ -7,7 +7,6 @@ import os
 # third party
 import numpy as np
 import pygrib
-
 from pyiem.plot import MapPlot
 from pyiem.plot.use_agg import plt
 

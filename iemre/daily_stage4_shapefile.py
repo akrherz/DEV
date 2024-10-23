@@ -7,10 +7,9 @@ import datetime
 import shutil
 import sys
 
+import geopandas as gpd
 import netCDF4
 import numpy as np
-
-import geopandas as gpd
 import pandas as pd
 from pyiem import iemre, reference, util
 from pyiem.datatypes import distance

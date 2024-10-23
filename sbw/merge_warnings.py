@@ -2,9 +2,8 @@
 
 import datetime
 
-import requests
-
 import pandas as pd
+import requests
 
 IEM_WEB = (
     "https://mesonet.agron.iastate.edu/json/sbw_by_point.py?lon=%s&"

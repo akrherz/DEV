@@ -1,15 +1,14 @@
 """Pre-2002 sbw database doesn't have much for polygons, we can fix that!"""
 
 import click
-import httpx
-from sqlalchemy import text
-from tqdm import tqdm
-
 import geopandas as gpd
+import httpx
 import pandas as pd
 from pyiem.database import get_dbconnc, get_sqlalchemy_conn
 from pyiem.nws.product import TextProduct
 from pyiem.util import logger
+from sqlalchemy import text
+from tqdm import tqdm
 
 LOG = logger()
 

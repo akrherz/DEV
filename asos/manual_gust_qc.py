@@ -5,12 +5,11 @@ Look for wind information that is likely bad and null it out.
 from zoneinfo import ZoneInfo
 
 import click
-from sqlalchemy import text
-
 import pandas as pd
 from pyiem.database import get_dbconnc, get_sqlalchemy_conn
 from pyiem.network import Table as NetworkTable
 from pyiem.util import logger
+from sqlalchemy import text
 
 LOG = logger()
 

@@ -3,11 +3,10 @@
 import shutil
 from io import StringIO
 
-import requests
-import tqdm
-
 import geopandas as gpd
 import pandas as pd
+import requests
+import tqdm
 from pyiem.util import get_dbconn
 
 

@@ -1,11 +1,10 @@
 """Plot of Average MCD Size."""
 
 # third party
-from sqlalchemy import text
-
 import pandas as pd
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import figure_axes
+from sqlalchemy import text
 
 
 def main():

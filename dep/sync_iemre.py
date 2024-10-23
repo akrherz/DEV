@@ -9,12 +9,11 @@ import os
 from datetime import date
 
 import numpy as np
-import requests
-from tqdm import tqdm
-
 import pandas as pd
+import requests
 from pyiem.dep import EAST, NORTH, SOUTH, WEST, get_cli_fname
 from pyiem.util import convert_value
+from tqdm import tqdm
 
 
 def process(lon, lat, clifn):

@@ -2,15 +2,14 @@
 
 from datetime import date
 
+import geopandas as gpd
 import numpy as np
 from affine import Affine
-from tqdm import tqdm
-
-import geopandas as gpd
 from pyiem import iemre
 from pyiem.grid.zs import CachingZonalStats
 from pyiem.plot import figure, plt
 from pyiem.util import get_sqlalchemy_conn, mm2inch, ncopen
+from tqdm import tqdm
 
 
 def main():

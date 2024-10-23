@@ -4,7 +4,6 @@ https://github.com/pandas-dev/pandas/issues/57039
 """
 
 import numpy as np
-
 import pandas as pd
 
 pcp = np.ones((2700, 6100), dtype=np.float64)

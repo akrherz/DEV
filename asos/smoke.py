@@ -1,9 +1,8 @@
 """Reporting Smoke."""
 
-import pytz
-
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+import pytz
 from pyiem.util import get_dbconnc
 
 

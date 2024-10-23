@@ -7,7 +7,6 @@ import numpy as np
 import pygrib
 import pytz
 import requests
-
 from pyiem.plot import MapPlot
 from pyiem.util import utc
 

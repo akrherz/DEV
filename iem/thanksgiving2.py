@@ -1,9 +1,8 @@
 # Compute mean depatures at or around a holiday
 
+import matplotlib.pyplot as plt
 import mx.DateTime
 import numpy
-
-import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
 
 COOP = get_dbconn("coop")

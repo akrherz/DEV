@@ -3,10 +3,9 @@
 import os
 import sys
 
-from tqdm import tqdm
-
 from pyiem.database import get_dbconn
 from pyiem.util import noaaport_text
+from tqdm import tqdm
 
 
 def main(argv):

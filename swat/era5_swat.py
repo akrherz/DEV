@@ -3,14 +3,13 @@
 import logging
 from collections import namedtuple
 
-import numpy as np
-from affine import Affine
-from tqdm import tqdm
-
 import geopandas as gpd
+import numpy as np
 import pandas as pd
+from affine import Affine
 from pyiem.grid.zs import CachingZonalStats
 from pyiem.util import logger, ncopen
+from tqdm import tqdm
 
 LOG = logger()
 LOG.setLevel(logging.INFO)

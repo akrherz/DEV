@@ -4,11 +4,10 @@ import sys
 from datetime import timezone
 
 import click
-from sqlalchemy import text
-
 import pandas as pd
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.util import logger, utc
+from sqlalchemy import text
 
 LOG = logger()
 

@@ -1,8 +1,7 @@
 """Make a spatial histogram of SBWs"""
 
-import numpy as np
-
 import matplotlib.pyplot as plt
+import numpy as np
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
 

@@ -7,7 +7,6 @@ from datetime import datetime
 
 import requests
 from psycopg2.extras import DictCursor
-
 from pyiem.nws.products.metarcollect import METARReport
 from pyiem.util import exponential_backoff, get_dbconn, logger
 

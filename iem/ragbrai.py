@@ -3,9 +3,8 @@
 import math
 from datetime import datetime
 
-import numpy
-
 import matplotlib.pyplot as plt
+import numpy
 from pyiem.util import get_dbconn
 
 ASOS = get_dbconn("asos")

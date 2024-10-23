@@ -5,11 +5,10 @@ import datetime
 import os
 import subprocess
 
-import numpy as np
-import osgeo.gdal as gdal
-
 import matplotlib.colors as mpcolors
 import matplotlib.pyplot as plt
+import numpy as np
+import osgeo.gdal as gdal
 from pyiem import reference
 from pyiem.util import get_dbconn
 

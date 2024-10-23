@@ -7,7 +7,6 @@ import sys
 import tempfile
 
 import pygrib
-
 from pyiem.mrms import NORTH, WEST, fetch
 from pyiem.util import utc
 

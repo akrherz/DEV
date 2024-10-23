@@ -7,7 +7,6 @@ import tempfile
 from zoneinfo import ZoneInfo
 
 from PIL import Image, ImageDraw, ImageFont
-
 from pyiem.plot import MapPlot
 from pyiem.util import logger, utc
 

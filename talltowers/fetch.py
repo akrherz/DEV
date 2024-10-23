@@ -1,7 +1,6 @@
 """Get the hourly data."""
 
 import httpx
-
 import pandas as pd
 
 

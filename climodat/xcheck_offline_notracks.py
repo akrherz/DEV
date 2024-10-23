@@ -3,11 +3,10 @@ Double check offline stations, maybe we can fix.
 """
 
 import requests
-from sqlalchemy import text
-
 from pyiem.database import get_dbconn, get_sqlalchemy_conn
 from pyiem.reference import ncei_state_codes
 from pyiem.util import logger
+from sqlalchemy import text
 
 LOG = logger()
 SERVICE = "https://data.rcc-acis.org/StnMeta"

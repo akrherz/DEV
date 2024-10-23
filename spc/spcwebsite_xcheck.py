@@ -1,9 +1,8 @@
 """Scrape the SPC website and verify we have all that data!"""
 
 # Third party
-import requests
-
 import pandas as pd
+import requests
 from pyiem.nws.product import TextProduct
 from pyiem.util import logger, noaaport_text, utc
 

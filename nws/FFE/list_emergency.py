@@ -2,9 +2,8 @@
 
 from functools import partial
 
-import pyproj
-
 import pandas as pd
+import pyproj
 from pyiem.nws.products.vtec import parser
 from shapely.ops import transform
 

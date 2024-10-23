@@ -1,8 +1,7 @@
 """Plot period of record VWC."""
 
-import pytz
-
 import matplotlib.dates as mdates
+import pytz
 from pandas.io.sql import read_sql
 from pyiem.plot import figure_axes
 from pyiem.util import get_dbconn

@@ -2,10 +2,9 @@
 
 import datetime
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pytz
-
-import matplotlib.pyplot as plt
 from pyiem import iemre, plot
 from pyiem.datatypes import distance
 from pyiem.util import ncopen

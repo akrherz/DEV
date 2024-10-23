@@ -3,9 +3,8 @@
 import json
 from io import BytesIO
 
-import requests
-
 import geopandas as gpd
+import requests
 
 
 def main():

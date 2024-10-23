@@ -4,7 +4,6 @@ from datetime import timedelta, timezone
 
 import numpy as np
 from backports.zoneinfo import ZoneInfo  # type: ignore
-
 from metpy.units import masked_array, units
 from pandas.io.sql import read_sql
 from pyiem.plot.use_agg import plt

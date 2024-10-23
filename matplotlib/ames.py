@@ -1,9 +1,8 @@
 """A one off."""
 
+import matplotlib.patheffects as PathEffects
 import numpy as np
 import pygrib
-
-import matplotlib.patheffects as PathEffects
 from matplotlib.patches import Polygon
 from pyiem.plot import MapPlot
 

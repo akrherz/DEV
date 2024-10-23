@@ -1,9 +1,8 @@
 """exercise."""
 
+import matplotlib.colors as mpcolors
 import numpy as np
 import xarray as xr
-
-import matplotlib.colors as mpcolors
 from pyiem.plot import MapPlot
 from pyiem.plot.colormaps import radar_ptype
 from pyiem.reference import Z_FILL

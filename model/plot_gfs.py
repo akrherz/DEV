@@ -2,7 +2,6 @@
 
 import numpy as np
 import pygrib
-
 from pyiem.datatypes import temperature
 from pyiem.plot import MapPlot, get_cmap
 

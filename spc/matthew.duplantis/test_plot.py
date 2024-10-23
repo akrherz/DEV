@@ -1,5 +1,4 @@
 import numpy as np
-
 from pyiem.plot import MapPlot
 
 lats = []

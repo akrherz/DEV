@@ -4,7 +4,6 @@ import datetime
 from io import StringIO
 
 import numpy as np
-
 import pandas as pd
 from matplotlib.ticker import MaxNLocator as mlocator
 from pyiem.database import get_dbconn

@@ -3,12 +3,11 @@
 import sys
 from datetime import datetime, timedelta
 
+import geopandas as gpd
 import httpx
 import numpy as np
-from tqdm import tqdm
-
-import geopandas as gpd
 import pandas as pd
+from tqdm import tqdm
 
 
 def main():

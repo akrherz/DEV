@@ -1,10 +1,9 @@
 """Dump events for our enjoyment"""
 
-import numpy as np
-import tqdm
-
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+import tqdm
 from pandas.io.sql import read_sql
 from pyiem.datatypes import temperature
 from pyiem.network import Table as NetworkTable

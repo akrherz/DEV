@@ -3,7 +3,6 @@
 from datetime import timedelta, timezone
 
 import fiona
-
 import geopandas as gpd
 import matplotlib.colors as mpcolors
 import pandas as pd

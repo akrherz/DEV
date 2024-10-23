@@ -5,17 +5,16 @@ import glob
 import os
 import sys
 
-import numpy as np
-from tqdm import tqdm
-
 import cartopy.crs as ccrs
 import geopandas as gpd
 import matplotlib.colors as mpcolors
+import numpy as np
 import pandas as pd
 from matplotlib.patches import Polygon
 from pyiem.plot.colormaps import stretch_cmap
 from pyiem.plot.geoplot import MapPlot
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 
 def plot(argv):

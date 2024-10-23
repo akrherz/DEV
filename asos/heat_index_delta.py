@@ -2,11 +2,10 @@
 http://www.srh.noaa.gov/images/ffc/pdf/ta_htindx.PDF
 """
 
-import numpy
-
 import matplotlib.cm as cm
 import matplotlib.colors as mpcolors
 import matplotlib.pyplot as plt
+import numpy
 import pyiem.datatypes as dt
 from pyiem import meteorology
 from pyiem.util import get_dbconn

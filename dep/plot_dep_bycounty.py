@@ -1,8 +1,6 @@
 """We have something from NRI to compare with."""
 
 import click
-from sqlalchemy import text
-
 import geopandas as gpd
 import matplotlib.colors as mpcolors
 from pyiem.database import get_sqlalchemy_conn
@@ -10,6 +8,7 @@ from pyiem.dep import RAMPS
 from pyiem.plot import MapPlot
 from pyiem.plot.colormaps import dep_erosion
 from pyiem.reference import Z_OVERLAY2
+from sqlalchemy import text
 
 
 @click.command()

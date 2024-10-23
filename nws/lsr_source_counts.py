@@ -1,7 +1,6 @@
 """Plot of LSR sources."""
 
 import numpy as np
-
 from matplotlib.patches import Rectangle
 from pandas.io.sql import read_sql
 from pyiem.plot import get_cmap

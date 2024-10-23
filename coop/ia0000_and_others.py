@@ -1,9 +1,8 @@
 """Somewhat interesting."""
 
+import matplotlib.pyplot as plt
 import numpy as np
 import numpy.ma as ma
-
-import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
 
 IEM = get_dbconn("coop")

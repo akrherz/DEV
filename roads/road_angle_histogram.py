@@ -4,10 +4,9 @@ from __future__ import print_function
 
 import math
 
+import matplotlib.pyplot as plt
 import numpy as np
 import psycopg2
-
-import matplotlib.pyplot as plt
 from shapely.wkb import loads
 
 

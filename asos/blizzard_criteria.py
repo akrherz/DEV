@@ -1,13 +1,12 @@
 """Lets run some diagnostics on blizzard criterion."""
 
 import numpy as np
-from tqdm import tqdm
-
 from matplotlib.ticker import FuncFormatter
 from pandas.io.sql import read_sql
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import figure
+from tqdm import tqdm
 
 
 def main():

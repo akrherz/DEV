@@ -3,10 +3,8 @@
 import glob
 import os
 
-import numpy as np
-from tqdm import tqdm
-
 import matplotlib.colors as mpcolors
+import numpy as np
 import pandas as pd
 from cartopy import crs as ccrs
 from geopandas import read_postgis
@@ -15,6 +13,7 @@ from pyiem.dep import read_slp
 from pyiem.plot.geoplot import MapPlot
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 
 def plot():

@@ -1,10 +1,9 @@
 """Generate a plot of MESH."""
 
+import cartopy.crs as ccrs
 import numpy as np
 import rasterio
 import shapefile
-
-import cartopy.crs as ccrs
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import get_dbconn, mm2inch
 from shapely.geometry import shape

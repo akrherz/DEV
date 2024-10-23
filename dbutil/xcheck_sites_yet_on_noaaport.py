@@ -3,7 +3,6 @@
 import time
 
 import httpx
-
 from pyiem.util import logger
 
 LOG = logger()

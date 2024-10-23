@@ -1,10 +1,9 @@
 """Quicker to update the feather file, than to regenerate it."""
 
-from sqlalchemy import text
-from tqdm import tqdm
-
 import pandas as pd
 from pyiem.database import get_sqlalchemy_conn
+from sqlalchemy import text
+from tqdm import tqdm
 
 
 def main():

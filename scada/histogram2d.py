@@ -1,12 +1,11 @@
 import datetime
 
-import numpy as np
-import psycopg2
-
 import matplotlib.colorbar as mpcolorbar  # NOPEP8
 import matplotlib.colors as mpcolors
 import matplotlib.patheffects as PathEffects  # NOPEP8
 import matplotlib.pyplot as plt
+import numpy as np
+import psycopg2
 from matplotlib.mlab import griddata
 from pandas.io.sql import read_sql
 

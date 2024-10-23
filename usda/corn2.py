@@ -3,11 +3,10 @@
 # R2 1660
 
 import numpy as np
-from scipy import stats
-
 import pandas as pd
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn
+from scipy import stats
 
 
 def main():

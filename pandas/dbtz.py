@@ -1,6 +1,5 @@
 import psycopg2
 import pytz
-
 from pandas.io.sql import read_sql
 
 pgconn = psycopg2.connect(database="asos", host="iemdb", user="nobody")

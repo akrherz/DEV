@@ -1,12 +1,11 @@
 """Diagnostic"""
 
 import click
-from sqlalchemy import text
-
 import geopandas as gpd
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import figure_axes
 from shapely.geometry import Point
+from sqlalchemy import text
 
 
 @click.command()

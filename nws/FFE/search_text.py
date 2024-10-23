@@ -1,8 +1,7 @@
 """Search the warnings database for potential FFEs."""
 
-from tqdm import tqdm
-
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 
 def main():

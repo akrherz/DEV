@@ -6,7 +6,6 @@ and a new one at the new logic.
 """
 
 import click
-
 import pandas as pd
 from pyiem.database import get_dbconn
 from pyiem.nws.product import TextProduct

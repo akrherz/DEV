@@ -1,13 +1,12 @@
 """Plot our plastic limit."""
 
-import numpy as np
-from sqlalchemy import text
-
 import geopandas as gpd
 import matplotlib.colors as mpcolors
+import numpy as np
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_OVERLAY
+from sqlalchemy import text
 
 
 def main():

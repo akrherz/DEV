@@ -2,10 +2,9 @@
 
 import datetime
 
-import numpy as np
-
 import matplotlib.font_manager
 import matplotlib.pyplot as plt
+import numpy as np
 from pyiem.datatypes import humidity, temperature
 from pyiem.meteorology import dewpoint
 

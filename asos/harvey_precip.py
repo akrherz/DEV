@@ -4,7 +4,6 @@ import datetime
 
 import numpy as np
 import pytz
-
 from pyiem.network import Table as NetworkTable
 from pyiem.util import get_dbconn
 

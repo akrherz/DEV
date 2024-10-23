@@ -4,7 +4,6 @@ import datetime
 
 import netCDF4
 import numpy as np
-
 from pyiem import iemre
 from pyiem.plot import MapPlot, nwsprecip
 

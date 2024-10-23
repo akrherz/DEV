@@ -4,13 +4,12 @@ Generate a simple scatter plot of power...
 
 import datetime
 
-import numpy as np
-import psycopg2
-
 import matplotlib.colorbar as mpcolorbar
 import matplotlib.colors as mpcolors
 import matplotlib.patheffects as PathEffects
 import matplotlib.pyplot as plt
+import numpy as np
+import psycopg2
 from pyiem.datatypes import direction, speed
 from pyiem.meteorology import uv
 

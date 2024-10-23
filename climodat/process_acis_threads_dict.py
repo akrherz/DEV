@@ -3,7 +3,6 @@
 import sys
 
 import requests
-
 from pyiem.reference import ncei_state_codes
 from pyiem.util import get_dbconn
 

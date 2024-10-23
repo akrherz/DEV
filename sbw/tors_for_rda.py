@@ -1,12 +1,11 @@
 """Tornado Warnings for RDAs."""
 
-from tqdm import tqdm
-
 import pandas as pd
 from pandas.io.sql import read_sql
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 
 def plot_data():

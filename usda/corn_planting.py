@@ -1,8 +1,7 @@
 """A corn planting daily feature"""
 
-import numpy as np
-
 import matplotlib.font_manager
+import numpy as np
 import pandas as pd
 from pandas.io.sql import read_sql
 from pyiem.plot.use_agg import plt

@@ -1,10 +1,9 @@
 """Ingest the NESDIS SCP Product."""
 
-from tqdm import tqdm
-
 from pyiem.database import get_dbconn
 from pyiem.nws.products.scp import parser
 from pyiem.util import noaaport_text
+from tqdm import tqdm
 
 
 def do(table):

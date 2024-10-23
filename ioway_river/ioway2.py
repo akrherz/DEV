@@ -1,9 +1,8 @@
 import datetime
 
-import psycopg2
-
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+import psycopg2
 
 ISUAG = psycopg2.connect(database="squaw", host="iemdb")
 icursor = ISUAG.cursor()

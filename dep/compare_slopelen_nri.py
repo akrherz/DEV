@@ -1,8 +1,7 @@
 """Plot a comparison of DEP slope length and NRI."""
 
-import numpy as np
-
 import geopandas as gpd
+import numpy as np
 from matplotlib import colors as mpcolors
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot, get_cmap

@@ -9,7 +9,6 @@ import os
 import subprocess
 
 import numpy as np
-
 import pandas as pd
 from pyiem.iemre import hourly_offset
 from pyiem.util import ncopen

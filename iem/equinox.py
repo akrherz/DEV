@@ -1,10 +1,9 @@
 import datetime
 
 import ephem
+import matplotlib.pyplot as plt
 import numpy
 import pytz
-
-import matplotlib.pyplot as plt
 from pyiem.database import get_dbconn
 
 

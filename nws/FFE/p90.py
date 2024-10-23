@@ -1,13 +1,12 @@
 """UGC/Polygon WWA stats onimbus"""
 
+import geopandas as gpd
 import numpy as np
 from affine import Affine
-from rasterstats import zonal_stats
-
-import geopandas as gpd
 from pyiem.plot import get_cmap
 from pyiem.plot.geoplot import MapPlot
 from pyiem.util import get_sqlalchemy_conn
+from rasterstats import zonal_stats
 
 
 def do_polygon(ctx):

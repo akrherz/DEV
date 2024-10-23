@@ -1,9 +1,8 @@
 """Generate a color ramp image, please."""
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
-
 import pyiem.mrms as mrms
+from PIL import Image, ImageDraw, ImageFont
 
 font = ImageFont.truetype(
     "/home/akrherz/projects/pyVBCam/src/pyvbcam/data/veramono.ttf", 10

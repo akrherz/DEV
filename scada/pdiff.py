@@ -1,7 +1,6 @@
-import psycopg2
-
 import matplotlib.pyplot as plt
 import pandas as pd
+import psycopg2
 from pandas.io.sql import read_sql
 
 pgconn = psycopg2.connect(database="scada")

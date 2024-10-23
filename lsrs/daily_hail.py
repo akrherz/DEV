@@ -1,8 +1,7 @@
 """Generate imshow plot of daily hail reports"""
 
-import numpy.ma
-
 import matplotlib.pyplot as plt
+import numpy.ma
 from pyiem.database import get_dbconn
 
 

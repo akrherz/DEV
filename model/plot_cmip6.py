@@ -4,7 +4,6 @@ import datetime
 from zoneinfo import ZoneInfo
 
 import numpy as np
-
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import ncopen, utc
 

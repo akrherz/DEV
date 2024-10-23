@@ -6,7 +6,6 @@ import subprocess
 from typing import Optional, Tuple
 
 import click
-
 import pandas as pd
 from pyiem.database import get_dbconn
 from pyiem.dep import read_cli

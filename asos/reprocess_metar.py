@@ -5,7 +5,6 @@ Reprocess RAW METAR data stored in the database, so to include more fields
 import datetime
 
 from metar.Metar import Metar
-
 from pyiem.reference import TRACE_VALUE
 from pyiem.util import get_dbconn, logger, utc
 

@@ -6,7 +6,6 @@ import subprocess
 
 import osgeo.gdal as gdal
 from osgeo import gdalconst
-
 from pyiem.util import get_dbconn
 
 PGCONN = get_dbconn("mesosite", user="nobody")

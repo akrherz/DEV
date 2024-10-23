@@ -1,8 +1,7 @@
 """SBW Intersection"""
 
-import tqdm
-
 import pandas as pd
+import tqdm
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot
 from pyiem.plot.use_agg import plt

@@ -2,10 +2,9 @@
 
 # third party
 import httpx
-from tqdm import tqdm
-
 from pyiem.database import get_dbconnc
 from pyiem.nws.product import TextProduct
+from tqdm import tqdm
 
 
 def main():

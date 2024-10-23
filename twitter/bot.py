@@ -16,6 +16,7 @@ from datetime import datetime, timedelta, timezone
 from multiprocessing.pool import ThreadPool
 
 import requests
+from pyiem.util import utc
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver import ActionChains
@@ -23,8 +24,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-
-from pyiem.util import utc
 
 XPATH_TWEETBOX = "//div[contains(@class, 'public-DraftStyleDefault-block')]"
 LATENCY_THRES = timedelta(minutes=10)

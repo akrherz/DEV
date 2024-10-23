@@ -1,8 +1,7 @@
-from netCDF4 import Dataset
-
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 from cartopy.util import add_cyclic_point
+from netCDF4 import Dataset
 
 # Read test data
 nc_fid = Dataset("test_data.nc", "r")

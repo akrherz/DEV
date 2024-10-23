@@ -8,9 +8,8 @@ import sys
 
 import psycopg2.extras
 import pyproj
-from tqdm import tqdm
-
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 P2163 = pyproj.Proj(init="epsg:2163")
 

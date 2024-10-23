@@ -1,7 +1,6 @@
 """Ingest."""
 
 import click
-
 import pandas as pd
 from pyiem.database import get_dbconnc
 from pyiem.util import logger

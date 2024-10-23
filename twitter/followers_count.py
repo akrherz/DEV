@@ -2,13 +2,12 @@
 
 import os
 
-from tqdm import tqdm
-
 import pandas as pd
 import twitter
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import get_dbconn, get_properties, get_sqlalchemy_conn
+from tqdm import tqdm
 
 
 def get_followers_count():

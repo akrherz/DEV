@@ -2,13 +2,12 @@
 
 import datetime
 
+import geopandas as gpd
 import netCDF4
 import numpy as np
+import pandas as pd
 from affine import Affine
 from rasterstats import zonal_stats
-
-import geopandas as gpd
-import pandas as pd
 
 AFF = Affine(0.0417, 0.0, -125.0, 0.0, -0.0417, 49.9357)
 

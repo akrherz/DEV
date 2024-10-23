@@ -1,14 +1,13 @@
 """Example using rasterio."""
 
+import cartopy.crs as ccrs
+import matplotlib.colors as mpcolors
+import matplotlib.pyplot as plt
 import numpy as np
 import rasterio
 from PIL import Image
 from rasterio import Affine
 from rasterio.warp import Resampling, reproject
-
-import cartopy.crs as ccrs
-import matplotlib.colors as mpcolors
-import matplotlib.pyplot as plt
 
 # EPSG 5070
 ax = plt.axes(

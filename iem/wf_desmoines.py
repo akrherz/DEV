@@ -14,17 +14,16 @@ import datetime
 import sys
 
 import numpy as np
+import pandas as pd
 import pyproj
 import pytz
 from PIL import Image
-from sqlalchemy import text
-
-import pandas as pd
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.datatypes import distance
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot, nwsprecip
 from pyiem.plot.use_agg import plt
+from sqlalchemy import text
 
 p26915 = pyproj.Proj("EPSG:26915")
 central = pytz.timezone("America/Chicago")

@@ -4,14 +4,13 @@ from datetime import datetime, timedelta, timezone
 
 import click
 import httpx
-from psycopg import Connection
-from sqlalchemy import text
-
 import pandas as pd
+from psycopg import Connection
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.nws.lsr import LSR
 from pyiem.nws.products.lsr import parser
 from pyiem.util import logger, utc
+from sqlalchemy import text
 
 LOG = logger()
 

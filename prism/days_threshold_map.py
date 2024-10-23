@@ -2,10 +2,9 @@
 
 import datetime
 
+import matplotlib.pyplot as plt
 import netCDF4
 import numpy as np
-
-import matplotlib.pyplot as plt
 from pyiem.datatypes import temperature
 from pyiem.iemre import daily_offset
 from pyiem.plot.geoplot import MapPlot

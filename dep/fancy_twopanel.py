@@ -1,9 +1,8 @@
 """playing."""
 
-import numpy as np
-
 import cartopy.crs as ccrs
 import matplotlib.colors as mpcolors
+import numpy as np
 from geopandas import read_postgis
 from matplotlib.patches import Polygon
 from pyiem.dep import RAMPS

@@ -7,7 +7,6 @@ var currentstnname = '8762482 - West Bank 1, Bayou Gauche, LA';
 """
 
 import requests
-
 from pyiem.reference import nwsli2country, nwsli2state
 from pyiem.util import get_dbconn
 

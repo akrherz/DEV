@@ -3,11 +3,10 @@
 import difflib
 import sys
 
-from tqdm import tqdm
-
 import pandas as pd
 from pyiem.database import get_dbconn, get_sqlalchemy_conn
 from pyiem.util import noaaport_text
+from tqdm import tqdm
 
 
 def dotable(date):

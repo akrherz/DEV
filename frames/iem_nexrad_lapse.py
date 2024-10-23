@@ -3,9 +3,6 @@
 import datetime
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import text
-from tqdm import tqdm
-
 import geopandas as gpd
 import matplotlib.colors as mpcolors
 import matplotlib.dates as mdates
@@ -15,6 +12,8 @@ from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot, geoplot, get_cmap
 from pyiem.reference import Z_OVERLAY2
 from pyiem.util import utc
+from sqlalchemy import text
+from tqdm import tqdm
 
 CST = ZoneInfo("America/Chicago")
 geoplot.MAIN_AX_BOUNDS = [0.05, 0.3, 0.89, 0.6]

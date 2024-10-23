@@ -4,7 +4,6 @@ import datetime
 
 import numpy as np
 import osgeo.gdal as gdal
-
 from pyiem import reference
 
 

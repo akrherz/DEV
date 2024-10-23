@@ -3,7 +3,6 @@
 from zoneinfo import ZoneInfo
 
 import click
-
 from pandas.io.sql import read_sql
 from pyiem.database import get_dbconnc, get_sqlalchemy_conn
 from pyiem.models.shef import SHEFElement

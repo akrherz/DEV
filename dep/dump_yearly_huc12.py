@@ -1,9 +1,8 @@
 """Create a dump of yearly huc12 results."""
 
-from sqlalchemy import text
-
 import pandas as pd
 from pyiem.database import get_sqlalchemy_conn
+from sqlalchemy import text
 
 
 def main():

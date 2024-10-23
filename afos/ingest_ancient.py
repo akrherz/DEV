@@ -5,10 +5,9 @@ import os
 import re
 import sys
 
-from tqdm import tqdm
-
 from pyiem.nws.product import TextProduct
 from pyiem.util import get_dbconn, noaaport_text, utc
+from tqdm import tqdm
 
 # Copied from iem/scripts/util/poker2afos.py
 sys.path.insert(0, "/opt/iem/scripts/util")

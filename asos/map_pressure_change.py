@@ -2,9 +2,8 @@
 
 from datetime import timedelta, timezone
 
-import numpy as np
-
 import matplotlib.colors as mpcolors
+import numpy as np
 import pandas as pd
 from geopandas import read_postgis
 from matplotlib.colorbar import ColorbarBase

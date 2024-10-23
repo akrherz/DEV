@@ -1,13 +1,12 @@
 """Where are the CWA borders at?"""
 
 # third party
-import numpy as np
-from tqdm import tqdm
-
 import matplotlib.pyplot as plt
+import numpy as np
 from pandas.io.sql import read_sql
 from pyiem.network import Table as NetworkTable
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 
 def main():

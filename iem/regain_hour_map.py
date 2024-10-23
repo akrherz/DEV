@@ -3,7 +3,6 @@
 import ephem
 import mx.DateTime
 import tqdm
-
 from pyiem.plot import MapPlot
 
 

@@ -1,8 +1,7 @@
 """did the UGC have a warning on most active days."""
 
-import numpy as np
-
 import matplotlib.cm as cm
+import numpy as np
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn
 

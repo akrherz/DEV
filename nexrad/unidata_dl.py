@@ -6,10 +6,9 @@ import os
 import re
 
 import requests
-from tqdm import tqdm
-
 from pyiem.network import Table as NetworkTable
 from pyiem.util import exponential_backoff
+from tqdm import tqdm
 
 TWDR = NetworkTable("TWDR")
 FNREGEX = re.compile(

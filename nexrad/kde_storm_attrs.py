@@ -1,7 +1,6 @@
 """TVS."""
 
 import numpy as np
-
 from matplotlib.colors import BoundaryNorm
 from pandas.io.sql import read_sql
 from pyiem import reference

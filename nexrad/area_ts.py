@@ -38,10 +38,9 @@ while (now < ets):
 
 import datetime
 
-from backports.zoneinfo import ZoneInfo
-
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+from backports.zoneinfo import ZoneInfo
 
 
 def main():

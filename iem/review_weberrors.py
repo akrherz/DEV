@@ -2,9 +2,8 @@
 Review website_telemetry for errors.
 """
 
-import requests
-
 import pandas as pd
+import requests
 from pyiem.database import get_sqlalchemy_conn
 
 VHOST_MAPPER = {

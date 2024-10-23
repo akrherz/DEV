@@ -2,12 +2,11 @@
 
 import math
 
-import numpy
-import pytz
-
 import matplotlib.dates as mdates
 import matplotlib.patches as patches
 import matplotlib.ticker
+import numpy
+import pytz
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn
 

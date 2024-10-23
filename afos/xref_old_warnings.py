@@ -4,13 +4,12 @@ import sys
 from datetime import timezone
 
 import click
-from ingest_old_warnings import compute_until
-from sqlalchemy import text
-
 import pandas as pd
+from ingest_old_warnings import compute_until
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.nws.product import TextProduct, TextProductException
 from pyiem.util import logger, utc
+from sqlalchemy import text
 
 LOG = logger()
 PIL2PHENOM = {

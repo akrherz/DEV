@@ -4,7 +4,6 @@ See akrherz/iem#104
 """
 
 import click
-
 import pandas as pd
 from pyiem.database import get_dbconn, get_sqlalchemy_conn
 from pyiem.util import logger

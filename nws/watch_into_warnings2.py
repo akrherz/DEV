@@ -25,9 +25,8 @@ combo2 as (
 
 import calendar
 
-import numpy as np
-
 import matplotlib.pyplot as plt
+import numpy as np
 
 data = """  1 |  6622 |   7453
   2 |  9850 |  12204

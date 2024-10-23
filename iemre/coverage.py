@@ -2,11 +2,10 @@
 
 import os
 
-import numpy as np
-import tqdm
-
 import geopandas as gpd
+import numpy as np
 import pandas as pd
+import tqdm
 from pyiem import iemre
 from pyiem.grid.zs import CachingZonalStats
 from pyiem.plot import figure_axes

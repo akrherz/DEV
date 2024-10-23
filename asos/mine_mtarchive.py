@@ -7,7 +7,6 @@ import subprocess
 import sys
 
 import requests
-
 from pyiem.util import get_dbconn, utc
 
 DUP = re.compile("[0-9]{3} SA..[0-9][0-9] [A-Z]{3,4}")

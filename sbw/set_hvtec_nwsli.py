@@ -2,10 +2,9 @@
 
 import sys
 
-from tqdm import tqdm
-
 from pyiem.nws.products.vtec import parser
 from pyiem.util import get_dbconn, noaaport_text
+from tqdm import tqdm
 
 
 def main(argv):

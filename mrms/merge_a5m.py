@@ -8,7 +8,6 @@ from datetime import date, datetime, timedelta
 import click
 import numpy as np
 import pygrib
-
 from pyiem import iemre
 from pyiem.mrms import fetch
 from pyiem.util import logger, ncopen, utc

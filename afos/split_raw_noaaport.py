@@ -5,7 +5,6 @@ import os
 import subprocess
 
 import tqdm
-
 from pyiem.nws.product import TextProduct
 from pyiem.util import utc
 

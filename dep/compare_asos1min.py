@@ -4,13 +4,12 @@ import datetime
 import sys
 from zoneinfo import ZoneInfo
 
-import requests
-from sqlalchemy import text
-
 import matplotlib.dates as mdates
 import pandas as pd
+import requests
 from pyiem.plot import figure
 from pyiem.util import get_sqlalchemy_conn, mm2inch
+from sqlalchemy import text
 
 
 def main(argv):

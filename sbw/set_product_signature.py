@@ -2,13 +2,12 @@
 
 import click
 import httpx
-from sqlalchemy import text
-from tqdm import tqdm
-
 import pandas as pd
 from pyiem.database import get_dbconnc, get_sqlalchemy_conn
 from pyiem.nws.product import TextProduct
 from pyiem.util import logger
+from sqlalchemy import text
+from tqdm import tqdm
 
 LOG = logger()
 

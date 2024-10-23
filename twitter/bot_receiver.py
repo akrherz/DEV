@@ -5,10 +5,9 @@ Receive bot messages and write to our hackish queue.
 import json
 import os
 
+from pyiem.util import get_properties, utc
 from twisted.internet import reactor
 from twisted.web import resource, server
-
-from pyiem.util import get_properties, utc
 
 
 class RootResource(resource.Resource):

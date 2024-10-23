@@ -1,8 +1,7 @@
 """Create a pretty table."""
 
-import numpy as np
-
 import matplotlib.colors as mpcolors
+import numpy as np
 from matplotlib import patches
 from matplotlib.font_manager import FontProperties
 from metpy.calc.basic import heat_index

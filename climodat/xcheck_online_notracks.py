@@ -4,7 +4,6 @@ threading.  This script looks for trouble.
 """
 
 import requests
-
 from pyiem.database import get_dbconn
 from pyiem.reference import ncei_state_codes
 from pyiem.util import logger

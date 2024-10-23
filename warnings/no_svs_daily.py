@@ -3,7 +3,6 @@
 import calendar
 
 import seaborn as sns
-
 from pandas.io.sql import read_sql
 from pyiem.plot import get_cmap
 from pyiem.plot.use_agg import plt

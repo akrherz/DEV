@@ -10,11 +10,10 @@ Wants:
 # pylint: disable=abstract-class-instantiated
 from datetime import timezone
 
-from tqdm import tqdm
-
 import pandas as pd
 from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 
 def main():

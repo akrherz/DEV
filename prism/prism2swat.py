@@ -8,14 +8,13 @@ import os
 import sys
 from collections import namedtuple
 
+import geopandas as gpd
 import netCDF4
 import numpy as np
 from affine import Affine
-from tqdm import tqdm
-
-import geopandas as gpd
 from pyiem.grid.zs import CachingZonalStats
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 GRIDINFO = namedtuple("GridInfo", ["x0", "y0", "xsz", "ysz", "mask"])
 PROJSTR = "+proj=longlat +datum=WGS84 +no_defs"

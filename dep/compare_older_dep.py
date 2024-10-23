@@ -4,17 +4,16 @@
 import glob
 import os
 
-import numpy as np
-
-# Third party
-from tqdm import tqdm
-
 import geopandas as gpd
 import matplotlib.colors as mpcolors
+import numpy as np
 import pandas as pd
 from pyiem.dep import read_env
 from pyiem.plot import MapPlot, figure_axes, get_cmap
 from pyiem.util import get_sqlalchemy_conn
+
+# Third party
+from tqdm import tqdm
 
 
 def plot2():

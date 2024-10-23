@@ -6,7 +6,6 @@ import os
 import ephem
 import urllib2
 from PIL import Image
-
 from pyiem.util import get_dbconn
 
 

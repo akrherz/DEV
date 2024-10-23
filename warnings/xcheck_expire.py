@@ -4,11 +4,10 @@ Requested cross check.
 
 import click
 import httpx
-from sqlalchemy import text
-
 import pandas as pd
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.nws.products.vtec import VTECProduct
+from sqlalchemy import text
 
 
 @click.command()

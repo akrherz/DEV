@@ -1,7 +1,6 @@
 """See what Dr Thompson has to say."""
 
 import requests
-
 from pyiem.util import get_dbconn
 
 

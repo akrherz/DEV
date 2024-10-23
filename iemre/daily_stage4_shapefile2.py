@@ -3,10 +3,9 @@
 NOTE: DBF has a 256 column limit, so we dump twice here.
 """
 
+import geopandas as gpd
 import netCDF4
 import numpy as np
-
-import geopandas as gpd
 from pyiem import reference
 from pyiem.datatypes import distance
 from shapely.geometry import Point

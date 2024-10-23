@@ -3,7 +3,6 @@
 import datetime
 
 import numpy
-
 from matplotlib import pyplot as plt
 from pyiem.util import get_dbconn
 

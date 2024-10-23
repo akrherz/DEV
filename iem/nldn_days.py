@@ -3,7 +3,6 @@
 import datetime
 
 import numpy as np
-
 from pyiem import reference
 from pyiem.plot import MapPlot
 from pyiem.plot.use_agg import plt

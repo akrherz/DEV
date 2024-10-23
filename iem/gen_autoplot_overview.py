@@ -4,9 +4,8 @@ from io import StringIO
 
 import httpx
 from bs4 import BeautifulSoup
-from tqdm import tqdm
-
 from pyiem.util import logger
+from tqdm import tqdm
 
 LOG = logger()
 BASEURL = "http://mesonet.agron.iastate.edu/plotting/auto"

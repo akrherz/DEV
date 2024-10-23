@@ -3,7 +3,6 @@
 import datetime
 
 import numpy as np
-
 from pyiem.plot.use_agg import plt
 
 

@@ -13,9 +13,8 @@ http://www1.ncdc.noaa.gov/pub/data/normals/1981-2010/products/temperature/dly-tm
 import datetime
 import sys
 
-from tqdm import tqdm
-
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 
 def compute_stations():

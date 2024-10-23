@@ -3,7 +3,6 @@
 import sys
 
 import requests
-
 from pyiem.database import get_dbconnc
 from pyiem.network import Table as NetworkTable
 from pyiem.util import logger

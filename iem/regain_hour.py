@@ -3,10 +3,9 @@
 import datetime
 
 import ephem
-import numpy
-
 import matplotlib.font_manager
 import matplotlib.pyplot as plt
+import numpy
 
 
 def compute_sunrise(lat, long):

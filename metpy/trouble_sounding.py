@@ -1,10 +1,9 @@
 import datetime
 
-from siphon.simplewebservice.iastate import IAStateUpperAir
-
 import pandas as pd
 from metpy.calc import surface_based_cape_cin
 from metpy.units import units
+from siphon.simplewebservice.iastate import IAStateUpperAir
 
 res = IAStateUpperAir.request_data(datetime.datetime(2018, 4, 7, 17), "KXMR")
 # pw = precipitable_water(res['dewpoint'].values * units.degC,

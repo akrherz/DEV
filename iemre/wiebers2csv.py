@@ -1,10 +1,9 @@
 """A util script to dump IEMRE json service to csv files"""
 
 # third party
-import requests
-
 import geopandas as gpd
 import pandas as pd
+import requests
 
 
 def main():

@@ -1,14 +1,13 @@
 """Make a fancy heatmap of how this YTD compares to previous years."""
 
 import numpy as np
-import requests
-from tqdm import tqdm
-
 import pandas as pd
+import requests
 from matplotlib.colors import BoundaryNorm, ListedColormap
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import figure_axes
+from tqdm import tqdm
 
 TAKE = ["IA2110", "IA2603", "IA6389", "IA5952", "IA7161", "IA4585", "IA2724"]
 TAKE.extend(["IA5198", "IA5230", "IA1354"])

@@ -5,7 +5,6 @@ import os
 
 import numpy as np
 import pygrib
-
 from matplotlib.colors import ListedColormap
 from metpy.calc import windchill
 from metpy.units import units

@@ -7,7 +7,6 @@ import datetime
 
 import numpy as np
 import pygrib
-
 from pyiem.plot import MapPlot, nwssnow
 
 

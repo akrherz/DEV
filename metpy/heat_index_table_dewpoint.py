@@ -1,9 +1,8 @@
 """Create a pretty table."""
 
+import matplotlib.colors as mpcolors
 import numpy as np
 import seaborn as sns
-
-import matplotlib.colors as mpcolors
 from matplotlib import patches
 from matplotlib.font_manager import FontProperties
 from metpy.calc import heat_index, relative_humidity_from_dewpoint

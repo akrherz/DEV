@@ -1,7 +1,6 @@
 """Diagnostic."""
 
 import netCDF4
-
 from pyiem.plot import MapPlot
 
 nc = netCDF4.Dataset("/mesonet/data/iemre/2018_iemre_daily.nc")

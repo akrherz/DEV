@@ -3,7 +3,6 @@
 import datetime
 
 import requests
-
 from pyiem.util import get_dbconn
 
 data = """238 PM	West Des Moines	3

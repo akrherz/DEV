@@ -1,11 +1,10 @@
 """Review IEM processing of 6 hourly max/min temperatures."""
 
 import click
-from sqlalchemy import text
-
 import pandas as pd
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.network import Table as NetworkTable
+from sqlalchemy import text
 
 
 @click.command()

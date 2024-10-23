@@ -2,7 +2,6 @@
 
 # third party
 import numpy as np
-
 from pyiem.database import get_dbconn
 from pyiem.plot.use_agg import plt
 

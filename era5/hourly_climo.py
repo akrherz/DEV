@@ -3,7 +3,6 @@
 import sys
 
 import numpy as np
-
 import pandas as pd
 from metpy.calc import relative_humidity_from_dewpoint
 from metpy.units import units

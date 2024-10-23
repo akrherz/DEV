@@ -18,7 +18,6 @@ The gauge should be saved to the file "gauge.png".
 import math
 
 import click
-
 import pandas as pd
 from matplotlib.patches import Rectangle
 from pyiem.database import get_sqlalchemy_conn

@@ -3,12 +3,11 @@
 from datetime import timezone
 
 import click
-from sqlalchemy import text
-from tqdm import tqdm
-
 import pandas as pd
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.util import logger
+from sqlalchemy import text
+from tqdm import tqdm
 
 LOG = logger()
 

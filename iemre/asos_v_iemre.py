@@ -1,11 +1,10 @@
 """Scatter plot between IEMRE and ASOS."""
 
-import requests
-from tqdm import tqdm
-
 import pandas as pd
+import requests
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_sqlalchemy_conn
+from tqdm import tqdm
 
 
 def main():

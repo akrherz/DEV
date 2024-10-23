@@ -1,7 +1,6 @@
 """Mine ACIS for threaded stations."""
 
 import requests
-
 from pyiem.network import Table as NetworkTable
 from pyiem.reference import ncei_state_codes
 from pyiem.util import get_dbconn, logger

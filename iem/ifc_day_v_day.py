@@ -2,10 +2,9 @@
 
 import datetime
 
+import matplotlib.pyplot as plt
 import netCDF4
 import numpy as np
-
-import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 from pyiem.datatypes import distance
 from pyiem.iemre import daily_offset

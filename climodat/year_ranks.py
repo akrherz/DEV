@@ -2,14 +2,13 @@
 
 import os
 
-from sqlalchemy import text
-from tqdm import tqdm
-
 import matplotlib.colors as mpcolors
 import pandas as pd
 from pyiem.plot import MapPlot
 from pyiem.reference import state_names
 from pyiem.util import get_sqlalchemy_conn
+from sqlalchemy import text
+from tqdm import tqdm
 
 
 def get_data():

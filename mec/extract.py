@@ -1,7 +1,6 @@
 import datetime
 
 import pytz
-
 from pyiem.util import get_dbconn
 
 pgconn = get_dbconn("mec", user="mesonet")

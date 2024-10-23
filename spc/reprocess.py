@@ -3,11 +3,10 @@
 import subprocess
 
 import requests
+from pyiem.database import get_dbconn
 
 # third party
 from tqdm import tqdm
-
-from pyiem.database import get_dbconn
 
 
 def main():

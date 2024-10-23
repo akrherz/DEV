@@ -1,12 +1,11 @@
 """Plot of cow data."""
 
-import requests
-from tqdm import tqdm
-
 import pandas as pd
+import requests
 from pyiem.network import Table as NetworkTable
 from pyiem.plot.geoplot import MapPlot
 from pyiem.plot.use_agg import plt
+from tqdm import tqdm
 
 
 def plot_data():

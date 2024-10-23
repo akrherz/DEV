@@ -1,9 +1,8 @@
 """One time moving sm_15minute data to sm_minute."""
 
-from psycopg2.extras import DictCursor
-
 import pandas as pd
 from pandas.io.sql import read_sql
+from psycopg2.extras import DictCursor
 from pyiem.util import get_dbconn, logger
 
 LOG = logger()

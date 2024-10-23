@@ -5,9 +5,8 @@ Compute the difference between the 12 UTC 850 hPa temp and afternoon high
 import calendar
 from datetime import timezone
 
-import seaborn as sns
-
 import pandas as pd
+import seaborn as sns
 from pyiem.plot import figure_axes
 from pyiem.util import get_sqlalchemy_conn
 

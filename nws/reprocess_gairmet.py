@@ -8,7 +8,6 @@ import datetime
 
 # third party
 import requests
-
 from pyiem.nws.products.gairmet import parser
 from pyiem.util import get_dbconn
 

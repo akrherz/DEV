@@ -2,10 +2,9 @@
 
 from datetime import timedelta
 
-from tqdm import tqdm
-
 import pandas as pd
 from pyiem.database import get_dbconn, get_sqlalchemy_conn
+from tqdm import tqdm
 
 
 def main():

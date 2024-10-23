@@ -2,9 +2,8 @@
 
 import click
 import httpx
-from tqdm import tqdm
-
 import pandas as pd
+from tqdm import tqdm
 
 
 @click.command()

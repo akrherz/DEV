@@ -11,11 +11,10 @@ import glob
 import os
 import sys
 
-import shapefile
-from tqdm import tqdm
-
 import pandas as pd
+import shapefile
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 print(" * BE CAREFUL!  The dbf files may not be 5070, but 26915")
 print(" * VERIFY IF POINT_X or X is the 5070 grid value")

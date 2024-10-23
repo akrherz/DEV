@@ -1,10 +1,9 @@
 """uses basemap, so no longer functioning :/"""
 
-from mpl_toolkits.basemap import Basemap
-
 import matplotlib.font_manager
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
+from mpl_toolkits.basemap import Basemap
 from pyiem.util import get_dbconn
 
 

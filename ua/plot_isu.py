@@ -1,8 +1,7 @@
 """Plot ISU sounding."""
 
-import sounderpy as spy
-
 import pandas as pd
+import sounderpy as spy
 from metpy.calc import dewpoint_from_relative_humidity, wind_components
 from metpy.units import units
 

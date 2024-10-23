@@ -7,7 +7,6 @@ import datetime
 
 import numpy as np
 import pygrib
-
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.util import c2f
 

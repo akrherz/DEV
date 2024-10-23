@@ -1,7 +1,6 @@
 """SBW Intersection"""
 
 import numpy as np
-
 from pandas.io.sql import read_sql
 from pyiem.plot.use_agg import plt
 from pyiem.util import get_dbconn

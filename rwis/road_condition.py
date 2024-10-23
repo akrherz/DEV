@@ -1,10 +1,9 @@
 import datetime
 
-import psycopg2
-import pytz
-
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
+import psycopg2
+import pytz
 from pandas.io.sql import read_sql
 
 POSTGIS = psycopg2.connect(database="postgis", host="iemdb", user="nobody")

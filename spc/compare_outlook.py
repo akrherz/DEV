@@ -3,11 +3,10 @@
 import datetime
 import subprocess
 
-import pytz
-import requests
-
 import geopandas as gpd
 import pandas as pd
+import pytz
+import requests
 from pyiem.database import get_dbconnstr
 from pyiem.util import logger, utc
 

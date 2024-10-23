@@ -2,7 +2,6 @@
 
 import numpy as np
 from PIL import Image
-
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot, nwsprecip
 from pyiem.util import get_dbconn

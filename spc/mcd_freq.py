@@ -2,9 +2,8 @@
 Note the mcd table now explicitly stores this.
 """
 
-import numpy as np
-
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def main():

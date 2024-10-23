@@ -3,9 +3,8 @@
 import datetime
 from io import StringIO
 
-import requests
-
 import pandas as pd
+import requests
 from pyiem.datatypes import temperature
 from pyiem.meteorology import heatindex
 from pyiem.network import Table as NetworkTable

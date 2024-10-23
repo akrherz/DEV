@@ -2,9 +2,8 @@
 
 import numpy as np
 import requests
-from PIL import Image
-
 from pandas.io.sql import read_sql
+from PIL import Image
 from pyiem.util import get_dbconn, logger
 
 LOG = logger()

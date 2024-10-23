@@ -1,10 +1,9 @@
 """Generate a file of Cow Stats via API calls."""
 
 import httpx
-from tqdm import tqdm
-
 import pandas as pd
 from pyiem.network import Table as NetworkTable
+from tqdm import tqdm
 
 
 def main():

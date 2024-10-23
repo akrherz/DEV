@@ -2,12 +2,11 @@
 
 from itertools import cycle
 
+import matplotlib.pyplot as plt
 import numpy as np
 from psycopg2.extras import DictCursor
-from tqdm import tqdm
-
-import matplotlib.pyplot as plt
 from pyiem.util import get_dbconn
+from tqdm import tqdm
 
 
 def do_year(pgconn, year):

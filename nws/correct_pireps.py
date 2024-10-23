@@ -3,13 +3,13 @@
 # stdlib
 import datetime
 
+import pandas as pd
+
 # Third Party
 from psycopg2.extras import RealDictCursor
-from pywwa.workflows.pirep_parser import LOCS, load_locs
-
-import pandas as pd
 from pyiem.nws.products.pirep import Pirep
 from pyiem.util import get_dbconn, logger, utc
+from pywwa.workflows.pirep_parser import LOCS, load_locs
 
 LOG = logger()
 
