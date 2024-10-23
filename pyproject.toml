@@ -5,6 +5,7 @@ target-version = "py39"
 exclude = [
     "**/*.ipynb",
 ]
+src = ["src",]
 
 [tool.ruff.lint]
 select = [
