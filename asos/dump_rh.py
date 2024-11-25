@@ -1,7 +1,7 @@
 """Dump RH frequencies per year."""
 
 import pandas as pd
-from pyiem.util import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn
 
 
 def main():

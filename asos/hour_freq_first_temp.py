@@ -2,15 +2,15 @@
 
 from datetime import timedelta
 
-from pandas.io.sql import read_sql
+import pandas as pd
+from pyiem.database import get_dbconn
 from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
 
 
 def main():
     """Go"""
     pgconn = get_dbconn("asos")
-    df = read_sql(
+    df = pd.read_sql(
         "select extract(year from valid)::int as year, "
         "min(valid at time zone 'UTC') from alldata "
         "where station = 'DSM' and extract(month from valid) > 8 and "

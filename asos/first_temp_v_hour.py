@@ -1,8 +1,8 @@
 """What was the hour of the first fall temp min"""
 
 import pandas as pd
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot.use_agg import plt
-from pyiem.util import get_sqlalchemy_conn
 
 SQL = """
 WITH mins as (

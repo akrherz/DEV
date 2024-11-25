@@ -1,8 +1,8 @@
 """Jump up in feels like temp."""
 
 import pandas as pd
+from pyiem.database import get_dbconn
 from pyiem.plot import figure
-from pyiem.util import get_dbconn
 
 
 def main():

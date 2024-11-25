@@ -1,11 +1,13 @@
 """Quacks like a duck, it must be a duck."""
 
 import pandas as pd
+from pyiem.database import get_dbconn, get_sqlalchemy_conn
 from pyiem.network import Table as NetworkTable
-from pyiem.util import get_dbconn, get_sqlalchemy_conn, logger
+from pyiem.reference import StationAttributes
+from pyiem.util import logger
 
 LOG = logger()
-ATTR = "IS_AWOS"
+ATTR = StationAttributes.IS_AWOS
 
 
 def compute_is_awos(station):
@@ -13,7 +15,7 @@ def compute_is_awos(station):
     with get_sqlalchemy_conn("asos") as conn:
         df = pd.read_sql(
             """
-            SELECT extract(minute from valid) as minute, count(*) from t2023
+            SELECT extract(minute from valid) as minute, count(*) from t2024
             where station = %s and valid > now() - '30 days'::interval
             GROUP by minute
             """,

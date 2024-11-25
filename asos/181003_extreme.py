@@ -1,8 +1,8 @@
 """A table of comparables to extremes of 3 Oct 2018."""
 
 import pandas as pd
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.network import Table as NetworkTable
-from pyiem.util import get_sqlalchemy_conn
 
 
 def main():

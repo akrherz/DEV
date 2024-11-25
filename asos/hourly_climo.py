@@ -1,8 +1,8 @@
 """One Off."""
 
 from pandas.io.sql import read_sql
+from pyiem.database import get_dbconn
 from pyiem.datatypes import distance, speed, temperature
-from pyiem.util import get_dbconn
 
 
 def main():
