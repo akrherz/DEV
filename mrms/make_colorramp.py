@@ -59,7 +59,7 @@ def main():
     # xs = numpy.arange(25,255, 25)
     # ys = numpy.arange(1,10)
 
-    for x, y in zip(xs, ys):
+    for x, y in zip(xs, ys, strict=False):
         w = font.getlength(str(y))
         draw.line([x, 17, x, 10], fill=255)
         draw.text((x - (w / 2), 18), str(y), fill=255, font=font)

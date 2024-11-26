@@ -3,7 +3,7 @@
 import matplotlib.font_manager
 import matplotlib.pyplot as plt
 import numpy as np
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def main():
@@ -52,7 +52,9 @@ def main():
         "MIW": "Marshalltown",
     }
 
-    for sid, color in zip(["ADU", "DSM", "MIW"], ["b", "r", "g"]):
+    for sid, color in zip(
+        ["ADU", "DSM", "MIW"], ["b", "r", "g"], strict=False
+    ):
         cursor.execute(
             """
             SELECT valid, tmpf, dwpf from

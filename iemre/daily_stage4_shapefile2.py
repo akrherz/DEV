@@ -43,7 +43,7 @@ def main():
     lats = nc.variables["lat"][south:north, west:east]
     lons = nc.variables["lon"][south:north, west:east]
     pts = []
-    for lon, lat in zip(np.ravel(lons), np.ravel(lats)):
+    for lon, lat in zip(np.ravel(lons), np.ravel(lats), strict=False):
         pts.append(Point(lon, lat))
     df = gpd.GeoDataFrame({"geometry": pts})
     data = precip[:, south:north, west:east]

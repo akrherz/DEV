@@ -6,7 +6,7 @@ https://www.ncdc.noaa.gov/homr/reports
 import sys
 
 import pandas as pd
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def main():

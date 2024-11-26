@@ -70,7 +70,7 @@ def main():
     xi = numpy.linspace(-95, -90, 100)
     yi = numpy.linspace(39, 47, 100)
     xi, yi = numpy.meshgrid(xi, yi)
-    vals = griddata(zip(lons, lats), vals, (xi, yi), "cubic")
+    vals = griddata(zip(lons, lats, strict=False), vals, (xi, yi), "cubic")
     lons = xi
     lats = yi
 
@@ -98,14 +98,14 @@ def main():
     # x = [-95,-95,-92,-92,-95]
     # y = [42,43,43,42,42]
     xx, yy = m(x, y)
-    path = Path(zip(xx, yy))
+    path = Path(zip(xx, yy, strict=False))
     patch = PathPatch(path, facecolor="none")
     ax.add_patch(patch)
 
     x, y = m(lons, lats)
     cs = m.contourf(x, y, vals, numpy.arange(0, 30, 2), zorder=2)
 
-    poly = zip(xx, yy)
+    poly = zip(xx, yy, strict=False)
     mask_outside_polygon(poly, ax=ax)
     m.drawstates(linewidth=2, zorder=4)
     cbar = m.colorbar(cs, location="right", pad="1%", ticks=cs.levels)

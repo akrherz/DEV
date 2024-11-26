@@ -70,7 +70,7 @@ def main():
     quantiles = df["pwater"].quantile(np.arange(0.0, 1.01, 0.2)).values
     x = []
     y = []
-    for bot, top in zip(quantiles[:-1], quantiles[1:]):
+    for bot, top in zip(quantiles[:-1], quantiles[1:], strict=False):
         x.append(top)
         sample = df[(df["pwater"] >= bot) & (df["pwater"] < top)]
         y.append((sample["sum"] > 0.0).sum() / len(sample.index) * 100.0)

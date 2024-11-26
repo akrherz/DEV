@@ -2,7 +2,7 @@
 
 import click
 import pandas as pd
-from pyiem.util import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn
 from sqlalchemy import text
 
 
@@ -70,7 +70,9 @@ def update_iemaccess(meta, oldid, newid):
         # Delete anything in the summary table that is before the new
         # archive_begin
         # Update the iemid for the new id
-        for tbl, col in zip(["summary", "hourly"], ["day", "valid"]):
+        for tbl, col in zip(
+            ["summary", "hourly"], ["day", "valid"], strict=True
+        ):
             stmt = text(
                 f"DELETE FROM {tbl} WHERE iemid = :newiemid and "
                 f"{col} <= :lastdate"

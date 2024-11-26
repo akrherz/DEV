@@ -172,7 +172,7 @@ def compute_weekly(fp, sts, ets):
     for row in cursor:
         data[row["station"]] = row
 
-    for district, sector in zip(DISTRICTS, STIDS):
+    for district, sector in zip(DISTRICTS, STIDS, strict=False):
         fp.write("%s District\n" % (district,))
         for sid in sector:
             nwsli = sid[-5:].strip()
@@ -262,7 +262,7 @@ def compute_monthly(fp, year, month):
     for row in cursor:
         data[row["station"]] = row
 
-    for district, sector in zip(DISTRICTS, STIDS):
+    for district, sector in zip(DISTRICTS, STIDS, strict=False):
         fp.write("%s District\n" % (district,))
         for sid in sector:
             nwsli = sid[-5:].strip()

@@ -76,7 +76,7 @@ def main():
         "Garber",
     ]
     stations = ["SPLI4", "EDRI4", "CMTI4", "TENI4", "EKDI4", "GRBI4"]
-    for station, name in zip(stations, names):
+    for station, name in zip(stations, names, strict=False):
         lats.append(nt.sts[station]["lat"])
         lons.append(nt.sts[station]["lon"])
         m = p26915(lons[-1], lats[-1])
@@ -169,7 +169,7 @@ def main():
 
     m.contourf(x[:, :-1], y[:, :-1], data, clevs, cmap=nwsprecip())
 
-    for lon, lat, myid, c in zip(lons, lats, ids, colors):
+    for lon, lat, myid, c in zip(lons, lats, ids, colors, strict=False):
         m.plot_values(
             [lon],
             [lat],

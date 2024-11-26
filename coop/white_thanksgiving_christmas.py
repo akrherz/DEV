@@ -61,7 +61,7 @@ def main():
     )
     vals = [thit, chit, bhit]
     ax.bar(range(3), vals)
-    for x, y in zip(range(3), vals):
+    for x, y in zip(range(3), vals, strict=False):
         ax.text(x, y + 1, f"{y:.1f}%", ha="center")
     ax.set_xticks(range(3))
     ax.set_xticklabels(

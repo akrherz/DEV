@@ -56,7 +56,7 @@ def main():
     )
     faux.add_patch(rect)
 
-    for color, label, loc in zip(COLORS, LABELS, LEGENDLOCS):
+    for color, label, loc in zip(COLORS, LABELS, LEGENDLOCS, strict=False):
         rect = patches.Rectangle(
             (loc, 0.055),
             0.02,

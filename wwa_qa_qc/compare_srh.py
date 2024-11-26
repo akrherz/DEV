@@ -4,7 +4,7 @@ import datetime
 
 import pandas as pd
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 SRH = "http://www.srh.noaa.gov/ridge2/shapefiles/psql_currenthazards.html"
 

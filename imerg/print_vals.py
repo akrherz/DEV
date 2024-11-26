@@ -2,8 +2,8 @@
 
 import datetime
 
+import httpx
 import osgeo.gdal as gdal
-import requests
 
 
 def main():
@@ -20,7 +20,7 @@ def main():
             "https://mesonet.agron.iastate.edu/archive/data/%Y/%m/%d/"
             "GIS/imerg/p30m_%Y%m%d%H%M.png"
         )
-        req = requests.get(uri)
+        req = httpx.get(uri)
         with open("/tmp/bah.png", "wb") as fh:
             fh.write(req.content)
         data = gdal.Open("/tmp/bah.png").ReadAsArray()

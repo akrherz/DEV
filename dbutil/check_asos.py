@@ -4,7 +4,8 @@ Looks at our archive for ASOS sites which we think are online, but have
 never reported data.  If so, set them offline!
 """
 
-from pyiem.util import get_dbconn, logger
+from pyiem.database import get_dbconn
+from pyiem.util import logger
 
 LOG = logger()
 

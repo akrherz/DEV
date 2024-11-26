@@ -39,7 +39,7 @@ def main():
         dt.temperature(t, "F"), dt.temperature(d, "F")
     )
     counts = numpy.zeros(numpy.shape(hindex.value("F")), "f")
-    for otmp, odwp in zip(otmpf.value("F"), odwpf.value("F")):
+    for otmp, odwp in zip(otmpf.value("F"), odwpf.value("F"), strict=False):
         if odwp < 40 or odwp >= 79.5:
             continue
         counts[(int(round(odwp)) - 40), int(round(otmp)) - 80] += 1.0

@@ -52,7 +52,7 @@ def main(argv):
     lats = nc.variables["lat"][south:north, west:east]
     lons = nc.variables["lon"][south:north, west:east]
     pts = []
-    for lon, lat in zip(np.ravel(lons), np.ravel(lats)):
+    for lon, lat in zip(np.ravel(lons), np.ravel(lats), strict=False):
         pts.append(Point(lon, lat))
     for m1, m2 in [(1, 8), (9, 12)]:
         # iterate over days

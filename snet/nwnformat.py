@@ -164,7 +164,7 @@ class nwnformat:
         self.avg_sknt = int(float(sum(self.aSknt)) / float(len(self.aSknt)))
         utot = 0
         vtot = 0
-        for s, d in zip(self.aSknt, self.aDrct):
+        for s, d in zip(self.aSknt, self.aDrct, strict=False):
             u, v = uv(s, d)
             if s > self.xsped:
                 self.xsped = s * 1.150

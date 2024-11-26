@@ -244,7 +244,9 @@ def main(year, pil):
             # Gate 1, are the product_ids the same
             if pid1 != pid2:
                 LOG.info("Product IDs differ %s %s, afos update", pid1, pid2)
-                for prodrow, prod in zip([prod1row, prod2row], [prod1, prod2]):
+                for prodrow, prod in zip(
+                    [prod1row, prod2row], [prod1, prod2], strict=True
+                ):
                     res = conn.execute(
                         text(
                             f"""

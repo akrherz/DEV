@@ -67,7 +67,7 @@ def main():
         now += datetime.timedelta(hours=3)
     lats = []
     lons = []
-    for station, _name in zip(stations, names):
+    for station, _name in zip(stations, names, strict=False):
         lats.append(nt.sts[station]["lat"])
         lons.append(nt.sts[station]["lon"])
 
@@ -96,7 +96,7 @@ def main():
     m0 = None
     offset0 = None
     elev0 = None
-    for station, name in zip(stations, names):
+    for station, name in zip(stations, names, strict=False):
         mm = p26915(lons[-1], lats[-1])
         if m0 is None:
             m0 = mm
@@ -174,7 +174,7 @@ def main():
 
     m.contourf(x[:, :-1], y[:, :-1], data, clevs, cmap=nwsprecip())
 
-    for lon, lat, myid, c in zip(lons, lats, ids, colors):
+    for lon, lat, myid, c in zip(lons, lats, ids, colors, strict=False):
         m.plot_values(
             [lon],
             [lat],

@@ -92,7 +92,9 @@ def main():
 
     normal = 300.0
     skip = 0
-    for ts, s, du, dv in zip(valid["USIRGZ"], values["USIRGZ"], u, v):
+    for ts, s, du, dv in zip(
+        valid["USIRGZ"], values["USIRGZ"], u, v, strict=False
+    ):
         if skip % 3 == 0:
             x = (
                 (ts - valid["USIRGZ"][0]).days * 86400.0
@@ -214,7 +216,9 @@ def main():
 
     normal = 300.0
     skip = 0
-    for ts, s, du, dv in zip(valid2["USIRGZ"], values2["USIRGZ"], u2, v2):
+    for ts, s, du, dv in zip(
+        valid2["USIRGZ"], values2["USIRGZ"], u2, v2, strict=False
+    ):
         x = (
             (ts - valid2["USIRGZ"][0]).days * 86400.0
             + (ts - valid2["USIRGZ"][0]).seconds

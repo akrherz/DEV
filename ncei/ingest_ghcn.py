@@ -228,6 +228,7 @@ def process(station, metadata, allow_inserts):
         for dbcol, obcol in zip(
             ["high", "low", "precip", "snow", "snowd"],
             ["TMAX", "TMIN", "PRCP", "SNOW", "SNWD"],
+            strict=False,
         ):
             if pd.isna(row[obcol]) or row[obcol] == row[dbcol]:
                 continue

@@ -52,7 +52,7 @@ def main(year):
         nextmonth = nextmonth.replace(day=1) - datetime.timedelta(days=1)
         begins.append(datetime.date(year, month, 26))
         ends.append(nextmonth)
-        for sts, ets in zip(begins, ends):
+        for sts, ets in zip(begins, ends, strict=False):
             FORM["begdatestring"] = sts.strftime("%Y%m%d00")
             FORM["enddatestring"] = ets.strftime("%Y%m%d23")
             FORM["emailadd"] = ("akrherz+%s@iastate.edu") % (

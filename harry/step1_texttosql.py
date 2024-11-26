@@ -86,7 +86,7 @@ def print_diags(df):
     # df.reset_index(inplace=True)
 
     print("==== bulk stats to report for website news item ====")
-    for field, threshold in zip(FIELDS, [2, 2, 0.2, 2, 2]):
+    for field, threshold in zip(FIELDS, [2, 2, 0.2, 2, 2], strict=False):
         df["diff_" + field] = df["new_" + field] - df[field]
         df["diff_" + field + "_abs"] = df["diff_" + field].abs()
         df2 = df[df["diff_" + field].abs() >= threshold]

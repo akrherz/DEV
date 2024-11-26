@@ -1,6 +1,6 @@
 """See if we have metadata from HOMR
 
-https://www.ncdc.noaa.gov/homr/reports
+https://www.ncei.noaa.gov/access/homr/reports
 """
 
 import pandas as pd
@@ -17,7 +17,7 @@ def main():
         index_col="nwsli",
     )
     print("Found %s unknown entries" % (len(udf.index),))
-    for line in open("/home/akrherz/Downloads/mshr_enhanced_201907.txt"):
+    for line in open("/home/akrherz/Downloads/mshr_enhanced_202407.txt"):
         if len(line) < 10:
             continue
         nwsli = line[155:174].strip()

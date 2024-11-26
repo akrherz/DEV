@@ -110,6 +110,7 @@ def copy_iemre(nc, ncdate0, ncdate1, islice, jslice):
         for rt, nt in zip(
             list(range(re_slice.start, re_slice.stop)),
             list(range(yfx_slice.start, yfx_slice.stop)),
+            strict=False,
         ):
             # IEMRE power_swdn is MJ, test to see if data exists
             srad = renc.variables["power_swdn"][rt, jslice, islice]

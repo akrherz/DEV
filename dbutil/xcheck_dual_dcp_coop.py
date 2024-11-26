@@ -3,8 +3,8 @@
 import subprocess
 
 from pandas.io.sql import read_sql
+from pyiem.database import get_dbconn
 from pyiem.reference import state_names
-from pyiem.util import get_dbconn
 
 SCRIPT = "/opt/iem/scripts/dbutil/delete_station.py"
 

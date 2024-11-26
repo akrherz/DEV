@@ -87,6 +87,7 @@ def main():
                 lons < -93.55,
             )
         ],
+        strict=False,
     ):
         xx, yy = m.map(lo + 0.02, la + 0.02)
         txt = m.ax.text(

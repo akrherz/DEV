@@ -40,7 +40,7 @@ def main():
     ax.bar(YEARS, VALS, width=0.4, align="center", label="Full Year")
     # ax.bar(YEARS, VALS2, width=-0.4, align='edge',
     #       label='YTD to 24 May')
-    for x, y in zip(YEARS, VALS):
+    for x, y in zip(YEARS, VALS, strict=False):
         ax.text(
             x,
             y + 0.5,

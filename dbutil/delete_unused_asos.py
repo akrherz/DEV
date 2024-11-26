@@ -1,6 +1,6 @@
 """Find ASOS stations that should be culled."""
 
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def check(station, network):

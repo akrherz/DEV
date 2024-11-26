@@ -136,7 +136,7 @@ def run():
     ax.grid()
     ax.set_xticks(np.arange(1, 13))
     xlabels = calendar.month_abbr[1:]
-    for i, (d, t) in enumerate(zip(dry, total)):
+    for i, (d, t) in enumerate(zip(dry, total, strict=False)):
         if t > 0:
             xlabels[i] += "\n%.0f\n%.0f%%" % (t, d / float(t) * 100.0)
     ax.set_xticklabels(xlabels)

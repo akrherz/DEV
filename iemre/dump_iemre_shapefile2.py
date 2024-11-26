@@ -44,7 +44,7 @@ def main():
     lons, lats = np.meshgrid(lons, lats)
     nc.close()
     pts = []
-    for lon, lat in zip(np.ravel(lons), np.ravel(lats)):
+    for lon, lat in zip(np.ravel(lons), np.ravel(lats), strict=False):
         pts.append(Point(lon, lat))
     df = gpd.GeoDataFrame({"geometry": pts})
     for month in range(1, 11):

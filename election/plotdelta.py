@@ -33,7 +33,7 @@ def main():
     delta = delta.sort_values()
     bars = ax.barh(range(len(delta.index)), delta.values)
     for i, (mybar, state, val) in enumerate(
-        zip(bars, delta.index.values, delta.values)
+        zip(bars, delta.index.values, delta.values, strict=False)
     ):
         if state in [
             "Georgia",
