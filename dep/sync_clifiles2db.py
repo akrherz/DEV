@@ -17,7 +17,7 @@ def main():
                 # 087.81x044.63.cli
                 tokens = file.split("x")
                 lon = 0 - float(tokens[0])
-                lat = float(tokens[1].split(".")[0])
+                lat = float(tokens[1].rsplit(".", maxsplit=1)[0])
                 res = conn.execute(
                     text("""
     select id from climate_files where filepath = :path and scenario = 0
