@@ -18,11 +18,14 @@ def main():
         fn = dt.strftime("/mnt/idep2/data/dailyprecip/%Y/%Y%m%d.npy.gz")
         if not os.path.isfile(fn):
             continue
+        # Get the file modified time
+        mtime = os.path.getmtime(fn)
         with gzip.GzipFile(fn, "r") as src:
             values = np.flipud(np.load(file=src))
         values = (values * 100.0).astype(np.uint16)
+        newfn = fn.replace(".npy.gz", ".geotiff")
         with rasterio.open(
-            fn.replace(".npy.gz", ".geotiff"),
+            newfn,
             "w",
             driver="GTiff",
             compress="lzw",
@@ -37,6 +40,7 @@ def main():
             dst._set_all_scales([0.01])
             dst._set_all_offsets([0.0])
             dst.write(values, 1)
+        os.utime(newfn, (mtime, mtime))
 
 
 if __name__ == "__main__":
