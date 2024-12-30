@@ -1,5 +1,6 @@
 """We converted from numpy grid to GeoTIFF."""
 
+import gzip
 import os
 
 import numpy as np
@@ -14,13 +15,14 @@ def main():
     progress = tqdm(pd.date_range("2007/01/01", "2024/12/29"))
     for dt in progress:
         progress.set_description(dt.strftime("%Y-%m-%d"))
-        fn = dt.strftime("/mnt/idep2/data/dailyprecip/%Y/%Y%m%d.npy")
+        fn = dt.strftime("/mnt/idep2/data/dailyprecip/%Y/%Y%m%d.npy.gz")
         if not os.path.isfile(fn):
             continue
-        values = np.flipud(np.load(fn))
+        with gzip.GzipFile(fn, "r") as src:
+            values = np.flipud(np.load(file=src))
         values = (values * 100.0).astype(np.uint16)
         with rasterio.open(
-            fn.replace(".npy", ".geotiff"),
+            fn.replace(".npy.gz", ".geotiff"),
             "w",
             driver="GTiff",
             compress="lzw",
