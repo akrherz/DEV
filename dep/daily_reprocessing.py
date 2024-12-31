@@ -78,7 +78,7 @@ def pick_dates_by_moddate() -> Tuple[str]:
 
 def get_update_date(dt):
     """Filter days that should not be reprocessed."""
-    fn = f"/mnt/idep2/data/dailyprecip/{dt:%Y/%Y%m%d}.npy.gz"
+    fn = f"/mnt/idep2/data/dailyprecip/{dt:%Y/%Y%m%d}.geotiff"
     mt = datetime.datetime(2050, 1, 1)
     if os.path.isfile(fn):
         mt = datetime.datetime.fromtimestamp(os.path.getmtime(fn))
