@@ -2,18 +2,13 @@
 
 import datetime
 
-import requests
+import httpx
+from pyiem.database import get_dbconn
 from pyiem.nws.products.cli import parser
-from pyiem.util import get_dbconn, noaaport_text
+from pyiem.util import noaaport_text
 
 COLS = [
-    "resultant_wind_speed",
-    "resultant_wind_direction",
-    "highest_wind_speed",
-    "highest_wind_direction",
-    "highest_gust_speed",
-    "highest_gust_direction",
-    "average_wind_speed",
+    "snowdepth",
 ]
 
 
@@ -24,18 +19,17 @@ def do(valid):
     cursor2 = dbconn.cursor()
     cursor.execute(
         "select station, product from cli_data WHERE valid = %s "
-        "and average_wind_speed is null",
+        "and snowdepth is null",
         (valid,),
     )
     for row in cursor:
         uri = f"http://iem.local/api/1/nwstext/{row[1]}"
-        req = requests.get(uri)
-        if req.status_code != 200:
-            print(f"missing {row[1]}")
-            continue
         try:
-            cli = parser(noaaport_text(req.content.decode("ascii", "ignore")))
-        except Exception:
+            resp = httpx.get(uri, timeout=30)
+            resp.raise_for_status()
+            cli = parser(noaaport_text(resp.content.decode("ascii", "ignore")))
+        except Exception as exp:
+            print(f"missing {row[1]} {exp}")
             continue
         if not cli.data:
             continue
@@ -50,10 +44,7 @@ def do(valid):
             continue
         print(f"{row[0]} {valid} {vals}")
         cursor2.execute(
-            "UPDATE cli_data SET resultant_wind_speed = %s, "
-            "resultant_wind_direction = %s, highest_wind_speed = %s, "
-            "highest_wind_direction = %s, highest_gust_speed = %s, "
-            "highest_gust_direction = %s, average_wind_speed = %s  WHERE "
+            "UPDATE cli_data SET snowdepth = %s WHERE "
             "station = %s and valid = %s",
             (*vals, row[0], valid),
         )
@@ -64,8 +55,8 @@ def do(valid):
 
 def main():
     """Go Main."""
-    sts = datetime.date(2020, 1, 1)
-    ets = datetime.date(2020, 4, 24)
+    sts = datetime.date(2020, 10, 1)
+    ets = datetime.date(2022, 4, 24)
     interval = datetime.timedelta(days=1)
     now = sts
     while now < ets:
