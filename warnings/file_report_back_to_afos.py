@@ -16,8 +16,7 @@ def main(argv):
     acursor = afosdb.cursor()
     # Get all our text products.
     df = read_sql(
-        f"SELECT report, svs, issue from warnings_{year} "
-        "ORDER by issue DESC",
+        f"SELECT report, svs, issue from warnings_{year} ORDER by issue DESC",
         postgisdb,
         index_col=None,
     )

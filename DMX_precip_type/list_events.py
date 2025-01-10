@@ -158,10 +158,7 @@ def plot4():
     ax.set_ylabel("Frequency [%]")
     ax.set_yticks(range(0, 101, 10))
     ax.set_title(
-        (
-            "For Precipitating Events\n"
-            "Frequency of Snow by Wet Bulb Temperature"
-        )
+        ("For Precipitating Events\nFrequency of Snow by Wet Bulb Temperature")
     )
     fig.savefig("test.png")
 

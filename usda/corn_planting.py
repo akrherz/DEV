@@ -49,10 +49,7 @@ def main():
         )
     ax[0].scatter(sx, sy, c="brown", s=30, zorder=4)
     ax[0].set_xlabel(
-        (
-            "dots represent end of week with "
-            "largest yearly planting percentage"
-        )
+        ("dots represent end of week with largest yearly planting percentage")
     )
     prop = matplotlib.font_manager.FontProperties(size=12)
 

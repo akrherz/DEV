@@ -25,11 +25,11 @@ def main():
         for sid, row in df.iterrows():
             for col in ["temp24_hour", "precip24_hour"]:
                 df2 = pd.read_sql(
-                    f"""SELECT {col.replace('24', '')} as datum, count(*),
+                    f"""SELECT {col.replace("24", "")} as datum, count(*),
                     min(day), max(day) from alldata WHERE
                     station = %s and day > now() - '3 years'::interval and
-                    {col.replace('24', '')} is not null and
-                    not {col.replace('24_hour', '')}_estimated GROUP by datum
+                    {col.replace("24", "")} is not null and
+                    not {col.replace("24_hour", "")}_estimated GROUP by datum
                     ORDER by count DESC
                     """,
                     conn,

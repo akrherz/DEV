@@ -34,8 +34,7 @@ def main():
             continue
         iemid = cursor.fetchone()[0]
         cursor.execute(
-            "SELECT * from station_attributes where iemid = %s and "
-            "attr = %s",
+            "SELECT * from station_attributes where iemid = %s and attr = %s",
             (iemid, HAS1MIN),
         )
         if cursor.rowcount == 1:

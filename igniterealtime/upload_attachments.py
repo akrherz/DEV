@@ -137,14 +137,14 @@ def main():
             res = req.json()
 
             if attachment["contentType"].startswith("image"):
-                raw += ('\n<img src="%s" ' 'width="%s" height="%s">') % (
+                raw += ('\n<img src="%s" width="%s" height="%s">') % (
                     res["url"],
                     res["width"],
                     res["height"],
                 )
             else:
                 raw += (
-                    '\n<a class="attachment" ' 'href="%s">%s</a> (%s Bytes)'
+                    '\n<a class="attachment" href="%s">%s</a> (%s Bytes)'
                 ) % (res["url"], attachment["name"], attachment["size"])
             data = {
                 "post[raw]": raw,

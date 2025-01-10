@@ -38,7 +38,7 @@ def main(clifn, title):
     (fig, ax) = figure_axes(
         logo="dep",
         figsize=(8, 6),
-        title=("DEP 2007-2023 Maximum Precipitation Rate\n" f"{title}"),
+        title=(f"DEP 2007-2023 Maximum Precipitation Rate\n{title}"),
     )
     print(df[df["jday"] > 330].sort_values("maxr", ascending=False))
     gdf = df[["jday", "maxr"]].groupby("jday").max()

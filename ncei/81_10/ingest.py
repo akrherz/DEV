@@ -57,7 +57,7 @@ def ingest(stations, pgconn):
                 val = int(token[:-1]) / 100.0
                 if val == "-8888":
                     continue
-                d = f"2000-{month}-{(t-1):02.0f}"
+                d = f"2000-{month}-{(t - 1):02.0f}"
                 data[dbid][d] = {}
                 data[dbid][d]["precip"] = val
 
@@ -75,7 +75,7 @@ def ingest(stations, pgconn):
                 val = int(token[:-1]) / 10.0
                 if val == "-8888":
                     continue
-                d = f"2000-{month}-{(t-1):02.0f}"
+                d = f"2000-{month}-{(t - 1):02.0f}"
                 data[dbid][d]["snow"] = val
 
     print("Process TMIN")
@@ -92,7 +92,7 @@ def ingest(stations, pgconn):
                 val = int(token[:-1]) / 10.0
                 if val == "-8888":
                     continue
-                d = f"2000-{month}-{(t-1):02.0f}"
+                d = f"2000-{month}-{(t - 1):02.0f}"
                 data[dbid][d]["tmin"] = val
 
     print("Process TMAX")
@@ -109,7 +109,7 @@ def ingest(stations, pgconn):
                 val = int(token[:-1]) / 10.0
                 if val == "-8888":
                     continue
-                d = f"2000-{month}-{(t-1):02.0f}"
+                d = f"2000-{month}-{(t - 1):02.0f}"
                 data[dbid][d]["tmax"] = val
 
     progress = tqdm(data.keys())

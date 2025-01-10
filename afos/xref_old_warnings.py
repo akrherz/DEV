@@ -253,7 +253,7 @@ def handle_afos_row(conn, row):
             return
         conn.execute(
             text(f"""
-            UPDATE {row['table']} SET entered = :valid
+            UPDATE {row["table"]} SET entered = :valid
             WHERE ctid = :ctid
             """),
             {"ctid": row["ctid"], "valid": prod.valid},

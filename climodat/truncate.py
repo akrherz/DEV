@@ -23,8 +23,7 @@ def truncate(row, end):
             break
     dt -= timedelta(days=1)
     cursor.execute(
-        f"DELETE from alldata_{row['id'][:2]} WHERE station = %s and "
-        "day > %s",
+        f"DELETE from alldata_{row['id'][:2]} WHERE station = %s and day > %s",
         (row["id"], dt.date()),
     )
     LOG.info("  removed %s rows after %s", cursor.rowcount, dt)

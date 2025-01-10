@@ -64,7 +64,7 @@ def main(year):
             )
             res = conn.execute(
                 text(f"""
-                update {row['table']} SET pil = :pil, bbb = :bbb, data = :data
+                update {row["table"]} SET pil = :pil, bbb = :bbb, data = :data
                 WHERE ctid = :ctid
             """),
                 {

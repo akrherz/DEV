@@ -16,7 +16,7 @@ df = read_sql(
 (fig, ax) = plt.subplots(1, 1)
 
 ax.set_title(
-    ("Wind Farm Normalized Power\n" "[Turbine 141, alpha1 blade pitch < 1]")
+    ("Wind Farm Normalized Power\n[Turbine 141, alpha1 blade pitch < 1]")
 )
 
 ax.scatter(

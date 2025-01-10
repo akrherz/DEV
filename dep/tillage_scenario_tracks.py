@@ -76,7 +76,7 @@ def main(huc12):
         logo="dep",
         figsize=(10.24, 7.68),
     )
-    ax = fig.add_axes([0.13, 0.1, 0.5, 0.8])
+    ax = fig.add_axes((0.13, 0.1, 0.5, 0.8))
     colors = [
         "tan",
         "green",
@@ -97,7 +97,8 @@ def main(huc12):
                 label=None
                 if label
                 else (
-                    f"{i+1}: {sc * 100:.0f}-{slope_classes[i + 1] * 100:.0f}%"
+                    f"{i + 1}: {sc * 100:.0f}-"
+                    f"{slope_classes[i + 1] * 100:.0f}%"
                 ),
             )
             label = True

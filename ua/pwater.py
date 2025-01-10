@@ -59,7 +59,7 @@ def main():
         title=(
             "Omaha 7 PM Precipitable Water + Next 12 Hour Rainfall during May"
         ),
-        subtitle=(f"{df['date'].min():%Y/%m/%d} to " "2023-05-23"),
+        subtitle=(f"{df['date'].min():%Y/%m/%d} to 2023-05-23"),
         figsize=(8.0, 6.0),
     )
     ax.scatter(df["pwater"].values, df["sum"].values)

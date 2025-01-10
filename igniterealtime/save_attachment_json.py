@@ -39,7 +39,7 @@ def main():
     """Go"""
     # Get space details
     url = (
-        "%s/places?fields=placeID,name,-resources&" "startIndex=0&count=100"
+        "%s/places?fields=placeID,name,-resources&startIndex=0&count=100"
     ) % (API,)
     places = apiget(url)
     for place in places["list"][8:]:

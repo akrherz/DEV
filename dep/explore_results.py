@@ -112,7 +112,7 @@ def main(huc12):
         modelled = gdf[pd.notna(gdf["delivery"])]
         ma = modelled["acres"].sum()
         ta = gdf["acres"].sum()
-        print(f"{label} {ma:.1f}/{ta:.1f} {ma/ta*100.:.2f}")
+        print(f"{label} {ma:.1f}/{ta:.1f} {ma / ta * 100.0:.2f}")
 
     # weighting by acres
     print(

@@ -87,7 +87,7 @@ def do(turbine):
     ax[0].grid(True)
     ax[0].set_ylim(0, 12)
     ax[0].set_title(
-        ("Turbine %s Power Differential at Wind Speed\n" "Pitch < 1$^\circ$")
+        ("Turbine %s Power Differential at Wind Speed\nPitch < 1$^\circ$")
         % (turbine,)
     )
     ax[0].set_ylabel("Wind Speed [mps]")

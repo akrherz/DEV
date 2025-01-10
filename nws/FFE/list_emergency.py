@@ -26,7 +26,7 @@ def main():
             continue
         v = parser(report)
         data = {
-            "link": ("https://mesonet.agron.iastate.edu/" "p.php?pid=%s")
+            "link": ("https://mesonet.agron.iastate.edu/p.php?pid=%s")
             % (v.get_product_id(),),
             "utc_valid": v.valid.strftime("%Y-%m-%d %H:%M"),
             "source": v.source,

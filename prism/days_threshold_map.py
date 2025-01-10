@@ -38,10 +38,8 @@ def main():
     print(np.min(val))
     mp = MapPlot(
         sector="conus",
-        title=("OSU PRISM 2017 Days with High >= 90$^\circ$F " "Departure"),
-        subtitle=(
-            "2017 thru 4 July against 1981-2016 " "Year to Date Average"
-        ),
+        title=("OSU PRISM 2017 Days with High >= 90$^\circ$F Departure"),
+        subtitle=("2017 thru 4 July against 1981-2016 Year to Date Average"),
     )
     mp.contourf(
         lons,

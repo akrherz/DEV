@@ -66,7 +66,7 @@ def cross_check(afosdb: Connection, textdf: pd.DataFrame) -> bool:
             )
             afosdb.execute(
                 text(
-                    f"""update {row['table']} SET entered = :entered,
+                    f"""update {row["table"]} SET entered = :entered,
                     source = :source, wmo = :wmo, pil = :pil, bbb = :bbb
                     where ctid = :ctid"""
                 ),

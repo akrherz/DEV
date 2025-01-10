@@ -32,8 +32,8 @@ def main():
         df.at[station, "lon"] = nt.sts[station[1:]]["lon"]
 
     mp = MapPlot(
-        title=("00z Analysis NAM January Average " "Precipitable Water [in]"),
-        subtitle=("based on grid point samples " "from 2004-2020 for January"),
+        title=("00z Analysis NAM January Average Precipitable Water [in]"),
+        subtitle=("based on grid point samples from 2004-2020 for January"),
     )
     cmap = plt.get_cmap("plasma_r")
     cmap.set_under("white")

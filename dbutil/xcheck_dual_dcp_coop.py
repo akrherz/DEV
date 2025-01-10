@@ -18,7 +18,7 @@ def delete(station, network):
 def move(cursor, nwsli, state):
     """Move to DCP"""
     cursor.execute(
-        "UPDATE stations SET network = %s where id = %s and " "network = %s",
+        "UPDATE stations SET network = %s where id = %s and network = %s",
         (f"{state}_DCP", nwsli, f"{state}_COOP"),
     )
 

@@ -16,8 +16,7 @@ def get_data():
     """Get data"""
     with get_sqlalchemy_conn("postgis") as conn:
         states = gpd.read_postgis(
-            "SELECT the_geom, state_abbr from states "
-            "where state_abbr = 'IA'",
+            "SELECT the_geom, state_abbr from states where state_abbr = 'IA'",
             conn,
             index_col="state_abbr",
             geom_col="the_geom",

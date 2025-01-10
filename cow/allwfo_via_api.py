@@ -16,8 +16,8 @@ def main():
         url = (
             f"http://mesonet.agron.iastate.edu/api/1/cow.json?wfo={wfo}&"
             "begints=2019-01-01T00:00Z&endts=2024-05-08T00:00Z&"
-            "phenomena=SV&phenomena=TO&"  # lsrtype=SV&"
-        )
+            "phenomena=SV&phenomena=TO&"
+        )  # lsrtype=SV&"
         try:
             reg = httpx.get(url, timeout=300)
         except Exception:

@@ -141,9 +141,7 @@ def plot_climo(climo, lons, lats):
     """Plot the climatology."""
     mp = MapPlot(
         sector="conus",
-        title=(
-            "1 Jan - 28 May SPC Tornado Watch Count Climatology " "2000-2023"
-        ),
+        title=("1 Jan - 28 May SPC Tornado Watch Count Climatology 2000-2023"),
         subtitle=(
             "based on unofficial watch polygon "
             "archives maintained by the IEM, "

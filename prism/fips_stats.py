@@ -33,7 +33,7 @@ def main():
         """Download."""
         for fips, info in tqdm(fips_info.items()):
             url = (
-                "http://iem.local/json/prism/%.2f/%.2f/" "19810101-20111231"
+                "http://iem.local/json/prism/%.2f/%.2f/19810101-20111231"
             ) % (info["lon"], info["lat"])
             r = requests.get(url)
             o = open("cache/%s.json" % (fips,), "w")

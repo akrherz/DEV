@@ -22,7 +22,7 @@ def write_html(html, plot, meta, counter):
     html.write(
         f'<div class="col-md-3 well">'
         f'<a href="/plotting/auto/?q={plot["id"]}">'
-        f'<h4>#{plot["id"]}. {plot["label"]}</h4></a>'
+        f"<h4>#{plot['id']}. {plot['label']}</h4></a>"
         f'<a href="/plotting/auto/?q={plot["id"]}">'
         f'<img src="/pickup/autoplot/{plot["id"]}_thumb.png" '
         f'class="img img-responsive"></a><br>{desc}'
@@ -44,7 +44,7 @@ def main():
         if counter > 1:
             html.write("</div>\n")
         counter = 1
-        html.write(f'<h2>{section["label"]}</h2>\n')
+        html.write(f"<h2>{section['label']}</h2>\n")
         html.write('<div class="row">\n')
         progress = tqdm(section["options"])
         for plot in progress:

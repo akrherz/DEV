@@ -50,7 +50,7 @@ def debug(placeid, startindex):
 def main():
     """Go main"""
     url = (
-        "%s/places?fields=placeID,name,-resources&" "startIndex=0&count=100"
+        "%s/places?fields=placeID,name,-resources&startIndex=0&count=100"
     ) % (API,)
     places = apiget(url)
     for counter, place in enumerate(places["list"]):

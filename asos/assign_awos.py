@@ -39,8 +39,7 @@ def main():
     """Go Main Go."""
     with get_sqlalchemy_conn("mesosite") as conn:
         netdf = pd.read_sql(
-            "SELECT id from networks where id ~* '_ASOS' and "
-            "length(id) = 7",
+            "SELECT id from networks where id ~* '_ASOS' and length(id) = 7",
             conn,
             index_col=None,
         )

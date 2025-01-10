@@ -29,8 +29,7 @@ def main(argv):
         if drct == row[2]:
             continue
         cursor2.execute(
-            f"UPDATE t{year} SET drct = %s WHERE station = %s "
-            "and valid = %s",
+            f"UPDATE t{year} SET drct = %s WHERE station = %s and valid = %s",
             (drct, row[0], row[1]),
         )
         hits += 1

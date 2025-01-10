@@ -66,7 +66,7 @@ def main(year):
             "valid < %s and report_type = 2 group by station",
             conn,
             index_col="station",
-            params=(f"{year}-01-01 00:00+00", f"{year+1}-01-01 00:00+00"),
+            params=(f"{year}-01-01 00:00+00", f"{year + 1}-01-01 00:00+00"),
         )
     LOG.info("Found %s stations and %s rows", len(df.index), df["count"].sum())
     for station in df.index:

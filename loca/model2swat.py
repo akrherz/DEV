@@ -62,10 +62,7 @@ def main(argv):
     hucs = huc12df.index.values
     years = range(1989, 2011) if rcp == "historical" else range(2039, 2061)
     nc = netCDF4.Dataset(
-        (
-            "%s/pr/pr_day_%s_%s_r1i1p1"
-            "_%.0f0101-%.0f1231.LOCA_2016-04-02.16th.nc"
-        )
+        ("%s/pr/pr_day_%s_%s_r1i1p1_%.0f0101-%.0f1231.LOCA_2016-04-02.16th.nc")
         % (basedir, model, rcp, years[0], years[0])
     )
 

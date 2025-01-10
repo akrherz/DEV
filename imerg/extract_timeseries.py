@@ -29,7 +29,7 @@ def main():
     for dt in progress:
         progress.set_description(dt.strftime("%Y%m%d%H%M"))
         fn = dt.strftime(
-            "/mesonet/ARCHIVE/data/%Y/%m/%d/" "GIS/imerg/p30m_%Y%m%d%H%M.png"
+            "/mesonet/ARCHIVE/data/%Y/%m/%d/GIS/imerg/p30m_%Y%m%d%H%M.png"
         )
         if not os.path.isfile(fn):
             for j in jobs:

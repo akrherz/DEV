@@ -22,8 +22,7 @@ def make_map():
         sector="nws",
         continentalcolor="white",
         title=(
-            "Percent of SVR+TOR Warning Vertices within 2km "
-            "of County Border"
+            "Percent of SVR+TOR Warning Vertices within 2km of County Border"
         ),
         subtitle=(
             "1 Oct 2007 through 29 Mar 2018, "

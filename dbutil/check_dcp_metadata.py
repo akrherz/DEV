@@ -44,8 +44,7 @@ def main():
         state2 = nwsli2state.get(code)
         if state is not None and state != state2:
             print(
-                f"ID:{nwsli} ST:{state} C:{country} NET:{network} "
-                f"L_S:{state2}"
+                f"ID:{nwsli} ST:{state} C:{country} NET:{network} L_S:{state2}"
             )
 
 

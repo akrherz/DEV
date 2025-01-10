@@ -24,8 +24,7 @@ def main(argv):
     table = f"warnings_{argv[1]}"
 
     cursor.execute(
-        f"SELECT ctid, report, svs, ugc from {table} where "
-        "purge_time is null"
+        f"SELECT ctid, report, svs, ugc from {table} where purge_time is null"
     )
 
     LOG.info("Found %s entries to process...", cursor.rowcount)

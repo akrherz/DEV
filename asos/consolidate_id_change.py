@@ -56,8 +56,7 @@ def update_iemaccess(meta, oldid, newid):
     # cull any summary rows after archive_end
     with get_sqlalchemy_conn("iem") as conn:
         stmt = text(
-            "DELETE FROM summary WHERE iemid = :oldiemid and "
-            "day > :lastdate"
+            "DELETE FROM summary WHERE iemid = :oldiemid and day > :lastdate"
         )
         res = conn.execute(
             stmt,

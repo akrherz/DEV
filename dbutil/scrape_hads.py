@@ -35,8 +35,7 @@ def main():
             network = "%s__DCP" % (country,)
         print("Processing country:%s state:%s" % (country, state))
         uri = (
-            "https://hads.ncep.noaa.gov/"
-            "compressed_defs/%s_dcps_compressed.txt"
+            "https://hads.ncep.noaa.gov/compressed_defs/%s_dcps_compressed.txt"
         ) % (hadscode,)
         req = requests.get(uri, timeout=60)
         if req.status_code != 200:

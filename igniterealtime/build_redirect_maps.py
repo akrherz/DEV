@@ -116,7 +116,7 @@ def main():
     """Go Main Go"""
     xref = build_xref()
     url = (
-        "%s/places?fields=placeID,name,-resources&" "startIndex=0&count=100"
+        "%s/places?fields=placeID,name,-resources&startIndex=0&count=100"
     ) % (API,)
     places = apiget(url)
     for counter, place in enumerate(places["list"]):
