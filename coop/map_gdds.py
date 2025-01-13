@@ -1,8 +1,8 @@
 """Map GDD totals"""
 
 from pandas.io.sql import read_sql
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot
-from pyiem.util import get_sqlalchemy_conn
 
 # NOTE: this fancy SQL did not save much in time.
 SQL = """

@@ -1,9 +1,9 @@
 """Map values"""
 
 from pandas.io.sql import read_sql
+from pyiem.database import get_dbconn
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot
-from pyiem.util import get_dbconn
 
 
 def main():

@@ -1,7 +1,7 @@
 """Shrug."""
 
 import matplotlib.pyplot as plt
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def main():
@@ -13,7 +13,7 @@ def main():
         """
     SELECT low,
     sum(case when snowd > 0 then 1 else 0 end) / count(*):: numeric,
-    count(*) from alldata_ia where station = 'IA2203' and low < 32
+    count(*) from alldata_ia where station = 'IATAME' and low < 32
     and year > 1899 and snowd >= 0 and year < 2012 GROUP by low
     ORDER by low DESC
     """

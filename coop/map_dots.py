@@ -3,10 +3,10 @@
 import os
 
 import pandas as pd
+from pyiem.database import get_dbconn, get_sqlalchemy_conn
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot
 from pyiem.reference import Z_OVERLAY, state_names
-from pyiem.util import get_dbconn, get_sqlalchemy_conn
 from tqdm import tqdm
 
 
