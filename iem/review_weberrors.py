@@ -2,8 +2,8 @@
 Review website_telemetry for errors.
 """
 
+import httpx
 import pandas as pd
-import requests
 from pyiem.database import get_sqlalchemy_conn
 
 VHOST_MAPPER = {
@@ -34,6 +34,9 @@ def main():
     for _, row in df.iterrows():
         vhost = row["vhost"]
         uri = row["request_uri"]
+        # Unclear how this happens, but alas
+        if uri.startswith("http"):
+            continue
         print("-------------------------------------------------")
         print(f"[{vhost}] {uri}")
         if uri.find("hads.py") > 0:
@@ -42,7 +45,7 @@ def main():
         waiting = True
         while waiting:
             vhost = VHOST_MAPPER.get(vhost, vhost)
-            req = requests.get(f"http://{vhost}{uri}", timeout=600)
+            req = httpx.get(f"http://{vhost}{uri}", timeout=600)
             # Rumfields Known Knowns
             if req.status_code in [200, 400, 404, 422, 503]:
                 waiting = False
