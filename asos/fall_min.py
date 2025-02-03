@@ -2,15 +2,15 @@
 
 import datetime
 
-from pandas.io.sql import read_sql
+import pandas as pd
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot
-from pyiem.util import get_sqlalchemy_conn
 
 
 def main():
     """Go"""
     with get_sqlalchemy_conn("iem") as conn:
-        df = read_sql(
+        df = pd.read_sql(
             """
             SELECT id, network, ST_x(geom) as lon,
             ST_y(geom) as lat, min(min_tmpf)

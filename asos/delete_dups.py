@@ -4,7 +4,7 @@ A stop gap hack to remove some bad data from the database.  Sadly, gonna be
 tough to resolve how these obs appeared in the database to begin with :(
 """
 
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.database import get_dbconn
 from tqdm import tqdm
 
@@ -13,7 +13,7 @@ def do_year(year):
     """Process this year"""
     pgconn = get_dbconn("asos")
     table = f"t{year}"
-    stations = read_sql(
+    stations = pd.read_sql(
         f"SELECT distinct station from {table} ORDER by station",
         pgconn,
     )

@@ -14,7 +14,7 @@ from sqlalchemy import text
 LOG = logger()
 
 
-def process(conn, row, station, nt, threshold: int):
+def process(conn, row, station, nt, threshold: int, autozap: bool):
     """Do what we need to do here."""
     delta = pd.Timedelta(hours=3)
     obs = pd.read_sql(
@@ -38,7 +38,21 @@ def process(conn, row, station, nt, threshold: int):
         ]
     print(row["valid"])
     print(obs.head(100))
-    res = input("Null space sep list (#s #g #p): ")
+    if autozap:
+        res = []
+        for i, row in obs.iterrows():
+            if row["sknt"] is not None and row["sknt"] >= threshold:
+                res.append(f"{i}s")
+            if row["gust"] is not None and row["gust"] >= threshold:
+                res.append(f"{i}g")
+            if (
+                row["peak_wind_gust"] is not None
+                and row["peak_wind_gust"] >= threshold
+            ):
+                res.append(f"{i}p")
+        res = " ".join(res)
+    else:
+        res = input("Null space sep list (#s #g #p): ")
     if res == "":
         return
     tzinfo = ZoneInfo(nt.sts[station]["tzname"])
@@ -83,7 +97,8 @@ def process(conn, row, station, nt, threshold: int):
 @click.option("--station", required=True)
 @click.option("--network", required=True)
 @click.option("--threshold", type=int, default=100)
-def main(station, network, threshold):
+@click.option("--autozap", is_flag=True)
+def main(station, network, threshold, autozap: bool):
     """Go Main Go."""
     nt = NetworkTable(network, only_online=False)
     # Look for obs that are maybe bad
@@ -101,7 +116,7 @@ def main(station, network, threshold):
         LOG.info("Found %s rows", len(obs.index))
 
         for _, row in obs.iterrows():
-            process(conn, row, station, nt, threshold)
+            process(conn, row, station, nt, threshold, autozap)
 
 
 if __name__ == "__main__":

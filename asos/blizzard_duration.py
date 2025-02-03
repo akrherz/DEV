@@ -3,7 +3,7 @@
 from datetime import timedelta
 
 import pandas as pd
-from pyiem.util import get_dbconn, get_sqlalchemy_conn
+from pyiem.database import get_dbconn, get_sqlalchemy_conn
 
 
 def main():
