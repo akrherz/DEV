@@ -3,9 +3,8 @@
 import calendar
 
 import pandas as pd
-from pandas.io.sql import read_sql
+from pyiem.database import get_dbconn
 from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
 
 SCENARIOS = {
     0: "DEP Baseline",
@@ -20,7 +19,7 @@ def gendata():
     pgconn = get_dbconn("idep")
     dates = pd.date_range("2019-01-01", "2019-12-31").strftime("%m%d")
     for scenario in [0, 36, 37, 38]:
-        df = read_sql(
+        df = pd.read_sql(
             """
         WITH data as (
             SELECT r.huc_12, to_char(valid, 'mmdd') as sday,

@@ -2,8 +2,7 @@
 
 import click
 import pandas as pd
-from pyiem.database import get_sqlalchemy_conn
-from sqlalchemy import text
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 
 
 @click.command()
@@ -16,7 +15,7 @@ def main(filename: str, wfo: str):
     with get_sqlalchemy_conn("mesosite") as pgconn:
         for nwsli, row in wfodf.iterrows():
             res = pgconn.execute(
-                text(
+                sql_helper(
                     "update stations SET name = :name, "
                     "geom = ST_Point(:lon, :lat, 4326), elevation = -999, "
                     "ugc_county = null, ugc_zone = null "
@@ -34,7 +33,7 @@ def main(filename: str, wfo: str):
             pgconn.commit()
     with get_sqlalchemy_conn("mesosite") as pgconn:
         iemdf = pd.read_sql(
-            text(
+            sql_helper(
                 "select id, name from stations where network ~* 'COOP' and "
                 "wfo = :wfo"
             ),
@@ -50,7 +49,7 @@ def main(filename: str, wfo: str):
     with get_sqlalchemy_conn("mesosite") as pgconn:
         for nwsli in iem_delta:
             stdf = pd.read_sql(
-                text(
+                sql_helper(
                     "select wfo, network, online from stations where id = :id"
                 ),
                 pgconn,

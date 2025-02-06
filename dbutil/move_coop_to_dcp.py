@@ -3,7 +3,7 @@ Loop over sites that we think are solely COOP, but report many times per day
 and so are likely DCP
 """
 
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def main():

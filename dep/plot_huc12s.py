@@ -4,10 +4,9 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 from matplotlib import colors as mpcolors
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_POLITICAL
-from sqlalchemy import text
 
 SQL = """
 with data as (
@@ -29,7 +28,9 @@ def main():
     """Go Main Go."""
     with get_sqlalchemy_conn("idep") as conn:
         huc12df = gpd.read_postgis(
-            text("select simple_geom, huc_12 from huc12 where scenario = 0"),
+            sql_helper(
+                "select simple_geom, huc_12 from huc12 where scenario = 0"
+            ),
             conn,
             geom_col="simple_geom",
             index_col="huc_12",
