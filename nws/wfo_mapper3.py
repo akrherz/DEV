@@ -148,9 +148,11 @@ def main():
     mp.fill_cwas(
         vals,
         bins=bins,
-        lblformat="%.1f",  # , labels=labels,
+        lblformat="%.1f",
+        # labels=labels,
         cmap=cmap,
-        ilabel=True,  # clevlabels=clevlabels,
+        ilabel=True,
+        # clevlabels=clevlabels,
         units="count",
         extend="neither",
         spacing="proportional",

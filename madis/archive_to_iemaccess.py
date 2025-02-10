@@ -75,7 +75,7 @@ def provider2network(provider, name):
         if network.endswith("DOT"):
             if len(network) == 5:
                 return f"{network[:2]}_RWIS"
-            if tokens[-2] in ["UTAH", "WA", "NV", "MT"]:
+            if tokens[-2] == "UTAH" or len(tokens[-2]) == 2:
                 return f"{tokens[-2][:2]}_RWIS"
             LOG.warning("How to convert %s into a network?", repr(tokens))
             return None
@@ -87,6 +87,7 @@ def provider2network(provider, name):
             return None
         return f"{provider[:2]}_RWIS"
     LOG.warning("Unsure how to convert %s into a network", provider)
+    sys.exit()
     return None
 
 
@@ -163,13 +164,7 @@ def main(valid: datetime):
     for recnum, provider in enumerate(providers):
         name = names[recnum]
         network = provider2network(provider, name)
-        if network is None or network not in [
-            "UT_RWIS",
-            "ID_RWIS",
-            "OR_RWIS",
-            "WA_RWIS",
-            "MT_RWIS",
-        ]:
+        if network is None or "RWIS" not in network or network == "IA_RWIS":
             continue
         LOG.debug("provider: %s name: %s network: %s", provider, name, network)
         this_station = stations[recnum]
@@ -201,6 +196,7 @@ def main(valid: datetime):
         if rstate4[recnum] is not np.ma.masked:
             db[this_station]["scond3"] = road_state_xref.get(rstate4[recnum])
 
+    dirty = False
     for sid, val in db.items():
         iem = Observation(sid, val["network"], val["ts"])
         for colname in ["scond0", "scond1", "scond2", "scond3"]:
@@ -241,17 +237,19 @@ def main(valid: datetime):
             not iem.save(icursor, force_current_log=True)
             and val["network"] != "IA_RWIS"
         ):
+            dirty = True
             LOG.warning(
                 "MADIS Extract: %s found new station: %s network: %s",
                 valid,
                 sid,
                 val["network"],
             )
-            subprocess.call(
-                ["python", "sync_stations.py", f"--filename=/tmp/{fnp}.nc"]
-            )
-            LOG.info("...done with sync.")
         del iem
+    if dirty:
+        subprocess.call(
+            ["python", "sync_stations.py", f"--filename=/tmp/{fnp}.nc"]
+        )
+        LOG.info("...done with sync.")
     os.unlink(f"/tmp/{fnp}.nc")
     icursor.close()
     pgconn.commit()

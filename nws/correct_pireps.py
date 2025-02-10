@@ -9,7 +9,7 @@ import pandas as pd
 from psycopg2.extras import RealDictCursor
 from pyiem.nws.products.pirep import Pirep
 from pyiem.util import get_dbconn, logger, utc
-from pywwa.workflows.pirep_parser import LOCS, load_locs
+from pywwa.workflows.pirep import LOCS, load_locs
 
 LOG = logger()
 

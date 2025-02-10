@@ -3,7 +3,7 @@
 # third party
 import matplotlib.pyplot as plt
 import numpy as np
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.network import Table as NetworkTable
 from pyiem.util import get_dbconn
 from tqdm import tqdm
@@ -18,7 +18,7 @@ def main():
     for wfo in tqdm(nt.sts):
         if nt.sts[wfo]["state"] in ["PR", "AK", "HI"]:
             continue
-        df = read_sql(
+        df = pd.read_sql(
             """
         WITH wlocs as (
             select st_x(st_transform(geom, 2163)) as x,
@@ -37,7 +37,9 @@ def main():
             index_col=None,
         )
         h2d, xedges, yedges = np.histogram2d(
-            df["x"] / 1000.0, df["y"] / 1000.0, axis
+            df["x"].to_numpy() / 1000.0,
+            df["y"].to_numpy() / 1000.0,
+            list(axis),
         )
         # trick here is just to put any value > 0 as 1
         total += np.where(h2d > 0, 1, 0)
@@ -49,10 +51,8 @@ def main():
     ax.set_xlabel("X Distance from WFO [km]")
     ax.set_ylabel("Y Distance from WFO [km]")
     ax.set_title(
-        (
-            "Frequency of NWS Office's own CWA Border\n"
-            "for CONUS NWS Offices, all borders considered (ie coastal)"
-        )
+        "Frequency of NWS Office's own CWA Border\n"
+        "for CONUS NWS Offices, all borders considered (ie coastal)"
     )
     fig.text(0.02, 0.01, "@akrherz 16 Nov 2017")
     fig.text(0.99, 0.01, "computed in US Albers EPSG:2163", ha="right")

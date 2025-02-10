@@ -2,18 +2,18 @@
 
 # third party
 import pandas as pd
-from pyiem.util import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 
 
 def main():
     """Do Something"""
     with get_sqlalchemy_conn("postgis") as conn:
         df = pd.read_sql(
-            """SELECT ugc, eventid,
+            sql_helper("""SELECT ugc, eventid,
             generate_series(issue, expire, '1 minute'::interval) as ts
             from warnings WHERE phenomena = 'TO' and significance = 'W'
             ORDER by ts ASC
-        """,
+        """),
             conn,
             index_col=None,
         )

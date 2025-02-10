@@ -11,7 +11,7 @@ def main():
     # filter for just DMX
     df = df[df["CWA"] == "DMX"]
     # Simplify the geometry to 5 decimal places
-    df["geometry"] = df["geometry"].simplify(0.00001)
+    df["geometry"] = df["geometry"].simplify(0.00001)  # type: ignore
     # create a gibson ridge placefile with just the boundaries
     with open("DMX.txt", "w", encoding="utf-8") as fh:
         fh.write(

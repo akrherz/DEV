@@ -17,10 +17,9 @@ from datetime import timezone
 
 import click
 import pandas as pd
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.nws.products.vtec import parser
 from pyiem.util import logger, utc
-from sqlalchemy import text
 
 LOG = logger()
 
@@ -33,7 +32,7 @@ def workflow(row):
     LOG.info("Processing %s %s", row["utc_valid"], row["pil"])
     with get_sqlalchemy_conn("afos") as conn:
         res = conn.execute(
-            text("""
+            sql_helper("""
             select ctid, tableoid::regclass as tablename, data, bbb from
             products where entered = :entered and pil = :pil and
             bbb is null
@@ -84,7 +83,7 @@ def workflow(row):
     vtec = prods[rraidx].segments[0].vtec[0]
     with get_sqlalchemy_conn("postgis") as conn:
         res = conn.execute(
-            text("""
+            sql_helper("""
             select ctid from sbw where vtec_year = :vtec_year and
             eventid = :eventid and phenomena = :phenomena and
             significance = :significance and wfo = :wfo and
@@ -104,7 +103,7 @@ def workflow(row):
             sys.exit()
         sbwctid = res.fetchone()[0]
         res = conn.execute(
-            text("""
+            sql_helper("""
             select ctid from warnings where vtec_year = :vtec_year and
             eventid = :eventid and phenomena = :phenomena and
             significance = :significance and wfo = :wfo and
@@ -131,17 +130,20 @@ def workflow(row):
     ):
         # update afos data and bbb fields
         res = afos.execute(
-            text(f"""
-            UPDATE {prodrows[rraidx][1]} SET bbb = :bbb, data = :data
+            sql_helper(
+                """
+            UPDATE {table} SET bbb = :bbb, data = :data
             WHERE ctid = :ctid
-            """),
+            """,
+                table=prodrows[rraidx][1],
+            ),
             {"bbb": "RRA", "data": newtext, "ctid": prodrows[rraidx][0]},
         )
         if res.rowcount != 1:
             LOG.info("Failed to update afos row %s", prodrows[rraidx][0])
             sys.exit()
         res = postgis.execute(
-            text("""
+            sql_helper("""
             UPDATE sbw SET product_id = :newpid WHERE ctid = :ctid
             and vtec_year = :vtec_year
             """),
@@ -156,7 +158,7 @@ def workflow(row):
             sys.exit()
         for wctid in warningctids:
             res = postgis.execute(
-                text("""
+                sql_helper("""
                 UPDATE warnings SET
                 product_ids = array_replace(product_ids, :oldpid, :newpid)
                 WHERE ctid = :ctid
@@ -186,7 +188,7 @@ def main(year, pil):
     # build a list of problematic products
     with get_sqlalchemy_conn("afos") as conn:
         products = pd.read_sql(
-            text("""
+            sql_helper("""
             select entered at time zone 'UTC' as utc_valid,
             pil, bbb, count(*) from products where entered >= :sts and
             entered < :ets and substr(pil, 1, 3) = :pil
@@ -219,11 +221,14 @@ def main(year, pil):
                 continue
             bbbcomp = "bbb = :bbb" if row["bbb"] is not None else "bbb is null"
             res = conn.execute(
-                text(f"""
+                sql_helper(
+                    """
                 select ctid, tableoid::regclass as tablename, data, bbb from
                 products where entered = :entered and pil = :pil and
                 {bbbcomp}
-                """),
+                """,
+                    bbbcomp=bbbcomp,
+                ),
                 {
                     "entered": row["utc_valid"],
                     "pil": row["pil"],
@@ -248,10 +253,9 @@ def main(year, pil):
                     [prod1row, prod2row], [prod1, prod2], strict=True
                 ):
                     res = conn.execute(
-                        text(
-                            f"""
-                        UPDATE {prodrow[1]} SET bbb = :bbb WHERE ctid = :ctid
-                    """
+                        sql_helper(
+                            "UPDATE {table} SET bbb = :bbb WHERE ctid = :ctid",
+                            table=prodrow[1],
                         ),
                         {"bbb": prod.bbb, "ctid": prodrow[0]},
                     )
@@ -287,10 +291,9 @@ def main(year, pil):
                         else prod2row
                     )
                     res = conn.execute(
-                        text(
-                            f"""
-                        DELETE from {delrow[1]} where ctid = :ctid
-                    """
+                        sql_helper(
+                            "DELETE from {table} where ctid = :ctid",
+                            table=delrow[1],
                         ),
                         {"ctid": delrow[0]},
                     )
