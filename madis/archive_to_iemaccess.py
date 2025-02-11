@@ -118,7 +118,15 @@ def main(valid: datetime):
 
     stations = chartostring(nc.variables["stationId"][:])
     providers = chartostring(nc.variables["dataProvider"][:])
-    names = chartostring(nc.variables["stationName"][:])
+    try:
+        names = chartostring(nc.variables["stationName"][:])
+    except UnicodeDecodeError:
+        names = chartostring(nc.variables["stationName"][:], "bytes").tolist()
+        for i, name in enumerate(names):
+            try:
+                names[i] = str(name.decode("utf-8"))
+            except UnicodeDecodeError:
+                names[i] = ""
 
     tmpk = nc.variables["temperature"][:]
     dwpk = nc.variables["dewpoint"][:]
