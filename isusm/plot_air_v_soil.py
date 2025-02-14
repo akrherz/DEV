@@ -23,7 +23,7 @@ def main():
     df["soil"] = c2f(df["soil"])
 
     fig = figure(
-        title="ISU Soil Moisture -- Ames Kitch Farm Temperature Comparison",
+        title="ISU Soil Moisture -- Ames Kitchen Farm Temperature Comparison",
         subtitle=(
             "Air Temp vs Soil Temp at 2 inches, "
             "★ is start of period, ● is end of period"
