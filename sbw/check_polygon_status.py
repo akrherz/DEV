@@ -5,15 +5,15 @@ see akrherz/pyIEM#207
 
 import sys
 
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
+import pandas as pd
+from pyiem.database import get_dbconn
 
 
 def main(argv):
     """check things out."""
     year = argv[1]
     pgconn = get_dbconn("postgis")
-    df = read_sql(
+    df = pd.read_sql(
         f"""
         with ugc_based as (
             SELECT distinct wfo, eventid, updated

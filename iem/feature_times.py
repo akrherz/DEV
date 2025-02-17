@@ -1,20 +1,20 @@
 """Feature analysis."""
 
 import pandas as pd
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.plot import figure_axes
-from pyiem.util import get_sqlalchemy_conn
 
 
 def main():
     """GO Main Go."""
     with get_sqlalchemy_conn("mesosite") as conn:
         df = pd.read_sql(
-            """
+            sql_helper("""
             SELECT valid, good, bad, abstain,
             extract(hour from valid) as hour,
             extract(minute from valid) as minute from feature
             where good > 0 ORDER by valid
-        """,
+        """),
             conn,
             index_col="valid",
         )

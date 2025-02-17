@@ -42,7 +42,6 @@ def main():
     # Read the color table
     img = Image.open("/tmp/check_raster.png")
     flat = np.array(img.getpalette())
-    # pylint: disable=unsubscriptable-object
     palette = np.reshape(flat, (int(flat.shape[0] / 3), 3))
     for coloridx, rgb in enumerate(palette):
         row = df.loc[coloridx]

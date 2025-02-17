@@ -7,11 +7,9 @@ Wants:
   - where within the warning did the big LSRs happen
 """
 
-# pylint: disable=abstract-class-instantiated
 from datetime import timezone
 
 import pandas as pd
-from pandas.io.sql import read_sql
 from pyiem.util import get_dbconn
 from tqdm import tqdm
 
@@ -21,7 +19,7 @@ def main():
     pgconn = get_dbconn("postgis")
 
     # Get events for consideration
-    df = read_sql(
+    df = pd.read_sql(
         """
         WITH events as (
             select wfo, phenomena, eventid,
@@ -52,7 +50,7 @@ def main():
         # Get the polygon history for this warning
         sbwtable = f"sbw_{row['year']}"
         lsrtable = f"lsrs_{row['year']}"
-        warndf = read_sql(
+        warndf = pd.read_sql(
             f"""
         SELECT row_number() over(ORDER by polygon_begin ASC) as sequence,
         wfo, eventid, phenomena,
@@ -74,7 +72,7 @@ def main():
         warndf["wind_reports"] = 0
         for j, wrow in warndf.iterrows():
             # Get LSRs
-            lsrdf = read_sql(
+            lsrdf = pd.read_sql(
                 f"""
             SELECT distinct city, valid, type, magnitude
             from {lsrtable} WHERE valid >= %s and

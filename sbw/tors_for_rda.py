@@ -1,7 +1,6 @@
 """Tornado Warnings for RDAs."""
 
 import pandas as pd
-from pandas.io.sql import read_sql
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot
 from pyiem.util import get_dbconn
@@ -41,7 +40,7 @@ def get_data():
     progress = tqdm(nt.sts)
     for sid in progress:
         progress.set_description(sid)
-        df = read_sql(
+        df = pd.read_sql(
             "SELECT issue, date(issue) from sbw "
             "WHERE issue > '2001-01-01' and "
             "phenomena = 'TO' and significance = 'W' and status = 'NEW' and "

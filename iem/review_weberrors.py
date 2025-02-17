@@ -2,9 +2,10 @@
 Review website_telemetry for errors.
 """
 
+import click
 import httpx
 import pandas as pd
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 
 VHOST_MAPPER = {
     "datateam.agron.iastate.edu": "datateam.local",
@@ -20,16 +21,22 @@ VHOST_MAPPER = {
 }
 
 
-def main():
+@click.command()
+@click.option(
+    "--hours", type=int, default=24, help="Number of hours to look back"
+)
+def main(hours: int):
     """Go Main Go."""
     with get_sqlalchemy_conn("mesosite") as conn:
         df = pd.read_sql(
-            """
+            sql_helper("""
             select distinct vhost, request_uri from website_telemetry
             where status_code >= 500
-            and valid > now() - '1 day'::interval and vhost != 'iem.local'
-            """,
+            and valid > now() - ':hours hours'::interval
+            and vhost != 'iem.local'
+            """),
             conn,
+            params={"hours": hours},
         )
     for _, row in df.iterrows():
         vhost = row["vhost"]
