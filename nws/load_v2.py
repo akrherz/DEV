@@ -57,7 +57,7 @@ def main():
     ax.set_ylabel("Number of Zones")
     ax.set_ylim(bottom=0.1)
 
-    ax = fig.add_axes([0.1, 0.1, 0.8, 0.35])
+    ax = fig.add_axes((0.1, 0.1, 0.8, 0.35))
     ax.bar(df["ts"].values, df["cus"].values, width=1 / 1440.0)
     ax.set_ylabel("Percent of Contiguous US")
     ax.set_ylim(bottom=0)

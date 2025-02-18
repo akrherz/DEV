@@ -4,7 +4,7 @@ import datetime
 import os
 
 import ephem
-import urllib2
+import httpx
 from PIL import Image
 from pyiem.util import get_dbconn
 
@@ -49,15 +49,14 @@ def main():
             )
         )
         try:
-            data = urllib2.urlopen(uri).read()
-        except urllib2.HTTPError:
-            print("Download failed")
+            res = httpx.get(uri).content
+        except Exception as exp:
+            print(f"Download failed {exp}")
             now += datetime.timedelta(days=1)
             continue
         sunrises += 1
-        o = open("webcam.jpg", "w")
-        o.write(data)
-        o.close()
+        with open("webcam.jpg", "w") as o:
+            o.write(res)
 
         f = Image.open("webcam.jpg")
         (w, h) = f.size
@@ -100,15 +99,14 @@ def main():
             )
         )
         try:
-            data = urllib2.urlopen(uri).read()
-        except urllib2.HTTPError:
-            print("Download failed")
+            data = httpx.get(uri).content
+        except Exception as exp:
+            print(f"Download failed {exp}")
             now += datetime.timedelta(days=1)
             continue
         sunsets += 1
-        o = open("webcam.jpg", "w")
-        o.write(data)
-        o.close()
+        with open("webcam.jpg", "w") as o:
+            o.write(data)
 
         f = Image.open("webcam.jpg")
         (w, h) = f.size

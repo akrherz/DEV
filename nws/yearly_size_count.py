@@ -3,8 +3,8 @@
 import datetime
 
 import matplotlib.pyplot as plt
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
+import pandas as pd
+from pyiem.database import get_dbconn
 
 
 def get_polygon():
@@ -43,7 +43,7 @@ def main():
     """Go Main Go"""
     pgconn = get_dbconn("postgis")
     sql = get_polygon()
-    df = read_sql(sql, pgconn, index_col="year")
+    df = pd.read_sql(sql, pgconn, index_col="year")
     print(df)
 
     (fig, ax) = plt.subplots(1, 1)

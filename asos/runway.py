@@ -2,7 +2,7 @@
 
 import re
 
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def main():

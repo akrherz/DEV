@@ -4,8 +4,9 @@ from zoneinfo import ZoneInfo
 
 import matplotlib.dates as mdates
 import pandas as pd
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import figure
-from pyiem.util import get_sqlalchemy_conn, utc
+from pyiem.util import utc
 
 CST = ZoneInfo("America/Chicago")
 
@@ -59,17 +60,17 @@ def main():
         subtitle="Times in CDT",
         figsize=(8, 7),
     )
-    ax = fig.add_axes([0.1, 0.05, 0.85, 0.25])
+    ax = fig.add_axes((0.1, 0.05, 0.85, 0.25))
     df2 = df[df["id"] == "DNS"]
     common(ax, df2, "KDNS Denison, IA AWOS")
     ax.set_xlim(df.valid.values[0], df.valid.values[-1])
 
-    ax = fig.add_axes([0.1, 0.35, 0.85, 0.25])
+    ax = fig.add_axes((0.1, 0.35, 0.85, 0.25))
     df2 = df[df["id"] == "SUX"]
     common(ax, df2, "KSUX Sioux City, IA ASOS")
     ax.set_xlim(df.valid.values[0], df.valid.values[-1])
 
-    ax = fig.add_axes([0.1, 0.65, 0.85, 0.25])
+    ax = fig.add_axes((0.1, 0.65, 0.85, 0.25))
     df2 = df[df["id"] == "BOOI4"]
     common(ax, df2, "BOOI4 Ames AEA Farm, IA")
     ax.set_xlim(df.valid.values[0], df.valid.values[-1])

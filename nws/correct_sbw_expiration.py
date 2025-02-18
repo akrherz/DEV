@@ -2,8 +2,8 @@
 
 import sys
 
+from pyiem.database import get_dbconn
 from pyiem.nws.products.vtec import parser
-from pyiem.util import get_dbconn
 
 
 def main():

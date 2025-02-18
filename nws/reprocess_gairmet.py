@@ -3,13 +3,11 @@
 per akrherz/pyIEM#628
 """
 
-# stdlib
 import datetime
 
-# third party
 import requests
+from pyiem.database import get_dbconn
 from pyiem.nws.products.gairmet import parser
-from pyiem.util import get_dbconn
 
 
 def main():

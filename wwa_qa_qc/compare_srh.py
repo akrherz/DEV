@@ -3,7 +3,6 @@
 import datetime
 
 import pandas as pd
-from pandas.io.sql import read_sql
 from pyiem.database import get_dbconn
 
 SRH = "http://www.srh.noaa.gov/ridge2/shapefiles/psql_currenthazards.html"
@@ -14,7 +13,7 @@ def main():
     print("Report run at %s" % (datetime.datetime.utcnow(),))
     srhdf = pd.read_html(SRH, header=0)[0]
     srhdf["wfo"] = srhdf["wfo"].str.slice(1, 4)
-    iemdf = read_sql(
+    iemdf = pd.read_sql(
         """
     SELECT wfo, phenomena, significance, eventid, count(*) from warnings
     where expire > now()

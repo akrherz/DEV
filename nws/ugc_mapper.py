@@ -2,9 +2,9 @@
 
 import geopandas as gpd
 from matplotlib import colors as mpcolors
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_FILL
-from pyiem.util import get_sqlalchemy_conn
 
 
 def main():
@@ -40,7 +40,6 @@ def main():
     )
 
     bins = [1, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100]
-    print(df["count"].max())
     cmap = get_cmap("jet")
     cmap.set_under("white")
     cmap.set_over("black")
@@ -49,7 +48,7 @@ def main():
         df.to_crs(panel.crs).plot(
             ax=panel.ax,
             aspect=None,
-            fc=cmap(norm(df["count"].values)),
+            fc=cmap(norm(df["count"].to_numpy())),
             ec="k",
             lw=0.1,
             zorder=Z_FILL,

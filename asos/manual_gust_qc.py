@@ -41,12 +41,12 @@ def process(conn, row, station, nt, threshold: int, autozap: bool):
     if autozap:
         res = []
         for i, row in obs.iterrows():
-            if row["sknt"] is not None and row["sknt"] >= threshold:
+            if pd.notna(row["sknt"]) and row["sknt"] >= threshold:
                 res.append(f"{i}s")
-            if row["gust"] is not None and row["gust"] >= threshold:
+            if pd.notna(row["gust"]) and row["gust"] >= threshold:
                 res.append(f"{i}g")
             if (
-                row["peak_wind_gust"] is not None
+                pd.notna(row["peak_wind_gust"])
                 and row["peak_wind_gust"] >= threshold
             ):
                 res.append(f"{i}p")

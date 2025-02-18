@@ -3,7 +3,7 @@
 import calendar
 
 import matplotlib.pyplot as plt
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 pgconn = get_dbconn("postgis")
 pcursor = pgconn.cursor()

@@ -3,7 +3,7 @@
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import numpy as np
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def getsite(station, ocursor):

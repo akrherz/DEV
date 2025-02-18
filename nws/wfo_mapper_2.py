@@ -23,7 +23,7 @@ def main():
         labels[wfo] = "%s" % (row["eventid"],)
 
     bins = list(range(0, 31, 3))
-    bins[0] = 1.0
+    bins[0] = 1
     cmap = plt.get_cmap("plasma_r")
     cmap.set_over("black")
     cmap.set_under("white")

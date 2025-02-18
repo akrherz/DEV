@@ -75,7 +75,7 @@ while now < ets:
     ).variables["apcp"][:, y, x]
 
     # Loop over each day this year
-    nextyear = now + datetime.timedelta(years=1)
+    nextyear = now.replace(year=now.year + 1)
     sts = now
     while now < nextyear:
         offset = int((now - sts).days)

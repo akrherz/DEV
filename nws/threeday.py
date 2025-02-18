@@ -3,8 +3,7 @@
 import datetime
 
 import pandas as pd
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 COMPAREWFOS = "DMX DVN ARX FSD OAX".split()
 
@@ -28,7 +27,7 @@ def printr(row):
 def main():
     """Go"""
     pgconn = get_dbconn("postgis")
-    df = read_sql(
+    df = pd.read_sql(
         """
     with data as (
         select distinct date(issue), wfo, eventid from warnings

@@ -4,8 +4,8 @@ import metpy.calc as mcalc
 import pandas as pd
 from metpy.units import units
 from pyiem import meteorology
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.datatypes import temperature
-from pyiem.util import get_sqlalchemy_conn
 
 
 def main():

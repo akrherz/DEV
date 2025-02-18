@@ -4,8 +4,8 @@ import datetime
 
 import matplotlib.pyplot as plt
 import pandas as pd
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.datatypes import pressure, speed
-from pyiem.util import get_sqlalchemy_conn
 
 
 def main():
@@ -28,7 +28,7 @@ def main():
             xticklabels.append(ts.strftime("%-I:%M\n%p"))
 
     fig = plt.figure(figsize=(6, 7))
-    ax1 = fig.add_axes([0.1, 0.55, 0.75, 0.35])
+    ax1 = fig.add_axes((0.1, 0.55, 0.75, 0.35))
     ax1.plot(df.index.values, df["tmpf"], label="Air Temp")
     ax1.plot(df.index.values, df["dwpf"], label="Dew Point")
     ax1.legend()
@@ -47,7 +47,7 @@ def main():
         )
     )
 
-    ax = fig.add_axes([0.1, 0.08, 0.75, 0.35])
+    ax = fig.add_axes((0.1, 0.08, 0.75, 0.35))
 
     ax.bar(
         df.index.values,

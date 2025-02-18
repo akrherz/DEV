@@ -4,8 +4,8 @@ import sys
 
 import numpy as np
 import pandas as pd
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot, get_cmap
-from pyiem.util import get_sqlalchemy_conn
 
 
 def get_database_data(year):
