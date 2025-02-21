@@ -1,6 +1,6 @@
 """One off"""
 
-import requests
+import httpx
 from pyiem.datatypes import distance
 from pyiem.reference import nwsli2country, nwsli2state
 
@@ -9,11 +9,12 @@ def main():
     """Go Main Go"""
     fh = open("insert.sql", "w")
 
-    req = requests.get(
+    resp = httpx.get(
         "http://www.weather.gov/source/aprfc/nrcs_swe.json",
         timeout=30,
     )
-    j = req.json()
+    resp.raise_for_status()
+    j = resp.json()
     for feature in j["features"]:
         nwsli = feature["properties"]["lid"]
         name = feature["properties"]["name"]

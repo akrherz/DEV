@@ -1,7 +1,7 @@
 """See what Dr Thompson has to say."""
 
-import requests
-from pyiem.util import get_dbconn
+import httpx
+from pyiem.database import get_dbconn
 
 
 def main():
@@ -14,7 +14,7 @@ def main():
     unknown = []
     for row in acursor:
         unknown.append(row[0])
-    req = requests.get(
+    req = httpx.get(
         "https://weather.rap.ucar.edu/surface/stations.txt", timeout=30
     )
     for line in req.text.split("\n"):

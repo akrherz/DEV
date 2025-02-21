@@ -1,9 +1,9 @@
 """Review what ACIS says for unknown NWSLIs."""
 
-# Third Party
-import requests
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn, get_sqlalchemy_conn, logger
+import httpx
+import pandas as pd
+from pyiem.database import get_dbconn, get_sqlalchemy_conn
+from pyiem.util import logger
 
 LOG = logger()
 
@@ -50,7 +50,7 @@ def process(nwsli, row, data):
 def main():
     """Go Main Go."""
     with get_sqlalchemy_conn("hads") as conn:
-        df = read_sql(
+        df = pd.read_sql(
             "SELECT nwsli, max(product) as product from unknown "
             "where length(nwsli) = 5 GROUP by nwsli ORDER by nwsli ASC",
             conn,
@@ -58,7 +58,7 @@ def main():
         )
     LOG.info("Found %s unknown 5-char ids", len(df.index))
     for nwsli, row in df.iterrows():
-        req = requests.post(
+        req = httpx.post(
             "http://data.rcc-acis.org/StnMeta",
             json={
                 "meta": "name,ll,elev,state,network",

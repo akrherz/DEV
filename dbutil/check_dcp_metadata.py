@@ -1,7 +1,7 @@
 """Do some self diagnostics on NWSLI / DCP metadata"""
 
+from pyiem.database import get_dbconn
 from pyiem.reference import nwsli2country, nwsli2state
-from pyiem.util import get_dbconn
 
 
 def main():

@@ -2,7 +2,7 @@
 
 import click
 import pandas as pd
-from pyiem.util import get_dbconnc
+from pyiem.database import get_dbconnc
 
 
 @click.command()

@@ -2,7 +2,7 @@
 
 import subprocess
 
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.database import get_dbconn
 from pyiem.reference import state_names
 
@@ -38,7 +38,7 @@ def main():
         )
         for row in cursor:
             nwsli = row[0]
-            df = read_sql(
+            df = pd.read_sql(
                 "SELECT * from current_shef where station = %s ORDER by valid",
                 ipgconn,
                 params=(nwsli,),

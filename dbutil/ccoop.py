@@ -3,14 +3,13 @@ We have something new, CCOOP, celluar COOP sites.
 """
 
 import geopandas as gpd
-from pyiem.database import get_dbconnc
+from pyiem.database import sql_helper, with_sqlalchemy_conn
 from pyiem.reference import nwsli2state
 
 
-def main():
+@with_sqlalchemy_conn("mesosite")
+def main(conn=None):
     """Go Main Go."""
-    pgconn, cursor = get_dbconnc("mesosite")
-
     df = gpd.read_file("https://www.weather.gov/source/crh/ccoop/master.json")
     for _, row in df.iterrows():
         sid = row["sid"]
@@ -19,33 +18,59 @@ def main():
         ]:
             print(f"skipping {sid}")
             continue
-        cursor.execute("select network from stations where id = %s", (sid,))
-        networks = [x["network"] for x in cursor.fetchall()]
+        res = conn.execute(
+            sql_helper("select network from stations where id = :sid"),
+            {"sid": sid},
+        )
+        networks = [x[0] for x in res.fetchall()]
         state = nwsli2state.get(sid[3:])
         if len(networks) == 2:
             # The COOP should be deleted
-            print(f"python delete_station.py {state}_COOP {sid}")
+            print(
+                f"python delete_station.py --network={state}_COOP "
+                f"--station{sid}"
+            )
         if networks == [f"{state}_COOP"]:
             # Switch to DCP
             print(f"Switching {sid} to DCP")
-            cursor.execute(
-                "UPDATE stations SET network = %s WHERE id = %s and "
-                "network = %s",
-                (f"{state}_DCP", sid, f"{state}_COOP"),
+            conn.execute(
+                sql_helper(
+                    "UPDATE stations SET network = :network WHERE id = :sid "
+                    "and network = :network2"
+                ),
+                {
+                    "network": f"{state}_DCP",
+                    "sid": sid,
+                    "network2": f"{state}_COOP",
+                },
             )
             continue
-        cursor.execute(
-            "select iemid from stations where id = %s and network = %s",
-            (sid, f"{state}_DCP"),
+        res = conn.execute(
+            sql_helper(
+                "select iemid from stations where id = :sid "
+                "and network = :network"
+            ),
+            {"sid": sid, "network": f"{state}_DCP"},
         )
-        iemid = cursor.fetchone()["iemid"]
-        cursor.execute(
-            "insert into station_attributes(iemid, attr, value) values "
-            "(%s, 'IS_CCOOP', '1')",
-            (iemid,),
+        iemid = res.fetchone()[0]
+        res = conn.execute(
+            sql_helper(
+                "select value from station_attributes where iemid = :iemid "
+                "and attr = 'IS_CCOOP'"
+            ),
+            {"iemid": iemid},
         )
-    cursor.close()
-    pgconn.commit()
+        if res.rowcount > 0:
+            print(f"Already marked {sid} as CCOOP")
+            continue
+        conn.execute(
+            sql_helper(
+                "insert into station_attributes(iemid, attr, value) values "
+                "(:iemid, 'IS_CCOOP', '1')"
+            ),
+            {"iemid": iemid},
+        )
+    conn.commit()
 
 
 if __name__ == "__main__":

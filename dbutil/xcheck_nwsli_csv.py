@@ -33,11 +33,10 @@ def dowork(df, nwsli):
         network = network if res == "" else res
         res = input("Enter Country [US]: ")
         country = res if res != "" else "US"
-        giswkt = f"SRID=4326;POINT({row['Longitude']} {row['Latitude']})"
         cursor.execute(
             "INSERT into stations (id, name, network, country, plot_name, "
             "state, elevation, online, metasite, geom) VALUES (%s, %s, %s, "
-            "%s, %s, %s, %s, %s, %s, %s)",
+            "%s, %s, %s, %s, %s, %s, ST_Point(%s, %s, 4326))",
             (
                 nwsli,
                 city,
@@ -48,7 +47,8 @@ def dowork(df, nwsli):
                 -999,
                 True,
                 False,
-                giswkt,
+                row["Longitude"],
+                row["Latitude"],
             ),
         )
         cursor.close()
