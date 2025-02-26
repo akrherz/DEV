@@ -1,42 +1,78 @@
-"""Fill in the hole of feel column."""
+"""Fill in the feel, relh columns."""
 
-import datetime
-import sys
+from datetime import datetime, timedelta
 
+import click
 import metpy.calc as mcalc
 import numpy as np
 import pandas as pd
 from metpy.units import units
-from pyiem.util import get_dbconn, get_sqlalchemy_conn, utc
+from pyiem.database import get_dbconn, get_sqlalchemy_conn, sql_helper
+from pyiem.util import utc
+from tqdm import tqdm
+
+pd.set_option("future.no_silent_downcasting", True)
 
 
-def not_nan(val):
-    """Make sure this is not NaN."""
-    return None if pd.isnull(val) else float(val)
+def bnds_check(val, low, high):
+    """Check bounds."""
+    if pd.isnull(val):
+        return None
+    if val < low:
+        return None
+    if val > high:
+        return None
+    return float(val)
 
 
-def main(argv):
+def is_new(val, old):
+    """Is this a new value."""
+    if pd.isnull(val):
+        return False
+    if pd.isnull(old):
+        return True
+    return abs(val - old) > 0.01
+
+
+@click.command()
+@click.option(
+    "--date",
+    "dt",
+    type=click.DateTime(),
+    help="Date to process",
+    required=True,
+)
+@click.option(
+    "--dbname",
+    default="asos",
+    help="Database name to connect to",
+)
+def main(dt: datetime, dbname: str) -> None:
     """Go Main Go."""
-    start_time = datetime.datetime.now()
-    sts = utc(int(argv[1]), int(argv[2]), int(argv[3]))
-    ets = sts + datetime.timedelta(hours=24)
-    pgconn = get_dbconn("asos")
-    with get_sqlalchemy_conn("asos") as conn:
+    start_time = utc()
+    sts = utc(dt.year, dt.month, dt.day)
+    ets = sts + timedelta(hours=24)
+    pgconn = get_dbconn(dbname)
+    with get_sqlalchemy_conn(dbname) as conn:
         df = pd.read_sql(
-            f"""
-        SELECT station, valid, tmpf, dwpf, sknt, relh, feel from t{sts.year}
-        WHERE valid >= %s and valid < %s and tmpf >= dwpf
+            sql_helper(
+                """
+        SELECT station, valid, tmpf, dwpf, sknt, relh, feel,
+        relh as old_relh, feel as old_feel from {table}
+        WHERE valid >= :sts and valid < :ets and tmpf >= dwpf
         and (feel is null or relh is null)
         """,
+                table=f"t{sts.year}",
+            ),
             conn,
-            params=(sts, ets),
+            params={"sts": sts, "ets": ets},
             index_col=None,
         )
     print(
         f"{sts:%Y%m%d} query of {len(df.index)} rows finished in "
-        f"{(datetime.datetime.now() - start_time).total_seconds():.4f}s"
+        f"{(utc() - start_time).total_seconds():.4f}s"
     )
-    start_time = datetime.datetime.now()
+    start_time = utc()
     df["dirty"] = False
     df2 = df.fillna(np.nan)[pd.isnull(df["relh"])]
     if not df2.empty:
@@ -67,34 +103,34 @@ def main(argv):
     cursor = pgconn.cursor()
     count = 0
     skips = 0
-    for _, row in df[df["dirty"]].iterrows():
-        newfeel = not_nan(row["feel"])
-        newrelh = not_nan(row["relh"])
-        if newfeel is None and newrelh is None:
+    for _, row in tqdm(df[df["dirty"]].iterrows(), total=len(df.index)):
+        newfeel = is_new(row["feel"], row["old_feel"])
+        newrelh = is_new(row["relh"], row["old_relh"])
+        if not newfeel and not newrelh:
             skips += 1
             continue
         cursor.execute(
             f"UPDATE t{sts.year} SET feel = %s, relh = %s "
             "WHERE station = %s and valid = %s",
             (
-                newfeel,
-                newrelh,
+                bnds_check(row["feel"], -80, 150),
+                bnds_check(row["relh"], 0, 100),
                 row["station"],
                 row["valid"],
             ),
         )
-        if count > 1000 and count % 1000 == 0:
+        count += 1
+        if count % 1000 == 0:
             cursor.close()
             pgconn.commit()
             cursor = pgconn.cursor()
-        count += 1
     cursor.close()
     pgconn.commit()
     print(
         f"{sts:%Y%m%d} edit:{count} skip:{skips} rows finished in "
-        f"{(datetime.datetime.now() - start_time).total_seconds():.4f}s"
+        f"{(utc() - start_time).total_seconds():.4f}s"
     )
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()
