@@ -1,62 +1,67 @@
-"""Make a plot of all the bot warnings"""
+"""Plot of NWS Warnings."""
 
-import cartopy.crs as ccrs
-from geopandas import read_postgis
-from pyiem.network import Table as NetworkTable
-from pyiem.nws.vtec import VTEC_PHENOMENA
-from pyiem.plot import MapPlot
-from pyiem.util import get_dbconn
+import geopandas as gpd
+import pandas as pd
+from matplotlib.colors import BoundaryNorm
+from pyiem.database import get_sqlalchemy_conn, sql_helper
+from pyiem.plot import MapPlot, get_cmap
+from pyiem.reference import Z_OVERLAY
 
 
 def main():
     """Go Main"""
-    pgconn = get_dbconn("postgis")
-    phenomena = "TO"
-    wfo = "DMX"
-    nt = NetworkTable("WFO")
-    df = read_postgis(
-        """
-    select geom, issue from sbw where wfo = %s and phenomena = %s
-    and significance = 'W' and status = 'NEW' and issue > '2007-10-01'
-    and issue < '2020-01-01'
-    """,
-        pgconn,
-        params=(wfo, phenomena),
-        geom_col="geom",
-        crs={"init": "epsg:4326", "no_defs": True},
+    with get_sqlalchemy_conn("postgis") as conn:
+        warningsdf: pd.DataFrame = gpd.read_postgis(
+            sql_helper("""
+    with data as (
+        select w.geom, w.wfo, w.vtec_year,
+        rank() OVER (PARTITION by w.vtec_year
+        ORDER by w.issue ASC) from sbw w, states s WHERE w.status = 'NEW' and
+        w.phenomena = 'SV' and w.significance = 'W' and
+        w.wfo in ('DMX', 'DVN', 'ARX', 'FSD', 'OAX') and
+        ST_Intersects(w.geom, s.the_geom) and s.state_abbr = 'IA'
+        and ST_Area(ST_Intersection(w.geom, s.the_geom)) > 0.02
     )
-
-    bounds = df["geom"].total_bounds
-    # bounds = [-102.90293903,   40.08745967,  -97.75622311,   43.35172981]
-    bbuf = 0.25
+    SELECT geom, wfo, vtec_year from data where rank = 1 order by vtec_year asc
+                       """),
+            conn,
+            geom_col="geom",
+        )
+    print(warningsdf)
+    wfos = warningsdf["wfo"].value_counts()
+    wfocnts = (
+        "WFO Counts: "
+        f"OAX Omaha: {wfos['OAX']}, "
+        f"DMX Des Moines: {wfos['DMX']}, "
+        f"DVN Davenport: {wfos['DVN']}, "
+        f"ARX La Crosse: {wfos['ARX']}, "
+        f"FSD Sioux Falls: {wfos['FSD']}"
+    )
     mp = MapPlot(
-        sector="custom",
-        west=bounds[0] - bbuf,
-        south=bounds[1] - bbuf,
-        east=bounds[2] + bbuf,
-        north=bounds[3] + bbuf,
-        continentalcolor="white",  # '#b3242c',
-        title="NWS %s %s Warnings [2008-2019]"
-        % (nt.sts[wfo]["name"], VTEC_PHENOMENA[phenomena]),
-        subtitle="%s warnings plotted" % (len(df.index),),
+        sector="spherical_mercator",
+        west=-96.5,
+        east=-91.0,
+        south=40.5,
+        north=43.0,
+        title="2000-2025 First Iowa Severe Thunderstorm Warning of the Year",
+        subtitle=wfocnts,
     )
-    crs_new = ccrs.Mercator()
-    crs = ccrs.PlateCarree()
-    new_geometries = [
-        crs_new.project_geometry(ii, src_crs=crs) for ii in df["geom"].values
-    ]
-    # mp.draw_cwas()
-    mp.ax.add_geometries(
-        new_geometries,
-        crs=crs_new,
+    cmap = get_cmap("jet")
+    clevs = range(
+        warningsdf["vtec_year"].min(), warningsdf["vtec_year"].max() + 2
+    )
+    norm = BoundaryNorm(clevs, cmap.N)
+    warningsdf.to_crs(mp.panels[0].crs).plot(  # type: ignore
+        ax=mp.panels[0].ax,
+        aspect=None,
+        color=cmap(norm(warningsdf["vtec_year"].to_numpy())),
+        edgecolor="k",
         lw=0.5,
-        edgecolor="red",
-        facecolor="None",
-        alpha=1,
-        zorder=1,
+        zorder=Z_OVERLAY,
     )
+    mp.draw_colorbar(clevs, cmap, norm, units="Year", extend="neither")
     mp.drawcounties()
-    mp.postprocess(filename="test.png")
+    mp.postprocess(filename="250227.png")
 
 
 if __name__ == "__main__":
