@@ -59,16 +59,17 @@ def main():
         df = get_followers_count()
         df.to_csv("followers.csv")
     df = pd.read_csv("followers.csv").set_index("at_handle")
-    print(df["count"].max())
     mp = MapPlot(
         sector="nws",
-        title="BlueSky Followers Count (13 Nov 2024)",
+        title="BlueSky Followers Count (14 Mar 2025)",
         subtitle=f"Total: {df['count'].sum():,.0f}",
         twitter=True,
         nocaption=True,
     )
     cmap = get_cmap("jet")
-    levels = list(range(0, 31, 5))
+    levels = (
+        df["count"].quantile([0, 0.1, 0.25, 0.5, 0.75, 0.9]).values.astype(int)
+    )
     levels[0] = 1
     data = (
         df.loc[df["is_wfo"] & (df["count"] > 0)].reset_index().set_index("wfo")
@@ -80,7 +81,8 @@ def main():
         units="count",
         ilabel=True,
         lblformat="%.0f",
-        extend="neither",
+        extend="max",
+        spacing="proportional",
         labelbuffer=0,
     )
     txt = "Top 20 Non-WFO\n"
