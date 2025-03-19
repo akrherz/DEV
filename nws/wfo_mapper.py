@@ -1,10 +1,9 @@
 """Generic plotter"""
 
-import sys
-
+import click
 import numpy as np
 import pandas as pd
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.plot import MapPlot, get_cmap
 
 
@@ -12,27 +11,29 @@ def get_database_data(year):
     """Get data from database"""
     with get_sqlalchemy_conn("postgis") as pgconn:
         df = pd.read_sql(
-            """
+            sql_helper("""
             with data as (
-    select wfo, eventid, extract(year from polygon_begin) as year,
+    select wfo, eventid, vtec_year,
     max(case when tornadotag = 'POSSIBLE' then 1 else 0 end) as hit
     from sbw where phenomena = 'SV' and polygon_begin > '2015-01-01'
-    and status = 'NEW' group by wfo, eventid, year )
+    group by wfo, eventid, vtec_year)
     select wfo, sum(hit) as hits,
     count(*), sum(hit) / count(*)::float * 100. as freq
-    from data WHERE year = %s GROUP by wfo ORDER by wfo asc
-        """,
+    from data GROUP by wfo ORDER by wfo asc
+        """),
             pgconn,
             index_col="wfo",
-            params=(year,),
+            params={"year": year},
         )
     return df
 
 
-def main(argv):
+@click.command()
+@click.option("--year", type=int, default=2021, help="Year to plot")
+def main(year: int):
     """Go Main"""
-    year = int(argv[1])
     df = get_database_data(year)
+    df.to_csv("wfo.csv")
     print(df["freq"].describe())
     if "JSJ" in df.index:
         df.loc["SJU", "freq"] = df.loc["JSJ", "freq"]
@@ -44,13 +45,13 @@ def main(argv):
     # clevlabels = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N']
     cmap = get_cmap("YlOrRd")
     freq = df["hits"].sum() / df["count"].sum() * 100.0
-    extra = "till 1 Jun 2022" if year == 2022 else ""
+    extra = "till 19 March 2025"
     mp = MapPlot(
         sector="nws",
         continentalcolor="white",
         figsize=(12.0, 9.0),
         title=(
-            f"{year} Percentage of Svr TStorm Warnings (at issuance) "
+            "Percentage of Svr TStorm Warnings (at issuance) "
             "with Tornado 'POSSIBLE' Tag"
         ),
         subtitle=(
@@ -69,8 +70,8 @@ def main(argv):
         extend="neither",
     )
 
-    mp.postprocess(filename=f"{year}_SVR_torpossible.png")
+    mp.postprocess(filename="SVR_torpossible.png")
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()
