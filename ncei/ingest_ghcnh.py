@@ -246,6 +246,9 @@ def main(icao: str):
     with get_sqlalchemy_conn("asos") as conn:
         for obdict in process_file(fn):
             obdict["station"] = icao
+            # ASOS IEMAccess Summary only supports 1900+
+            if obdict["valid"].year < 1901:
+                continue
 
             if obdict["valid"].year != year:
                 year = obdict["valid"].year
