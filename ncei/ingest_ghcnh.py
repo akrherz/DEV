@@ -215,7 +215,8 @@ def process_file(filename: str) -> Generator[dict]:
 
 @click.command()
 @click.option("--icao", required=True, help="ICAO Identifier")
-def main(icao: str):
+@click.option("--downloadonly", is_flag=True, help="Just download the file")
+def main(icao: str, downloadonly: bool) -> None:
     """Go Main."""
     year = 1800
     station = icao if not icao.startswith("K") else icao[1:]
@@ -243,6 +244,9 @@ def main(icao: str):
                 ),
             ]
         )
+    if downloadonly:
+        LOG.info("Exiting due to downloadonly flag")
+        return
     with get_sqlalchemy_conn("asos") as conn:
         for obdict in process_file(fn):
             obdict["station"] = icao

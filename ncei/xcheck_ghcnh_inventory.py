@@ -6,6 +6,10 @@ from pyiem.util import logger
 
 LOG = logger()
 
+PROBLEMS = [
+    "CIR",  # archive has lots of just hourly precip
+]
+
 
 def main():
     """Go Main."""
@@ -44,6 +48,8 @@ def main():
     LOG.info("Found %s stations", len(stationdf))
     maxval = 0
     for sid, row in stationdf.iterrows():
+        if sid in PROBLEMS:
+            continue
         ghcnid = row["ghcnh_id"]
         if ghcnid not in inventory.index:
             LOG.info("Station %s GHCNH_ID %s not in inventory", sid, ghcnid)
