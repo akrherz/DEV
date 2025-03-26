@@ -113,7 +113,7 @@ def workflow(conn, icursor, obdict: dict, ctx: PROCESSING_CONTEXT):
     # outside of the GHCNh data
     if (
         ctx.doublecheck
-        and obdict["valid"].minute >= 50
+        and (obdict["valid"].minute >= 50 or obdict["valid"].minute == 0)
         and (obdict["valid"] + timedelta(minutes=10)).strftime("%Y%m%d%H")
         in ctx.dbhas
     ):
