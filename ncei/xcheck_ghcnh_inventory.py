@@ -8,6 +8,7 @@ LOG = logger()
 
 PROBLEMS = [
     "CIR",  # archive has lots of just hourly precip
+    "GVW",  # Missouri to Gulf traveller
 ]
 
 
@@ -38,7 +39,7 @@ def main():
     with get_sqlalchemy_conn("mesosite") as conn:
         stationdf = pd.read_sql(
             sql_helper("""
-    select id, value as ghcnh_id, archive_begin
+    select id, value as ghcnh_id, archive_begin, network
     from station_attributes a JOIN stations t
     on (a.iemid = t.iemid) WHERE attr = 'GHCNH_ID' and network ~* 'ASOS'
             """),
@@ -62,8 +63,9 @@ def main():
             ]["annual"].sum()
             if obs > maxval:
                 LOG.info(
-                    "Station %s GHCNH_ID %s IEM:%s GHCN:%s OBS:%s",
+                    "Station %s[%s] GHCNH_ID %s IEM:%s GHCN:%s OBS:%s",
                     sid,
+                    row["network"],
                     ghcnid,
                     row["archive_begin"].year,
                     inventory.at[ghcnid, "min_year"],
