@@ -75,6 +75,13 @@ def fetch_file(ghcnh_id: str) -> str:
     return fn
 
 
+def append_label(raw: str) -> str:
+    """Add a label to the METAR."""
+    if raw.find("RMK") == -1:
+        return f"{raw} RMK IEM_GHCNH"
+    return f"{raw} IEM_GHCNH"
+
+
 def load_dbhas(conn, ctx: PROCESSING_CONTEXT):
     """Figure out what we have in the database."""
     ctx.doublecheck = ctx.dbhas_year > 1996
@@ -130,7 +137,7 @@ def workflow(conn, icursor, obdict: dict, ctx: PROCESSING_CONTEXT):
         # save the raw METAR to the database, but used the processed values
         try:
             mtr = Metar(
-                obdict["raw"] + " IEM_GHCNH",
+                append_label(obdict["raw"]),
                 obdict["valid"].month,
                 obdict["valid"].year,
             )
@@ -149,7 +156,7 @@ def workflow(conn, icursor, obdict: dict, ctx: PROCESSING_CONTEXT):
             LOG.info("METAR `%s` failed", obdict["raw"])
             LOG.exception(exp)
     else:
-        obdict["raw"] = metar_from_dict(obdict) + " IEM_GHCNH"
+        obdict["raw"] = append_label(metar_from_dict(obdict))
         if obdict["raw"].endswith("AUTO /////KT RMK AO2 IEM_GHCNH"):
             COUNTERS["nodata"] += 1
             return
@@ -178,7 +185,7 @@ def main(
     """Go Main."""
     ctx = PROCESSING_CONTEXT(icao=icao)
     set_metadata(ctx)
-    if ctx.ghcnh_id is None:
+    if ctx.ghcnh_id == "":
         LOG.info("Aborting, no GHCNh ID found for %s", icao)
         return
     fn = fetch_file(ctx.ghcnh_id)
