@@ -4,6 +4,7 @@
 **/.ipynb_checkpoints
 **/*.bufr
 **/*.eps
+**/*.psv
 **/*.png
 **/*.jpg
 **/*.mp4
