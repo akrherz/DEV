@@ -2,11 +2,9 @@
 
 import os
 import subprocess
-import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import timedelta
-from typing import Optional
+from datetime import datetime, timedelta, timezone
 
 import click
 from metar.Metar import Metar
@@ -15,7 +13,8 @@ from pyiem.ncei.ghcnh import process_file
 from pyiem.nws.products.metar_util import metar_from_dict
 from pyiem.nws.products.metarcollect import to_iemaccess
 from pyiem.observation import Observation
-from pyiem.util import logger
+from pyiem.reference import StationAttributes as SA
+from pyiem.util import logger, utc
 
 LOG = logger()
 COUNTERS = defaultdict(lambda: 0)
@@ -29,27 +28,34 @@ class PROCESSING_CONTEXT:
     iemid: int = 0
     tzname: str = ""
     ghcnh_id: str = ""
+    floor: datetime = utc(1800, 1, 1)
     dbhas: list[str] = field(default_factory=list)
     doublecheck: bool = False
     dbhas_year: int = 1800
 
 
-def get_metadata(icao: str) -> Optional[tuple[int, str, str]]:
+def set_metadata(ctx: PROCESSING_CONTEXT):
     """Figure out some needed metadata."""
-    station = icao if not icao.startswith("K") else icao[1:]
+    station = ctx.icao if not ctx.icao.startswith("K") else ctx.icao[1:]
     with get_sqlalchemy_conn("mesosite") as conn:
         res = conn.execute(
             sql_helper("""
-                select s.iemid, tzname, value as ghcnh_id from stations s
+                select s.iemid, tzname, attr, value as ghcnh_id from stations s
                 JOIN station_attributes a on (s.iemid = a.iemid)
-                where id = :station and network ~* 'ASOS' and attr = 'GHCNH_ID'
+                where id = :station and network ~* 'ASOS' and
+                attr = ANY(:attrs)
             """),
-            {"station": station},
+            {"station": station, "attrs": [SA.GHCNH_ID, SA.FLOOR]},
         )
-        if res.rowcount == 0:
-            LOG.warning("FATAL: Failed to find metadata for %s", station)
-            sys.exit()
-        return res.first()
+        for row in res:
+            if row[2] == SA.GHCNH_ID:
+                ctx.ghcnh_id = row[3]
+            elif row[2] == SA.FLOOR:
+                ctx.floor = datetime.strptime(row[3], "%Y-%m-%d").replace(
+                    tzinfo=timezone.utc
+                )
+            ctx.iemid = row[0]
+            ctx.tzname = row[1]
 
 
 def fetch_file(ghcnh_id: str) -> str:
@@ -170,9 +176,11 @@ def main(
     icao: str, downloadonly: bool, savefile: bool, parseonly: bool
 ) -> None:
     """Go Main."""
-    ctx = PROCESSING_CONTEXT()
-    ctx.icao = icao
-    ctx.iemid, ctx.tzname, ctx.ghcnh_id = get_metadata(icao)
+    ctx = PROCESSING_CONTEXT(icao=icao)
+    set_metadata(ctx)
+    if ctx.ghcnh_id is None:
+        LOG.info("Aborting, no GHCNh ID found for %s", icao)
+        return
     fn = fetch_file(ctx.ghcnh_id)
     if downloadonly:
         LOG.info("Exiting due to downloadonly flag")
@@ -184,6 +192,9 @@ def main(
             obdict["station"] = icao
             COUNTERS["lines"] += 1
             if parseonly:
+                continue
+            if obdict["valid"] < ctx.floor:
+                COUNTERS["beforefloor"] += 1
                 continue
             workflow(conn, icursor, obdict, ctx)
             if COUNTERS["new"] > 0 and COUNTERS["new"] % 100 == 0:
