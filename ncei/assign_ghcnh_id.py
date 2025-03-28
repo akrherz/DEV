@@ -6,6 +6,9 @@ import click
 import httpx
 from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.network import Table as NetworkTable
+from pyiem.util import logger
+
+LOG = logger()
 
 
 def query_icao(icao: str) -> Optional[str]:
@@ -33,7 +36,12 @@ def query_icao(icao: str) -> Optional[str]:
                 if ident["idType"] == "GHCNH":
                     if ident["id"] in found:
                         continue
-                    found.append(ident["id"])
+                    if ident["date"]["endDate"] == "Present":
+                        found.append(ident["id"])
+                    else:
+                        LOG.info(
+                            "Ignoring not-current %s for %s", ident["id"], icao
+                        )
     if len(found) == 1:
         return found[0]
     return None
