@@ -5,11 +5,13 @@ import subprocess
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
+from typing import Optional
 
 import click
 from metar.Metar import Metar
 from pyiem.database import get_dbconnc, get_sqlalchemy_conn, sql_helper
 from pyiem.ncei.ghcnh import process_file
+from pyiem.network import Table as NetworkTable
 from pyiem.nws.products.metar_util import metar_from_dict
 from pyiem.nws.products.metarcollect import to_iemaccess
 from pyiem.observation import Observation
@@ -32,6 +34,9 @@ class PROCESSING_CONTEXT:
     dbhas: list[str] = field(default_factory=list)
     doublecheck: bool = False
     dbhas_year: int = 1800
+    downloadonly: bool = False
+    savefile: bool = False
+    parseonly: bool = False
 
 
 def set_metadata(ctx: PROCESSING_CONTEXT):
@@ -174,31 +179,23 @@ def workflow(conn, icursor, obdict: dict, ctx: PROCESSING_CONTEXT):
     COUNTERS["new"] += 1
 
 
-@click.command()
-@click.option("--icao", required=True, help="ICAO Identifier")
-@click.option("--downloadonly", is_flag=True, help="Just download the file")
-@click.option("--savefile", is_flag=True, help="Do not delete the file")
-@click.option("--parseonly", is_flag=True, help="Just parse the file")
-def main(
-    icao: str, downloadonly: bool, savefile: bool, parseonly: bool
-) -> None:
-    """Go Main."""
-    ctx = PROCESSING_CONTEXT(icao=icao)
+def process_icao(ctx: PROCESSING_CONTEXT):
+    """Do the work for a single ICAO."""
     set_metadata(ctx)
     if ctx.ghcnh_id == "":
-        LOG.info("Aborting, no GHCNh ID found for %s", icao)
+        LOG.info("Aborting, no GHCNh ID found for %s", ctx.icao)
         return
     fn = fetch_file(ctx.ghcnh_id)
-    if downloadonly:
+    if ctx.downloadonly:
         LOG.info("Exiting due to downloadonly flag")
         return
     iconn, icursor = get_dbconnc("iem")
     with get_sqlalchemy_conn("asos") as conn:
         for obdict in process_file(fn):
             # Needed for METAR generation
-            obdict["station"] = icao
+            obdict["station"] = ctx.icao
             COUNTERS["lines"] += 1
-            if parseonly:
+            if ctx.parseonly:
                 continue
             if obdict["valid"] < ctx.floor:
                 COUNTERS["beforefloor"] += 1
@@ -214,8 +211,44 @@ def main(
 
     for key, val in COUNTERS.items():
         LOG.info("%s: %s", key, val)
-    if not savefile:
+    if not ctx.savefile:
         os.unlink(fn)
+
+
+@click.command()
+@click.option("--icao", required=False, help="ICAO Identifier")
+@click.option("--network", required=False, help="Network Identifier")
+@click.option("--downloadonly", is_flag=True, help="Just download the file")
+@click.option("--savefile", is_flag=True, help="Do not delete the file")
+@click.option("--parseonly", is_flag=True, help="Just parse the file")
+def main(
+    icao: Optional[str],
+    network: Optional[str],
+    downloadonly: bool,
+    savefile: bool,
+    parseonly: bool,
+) -> None:
+    """Go Main."""
+    if icao is None and network is None:
+        raise ValueError("Must provide either ICAO or Network")
+    if icao is None:
+        ctx = PROCESSING_CONTEXT(
+            icao=icao,
+            savefile=savefile,
+            downloadonly=downloadonly,
+            parseonly=parseonly,
+        )
+        process_icao(ctx)
+    else:
+        nt = NetworkTable(network, only_online=False)
+        for icao in nt.sts:
+            ctx = PROCESSING_CONTEXT(
+                icao=icao,
+                savefile=savefile,
+                downloadonly=downloadonly,
+                parseonly=parseonly,
+            )
+            process_icao(ctx)
 
 
 if __name__ == "__main__":
