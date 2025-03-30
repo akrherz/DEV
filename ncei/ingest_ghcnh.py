@@ -231,7 +231,7 @@ def main(
     """Go Main."""
     if icao is None and network is None:
         raise ValueError("Must provide either ICAO or Network")
-    if icao is None:
+    if icao is not None:
         ctx = PROCESSING_CONTEXT(
             icao=icao,
             savefile=savefile,
