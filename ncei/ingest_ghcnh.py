@@ -241,7 +241,8 @@ def main(
         process_icao(ctx)
     else:
         nt = NetworkTable(network, only_online=False)
-        for icao in nt.sts:
+        # Sort the ids so that we resume in the same order
+        for icao in sorted(nt.sts.keys()):
             ctx = PROCESSING_CONTEXT(
                 icao=icao,
                 savefile=savefile,
