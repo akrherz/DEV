@@ -63,7 +63,7 @@ def set_metadata(ctx: PROCESSING_CONTEXT):
             ctx.tzname = row[1]
 
 
-def fetch_file(ghcnh_id: str) -> str:
+def fetch_file(ghcnh_id: str) -> Optional[str]:
     """Download the file, if necessary."""
     fn = f"GHCNh_{ghcnh_id}_por.psv"
     if not os.path.isfile(fn):
@@ -77,6 +77,9 @@ def fetch_file(ghcnh_id: str) -> str:
                 ),
             ]
         )
+    if not os.path.isfile(fn):
+        LOG.info("Failed to download %s", fn)
+        return None
     return fn
 
 
@@ -186,6 +189,9 @@ def process_icao(ctx: PROCESSING_CONTEXT):
         LOG.info("Aborting, no GHCNh ID found for %s", ctx.icao)
         return
     fn = fetch_file(ctx.ghcnh_id)
+    if fn is None:
+        LOG.info("Aborting, no file found for %s", ctx.ghcnh_id)
+        return
     if ctx.downloadonly:
         LOG.info("Exiting due to downloadonly flag")
         return
