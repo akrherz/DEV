@@ -58,7 +58,7 @@ def workflow(pgconn, wfo: str, phenomena: str):
     overall = (
         df["warn_counties"].sum() / float(df["watch_zones"].sum()) * 100.0
     )
-    print("WFO: %s Efficiency: %.1f  Overall: %.1f" % (wfo, eff, overall))
+    print(f"WFO: {wfo} Efficiency: {eff:.1f}  Overall: {overall:.1f}")
     return df["warn_counties"].sum(), df["watch_zones"].sum(), overall
 
 
@@ -68,7 +68,7 @@ def main():
     rows = []
     with get_sqlalchemy_conn("postgis") as pgconn:
         for wfo in tqdm(nt.sts.keys()):
-            warn, watch, overall = workflow(pgconn, wfo, "TO")
+            warn, watch, overall = workflow(pgconn, wfo, "HW")
             rows.append(
                 {"wfo": wfo, "warn": warn, "watch": watch, "overall": overall}
             )
@@ -86,11 +86,11 @@ def plot():
     mp = MapPlot(
         sector="conus",
         title=(
-            "Percentage of Counties/Parishes in a Tornado Watch "
-            "receiving 1+ Tornado Warning"
+            "Percentage of Counties/Parishes in a High Wind Watch "
+            "receiving a High Wind Warning"
         ),
         subtitle=(
-            f"2006-2024, Overall: {df['warn'].sum():,.0f} / "
+            f"2006-2025, Overall: {df['warn'].sum():,.0f} / "
             f"{df['watch'].sum():,.0f} = {overall:.1f}%"
         ),
     )
@@ -99,7 +99,7 @@ def plot():
     mp.fill_cwas(
         df2["overall"].to_dict(),
         cmap=cmap,
-        bins=range(0, 40, 5),
+        bins=range(0, 101, 10),
         extend="max",
         units="%",
         lblformat="%.0f",
