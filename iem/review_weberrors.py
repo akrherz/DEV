@@ -2,10 +2,13 @@
 Review website_telemetry for errors.
 """
 
+from datetime import timedelta
+
 import click
 import httpx
 import pandas as pd
 from pyiem.database import get_sqlalchemy_conn, sql_helper
+from pyiem.util import utc
 
 VHOST_MAPPER = {
     "datateam.agron.iastate.edu": "datateam.local",
@@ -32,14 +35,14 @@ def main(hours: int):
             sql_helper("""
             select distinct vhost, request_uri from website_telemetry
             where status_code >= 500
-            and valid > now() - ':hours hours'::interval
-            and vhost != 'iem.local'
+            and valid > :sts
+            and vhost not in ('iem.local', '')
             """),
             conn,
-            params={"hours": hours},
+            params={"sts": utc() - timedelta(hours=hours)},
         )
     for _, row in df.iterrows():
-        vhost = row["vhost"]
+        vhost = str(row["vhost"])
         uri = row["request_uri"]
         # Unclear how this happens, but alas
         if uri.startswith("http"):
