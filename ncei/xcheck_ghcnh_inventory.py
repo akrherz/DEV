@@ -47,6 +47,10 @@ def main():
             index_col="id",
         )
     LOG.info("Found %s stations", len(stationdf))
+    for sid in inventory[inventory["min_year"] == 2023].index:
+        df2 = stationdf[stationdf["ghcnh_id"] == sid]
+        if not df2.empty:
+            print(sid, df2.iloc[0]["archive_begin"], df2.index[0])
     maxval = 0
     for sid, row in stationdf.iterrows():
         if sid in PROBLEMS:
