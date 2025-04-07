@@ -6,10 +6,9 @@ from zoneinfo import ZoneInfo
 
 import click
 import pandas as pd
-from pyiem.database import get_dbconnc, get_sqlalchemy_conn
+from pyiem.database import get_dbconnc, get_sqlalchemy_conn, sql_helper
 from pyiem.network import Table as NetworkTable
 from pyiem.util import logger
-from sqlalchemy import text
 
 LOG = logger()
 
@@ -18,46 +17,49 @@ def process(conn, row, station, nt):
     """Do what we need to do here."""
     delta = pd.Timedelta(hours=3)
     obs = pd.read_sql(
-        "SELECT valid, tmpf, dwpf, relh, feel from alldata where "
-        "station = %s and valid >= %s and valid <= %s and "
-        "report_type in (3, 4) ORDER by valid ASC",
+        sql_helper("""
+    SELECT valid, tmpf, dwpf, relh, feel from alldata where
+    station = :station and valid >= :sts and valid <= :ets and
+    report_type in (3, 4) ORDER by valid ASC
+        """),
         conn,
-        params=(
-            station,
-            row["valid"] - delta,
-            row["valid"] + delta,
-        ),
+        params={
+            "station": station,
+            "sts": row["valid"] - delta,
+            "ets": row["valid"] + delta,
+        },
     )
     print(row["valid"])
     print(obs.head(100))
-    res = input("Null space sep list (#t #d #r #f): ")
+    res = input("Rows to null (#t #d): ")
     if res == "":
         return
     tzinfo = ZoneInfo(nt.sts[station]["tzname"])
     iempgconn, iemcursor = get_dbconnc("iem")
-    mapper = {
-        "t": "tmpf",
-        "d": "dwpf",
-        "r": "relh",
-        "f": "feel",
-    }
     for entry in res.split():
         idx = int(entry[:-1])
         cullrow = obs.loc[idx]
         colval = entry[-1]
-        col = mapper[colval]
+        tonull = ""
+        if colval == "t":
+            tonull = "tmpf = null, dwpf = null, relh = null, feel = null"
+        elif colval == "d":
+            tonull = "tmpf = null, dwpf = null, relh = null, feel = null"
+        table = f"t{cullrow['valid'].year}"
         conn.execute(
-            text(
-                f"UPDATE t{cullrow['valid'].year} SET {col} = null, "
+            sql_helper(
+                "UPDATE {table} SET {tonull}, "
                 "editable = 'f' "
-                "WHERE station = :station and valid = :dt"
+                "WHERE station = :station and valid = :dt",
+                tonull=tonull,
+                table=table,
             ),
             {
                 "station": station,
                 "dt": cullrow["valid"],
             },
         )
-        print(f"Setting {cullrow['valid']} {col}->null")
+        print(f"Setting {cullrow['valid']} {tonull}")
 
         iemcursor.execute(
             f"update summary_{cullrow['valid'].year} set max_feel = null, "
@@ -89,11 +91,16 @@ def main(station, network, varname, above, below, year):
     tbl = f"t{year}" if year is not None else "alldata"
     with get_sqlalchemy_conn("asos") as conn:
         obs = pd.read_sql(
-            text(f"""
+            sql_helper(
+                """
             select valid, tmpf, dwpf, relh, feel from {tbl}
             where station = :station and {varname} {op} :t
-            ORDER by feel desc
-                """),
+            ORDER by {varname} asc
+                """,
+                tbl=tbl,
+                op=op,
+                varname=varname,
+            ),
             conn,
             params={
                 "station": station,
