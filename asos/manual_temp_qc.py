@@ -2,6 +2,7 @@
 Manually review temperatures.
 """
 
+from typing import Optional
 from zoneinfo import ZoneInfo
 
 import click
@@ -83,28 +84,34 @@ def process(conn, row, station, nt):
 @click.option("--above", type=int, default=None)
 @click.option("--below", type=int, default=None)
 @click.option("--year", type=int, default=None)
-def main(station, network, varname, above, below, year):
+@click.option("--month", type=int, help="Month to filter on")
+def main(station, network, varname, above, below, year, month: Optional[int]):
     """Go Main Go."""
     nt = NetworkTable(network, only_online=False)
     # Look for obs that are maybe bad
     op = ">" if above is not None else "<"
     tbl = f"t{year}" if year is not None else "alldata"
+    mfilter = ""
+    if month is not None:
+        mfilter = " and extract(month from valid) = :month "
     with get_sqlalchemy_conn("asos") as conn:
         obs = pd.read_sql(
             sql_helper(
                 """
             select valid, tmpf, dwpf, relh, feel from {tbl}
-            where station = :station and {varname} {op} :t
+            where station = :station and {varname} {op} :t {mfilter}
             ORDER by {varname} asc
                 """,
                 tbl=tbl,
                 op=op,
                 varname=varname,
+                mfilter=mfilter,
             ),
             conn,
             params={
                 "station": station,
                 "t": above if above is not None else below,
+                "month": month,
             },
         )
         LOG.info("Found %s rows", len(obs.index))
