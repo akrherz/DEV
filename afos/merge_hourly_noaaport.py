@@ -3,43 +3,67 @@
 http://idd.ssec.wisc.edu/native/nwstg/text/
 """
 
-from pyiem.database import get_dbconn
+from datetime import datetime, timezone
+
+import click
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.nws.product import TextProduct
-from pyiem.util import utc
 
 
-def main():
+@click.command()
+@click.option("--valid", type=click.DateTime(), help="UTC valid time to use")
+@click.option("--filename", type=click.Path(), help="File to read")
+def main(valid: datetime, filename: str):
     """Go Main Go."""
-    pgconn = get_dbconn("afos")
-    cursor = pgconn.cursor()
-    utcnow = utc(2024, 7, 30, 4)
-    with open("/mesonet/tmp/2024073003.txt", "rb") as fh:
+    utcnow = valid.replace(tzinfo=timezone.utc)
+    with open(filename, "rb") as fh:
         data = fh.read()
-    for token in data.decode("ascii", "ignore").split("\003"):
-        try:
-            tp = TextProduct(token, utcnow=utcnow, parse_segments=False)
-        except Exception as exp:
-            print(exp)
-            continue
-        if tp.afos is None:
-            continue
-        cursor.execute(
-            "SELECT data from products_2024_0712 where entered = %s and "
-            "source = %s and wmo = %s and pil = %s",
-            (tp.valid, tp.source, tp.wmo, tp.afos),
-        )
-        if cursor.rowcount > 0:
-            continue
-        print(tp.get_product_id())
-        cursor.execute(
-            """
-        INSERT into products_2024_0712 (entered, source, wmo, pil, data, bbb)
-        VALUES (%s, %s, %s, %s, %s, %s)
-        """,
-            (tp.valid, tp.source, tp.wmo, tp.afos, token, tp.bbb),
-        )
-    cursor.close()
-    pgconn.commit()
+    with get_sqlalchemy_conn("afos") as conn:
+        for token in data.decode("ascii", "ignore").split("\003"):
+            try:
+                tp = TextProduct(
+                    token, utcnow=utcnow, ugc_provider={}, parse_segments=False
+                )
+            except Exception as exp:
+                print(exp)
+                continue
+            if tp.afos is None:
+                continue
+            part = "0106" if tp.valid.month < 7 else "0712"
+            table = f"products_{tp.valid:%Y}_{part}"
+            params = {
+                "entered": tp.valid,
+                "source": tp.source,
+                "wmo": tp.wmo,
+                "pil": tp.afos,
+                "bbb": tp.bbb,
+                "data": token,
+            }
+            res = conn.execute(
+                sql_helper(
+                    """
+    SELECT data from {table} where entered = :entered and
+    source = :source and wmo = :wmo and pil = :pil and
+    bbb is not distinct from :bbb
+                """,
+                    table=table,
+                ),
+                params,
+            )
+            if res.rowcount > 0:
+                continue
+            print(tp.get_product_id())
+            conn.execute(
+                sql_helper(
+                    """
+            INSERT into {table} (entered, source, wmo, pil, data, bbb)
+            VALUES (:entered, :source, :wmo, :pil, :data, :bbb)
+            """,
+                    table=table,
+                ),
+                params,
+            )
+        conn.commit()
 
 
 if __name__ == "__main__":
