@@ -2,7 +2,7 @@
 
 import datetime
 
-import matplotlib.pyplot as plt
+from pyiem.plot import figure
 
 
 def main():
@@ -15,7 +15,7 @@ def main():
         xs.append(ts)
         ys.append(int(tokens[1]))
 
-    fig = plt.figure(figsize=(8, 6))
+    fig = figure(figsize=(8, 6))
     ax = fig.add_subplot(111)
 
     ax.semilogy(xs, ys, lw=3)
@@ -37,7 +37,6 @@ def main():
     ax.set_ylabel("Maximum Daily Web Requests", fontsize=20)
     ax.set_title("IEM Web Requests Milestones [17 Jun 2001-2017]", fontsize=18)
     ax.grid(True)
-    plt.setp(ax.get_yticklabels(), fontsize=20)
     fig.tight_layout()
     fig.savefig("test.png")
 

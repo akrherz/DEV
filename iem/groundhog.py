@@ -2,28 +2,29 @@
 
 import matplotlib.patches as mpatches
 import pandas as pd
-from pyiem.database import get_dbconnstr
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import figure
 
 
 def main():
     """Go Main Go."""
-    obs = pd.read_sql(
-        "SELECT valid, skyc1, skyc2, skyc3, skyc4 from alldata where "
-        "station = 'DSM' and to_char(valid, 'MMDD') = '0202' and "
-        "extract(minute from valid) > 50 and "
-        "extract(hour from valid) = 7 and valid > '2007-01-01' "
-        "and report_type = 2 ORDER by valid ASC",
-        get_dbconnstr("asos"),
-    )
-
-    cobs = pd.read_sql(
-        "SELECT year, sum(snow) as snow_total, avg((high+low)/2.) as avg_t "
-        "from alldata_ia where station = 'IATDSM' and sday > '0202' and "
-        "sday < '0316' GROUP by year",
-        get_dbconnstr("coop"),
-        index_col="year",
-    )
+    with get_sqlalchemy_conn("asos") as conn:
+        obs = pd.read_sql(
+            "SELECT valid, skyc1, skyc2, skyc3, skyc4 from alldata where "
+            "station = 'DSM' and to_char(valid, 'MMDD') = '0202' and "
+            "extract(minute from valid) > 50 and "
+            "extract(hour from valid) = 7 and valid > '2007-01-01' "
+            "and report_type = 2 ORDER by valid ASC",
+            conn,
+        )
+    with get_sqlalchemy_conn("coop") as conn:
+        cobs = pd.read_sql(
+            "SELECT year, sum(snow) as snow_total, avg((high+low)/2.) as avg_t"
+            " from alldata_ia where station = 'IATDSM' and sday > '0202' and "
+            "sday < '0316' GROUP by year",
+            conn,
+            index_col="year",
+        )
 
     climo = cobs.mean()
 

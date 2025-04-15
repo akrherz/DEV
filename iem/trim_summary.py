@@ -1,7 +1,8 @@
 """Delete data we do not need."""
 
 import pandas as pd
-from pyiem.util import get_dbconn, get_sqlalchemy_conn, logger
+from pyiem.database import get_dbconn, get_sqlalchemy_conn
+from pyiem.util import logger
 
 LOG = logger()
 IEM = get_dbconn("iem")

@@ -4,7 +4,7 @@ import datetime
 import os
 import re
 
-import matplotlib.pyplot as plt
+from pyiem.plot import figure_axes
 
 
 def main():
@@ -37,7 +37,7 @@ def main():
             xticklabels.append(now.strftime(fmt))
         now += interval
 
-    fig, ax = plt.subplots(1, 1)
+    fig, ax = figure_axes()
 
     ax.bar(valid, vals, edgecolor="b", facecolor="b", width=86400)
     ax.set_xticks(xticks)

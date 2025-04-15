@@ -3,7 +3,7 @@
 from metpy.calc import relative_humidity_from_dewpoint
 from metpy.units import units
 from pandas.io.sql import read_sql
-from pyiem.util import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn
 
 
 def main():
