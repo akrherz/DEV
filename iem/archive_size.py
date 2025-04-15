@@ -1,8 +1,8 @@
 """Plot archive sizes."""
 
-import datetime
+from datetime import date, datetime
 
-import matplotlib.pyplot as plt
+from pyiem.plot import figure_axes
 
 data = """250528    2000/02/01
 346308    2000/03/01
@@ -253,12 +253,65 @@ data = """250528    2000/02/01
 22912492	2020/08/01
 26596201	2020/09/01
 19768913	2020/10/01
-17974340	2020/11/01"""
+17974340	2020/11/01
+18437036	2020/12/01
+23739184	2021/01/01
+20764268	2021/02/01
+21670736	2021/03/01
+20128244	2021/04/01
+20510740	2021/05/01
+22283324	2021/06/01
+29055600	2021/07/01
+25510672	2021/08/01
+29238664	2021/09/01
+27151492	2021/10/01
+23233552	2021/11/01
+18811084	2021/12/01
+29762220	2022/01/01
+19215864	2022/02/01
+19170052	2022/03/01
+24270516	2022/04/01
+29418400	2022/05/01
+25663188	2022/06/01
+25692216	2022/07/01
+26320104	2022/08/01
+23752656	2022/09/01
+25494076	2022/10/01
+24644856	2022/11/01
+22684516	2022/12/01
+22661748	2023/01/01
+22560616	2023/02/01
+24728880	2023/03/01
+28590148	2023/04/01
+24381084	2023/05/01
+26301644	2023/06/01
+27926560	2023/07/01
+26195696	2023/08/01
+24469280	2023/09/01
+25233824	2023/10/01
+23349728	2023/11/01
+25640000	2023/12/01
+19319396	2024/01/01
+21310184	2024/02/01
+24880780	2024/03/01
+26506540	2024/04/01
+28420520	2024/05/01
+26209688	2024/06/01
+26398192	2024/07/01
+28061532	2024/08/01
+30654768	2024/09/01
+25376004	2024/10/01
+25609672	2024/11/01
+24210372	2024/12/01
+25434184	2025/01/01
+26235472	2025/02/01
+22115376	2025/03/01
+25870784	2025/04/01"""
 
 
 def main():
     """Go Main Go."""
-    dates = [datetime.date(2000, 1, 1)]
+    dates = [date(2000, 1, 1)]
     szs = [0.2]
     accum = [0.0002 * 30.0]
     for line in data.split("\n"):
@@ -266,10 +319,12 @@ def main():
         sz = float(tokens[0]) / 1000000.0
         szs.append(sz)
         accum.append(accum[-1] + 30.0 * sz / 1000.0)
-        dates.append(datetime.datetime.strptime(tokens[1], "%Y/%m/%d"))
+        dates.append(datetime.strptime(tokens[1], "%Y/%m/%d"))
 
-    (fig, ax) = plt.subplots(1, 1)
-
+    (fig, ax) = figure_axes(
+        title="IEM File-based Archive Storage (2000 - April 2025)",
+        figsize=(8, 6),
+    )
     ax.bar(dates, szs, width=30, fc="b", ec="b")
     ax2 = ax.twinx()
     ax2.plot(dates, accum, lw=2, c="r")
@@ -277,11 +332,10 @@ def main():
     ax2.set_ylim(bottom=0)
     ax.set_ylabel("Daily Archive Volume [GB]")
     ax.grid(True)
-    ax.set_title("IEM File-based Archive Storage (2000 - November 2020)")
 
     ax.annotate(
         "Add Iowa RWIS webcams",
-        xy=(datetime.datetime(2009, 12, 1), 1.0),
+        xy=(datetime(2009, 12, 1), 1.0),
         xycoords="data",
         xytext=(-150, 30),
         textcoords="offset points",
@@ -293,7 +347,7 @@ def main():
 
     ax.annotate(
         "Add High-res NEXRAD composites",
-        xy=(datetime.datetime(2010, 12, 1), 2.25),
+        xy=(datetime(2010, 12, 1), 2.25),
         xycoords="data",
         xytext=(-180, 50),
         textcoords="offset points",
@@ -304,20 +358,8 @@ def main():
     )
 
     ax.annotate(
-        "Add GIS GINI Satellite Images",
-        xy=(datetime.datetime(2011, 12, 1), 6),
-        xycoords="data",
-        xytext=(-190, 50),
-        textcoords="offset points",
-        bbox=dict(boxstyle="round", fc="0.8"),
-        arrowprops=dict(
-            arrowstyle="->", connectionstyle="angle,angleA=0,angleB=90,rad=1"
-        ),
-    )
-
-    ax.annotate(
         "Add Individual NEXRAD Images",
-        xy=(datetime.datetime(2012, 2, 1), 9.5),
+        xy=(datetime(2012, 2, 1), 9.5),
         xycoords="data",
         xytext=(-190, 50),
         textcoords="offset points",
@@ -329,7 +371,7 @@ def main():
 
     ax.annotate(
         "Add Some Model Surface Analysis",
-        xy=(datetime.datetime(2013, 4, 1), 13.5),
+        xy=(datetime(2013, 4, 1), 13.5),
         xycoords="data",
         xytext=(-210, 40),
         textcoords="offset points",
@@ -341,7 +383,7 @@ def main():
 
     ax.annotate(
         "Add MRMS Products",
-        xy=(datetime.datetime(2014, 6, 1), 17.5),
+        xy=(datetime(2014, 6, 1), 17.5),
         xycoords="data",
         xytext=(-250, 40),
         textcoords="offset pixels",
@@ -353,7 +395,7 @@ def main():
 
     ax.annotate(
         "Increased Size of Individual NEXRADs due to SAILS",
-        xy=(datetime.datetime(2016, 5, 1), 24.5),
+        xy=(datetime(2016, 5, 1), 24.5),
         xycoords="data",
         xytext=(-250, 30),
         textcoords="offset points",
@@ -363,7 +405,7 @@ def main():
         ),
     )
 
-    fig.savefig("201126.png")
+    fig.savefig("250416.png")
 
 
 if __name__ == "__main__":
