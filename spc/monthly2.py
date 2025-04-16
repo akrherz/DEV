@@ -3,8 +3,8 @@
 import calendar
 from io import StringIO
 
-import matplotlib.pyplot as plt
 import pandas as pd
+from pyiem.plot import figure
 
 data = """month|word|count
  200011 |   0 |  115
@@ -400,7 +400,11 @@ def main():
     s = pd.rolling_mean(jdf["ratio"], window=12)
     jdf["month"] = jdf.index.month
 
-    (fig, ax) = plt.subplots(2, 1)
+    fig = figure()
+    ax = [
+        fig.add_axes((0.1, 0.55, 0.85, 0.4)),
+        fig.add_axes((0.1, 0.1, 0.85, 0.4)),
+    ]
     ax[0].bar(
         jdf.index.values,
         jdf["ratio"],

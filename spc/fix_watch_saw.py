@@ -31,7 +31,7 @@ def main():
         newtext = "%s\n%s\n%s\n%s" % (line1, line2, line3, report[(pos + 6) :])
 
         try:
-            prod = TextProduct(newtext, utcnow=row[1])
+            prod = TextProduct(newtext, utcnow=row[1], ugc_provider={})
         except Exception:
             traceback.print_exc()
             continue

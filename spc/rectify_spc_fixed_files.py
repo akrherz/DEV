@@ -20,7 +20,7 @@ def process(cursor, fn):
     with open(fn, encoding="utf-8") as fh:
         newtext = fh.read()
     data = "000 \nSAUS22 KWNS 010000\n" + newtext
-    prod = TextProduct(data)
+    prod = TextProduct(data, ugc_provider={})
     LOG.info("%s, %s, %s", fn, pil, prod.valid)
     cursor.execute(
         "SELECT data from products where pil = %s and entered = %s",
