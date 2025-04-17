@@ -1,36 +1,36 @@
 """Verify MCD watch confidence."""
 
-import datetime
+from datetime import timedelta, timezone
 
+import geopandas as gpd
 import pandas as pd
-import pytz
-from pandas.io.sql import read_sql
-from pyiem.nws.products.mcd import parser
-from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn, get_sqlalchemy_conn, sql_helper
+from pyiem.plot import figure_axes
+from pyiem.util import logger
 from tqdm import tqdm
+
+LOG = logger()
 
 
 def get_mcds():
     """Fetch."""
-    pgconn = get_dbconn("afos")
-    df = read_sql(
-        """
-        SELECT entered as mcdtime, data from products where pil = 'SWOMCD' and
-        entered > '2012-05-01' ORDER by mcdtime ASC
-    """,
-        pgconn,
-        index_col=None,
-    )
-    df["algofail"] = True
-    df["probability"] = None
+    with get_sqlalchemy_conn("postgis") as conn:
+        df = gpd.read_postgis(
+            sql_helper("""
+            SELECT issue as mcdtime, watch_confidence, num, year, geom
+            from mcd where
+            watch_confidence is not null and st_isvalid(geom)
+            ORDER by mcdtime ASC
+        """),
+            conn,
+            index_col=None,
+            geom_col="geom",
+        )  # type: ignore
     df["wfos"] = ""
-    df["num"] = None
-    df["year"] = None
     return df
 
 
-def overlap(cursor, prod, threshold):
+def overlap(cursor, row, threshold):
     """Do Overlap"""
     cursor.execute(
         """
@@ -44,66 +44,51 @@ def overlap(cursor, prod, threshold):
         ORDER by issued ASC
     """,
         (
-            str(prod.geometry),
-            prod.valid,
-            prod.valid + datetime.timedelta(minutes=150),
+            row["geom"].wkt,
+            row["mcdtime"],
+            row["mcdtime"] + timedelta(minutes=150),
             threshold / 100.0,
         ),
     )
     if cursor.rowcount == 0:
         return None, None
-    row = cursor.fetchone()
-    issued = row[1].replace(tzinfo=pytz.utc)
-    return row[0], (issued - prod.valid).total_seconds() / 60.0
+    row2 = cursor.fetchone()
+    issued = row2[1].replace(tzinfo=timezone.utc)
+    return row2[0], (issued - row["mcdtime"]).total_seconds() / 60.0
 
 
-def do_verification(df):
+def do_verification(df: pd.DataFrame):
     """Do Verification"""
     pgconn = get_dbconn("postgis")
     cursor = pgconn.cursor()
     for idx, row in tqdm(df.iterrows(), total=len(df.index)):
-        try:
-            prod = parser(row["data"])
-        except Exception as _:
-            print(_)
-            print(row["data"])
-            continue
-        if not prod.geometry.is_valid:
-            print(
-                "MCD: %s is invalid: %s" % (prod.discussion_num, prod.geometry)
-            )
-            continue
-        prob = prod.watch_prob
-        if prob is None:
-            continue
-        df.at[idx, "algofail"] = False
-        df.at[idx, "probability"] = prob
-        df.at[idx, "wfos"] = ",".join(prod.attn_wfo)
-        df.at[idx, "num"] = prod.discussion_num
-        df.at[idx, "year"] = prod.valid.year
         for threshold in range(10, 101, 10):
-            try:
-                verif, timeoffset = overlap(cursor, prod, threshold)
-            except Exception:
-                cursor = pgconn.cursor()
-                print("FATAL")
-                continue
-            df.at[idx, "verif%s" % (threshold,)] = verif
-            df.at[idx, "timeoffset%s" % (threshold,)] = timeoffset
+            verif, timeoffset = overlap(cursor, row, threshold)
+            df.at[idx, f"verif{threshold}"] = verif
+            df.at[idx, f"timeoffset{threshold}"] = timeoffset
 
 
 def do_plotting(threshold):
     """Plotting."""
     df = pd.read_excel("mcd_verif.xlsx")
-    (fig, ax) = plt.subplots(1, 1)
+    (fig, ax) = figure_axes(
+        title=(
+            "SPC MCD Watch Probability Verification (1 May 2012 - 16 Apr 2025)"
+        ),
+        subtitle=(
+            "Subsequent Watch (within 2.5 hours of MCD, "
+            f"Polygon Spatial Overlap: >= {threshold:.0f}%)"
+        ),
+        figsize=(8, 6),
+    )
     probs = [5, 20, 40, 60, 80, 95]
     verif = []
     hits = []
     events = []
     for prob in probs:
-        df2 = df[df["probability"] == prob]
+        df2 = df[df["watch_confidence"] == prob]
         event = len(df2.index)
-        hit = len(df2[df2["verif%s" % (threshold,)] > 0].index)
+        hit = len(df2[df2[f"verif{threshold}"] > 0].index)
         hits.append(hit)
         events.append(event)
         verif.append(float(hit) / float(event) * 100.0)
@@ -113,7 +98,7 @@ def do_plotting(threshold):
         ax.text(
             i,
             v + 3,
-            "(%s/%s)\n%.1f%%" % (hits[i], events[i], v),
+            f"({hits[i]}/{events[i]})\n{v:.1f}%",
             ha="center",
             bbox=dict(color="white"),
         )
@@ -122,14 +107,6 @@ def do_plotting(threshold):
     ax.set_ylim(0, 110)
     ax.grid(True)
     ax.set_yticks(probs)
-    ax.set_title(
-        (
-            "SPC MCD Watch Probability Verification "
-            "(1 May 2012 - 12 Aug 2019)\n"
-            "Subsequent Watch (within 2.5 hours of MCD, "
-            "Spatial Overlap: >= %.0f%%)" % (threshold,)
-        )
-    )
     ax.set_ylabel("Watch Issuance Frequency [%]")
     ax.set_xlabel("MCD Watch Issuance Confidence [%]")
     ax.text(
@@ -140,14 +117,14 @@ def do_plotting(threshold):
         va="center",
         bbox=dict(color="white"),
     )
-    fig.text(0.01, 0.01, "@akrherz, 12 Aug 2019")
-    fig.savefig("test%s.png" % (threshold,))
+    fig.text(0.01, 0.01, "@akrherz, 16 Apr 2025")
+    fig.savefig(f"mcd_verify_{threshold}.png")
 
 
 def do_plotting2():
     """Another plotting option."""
     df = pd.read_excel("mcd_verif.xlsx")
-    (fig, ax) = plt.subplots(1, 1)
+    (fig, ax) = figure_axes()
     for threshold in range(10, 101, 10):
         probs = [5, 20, 40, 60, 80, 95]
         verif = []
@@ -184,15 +161,14 @@ def do_work():
     """Do Something Fun"""
     df = get_mcds()
     do_verification(df)
-    del df["data"]
-    df = df[df["probability"] > 0]
     df["mcdtime"] = df["mcdtime"].apply(lambda x: x.strftime("%Y-%m-%d %H:%M"))
     with pd.ExcelWriter("mcd_verif.xlsx") as writer:
-        df.to_excel(writer, "Verification", index=False)
-        writer.save()
+        df.drop(columns="geom").to_excel(
+            writer, sheet_name="Verification", index=False
+        )
 
 
 if __name__ == "__main__":
     # do_work()
-    do_plotting(10)
+    do_plotting(50)
     # do_plotting2()
