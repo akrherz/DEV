@@ -59,16 +59,17 @@ def main(filename, sheetname, metric):
 
     col = 0
     inserts = 0
+    deletes = 0
     pgconn, cursor = get_dbconnc("coop")
     while col < len(df.columns):
         # Look for Date in row 2
-        if df.iloc[2, col] != "DATE":
+        if df.iloc[3, col] != "DATE":
             col += 1
             continue
         print("Found Date in column", col)
         for row in range(3, len(df.index)):
             dt = df.iloc[row, col]
-            if dt is None:
+            if pd.isna(dt):
                 continue
             vals = list(df.iloc[row, col + 1 : col + 11])
             if not all(is_numeric(v) for v in vals):
@@ -78,6 +79,7 @@ def main(filename, sheetname, metric):
                 "delete from nass_iowa where valid = %s and metric = %s",
                 (dt, metric),
             )
+            deletes += cursor.rowcount
             cursor.execute(
                 "INSERT into nass_iowa(valid, metric, nw, nc, ne, wc, c, ec, "
                 "sw, sc, se, iowa) "
@@ -89,7 +91,7 @@ def main(filename, sheetname, metric):
 
     cursor.close()
     pgconn.commit()
-    LOG.info("Inserted %s rows", inserts)
+    LOG.info("Inserted %s rows, deleted %s rows", inserts, deletes)
 
 
 if __name__ == "__main__":

@@ -2,7 +2,6 @@
 
 import geopandas as gpd
 import numpy as np
-import pandas as pd
 from matplotlib import colors as mpcolors
 from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.plot import MapPlot, get_cmap
@@ -29,21 +28,32 @@ def main():
     with get_sqlalchemy_conn("idep") as conn:
         huc12df = gpd.read_postgis(
             sql_helper(
-                "select simple_geom, huc_12 from huc12 where scenario = 0"
+                """
+with hucs as (
+    select huc_12, simple_geom from huc12 where scenario = 0
+), agg as (
+    select huc_12, sum(case when qc_precip > 10 then 1 else 0 end) / 18 as days
+    from results_by_huc12 where scenario = 0 and valid < '2025-01-01' and
+    to_char(valid, 'MMDD') between '0415' and '0531'
+    group by huc_12
+)
+    select h.huc_12, simple_geom, days from hucs h JOIN agg a on
+    (h.huc_12 = a.huc_12)
+                """
             ),
             conn,
             geom_col="simple_geom",
             index_col="huc_12",
-        )
-    datadf = pd.read_csv(
-        "/tmp/huc12_stddev_rfactor.csv",
-        index_col="huc_12",
-        dtype={"huc_12": str},
-    )
-    avgdf = pd.read_csv(
-        "/tmp/huc12_rfactor.csv", index_col="huc_12", dtype={"huc_12": str}
-    )
-    huc12df["data"] = datadf["stddev"] / avgdf["avg"]
+        )  # type: ignore
+    # datadf = pd.read_csv(
+    #    "/tmp/huc12_stddev_rfactor.csv",
+    #    index_col="huc_12",
+    #    dtype={"huc_12": str},
+    # )
+    # avgdf = pd.read_csv(
+    #    "/tmp/huc12_rfactor.csv", index_col="huc_12", dtype={"huc_12": str}
+    # )
+    # huc12df["data"] = datadf["stddev"] / avgdf["avg"]
     # print(df)
     # df["percent"] = df["no_till_acres"] / df["total"] * 100.0
     # df = df.fillna(0)
@@ -57,29 +67,27 @@ def main():
         north=maxy,
         west=minx,
         east=maxx,
-        title=(
-            "2007-2024 Standard Deviation of Yearly R-Factor / "
-            "Average by HUC12"
-        ),
+        title=("2007-2024 Calendar days with >= 10mm precipitation by HUC12"),
+        subtitle="Between 15 April and 31 May",
         logo="dep",
         nocaption=True,
         continentalcolor="white",
         stateborderwidth=3,
     )
-    cmap = get_cmap("Reds")
+    cmap = get_cmap("managua")
     # cmap.set_bad("#000000")
     # cmap.set_over("#ffff00")
-    bins = np.arange(0, 1.1, 0.2)
+    bins = np.arange(0, 10.1, 2)
     norm = mpcolors.BoundaryNorm(bins, cmap.N)
 
     huc12df.to_crs(mp.panels[0].crs).plot(
         aspect=None,
         ax=mp.panels[0].ax,
-        color=cmap(norm(huc12df["data"])),
+        color=cmap(norm(huc12df["days"])),
         zorder=Z_POLITICAL,
     )
     # mp.drawcounties()
-    mp.draw_colorbar(bins, cmap, norm, title="Ratio", extend="max")
+    mp.draw_colorbar(bins, cmap, norm, title="days pear year", extend="max")
 
     mp.fig.savefig("test.png")
 
