@@ -14,7 +14,7 @@ from pyiem.util import logger
 SIZE = 13
 LOG = logger()
 SAVEFILE = "/opt/dep/scripts/cligen/mydays.txt"
-THRESHOLD_DATE = datetime.datetime(2023, 9, 1)
+THRESHOLD_DATE = datetime.datetime(2024, 2, 1)
 
 
 def env2database():
@@ -29,6 +29,26 @@ def env2database():
             cmd += f" --date {line.strip()} "
     LOG.info(cmd)
     subprocess.call(cmd, shell=True)
+
+
+def pick_dates_by_neighbor_diff() -> Tuple[str]:
+    """Repair an off-by one that caused some grief."""
+    c1 = read_cli("/i/0/cli/094x042/094.56x042.98.cli")
+    c2 = read_cli("/i/0/cli/094x042/094.56x042.99.cli")
+    candidates = (c2["pcpn"] - c1["pcpn"]).abs().sort_values(ascending=False)
+    days = []
+    for dt, diff in candidates.items():
+        mt = get_update_date(dt)
+        LOG.warning(
+            "Processing %s[mod:%s] with diff: %s",
+            dt,
+            mt.date(),
+            diff,
+        )
+        days.append(dt)
+        if len(days) > SIZE:
+            break
+    return days
 
 
 def pick_dates_by_database():
@@ -110,7 +130,7 @@ def edit_clifiles(days):
 @click.option("--dryrun", is_flag=True, default=False, help="Dry Run.")
 @click.option(
     "--algo",
-    type=click.Choice(["database", "moddate"]),
+    type=click.Choice(["database", "moddate", "neighbor"]),
     default="database",
     help="Algorithm to use",
 )
@@ -135,6 +155,8 @@ def main(clifile: Optional[str], dryrun: bool, algo: str):
                 days.append(dt)
             if len(days) > SIZE:
                 break
+    elif algo == "neighbor":
+        days = pick_dates_by_neighbor_diff()
     elif algo == "database":
         days = pick_dates_by_database()
     else:
