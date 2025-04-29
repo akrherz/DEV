@@ -28,7 +28,8 @@ VHOST_MAPPER = {
 @click.option(
     "--hours", type=int, default=24, help="Number of hours to look back"
 )
-def main(hours: int):
+@click.option("--ignoreapi", is_flag=True, help="Ignore API requests")
+def main(hours: int, ignoreapi: bool) -> None:
     """Go Main Go."""
     with get_sqlalchemy_conn("mesosite") as conn:
         df = pd.read_sql(
@@ -44,6 +45,9 @@ def main(hours: int):
     for _, row in df.iterrows():
         vhost = str(row["vhost"])
         uri = row["request_uri"]
+        if ignoreapi and uri.startswith("/api/"):
+            print(f"Skipping API request {uri}")
+            continue
         # Unclear how this happens, but alas
         if uri.startswith("http"):
             continue
