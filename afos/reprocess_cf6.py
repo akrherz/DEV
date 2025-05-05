@@ -28,7 +28,9 @@ def main():
         acursor = adbconn.cursor()
         for row in cursor:
             try:
-                prod = parser(row["data"], utcnow=row["entered"])
+                prod = parser(
+                    row["data"], utcnow=row["entered"], ugc_provider={}
+                )
                 progress.set_description(prod.get_product_id())
             except Exception as exp:
                 LOG.info("failed to parse %s: %s", row["data"], exp)
