@@ -1,5 +1,6 @@
 /.project
 /.pydevproject
+/rabbitmq/*.last
 /ldm/*.log
 **/.ipynb_checkpoints
 **/*.bufr
