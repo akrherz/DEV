@@ -95,17 +95,19 @@ def main(station, network, varname, above, below, year, month: Optional[int]):
     if month is not None:
         mfilter = " and extract(month from valid) = :month "
     with get_sqlalchemy_conn("asos") as conn:
+        sortdir = "DESC" if above is not None else "ASC"
         obs = pd.read_sql(
             sql_helper(
                 """
             select valid, tmpf, dwpf, relh, feel from {tbl}
             where station = :station and {varname} {op} :t {mfilter}
-            ORDER by {varname} asc
+            ORDER by {varname} {sortdir}
                 """,
                 tbl=tbl,
                 op=op,
                 varname=varname,
                 mfilter=mfilter,
+                sortdir=sortdir,
             ),
             conn,
             params={
