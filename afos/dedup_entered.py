@@ -5,15 +5,17 @@ products are duplicated by having one product with the old timestamp logic
 and a new one at the new logic.
 """
 
+import sys
 from datetime import datetime
 
 import click
 import pandas as pd
 from pyiem.database import get_dbconn
 from pyiem.nws.product import TextProduct
+from tqdm import tqdm
 
 
-def do(pgconn, dt: datetime):
+def do(pgconn, progress, dt: datetime):
     """Go main go"""
     cursor = pgconn.cursor()
     cursor2 = pgconn.cursor()
@@ -34,7 +36,8 @@ def do(pgconn, dt: datetime):
             )
         except Exception:
             continue
-        if prod.valid == row[1] and prod.bbb == row[4]:
+        # Allows for None check for bbb
+        if prod.valid == row[1] and (prod.bbb is row[4] or prod.bbb == row[4]):
             continue
         table2 = (
             f"products_{prod.valid:%Y}_"
@@ -51,18 +54,25 @@ def do(pgconn, dt: datetime):
             f"UPDATE {table} SET entered = %s, bbb = %s WHERE ctid = %s",
             (prod.valid, prod.bbb, row[0]),
         )
-        print(f"{row[3]} {row[1]} {row[4]} {prod.valid} ({delta}) {prod.bbb}")
+        progress.write(
+            f"{row[3]} {row[1]} {row[4]} {prod.valid} ({delta}) {prod.bbb}"
+        )
     cursor2.close()
     pgconn.commit()
 
 
 @click.command()
-@click.option("--year", type=int, required=True)
-def main(year: int):
+@click.option("--sts", type=click.DateTime(), required=True)
+@click.option("--ets", type=click.DateTime(), required=True)
+def main(sts: datetime, ets: datetime):
     """Do Main"""
+    sts = sts.date()
+    ets = ets.date()
     pgconn = get_dbconn("afos")
-    for dt in pd.date_range(f"{year}/05/30", f"{year}/06/30"):
-        do(pgconn, dt)
+    progress = tqdm(pd.date_range(sts, ets, freq="1D"), file=sys.stderr)
+    for dt in progress:
+        progress.set_description(f"Processing {dt:%Y-%m-%d}")
+        do(pgconn, progress, dt)
 
 
 if __name__ == "__main__":
