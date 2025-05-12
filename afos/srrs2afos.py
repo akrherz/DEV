@@ -69,10 +69,8 @@ def process():
                 )
                 if key not in memory:
                     cursor.execute(
-                        """
-                    DELETE from """
-                        + table
-                        + """ WHERE pil = %s and
+                        f"""
+                    DELETE from {table} WHERE pil = %s and
                     entered = %s and source = %s
                     """,
                         (prod.afos, prod.valid, prod.source),
@@ -80,9 +78,7 @@ def process():
                     deleted += cursor.rowcount
                     memory.append(key)
                 cursor.execute(
-                    """INSERT into """
-                    + table
-                    + """
+                    f"""INSERT into {table}
             (data, pil, entered, source, wmo) values (%s,%s,%s,%s,%s)
             """,
                     (bulletin, prod.afos, prod.valid, prod.source, prod.wmo),

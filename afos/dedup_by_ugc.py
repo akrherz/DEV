@@ -17,7 +17,7 @@ def compute_ugcs(products: pd.DataFrame, utc_valid: datetime):
     products["ugcs"] = None
     for idx, row2 in products.iterrows():
         try:
-            prod = TextProduct(row2["data"], utcnow=utc_valid)
+            prod = TextProduct(row2["data"], utcnow=utc_valid, ugc_provider={})
             products.at[idx, "product_id"] = prod.get_product_id()
             if prod.segments[0].ugcexpire is None:
                 LOG.info(

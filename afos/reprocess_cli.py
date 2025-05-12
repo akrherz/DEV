@@ -2,8 +2,7 @@
 
 from datetime import date
 
-from psycopg2.extras import DictCursor
-from pyiem.database import get_dbconn
+from pyiem.database import get_dbconnc
 from pyiem.network import Table as NetworkTable
 from pyiem.nws.products import cli
 from pyiem.util import logger
@@ -45,8 +44,7 @@ cli.HARDCODED.update(
 
 def main():
     """Go Main Go."""
-    dbconn = get_dbconn("iem")
-    cursor = dbconn.cursor(cursor_factory=DictCursor)
+    dbconn, cursor = get_dbconnc("iem")
     counter = 0
     for text in open("CLI.txt", "rb").read().split(b"\003"):
         try:
@@ -72,7 +70,7 @@ def main():
             if counter % 100 == 0:
                 cursor.close()
                 dbconn.commit()
-                cursor = dbconn.cursor(cursor_factory=DictCursor)
+                cursor = dbconn.cursor()
     print(cli.UNKNOWN)
     cursor.close()
     dbconn.commit()

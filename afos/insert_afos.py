@@ -41,12 +41,11 @@ def main(year, pil):
         )
         LOG.info("Found %s rows to process", len(products.index))
         for _idx, row in products.iterrows():
-            bbbcomp = "bbb = :bbb" if row["bbb"] is not None else "bbb is null"
             res = conn.execute(
-                text(f"""
+                text("""
                 select ctid, tableoid::regclass as tablename, data from
                 products where entered = :entered and pil = :pil and
-                {bbbcomp}
+                bbb is not distinct from :bbb
                 """),
                 {
                     "entered": row["utc_valid"],

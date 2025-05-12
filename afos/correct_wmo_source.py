@@ -26,12 +26,12 @@ with data as (
 
 import sys
 
-from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
+import pandas as pd
+from pyiem.database import get_dbconn
 
 # Pull in the standardized conversion
 sys.path.insert(0, "/opt/iem/scripts/util")
-from poker2afos import XREF_SOURCE  # noqa
+from poker2afos import XREF_SOURCE  # type: ignore
 
 
 def fixer(pgconn, oldval, newval):
@@ -47,7 +47,7 @@ def fixer(pgconn, oldval, newval):
 
 def do_table(pgconn, table):
     """Go Main Go."""
-    df = read_sql(
+    df = pd.read_sql(
         f"SELECT source, count(*) from {table} "
         "WHERE source is not null GROUP by source ORDER by source",
         pgconn,

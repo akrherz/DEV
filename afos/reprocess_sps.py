@@ -13,7 +13,7 @@ def main():
     cursor = dbconn.cursor()
     for text in open("SPS.txt", "rb").read().split(b"\003"):
         try:
-            prod = parser(text.decode("ascii"))
+            prod = parser(text.decode("ascii"), ugc_provider={})
             if prod.afos is None:
                 print(repr(text[:100]))
                 return

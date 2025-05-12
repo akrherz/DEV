@@ -53,7 +53,10 @@ def process(order):
                 bulletin = noaaport_text(bulletin)
                 try:
                     prod = TextProduct(
-                        bulletin, utcnow=ts, parse_segments=False
+                        bulletin,
+                        utcnow=ts,
+                        parse_segments=False,
+                        ugc_provider={},
                     )
                 except Exception as exp:
                     print("Parsing Failure %s\n%s" % (fobj.name, exp))

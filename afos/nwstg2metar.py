@@ -1,13 +1,10 @@
-""" """
+"""Shrug."""
 
-# stdlb
 import glob
 import re
 import subprocess
 import sys
 import tarfile
-
-# third party
 
 HAS = "https://www.ncei.noaa.gov/pub/has"
 YYYYMMDD = re.compile("([\d]{8})")
@@ -31,7 +28,7 @@ def main(argv):
                     )
                     with open(f"{dt}.txt", "a", encoding="ascii") as fh:
                         fh.write(data)
-        subprocess.call(f"mv {tarz} processed/", shell=True)
+        subprocess.call(["mv", tarz, "processed/"])
 
 
 if __name__ == "__main__":

@@ -25,7 +25,7 @@ def main():
         (tuple(PILS.split("|")),),
     )
     for row in acursor:
-        mydir = "KOKX/%s" % (row[0],)
+        mydir = f"KOKX/{row[0]}"
         if not os.path.isdir(mydir):
             os.makedirs(mydir)
         with open(

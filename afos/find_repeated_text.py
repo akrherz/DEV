@@ -37,7 +37,9 @@ def main(year):
     pgconn = get_dbconn("afos")
     for _, row in tqdm(df.iterrows(), total=len(df.index)):
         try:
-            TextProduct(row["data"], utcnow=row["utc_entered"])
+            TextProduct(
+                row["data"], utcnow=row["utc_entered"], ugc_provider={}
+            )
             continue
         except Exception as exp:
             if str(exp).find(" 1 UGC ") == -1:
@@ -56,12 +58,15 @@ def main(year):
             pos = data[200:].find(ttaaii) + 200
         entries.append(data)
         print([repr(x[:30]) for x in entries])
-        continue
         prod1text = row["data"][:pos]
         prod2text = "000 \n" + row["data"][pos:]
         try:
-            prod1 = TextProduct(prod1text, utcnow=row["utc_entered"])
-            prod2 = TextProduct(prod2text, utcnow=row["utc_entered"])
+            prod1 = TextProduct(
+                prod1text, utcnow=row["utc_entered"], ugc_provider={}
+            )
+            prod2 = TextProduct(
+                prod2text, utcnow=row["utc_entered"], ugc_provider={}
+            )
         except Exception as exp:
             LOG.info(
                 "Failed smoke test %s %s %s",

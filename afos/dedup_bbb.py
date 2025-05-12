@@ -5,10 +5,9 @@ from datetime import timezone
 
 import click
 import pandas as pd
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.nws.product import TextProduct, TextProductException
 from pyiem.util import logger, utc
-from sqlalchemy import text
 
 LOG = logger()
 
@@ -54,7 +53,9 @@ def process(df):
         for _idx, row in df.iterrows():
             if not row["take"]:
                 conn.execute(
-                    text(f"delete from {row['table']} WHERE ctid = :ctid"),
+                    sql_helper(
+                        f"delete from {row['table']} WHERE ctid = :ctid"
+                    ),
                     {"ctid": row["ctid"]},
                 )
                 continue
@@ -66,9 +67,10 @@ def process(df):
                     + row["data"][30:]
                 )
                 conn.execute(
-                    text(
-                        f"UPDATE {row['table']} SET data = :newtext, "
-                        "bbb = null WHERE ctid = :ctid"
+                    sql_helper(
+                        "UPDATE {table} SET data = :newtext, "
+                        "bbb = null WHERE ctid = :ctid",
+                        table=row["table"],
                     ),
                     {"newtext": newtext, "ctid": row["ctid"]},
                 )
@@ -83,7 +85,7 @@ def main(year):
     # build a list of problematic products
     with get_sqlalchemy_conn("afos") as conn:
         products = pd.read_sql(
-            text("""
+            sql_helper("""
             select ctid, entered at time zone 'UTC' as utc_valid,
             tableoid::regclass as table,
             pil, bbb, data from products where entered >= :sts and

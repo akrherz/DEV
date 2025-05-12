@@ -11,7 +11,7 @@ from tqdm import tqdm
 
 # Copied from iem/scripts/util/poker2afos.py
 sys.path.insert(0, "/opt/iem/scripts/util")
-from poker2afos import XREF_SOURCE  # noqa
+from poker2afos import XREF_SOURCE  # type: ignore
 
 
 def save(prod, cursor):
@@ -64,7 +64,10 @@ def main():
             for product in splitter(dirpath + "/" + fn):
                 try:
                     prod = TextProduct(
-                        product, utcnow=utcnow, parse_segments=False
+                        product,
+                        utcnow=utcnow,
+                        parse_segments=False,
+                        ugc_provider={},
                     )
                     save(prod, cursor)
                 except Exception:

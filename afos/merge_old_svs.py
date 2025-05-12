@@ -5,8 +5,7 @@ from datetime import timedelta, timezone
 
 from geopandas import read_postgis
 from ingest_old_warnings import compute_until
-from psycopg2.extras import DictCursor
-from pyiem.database import get_dbconn
+from pyiem.database import get_dbconnc
 from pyiem.nws.products.vtec import parser
 from pyiem.nws.vtec import VTEC
 from pyiem.util import noaaport_text
@@ -54,9 +53,8 @@ def main(argv):
     year = int(argv[1])
     phenomena = argv[2]
     significance = argv[3]
-    afosdb = get_dbconn("afos")
-    postgisdb = get_dbconn("postgis")
-    pcursor = postgisdb.cursor(cursor_factory=DictCursor)
+    afosdb, acursor = get_dbconnc("afos")
+    postgisdb, pcursor = get_dbconnc("postgis")
     # Need polygons to come along for the ride to help with ambiquity
     events = read_postgis(
         "WITH polys as ("

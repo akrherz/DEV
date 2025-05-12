@@ -19,9 +19,11 @@ def main():
     now = sts
     while now < ets:
         subprocess.call(
-            ("tar -zxf /mesonet/ARCHIVE/raw/noaaport/%s/%s.tgz")
-            % (now.year, now.strftime("%Y%m%d")),
-            shell=True,
+            [
+                "tar",
+                "-zxf",
+                f"/mesonet/ARCHIVE/raw/noaaport/{now.year}/{now:%Y%m%d}.tgz",
+            ]
         )
         with open("%s.txt" % (now.strftime("%Y%m%d"),), "w") as out:
             for hour in tqdm.tqdm(range(0, 24), desc=now.strftime("%m%d")):
@@ -36,7 +38,7 @@ def main():
                     if prod.find("RRSTAR") == -1:
                         continue
                     try:
-                        tp = TextProduct(prod, utcnow=now)
+                        tp = TextProduct(prod, utcnow=now, ugc_provider={})
                     except Exception:
                         continue
                     if tp.afos == "RRSTAR":

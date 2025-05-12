@@ -26,7 +26,7 @@ def main():
         for row in acursor:
             text = noaaport_text(row[3])
             try:
-                prod = parser(text)
+                prod = parser(text, ugc_provider={})
             except Exception as exp:
                 print(exp)
                 continue

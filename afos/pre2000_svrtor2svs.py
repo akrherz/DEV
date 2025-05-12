@@ -43,7 +43,9 @@ def main(year):
         for _, row in products.iterrows():
             prodtext = row["data"]
             try:
-                prod = TextProduct(prodtext, utcnow=row["utc_valid"])
+                prod = TextProduct(
+                    prodtext, utcnow=row["utc_valid"], ugc_provider={}
+                )
                 if not prod.segments:
                     raise ValueError("No segments found")
             except TextProductException as exp:

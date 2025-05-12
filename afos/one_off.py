@@ -58,7 +58,9 @@ def main(year):
             if entry is None or len(entry) < 30:
                 continue
             try:
-                prod = TextProduct(entry, utcnow=row["utc_entered"])
+                prod = TextProduct(
+                    entry, utcnow=row["utc_entered"], ugc_provider={}
+                )
                 if prod.afos is None:
                     print("AFOS is None")
                     return

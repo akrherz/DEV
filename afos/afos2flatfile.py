@@ -38,8 +38,8 @@ def workflow(date):
             f"data a {date:%Y%m%d}0000 bogus "
             f"text/noaaport/{pil}_{date:%Y%m%d}.txt txt"
         )
-        cmd = f"pqinsert -p '{pqstr}' /tmp/afos.tmp"
-        subprocess.call(cmd, shell=True)
+        cmd = ["pqinsert", "-p", pqstr, "/tmp/afos.tmp"]
+        subprocess.call(cmd)
 
 
 def main():

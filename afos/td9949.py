@@ -16,7 +16,7 @@ from pyiem.util import noaaport_text, utc
 
 # Copied from https://github.com/akrherz/iem
 sys.path.insert(0, "/opt/iem/scripts/util")
-from poker2afos import XREF_SOURCE  # noqa
+from poker2afos import XREF_SOURCE  # type: ignore
 
 WMO_RE = re.compile(
     r"^(?P<ttaaii>[A-Z0-9]{4,6})\s+(?P<cccc>[A-Z]{4})\s+"

@@ -3,7 +3,7 @@
 http://idd.ssec.wisc.edu/native/nwstg/text/
 """
 
-from pyiem.nws.products import TextProduct
+from pyiem.nws.product import TextProduct
 from pyiem.util import utc
 
 
@@ -15,7 +15,9 @@ def main():
         found = 0
         for token in data.decode("ascii", "ignore").split("\003"):
             try:
-                tp = TextProduct(token, utcnow=utcnow, parse_segments=False)
+                tp = TextProduct(
+                    token, utcnow=utcnow, parse_segments=False, ugc_provider={}
+                )
             except Exception as exp:
                 print(exp)
                 continue

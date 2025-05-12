@@ -4,7 +4,7 @@ import datetime
 import re
 import string
 
-from poker2afos import XREF_SOURCE  # noqa
+from poker2afos import XREF_SOURCE  # type: ignore
 from pyiem.database import get_dbconn
 from pyiem.util import noaaport_text, utc
 
