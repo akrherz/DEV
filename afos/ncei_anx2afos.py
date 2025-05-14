@@ -6,67 +6,49 @@ https://www.ncei.noaa.gov/data/service-records-retention-system/access/anx/
 """
 
 import os
+import sys
+from datetime import datetime, timezone
 
+import click
 import pandas as pd
 from pyiem.database import sql_helper, with_sqlalchemy_conn
-from pyiem.nws.product import TextProduct
-from pyiem.util import logger
+from pyiem.wmo import WMOProduct
+from pywwa.workflows.fake_afos_dump import compute_afos
 from sqlalchemy.engine import Connection
 
-LOG = logger()
+sys.path.insert(0, "/opt/iem/scripts/dbutil")
+from clean_afos import LOG, PIL3_IGNORE, PIL_IGNORE  # type: ignore
 
-# 7 May 2025 copied from iem repo :(
-PIL3_IGNORE = (
-    "RR1 RR2 RR3 RR4 RR5 RR6 RR7 RR8 RR9 RRA RRS RRZ ECM ECS ECX LAV "
-    "LEV MAV MET MTR MEX NBE NBH NBP NBS NBX OSO RSD RWR STO HML WRK "
-    "SCV LLL RRM ROB"
-).split()
-PIL_IGNORE = (
-    "HPTNCF WTSNCF TSTNCF HD3RSA XF03DY XOBUS ECMNC1 SYNBOU MISWTM MISWTX "
-    "MISMA1 MISAM1 BBXX CHECK CMAN SPECI METAR"
-).split()
-# Another 7 May 2025 copy
-FAKE = {
-    "URPA15": "AHOPA1",
-    "URPN15": "AHOPN1",
-    "URNT15": "AHONT1",
-    "URNT10": "REPNT0",
-    "URNT11": "REPNT1",
-    "URNT12": "REPNT2",
-    "URNT13": "REPNT3",
-    "URNT14": "REPNTS",
-    "URPA10": "REPPA0",
-    "URPA11": "REPPA1",
-    "URPA12": "REPPA2",
-    "URPA13": "REPPA3",
-    "URPA14": "REPPA4",
-    "URPN10": "REPPN0",
-    "URPN11": "REPPN1",
-    "URPN12": "REPPN2",
-    "URPN13": "REPPN3",
-    "URPN14": "REPPNS",
-    "URNT40": "URNT40",
-}
+# FRH=MOS, RVF=SHEF River, TID=Tide SHEF, BBX is BBXX, CRN is Climate Ref Net
+PIL3_IGNORE.extend(["FRH", "RVF", "TID", "BBX", "CRN"])
+PIL_IGNORE.extend(["QPSPTR", "QPFPTR"])
 
 
-def process(conn: Connection, utcnow, raw):
+def process(conn: Connection, utcnow: datetime, raw: str):
     """Ingest."""
     raw = f"000 \n{raw}\n"
     try:
-        prod = TextProduct(
-            raw, utcnow=utcnow, parse_segments=False, ugc_provider={}
-        )
+        prod = WMOProduct(raw, utcnow=utcnow)
     except Exception as exp:
         LOG.warning("Failed to parse %s: %s", raw[:20], exp)
         return
+    # Ensure we are decently close in time
+    if abs((prod.valid - utcnow).total_seconds()) > 86_400:
+        LOG.warning(
+            "Product %s is too far from utcnow %s",
+            prod.get_product_id(),
+            utcnow,
+        )
+        return
     # Life choices were made here
     if prod.afos is None:
-        if prod.wmo.startswith("UB"):
-            prod.afos = "PIREP"
-        elif prod.wmo not in FAKE:
+        try:
+            compute_afos(prod)
+        except Exception:
             return
-        else:
-            prod.afos = FAKE[prod.wmo]
+        if prod.afos is None:
+            LOG.warning("Failed to compute afos for %s", prod.get_product_id())
+            return
     if prod.afos in PIL_IGNORE or prod.afos[:3] in PIL3_IGNORE:
         return
     res = conn.execute(
@@ -91,7 +73,7 @@ def process(conn: Connection, utcnow, raw):
             "bbb) VALUES (:data, :pil, :entered, :source, :wmo, :bbb)"
         ),
         {
-            "data": raw.replace("\r", ""),
+            "data": prod.unixtext.replace("\000", ""),
             "pil": prod.afos,
             "entered": prod.valid,
             "source": prod.source,
@@ -111,14 +93,18 @@ def readfile(filename, utcnow, conn: Connection = None):
             if len(lines) < 4:
                 continue
             raw = "\n".join(lines[:-1])
-            # if raw.find("KWBC") > -1:
             process(conn, utcnow, raw)
     conn.commit()
 
 
-def main():
+@click.command()
+@click.option("--sts", type=click.DateTime(), required=True)
+@click.option("--ets", type=click.DateTime(), required=True)
+def main(sts: datetime, ets: datetime):
     """Go Main Go."""
-    for dt in pd.date_range("2006/05/28", "2006/05/30", freq="1h", tz="UTC"):
+    sts = sts.replace(tzinfo=timezone.utc)
+    ets = ets.replace(tzinfo=timezone.utc)
+    for dt in pd.date_range(sts, ets, freq="1h", tz="UTC"):
         ddir = f"/tank/ncei_srrs/anx/{dt:%Y/%m/%d/%H}"
         if not os.path.isdir(ddir):
             LOG.info("Directory %s does not exist, skipping", ddir)
