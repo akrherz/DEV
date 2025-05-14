@@ -20,19 +20,19 @@ def is_duplicate(prod: WMOProduct, row: dict) -> bool:
     """Check if this is a duplicate"""
     # Text should match
     if prod.unixtext != row["data"]:
-        print("Text %s != %s" % (len(prod.unixtext), len(row["data"])))
+        # print("Text %s != %s" % (len(prod.unixtext), len(row["data"])))
         return False
     # Check that bbb matches - either both None or equal values
     if prod.bbb != row["bbb"]:
-        print("BBB %s != %s" % (prod.bbb, row["bbb"]))
+        # print("BBB %s != %s" % (prod.bbb, row["bbb"]))
         return False
     # Check that timestamps are equal
     if prod.valid != row["entered"]:
-        print("Valid %s != %s" % (prod.valid, row["entered"]))
+        # print("Valid %s != %s" % (prod.valid, row["entered"]))
         return False
     # Check that pil and afos match
     if prod.afos != row["pil"]:
-        print(f"AFOS {prod.afos} != {row['pil']}")
+        # print(f"AFOS {prod.afos} != {row['pil']}")
         return False
     return True
 
