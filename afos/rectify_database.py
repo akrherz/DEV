@@ -11,6 +11,7 @@ import pandas as pd
 from pyiem.database import sql_helper, with_sqlalchemy_conn
 from pyiem.util import utc
 from pyiem.wmo import WMOProduct
+from pywwa.workflows.fake_afos_dump import compute_afos
 from sqlalchemy.engine import Connection
 from tqdm import tqdm
 
@@ -19,15 +20,19 @@ def is_duplicate(prod: WMOProduct, row: dict) -> bool:
     """Check if this is a duplicate"""
     # Text should match
     if prod.unixtext != row["data"]:
+        print("Text %s != %s" % (len(prod.unixtext), len(row["data"])))
         return False
     # Check that bbb matches - either both None or equal values
     if prod.bbb != row["bbb"]:
+        print("BBB %s != %s" % (prod.bbb, row["bbb"]))
         return False
     # Check that timestamps are equal
     if prod.valid != row["entered"]:
+        print("Valid %s != %s" % (prod.valid, row["entered"]))
         return False
     # Check that pil and afos match
     if prod.afos != row["pil"]:
+        print(f"AFOS {prod.afos} != {row['pil']}")
         return False
     return True
 
@@ -47,7 +52,7 @@ def do(progress, dt: datetime, limiters: dict, conn: Connection = None):
     res = conn.execute(
         sql_helper(
             """
-    SELECT ctid, entered, data, pil, bbb from {table} where
+    SELECT ctid, entered, data, trim(pil) as pil, bbb from {table} where
     entered >= :sts and entered <= :ets {limitsql}
     and substr(pil, 1, 3) != 'DSM' ORDER by entered ASC""",
             table=table,
@@ -65,6 +70,11 @@ def do(progress, dt: datetime, limiters: dict, conn: Connection = None):
         except Exception:
             aborts += 1
             continue
+        try:
+            if prod.afos is None:
+                compute_afos(prod)
+        except Exception:
+            pass
         # Allows for None check for bbb
         if is_duplicate(prod, row):
             dups += 1
