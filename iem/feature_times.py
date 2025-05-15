@@ -2,7 +2,7 @@
 
 import pandas as pd
 from pyiem.database import get_sqlalchemy_conn, sql_helper
-from pyiem.plot import figure_axes
+from pyiem.plot import figure
 
 
 def main():
@@ -22,35 +22,41 @@ def main():
     df["total"] = df["good"] + df["bad"] + df["abstain"]
     df["favorable"] = df["good"] / df["total"] * 100.0
 
-    (fig, ax) = figure_axes(
-        title="IEM Daily Feature Favorable Voting Percentage",
+    fig = figure(
+        title="IEM Daily Feature",
+        subtitle="Voting percentages by year, voting option added in 2004",
         figsize=(8, 6),
     )
+    ax = fig.add_axes((0.1, 0.15, 0.85, 0.7))
 
-    y = df["favorable"].rolling(60).mean()
-    ax.plot(df.index.values, y, color="b", label="Trailing 60 day average")
-    ax.legend(loc=4)
+    gdf = df.groupby(df.index.year).sum().copy()
+    gdf["good_pct"] = gdf["good"] / gdf["total"] * 100.0
+    gdf["bad_pct"] = gdf["bad"] / gdf["total"] * 100.0
+    gdf["abstain_pct"] = gdf["abstain"] / gdf["total"] * 100.0
+
+    # Create stacked bar plot
+    gdf[["good_pct", "bad_pct", "abstain_pct"]].plot(
+        kind="bar",
+        stacked=True,
+        ax=ax,
+        color=["green", "red", "blue"],
+    )
+
+    ax.legend(["Good", "Bad", "Abstain"], loc=(0.2, 1.01), ncol=3)
     ax.set_ylim(0, 100)
     ax.set_yticks([0, 5, 10, 25, 50, 75, 90, 95, 100])
     ax.grid(True)
-    ax.set_ylabel("Good Votes (Percent of Total)")
-    ax.set_xlim(df.index.values[0], df.index.values[-1])
+    ax.set_ylabel("Percentage of Votes")
+    gg = df["good"].sum() / df["total"].sum() * 100.0
+    bb = df["bad"].sum() / df["total"].sum() * 100.0
+    aa = df["abstain"].sum() / df["total"].sum() * 100.0
     ax.set_xlabel(
-        (
-            "Total Votes; Good: %s (%.1f%%) "
-            "Bad: %s (%.1f%%) Abstain: %s (%.1f%%)"
-        )
-        % (
-            df["good"].sum(),
-            df["good"].sum() / df["total"].sum() * 100.0,
-            df["bad"].sum(),
-            df["bad"].sum() / df["total"].sum() * 100.0,
-            df["abstain"].sum(),
-            df["abstain"].sum() / df["total"].sum() * 100.0,
-        )
+        f"Total Votes: Good {df['good'].sum():,.0f} ({gg:.1f}%), "
+        f"Bad {df['bad'].sum():,.0f} ({bb:.1f}%), "
+        f"Abstain {df['abstain'].sum():,.0f} ({aa:.1f}%)"
     )
 
-    fig.savefig("230616.png")
+    fig.savefig("250516.png")
 
 
 if __name__ == "__main__":
