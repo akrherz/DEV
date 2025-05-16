@@ -17,9 +17,9 @@ def do(progress, conn: Connection, dt):
     pireps = pd.read_sql(
         sql_helper(
             """
-        select ctid, report, valid, product_id from {table} WHERE
-        valid >= :sts and valid < :ets
-        ORDER by valid ASC, length(report) DESC
+    select ctid, report, valid, product_id from {table} WHERE
+    valid >= :sts and valid < :ets
+    ORDER by valid ASC, length(report) DESC
         """,
             table=table,
         ),

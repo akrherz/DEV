@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 
 @with_sqlalchemy_conn("afos")
-def get_archive(conn: Connection = None) -> pd.DataFrame:
+def get_archive(conn: Connection | None = None) -> pd.DataFrame:
     """Get our archive."""
     return pd.read_sql(
         sql_helper("""
