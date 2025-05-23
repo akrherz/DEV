@@ -15,7 +15,7 @@ def main():
     select station, valid from raob_flights where
     valid >= '2025-01-01 00:00+00' and substr(station, 1, 1) in ('K', 'P')
     and extract(hour from valid at time zone 'UTC') in (0, 12) and
-    valid < '2025-05-01 00:00+00' and station not in ('KEDW', 'KNID', 'KDPG',
+    valid < '2025-05-17 00:00+00' and station not in ('KEDW', 'KNID', 'KDPG',
     'KVPS', 'KLMN')
     order by station asc, valid asc
                        """),
@@ -25,7 +25,7 @@ def main():
 
     fig = figure(
         subtitle="Based on NCEI IGRA2 data processed by the IEM",
-        title="00 + 12 UTC US Sounding Reports, 1 Jan - 30 Apr 2025",
+        title="00 + 12 UTC US Sounding Reports, 1 Jan - 16 May 2025",
         figsize=(8, 8),
     )
     ax = fig.add_axes((0.1, 0.25, 0.85, 0.65))
