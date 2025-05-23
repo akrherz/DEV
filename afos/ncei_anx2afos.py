@@ -21,7 +21,7 @@ from clean_afos import LOG, PIL3_IGNORE, PIL_IGNORE  # type: ignore
 
 # FRH=MOS, RVF=SHEF River, TID=Tide SHEF, BBX is BBXX, CRN is Climate Ref Net
 PIL3_IGNORE.extend(["FRH", "RVF", "TID", "BBX", "CRN"])
-PIL_IGNORE.extend(["QPSPTR", "QPFPTR"])
+PIL_IGNORE.extend(["QPSPTR", "QPFPTR", "SPECI"])
 
 
 def process(conn: Connection, utcnow: datetime, raw: str):
