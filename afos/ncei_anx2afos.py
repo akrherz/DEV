@@ -20,7 +20,7 @@ sys.path.insert(0, "/opt/iem/scripts/dbutil")
 from clean_afos import LOG, PIL3_IGNORE, PIL_IGNORE  # type: ignore
 
 # FRH=MOS, RVF=SHEF River, TID=Tide SHEF, BBX is BBXX, CRN is Climate Ref Net
-PIL3_IGNORE.extend(["FRH", "RVF", "TID", "BBX", "CRN"])
+PIL3_IGNORE.extend(["FRH", "RVF", "TID", "BBX", "CRN", "TST"])
 PIL_IGNORE.extend(["QPSPTR", "QPFPTR", "SPECI"])
 
 
