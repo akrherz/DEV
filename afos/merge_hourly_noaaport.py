@@ -27,7 +27,7 @@ def main(valid: datetime, filename: str):
             except Exception as exp:
                 print(exp)
                 continue
-            if tp.afos is None:
+            if tp.afos is None or tp.afos.startswith(("TST", "CAP")):
                 continue
             part = "0106" if tp.valid.month < 7 else "0712"
             table = f"products_{tp.valid:%Y}_{part}"
