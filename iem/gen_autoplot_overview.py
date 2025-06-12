@@ -20,16 +20,20 @@ def write_html(html, plot, meta, counter):
         with StringIO(" ".join(desc.split()[:30])) as sio:
             desc = BeautifulSoup(sio, "lxml").text
     html.write(
-        f'<div class="col-md-3 well">'
-        f'<a href="/plotting/auto/?q={plot["id"]}">'
-        f"<h4>#{plot['id']}. {plot['label']}</h4></a>"
+        '<div class="col-md-3 mb-3">'
+        '<div class="card h-100">'
+        '<div class="card-body">'
+        f'<a href="/plotting/auto/?q={plot["id"]}" '
+        'class="text-decoration-none">'
+        f'<h5 class="card-title">#{plot["id"]}. {plot["label"]}</h5></a>'
         f'<a href="/plotting/auto/?q={plot["id"]}">'
         f'<img src="/pickup/autoplot/{plot["id"]}_thumb.png" '
-        f'class="img img-responsive"></a><br>{desc}'
-        "</div>\n"
+        f'class="img-fluid mb-2" alt="Plot {plot["id"]} thumbnail"></a>'
+        f'<p class="card-text">{desc}</p>'
+        "</div></div></div>\n"
     )
     if counter % 4 == 0:
-        html.write('</div><!-- ./row --><div class="row">\n')
+        html.write('</div><!-- ./row --><div class="row g-3">\n')
 
 
 def main():
@@ -45,7 +49,7 @@ def main():
             html.write("</div>\n")
         counter = 1
         html.write(f"<h2>{section['label']}</h2>\n")
-        html.write('<div class="row">\n')
+        html.write('<div class="row g-3">\n')
         progress = tqdm(section["options"])
         for plot in progress:
             apid = plot["id"]
@@ -70,9 +74,10 @@ def main():
             counter += 1
 
     with open(f"{STORAGE}/overview.html", "w", encoding="utf-8") as fh:
-        fh.write('<div class="row">\n')
+        fh.write('<div class="container-fluid">\n')
+        fh.write('<div class="row g-3">\n')
         fh.write(html.getvalue())
-        fh.write("</div>")
+        fh.write("</div></div>")
 
 
 if __name__ == "__main__":
