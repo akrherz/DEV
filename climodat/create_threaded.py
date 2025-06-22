@@ -5,8 +5,9 @@ import json
 import sys
 
 # third party
+from pyiem.database import get_dbconn
 from pyiem.network import Table as NetworkTable
-from pyiem.util import get_dbconn, logger
+from pyiem.util import logger
 
 LOG = logger()
 
@@ -52,7 +53,7 @@ def main(argv):
     cursor.execute(
         "INSERT into stations(id, name, network, country, state, "
         "plot_name, online, metasite, geom) VALUES "
-        "(%s, %s, %s, 'US', %s, %s, 't', 't', 'SRID=4326;POINT(%s %s)') "
+        "(%s, %s, %s, 'US', %s, %s, 't', 't', ST_POINT(%s, %s, 4326)) "
         "RETURNING iemid",
         (
             job["threaded"],
@@ -64,7 +65,7 @@ def main(argv):
             lat,
         ),
     )
-    iemid = cursor.fetchone()
+    iemid = cursor.fetchone()[0]
     LOG.info("Created station %s with iemid %s", job["threaded"], iemid)
     # Create station_threading entries
     for entry in queue:
