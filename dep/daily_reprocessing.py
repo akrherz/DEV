@@ -33,21 +33,24 @@ def env2database():
 
 def pick_dates_by_neighbor_diff() -> Tuple[str]:
     """Repair an off-by one that caused some grief."""
-    c1 = read_cli("/i/0/cli/094x042/094.09x042.98.cli")
-    c2 = read_cli("/i/0/cli/094x042/094.09x042.99.cli")
+    c1 = read_cli("/i/0/cli/096x037/096.77x037.98.cli")
+    c2 = read_cli("/i/0/cli/096x037/096.77x037.99.cli")
     candidates = (c2["pcpn"] - c1["pcpn"]).abs().sort_values(ascending=False)
     days = []
-    today = pd.Timestamp(datetime.date.today())
+    today = pd.Timestamp(datetime.date(2025, 5, 1))
     for dt, diff in candidates.items():
         if dt >= today:
             continue
         mt = get_update_date(dt)
         LOG.warning(
-            "Processing %s[mod:%s] with diff: %s",
+            "%s %s[mod:%s] with diff: %s",
+            "Skipping" if mt >= today else "Processing",
             dt,
             mt.date(),
             diff,
         )
+        if mt >= today:
+            continue
         days.append(dt)
         if len(days) > SIZE:
             break
