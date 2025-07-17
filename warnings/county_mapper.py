@@ -3,8 +3,8 @@
 import datetime
 
 from matplotlib import cm
+from pyiem.database import get_dbconn
 from pyiem.plot import MapPlot
-from pyiem.util import get_dbconn
 
 
 def main():
@@ -13,33 +13,16 @@ def main():
     pcursor = pgconn.cursor()
 
     opts = {
-        "subtitle": "In Severe Thunderstorm Warning",
-        "sdate": datetime.date(1994, 1, 1),
-        "edate": datetime.date(2020, 1, 1),
-        "normalized": False,
-        "dbcols": ("SV",),
+        "subtitle": "In Tornado Warning",
+        "sdate": datetime.date(1986, 1, 1),
+        "edate": datetime.date(2025, 7, 17),
+        "normalized": True,
+        "dbcols": ("TO",),
     }
-    opts["title"] = "Yearly Average Minutes"
+    opts["title"] = "Tornado Warning Counts (County Based)"
     opts["years"] = float(opts["edate"].year - opts["sdate"].year)
-    opts["units"] = "minutes per year"
-    # bins = [1, 2, 5, 10, 15, 20, 30, 45, 60, 75, 90, 120, 150, 180, 240]
-    bins = [
-        1,
-        10,
-        30,
-        45,
-        60,
-        90,
-        120,
-        240,
-        300,
-        480,
-        720,
-        840,
-        1080,
-        1320,
-        1540,
-    ]
+    opts["units"] = "count"
+    bins = [1, 2, 5, 10, 15, 20, 30, 45, 60, 75, 120, 150, 180, 240, 300]
     # bins = [1, 30, 60, 120, 240, 360, 480, 600, 840, 1080, 1320, 1540, 1760]
     # bins = [0.01,0.1,0.25,0.5,0.75,1,2,3,4,5,7,10,15]
     # bins = [0.1,1,2,5,7,10,15,20,25,30,40,50,60,70,80]
@@ -47,7 +30,7 @@ def main():
     if opts["normalized"]:
         opts["title"] += " (Normalized by County Size)"
         opts["units"] += " / sq km"
-        bins = [0.0001, 0.01, 0.03, 0.07, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7]
+        bins = [0.0001, 0.01, 0.03, 0.07, 0.1, 0.15, 0.2, 0.25]
 
     fn = "%s_%s_%s_%s.png" % (
         opts["sdate"].year,
@@ -81,42 +64,23 @@ def main():
 
     # norm = mpcolors.BoundaryNorm(bins, cmap.N)
 
-    # WITH data as (
-    # SELECT ugc, count(*) / %s  as data from warnings
-    # WHERE ugc is not null and
-    # significance = 'W' and phenomena in %s and issue > %s and issue < %s
-    # GROUP by ugc),
-    # u as (SELECT ugc, ST_Area(ST_Transform(geom, 2163)) / 1000000. as area
-    # from ugcs where substr(ugc,3,1) = 'C' and end_ts is null)
-
-    # SELECT data.ugc, data.data, data.data / u.area
-    # from data JOIN u on (u.ugc = data.ugc)
-
     pcursor.execute(
         """
-    WITH data as (
-    SELECT ugc, count(*) / %s  as data from
-    (select distinct ugc, generate_series(issue, expire, '1 minute'::interval)
-    from warnings where phenomena in %s and significance = 'W'
-    and ugc is not null and (expire - issue) < '1440 minutes'::interval
-    and issue > %s and issue < %s) as foo2
-    GROUP by ugc),
-
-    u as (SELECT ugc, ST_Area(ST_Transform(geom, 2163)) / 1000000. as area
-    from ugcs where substr(ugc,3,1) = 'C' and end_ts is null)
-
-    SELECT data.ugc, data.data, data.data / u.area
-    from data JOIN u on (u.ugc = data.ugc)
-    """,
-        (opts["years"], opts["dbcols"], opts["sdate"], opts["edate"]),
+        WITH data as (
+            SELECT ugc, count(*)  as data from warnings
+            WHERE significance = 'W' and phenomena = 'TO'
+            GROUP by ugc)
+    select d.ugc, d.data / u.area2163 from data d, ugcs u WHERE
+    d.ugc = u.ugc and u.end_ts is null
+    """
     )
     data = {}
     for row in pcursor:
-        data[row[0]] = float(row[2 if opts["normalized"] else 1])
+        data[row[0]] = float(row[1])
 
     m.fill_ugcs(
         data,
-        bins,
+        bins=bins,
         cmap=cmap,
         units=opts["units"],
         spacing="proportional",
