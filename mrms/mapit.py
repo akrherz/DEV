@@ -2,9 +2,9 @@
 
 import numpy as np
 from PIL import Image
+from pyiem.database import get_dbconn
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot, nwsprecip
-from pyiem.util import get_dbconn
 
 
 def main():
@@ -14,15 +14,28 @@ def main():
 
     cursor.execute(
         """SELECT ST_x(geom) as lon, ST_y(geom) as lat,
-    pday from summary_2022 s JOIN stations t on (s.iemid = t.iemid)
-    where day = '2022-06-15' and network in
-    ('IACOCORAHS', 'WI_COOP', 'MN_COOP', 'IA_COOP')
-    and pday > 0 ORDER by pday DESC"""
+    pday from summary_2025 s JOIN stations t on (s.iemid = t.iemid)
+    where day = '2025-07-23' and network in
+    ('WI_COOP', 'MN_COOP', 'IA_COOP')
+    and pday is not null ORDER by pday DESC"""
     )
     llons = []
     llats = []
     vals = []
     for row in cursor:
+        llons.append(row[0])
+        llats.append(row[1])
+        vals.append("%.2f" % (row[2],))
+    pgconnc = get_dbconn("coop")
+    ccursor = pgconnc.cursor()
+    ccursor.execute(
+        """SELECT ST_x(geom) as lon, ST_y(geom) as lat,
+    precip from cocorahs_2025 s JOIN stations t on (s.iemid = t.iemid)
+    where day = '2025-07-23' and network in
+    ('IA_COCORAHS')
+    and precip is not null ORDER by precip DESC"""
+    )
+    for row in ccursor:
         llons.append(row[0])
         llats.append(row[1])
         vals.append("%.2f" % (row[2],))
@@ -32,16 +45,16 @@ def main():
 
     cursor.execute(
         """SELECT ST_x(geom) as lon, ST_y(geom) as lat,
-    max(magnitude) from lsrs_2022
+    max(magnitude) from lsrs_2025
     where wfo in ('DMX', 'DVN', 'ARX') and typetext = 'HEAVY RAIN' and
-    valid > '2022-06-15' GROUP by lon, lat ORDER by max DESC"""
+    valid > '2025-07-23' GROUP by lon, lat ORDER by max DESC"""
     )
     for row in cursor:
         llons.append(row[0])
         llats.append(row[1])
         vals.append("%.2f" % (row[2],))
 
-    img = Image.open("/tmp/p24h_202206151700.png")
+    img = Image.open("/tmp/p24h_202507231300.png")
     data = np.flipud(np.asarray(img))
     # 7000,3500 == -130,-60,55,25 ===  -100 to -90 then 38 to 45
     sample = data[1800:2501, 3000:4501]
@@ -56,14 +69,14 @@ def main():
 
     mp = MapPlot(
         sector="custom",
-        west=-94.2,
-        east=-93.1,
-        south=41.7,
-        north=42.2,
+        west=-92.3,
+        east=-91.4,
+        south=42.2,
+        north=42.6,
         title="NOAA MRMS 24 Hour RADAR-Only Precipitation Estimate",
         subtitle=(
-            "MRMS valid 12 PM 14 Jun 2022 to 12 PM 15 Jun 2022, "
-            "NWS Local Storm + COOP Reports Overlaid"
+            "Buchanan County, IA. MRMS valid 8 AM 23 Jul 2025, "
+            "NWS Local Storm, COOP, and CoCoRaHS Reports Overlaid"
         ),
     )
     clevs = [
@@ -104,7 +117,7 @@ def main():
     mp.textmask[:, :] = 0
     mp.plot_values(llons, llats, vals, fmt="%s", labelbuffer=1)
 
-    mp.postprocess(filename="test.png")
+    mp.postprocess(filename="250724.png")
 
 
 if __name__ == "__main__":
