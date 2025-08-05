@@ -20,7 +20,7 @@ def main():
             conn,
             index_col="huc_12",
             geom_col="simple_geom",
-        )
+        )  # type: ignore
     huc12df["outside"] = np.nan
 
     minx, miny, maxx, maxy = huc12df.total_bounds
@@ -33,9 +33,10 @@ def main():
         north=maxy + buffer,
         west=minx + buffer,
         east=maxx - buffer,
-        title="HUC12 median / mean soil delivery [ratio]",
-        logo="dep",
-        caption="Daily Erosion Project",
+        title="DEP Ratio of median to mean soil delivery by HUC12",
+        subtitle="Computed over 2007-2024",
+        logo=None,
+        nocaption=True,
         continentalcolor="white",
         stateborderwidth=1,
     )
@@ -65,10 +66,10 @@ def main():
         clevs,
         cmap,
         norm,
-        extend="max",
+        extend="both",
     )
 
-    mp.fig.savefig("test.png")
+    mp.fig.savefig("figure2.png", dpi=300)
 
 
 if __name__ == "__main__":

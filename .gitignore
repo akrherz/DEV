@@ -2,6 +2,7 @@
 /.pydevproject
 /rabbitmq/*.last
 /ldm/*.log
+/wis2/downloads
 **/.ipynb_checkpoints
 **/*.bufr
 **/*.eps
