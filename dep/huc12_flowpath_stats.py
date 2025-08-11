@@ -52,8 +52,8 @@ def main():
 
     print(huc12df["outside"].describe())
 
-    clevs = np.arange(0.3, 1.3, 0.1)
-    cmap = get_cmap("plasma")
+    clevs = np.arange(0.1, 1.11, 0.2)
+    cmap = get_cmap("RdYlBu")
     cmap.set_bad("None")
     norm = BoundaryNorm(clevs, cmap.N)
 
