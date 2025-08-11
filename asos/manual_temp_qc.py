@@ -14,7 +14,16 @@ from pyiem.util import logger
 LOG = logger()
 
 
-def process(conn, row, station, nt):
+def process(
+    conn,
+    row,
+    station,
+    nt,
+    varname: str,
+    op: str,
+    threshold: float,
+    autozap: bool,
+):
     """Do what we need to do here."""
     delta = pd.Timedelta(hours=3)
     obs = pd.read_sql(
@@ -32,17 +41,27 @@ def process(conn, row, station, nt):
     )
     print(row["valid"])
     print(obs.head(100))
-    res = input("Rows to null (#t #d): ")
+    if autozap:
+        res = ""
+        hits = obs[obs[varname] > threshold]
+        if op == "<":
+            hits = obs[obs[varname] < threshold]
+        col = "d" if varname == "dwpf" else "t"
+        for i in hits.index:
+            res += f"{i}{col} "
+
+    else:
+        res = input("Rows to null (#t #d): ")
     if res == "":
         return
     tzinfo = ZoneInfo(nt.sts[station]["tzname"])
     iempgconn, iemcursor = get_dbconnc("iem")
-    for entry in res.split():
+    for entry in res.strip().split():
         idx = int(entry[:-1])
         cullrow = obs.loc[idx]
         colval = entry[-1]
         tonull = ""
-        if colval == "t":
+        if colval == "t":  # life choice
             tonull = "tmpf = null, dwpf = null, relh = null, feel = null"
         elif colval == "d":
             tonull = "tmpf = null, dwpf = null, relh = null, feel = null"
@@ -85,7 +104,17 @@ def process(conn, row, station, nt):
 @click.option("--below", type=int, default=None)
 @click.option("--year", type=int, default=None)
 @click.option("--month", type=int, help="Month to filter on")
-def main(station, network, varname, above, below, year, month: Optional[int]):
+@click.option("--autozap", is_flag=True, help="Zap em all")
+def main(
+    station,
+    network,
+    varname,
+    above,
+    below,
+    year,
+    month: Optional[int],
+    autozap: bool,
+):
     """Go Main Go."""
     nt = NetworkTable(network, only_online=False)
     # Look for obs that are maybe bad
@@ -94,6 +123,7 @@ def main(station, network, varname, above, below, year, month: Optional[int]):
     mfilter = ""
     if month is not None:
         mfilter = " and extract(month from valid) = :month "
+    threshold = above if above is not None else below
     with get_sqlalchemy_conn("asos") as conn:
         sortdir = "DESC" if above is not None else "ASC"
         obs = pd.read_sql(
@@ -112,14 +142,14 @@ def main(station, network, varname, above, below, year, month: Optional[int]):
             conn,
             params={
                 "station": station,
-                "t": above if above is not None else below,
+                "t": threshold,
                 "month": month,
             },
         )
         LOG.info("Found %s rows", len(obs.index))
 
         for _, row in obs.iterrows():
-            process(conn, row, station, nt)
+            process(conn, row, station, nt, varname, op, threshold, autozap)
 
 
 if __name__ == "__main__":
