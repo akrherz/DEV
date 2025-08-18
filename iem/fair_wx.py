@@ -5,9 +5,8 @@ from datetime import date, timedelta
 
 import numpy as np
 import pandas as pd
+from pyiem.database import get_dbconn
 from pyiem.plot import figure_axes
-from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
 
 FAIRS = [
     [date(1880, 9, 6), date(1880, 9, 10)],
@@ -150,6 +149,7 @@ FAIRS = [
     [date(2022, 8, 11), date(2022, 8, 21)],
     [date(2023, 8, 10), date(2023, 8, 20)],
     [date(2024, 8, 8), date(2024, 8, 18)],
+    [date(2025, 8, 7), date(2025, 8, 17)],
 ]
 
 
@@ -168,7 +168,7 @@ def hours_above():
                 SELECT distinct
                 date_trunc('hour', valid + '10 minutes'::interval)
                 from alldata where station = 'DSM' and valid >= %s and
-                valid < %s and tmpf >= 85.5 and report_type = 3
+                valid < %s and feel >= 85.5 and report_type = 3
                 """,
                 (sts, ets + timedelta(hours=24)),
             )
@@ -177,25 +177,25 @@ def hours_above():
         pd.DataFrame({"years": years, "hours": hours}).to_csv("/tmp/data.csv")
     df = pd.read_csv("/tmp/data.csv")
     (fig, ax) = figure_axes(
-        title="Iowa State Fair:: Number of Hourly Observations >= 86$^\circ$F",
+        title="Iowa State Fair:: Number of Hourly Obs with Heat Index >= 86°F",
         subtitle=(
             "based on hourly Des Moines Airport temperature reports "
-            "(1973-2024)"
+            "(1973-2025)"
         ),
         apctx={"_r": "43"},
     )
     ax.bar(df["years"], df["hours"])
     avgv = df["hours"].mean()
     ax.axhline(avgv, lw=2)
-    ax.text(2025, avgv, f"Avg:\n{avgv:.1f} hrs", va="center")
+    ax.text(2026, avgv, f"Avg:\n{avgv:.1f} hrs", va="center")
     ax.axvspan(1941.5, 1945.5, color="tan")
     ax.axvspan(2019.5, 2020.5, color="tan")
-    ax.set_xlim(1972.5, 2024.5)
+    ax.set_xlim(1972.5, 2025.5)
     ax.set_yticks(np.arange(0, 9 * 12 + 1, 12))
-    ax.set_xlabel(f"No State Fair in 2020, 2024 Total: {df['hours'].iloc[-1]}")
+    ax.set_xlabel(f"No State Fair in 2020, 2025 Total: {df['hours'].iloc[-1]}")
     ax.set_ylabel("Total Hours")
     ax.grid(True)
-    fig.savefig("240820.png")
+    fig.savefig("250818.png")
 
 
 def main():
@@ -218,7 +218,7 @@ def main():
         if precip[-1] < 0.01:
             dry.append(sts.year)
 
-    (fig, ax) = plt.subplots(1, 1)
+    (fig, ax) = figure_axes()
     ax.bar(years, precip)
     avgval = np.mean(precip)
     ax.axhline(avgval, lw=2, color="r", label=f'Average {avgval:.2f}"')
@@ -231,10 +231,10 @@ def main():
     ax.set_title(
         (
             "Iowa State Fair Weather (via Des Moines Airport / Downtown)\n"
-            r"Total Precipitation"
+            "Total Precipitation"
         )
     )
-    fig.savefig("test.png")
+    fig.savefig("250818.png")
 
 
 if __name__ == "__main__":
