@@ -29,8 +29,7 @@ def main():
         if not os.path.isdir(mydir):
             os.makedirs(mydir)
         with open(
-            "%s/%s_%s_%s.txt"
-            % (mydir, row[1].strftime("%Y%m%d%H%M"), row[2], row[0]),
+            f"{mydir}/{row[1]:%Y%m%d%H%M}_{row[2]}_{row[0]}.txt",
             "a",
         ) as fh:
             fh.write(row[3])

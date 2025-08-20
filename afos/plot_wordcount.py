@@ -3,7 +3,7 @@
 # 3rd Party
 import pandas as pd
 from pyiem.database import get_dbconn
-from pyiem.plot.use_agg import plt
+from pyiem.plot import figure_axes
 from pyiem.reference import wfo_dict
 
 LABELS = {
@@ -34,7 +34,7 @@ def main():
     )
     df = pd.merge(df, wfos, how="outer", on="wfo")
 
-    fig, ax = plt.subplots(1, 1, figsize=(12, 6.75))
+    fig, ax = figure_axes(figsize=(12, 6.75))
     for wfo in ["SJT", "EWX", "CRP", "FWD", "HGX"]:
         df2 = df[df["wfo"] == wfo].copy()
         df2["date"] = pd.to_datetime(df2["datum"], format="%Y%m")

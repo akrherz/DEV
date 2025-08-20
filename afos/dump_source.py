@@ -7,7 +7,7 @@ from pyiem.util import noaaport_text
 def main():
     """Go Main Go."""
     pgconn = get_dbconn("afos")
-    acursor = pgconn.cursor("streamer")
+    acursor = pgconn.cursor()
 
     acursor.execute(
         """

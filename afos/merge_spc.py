@@ -30,10 +30,7 @@ def main():
             + open(fn).read()
         )
         txt = noaaport_text(data)
-        table = "products_%s_%s" % (
-            ts.year,
-            "0106" if ts.month < 7 else "0712",
-        )
+        table = f"products_{ts.year}_{'0106' if ts.month < 7 else '0712'}"
         cursor.execute(
             f"INSERT into {table} (data, pil, entered, source, wmo) "
             "VALUES (%s, 'PTSDY1', %s, 'KWNS', 'WUUS01')",
