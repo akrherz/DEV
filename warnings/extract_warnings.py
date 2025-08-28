@@ -1,7 +1,7 @@
 """Dump tornado warnings whose first LSR came 30+ minutes into the warning"""
 
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def get_misses(pgconn):

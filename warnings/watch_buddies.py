@@ -3,8 +3,8 @@
 import sys
 
 from pandas.io.sql import read_sql
-from pyiem.plot import MapPlot, plt
-from pyiem.util import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn
+from pyiem.plot import MapPlot, get_cmap
 
 
 def main(argv):
@@ -43,7 +43,7 @@ def main(argv):
     maxval = df["count"].max()
     print(maxval)
     bins = [1, 5, 10, 25, 50, 75, 100, 150]
-    cmap = plt.get_cmap("plasma")
+    cmap = get_cmap("plasma")
     mp.fill_cwas(
         df["count"],
         bins=bins,

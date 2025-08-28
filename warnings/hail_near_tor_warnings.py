@@ -1,7 +1,7 @@
 """Requested dataset of hail near TORs."""
 
 import geopandas as gpd
-from pyiem.util import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn
 
 
 def main():
@@ -12,7 +12,7 @@ def main():
             -- List of TOR LSRs that had a warning polygon with it.
             with tors as (
                 select l.geom, l.valid, w.wfo, w.eventid,
-                extract(year from l.valid) as year, w.issue, w.expire
+                vtec_year as year, w.issue, w.expire
                 from sbw w, lsrs l
                 where w.phenomena = 'TO' and
                 w.significance = 'W' and w.status = 'NEW' and

@@ -13,7 +13,7 @@ from pyiem.database import get_dbconn
 def main():
     """."""
     pgconn = get_dbconn("postgis")
-    for year in range(2022, 2024):
+    for year in range(2023, 2025):
         cursor = pgconn.cursor()
         cursor.execute(
             f"""

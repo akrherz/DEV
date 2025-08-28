@@ -1,8 +1,9 @@
 """Run a diagnostic as per bureau request."""
 
 import pandas as pd
+from pyiem.database import get_dbconn
 from pyiem.nws.products.vtec import parser
-from pyiem.util import get_dbconn, noaaport_text
+from pyiem.util import noaaport_text
 
 ISO9660 = "%Y-%m-%d %H:%M"
 
