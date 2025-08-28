@@ -14,7 +14,7 @@ def main():
             """
             with data as (
                 select distinct date(issue), wfo, eventid from warnings
-                where phenomena = 'TO' and significance = 'W'),
+                where phenomena = 'FF' and significance = 'W'),
             agg as (select date, count(*) from data GROUP by date),
             agg2 as (select extract(year from date) as year, date, count,
                 rank() OVER (PARTITION by extract(year from date)
@@ -29,15 +29,16 @@ def main():
     df["doy"] = df["date"].dt.dayofyear
 
     fig, ax = figure_axes(
-        title="Yearly Date of [Max Number] of NWS Tornado Warnings Issued",
+        title="Yearly Date of [Max Number] of NWS Flash Flood Warnings Issued",
         subtitle=(
             "Based on unofficial IEM archives computed for "
             "US Central Timezone Day"
         ),
         figsize=(8, 8),
     )
+    ax.set_position([0.1, 0.1, 0.7, 0.8])
 
-    ax.barh(df.index.values, df["doy"].values, ec="b", fc="b")
+    ax.scatter(df["doy"].to_numpy(), df.index.values, marker="*")
     # Label each bar with the date and count
     for year, row in df.iterrows():
         ax.text(
@@ -47,8 +48,8 @@ def main():
             bbox={"color": "white", "pad": 0},
             va="center",
         )
-    ax.set_ylim(1985.5, 2023.5)
-    ax.set_xlim(0, 390)
+    ax.set_ylim(1985.5, 2025.5)
+    ax.set_xlim(0, 366)
     ax.set_xlabel("Day of Year, [count of daily maxes for month]")
     ax.set_ylabel("Year")
     ax.grid(True)
@@ -64,7 +65,7 @@ def main():
             f"{calendar.month_abbr[month]}\n[{monthly.at[month, 'date']:.0f}]"
         )
     ax.set_xticklabels(xticklabels)
-    fig.savefig("231121.png")
+    fig.savefig("250828.png")
 
 
 if __name__ == "__main__":
