@@ -6,8 +6,8 @@ import sys
 from datetime import timezone
 
 from pandas.io.sql import read_sql
+from pyiem.database import get_dbconn
 from pyiem.nws.product import TextProduct
-from pyiem.util import get_dbconn
 
 
 def dedup(pgconn, cursor, row):

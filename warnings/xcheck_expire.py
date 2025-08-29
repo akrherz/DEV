@@ -19,8 +19,7 @@ def main(year):
         warnings = pd.read_sql(
             text("""
             select product_id from sbw WHERE vtec_year = :year and
-            status = 'NEW'  and phenomena = 'MA'
-            and wfo = 'CHS'
+            status = 'NEW'  and phenomena = 'MA' and wfo = 'CHS'
             order by product_id
             """),
             conn,

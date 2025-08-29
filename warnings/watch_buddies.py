@@ -2,7 +2,7 @@
 
 import sys
 
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot, get_cmap
 
@@ -12,12 +12,12 @@ def main(argv):
     wfo = argv[1]
     name = argv[2]
     with get_sqlalchemy_conn("postgis") as conn:
-        df = read_sql(
+        df = pd.read_sql(
             """with dmx as (
-            select distinct extract(year from expire) as year, eventid from
+            select distinct vtec_year as year, eventid from
             warnings where phenomena = 'SV' and significance = 'A'
             and wfo = %s),
-            other as (select distinct extract(year from expire) as year,
+            other as (select distinct vtec_year as year,
             eventid,
             wfo from warnings where phenomena = 'SV' and significance = 'A'
             and wfo != 'HFO')

@@ -5,7 +5,7 @@ NOTE: Code needs updated before it will run again!
 
 import sys
 
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def load_touches(pgconn, touches, ugc, wfo):

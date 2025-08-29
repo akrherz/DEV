@@ -3,7 +3,6 @@
 import sys
 
 import pandas as pd
-from pandas.io.sql import read_sql
 from pyiem.plot import MapPlot, plt
 from pyiem.util import get_sqlalchemy_conn
 
@@ -14,7 +13,7 @@ def main(argv):
     wfo = argv[2]
     name = argv[3]
     with get_sqlalchemy_conn("postgis") as conn:
-        df = read_sql(
+        df = pd.read_sql(
             "with events as ("
             "select distinct wfo, "
             "date(issue at time zone 'UTC' + '12 hours'::interval) from "
@@ -62,7 +61,7 @@ def main(argv):
     # maxval = df["count"].max()
     # print(maxval)
     bins = list(range(0, 101, 10))
-    bins[0] = 1.0
+    bins[0] = 1
     cmap = plt.get_cmap("YlGnBu")
     cmap.set_under("white")
     mp.fill_cwas(

@@ -9,10 +9,9 @@ from datetime import datetime
 import click
 import httpx
 import pandas as pd
-from pyiem.database import get_dbconn, get_sqlalchemy_conn
+from pyiem.database import get_dbconn, get_sqlalchemy_conn, sql_helper
 from pyiem.nws.product import TextProduct
 from pyiem.util import noaaport_text
-from sqlalchemy import text
 from tqdm import tqdm
 
 
@@ -23,17 +22,18 @@ def main(year):
     # Find a batch of product_ids that need to be run
     with get_sqlalchemy_conn("postgis") as conn:
         df = pd.read_sql(
-            text(f"""
+            sql_helper("""
             select ctid, report, svs, tableoid::regclass as table,
             cardinality(array_remove(string_to_array(svs, '__', ''), NULL))
                  as svscnt, cardinality(product_ids), product_ids, updated
-            from warnings_{year} where
+            from warnings where vtec_year = :year and
             cardinality(array_remove(string_to_array(svs, '__', ''), NULL)) + 1
             != cardinality(product_ids) or
             cardinality(product_ids) = 0
             """),
             conn,
             params=dict(
+                year=year,
                 sts=datetime(year, 1, 1),
                 ets=datetime(year + 1, 1, 1),
             ),

@@ -5,8 +5,9 @@ import sys
 
 import pytz
 from pandas.io.sql import read_sql
+from pyiem.database import get_dbconn
 from pyiem.plot import MapPlot, get_cmap
-from pyiem.util import get_dbconn, utc
+from pyiem.util import utc
 
 
 def main(argv):
@@ -63,7 +64,7 @@ def main(argv):
     i = hr - 12 if hr >= 12 else hr + 12
     mp.fig.savefig(f"frame_{i:02.0f}.png")
     subprocess.call(
-        f"convert frame_{i:02.0f}.png frame_{i:02.0f}.gif", shell=True
+        ["convert", f"frame_{i:02.0f}.png", f"frame_{i:02.0f}.gif"]
     )
 
 

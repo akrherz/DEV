@@ -17,7 +17,7 @@ from tqdm import tqdm
 LOG = logger()
 
 
-def trim_product_ids(conn, product_ids, needle, utcnow):
+def trim_product_ids(product_ids, needle, utcnow):
     """Oye, a new problem to fix."""
     good = []
     for pid in product_ids:
@@ -103,7 +103,7 @@ def process_day(conn, dt: datetime):
                             conn.commit()
         if not found:
             print(f"Could not find {needle} in {pid}")
-            pids = trim_product_ids(conn, row["product_ids"], needle, dt)
+            pids = trim_product_ids(row["product_ids"], needle, dt)
             if pids:
                 conn.execute(
                     text("""
