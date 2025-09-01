@@ -27,7 +27,7 @@ def main():
             """
         SELECT ST_area(geom::geography) from sbw WHERE wfo = %s and
         phenomena = %s and significance = %s and eventid = %s and
-        extract(year from issue) = %s and status = 'NEW'
+        vtec_year = %s and status = 'NEW'
         """,
             (
                 row["source"][1:],

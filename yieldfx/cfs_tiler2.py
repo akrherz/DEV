@@ -92,7 +92,6 @@ def tile_extraction(nc, valid, west, south, isnewfile):
         if not os.path.isfile(ncfn):
             continue
         renc = ncopen(ncfn)
-        # print("tslice: %s jslice: %s islice: %s" % (tslice, jslice, islice))
         highc = temperature(
             renc.variables["high_tmpk"][:, jslice, islice], "K"
         ).value("C")

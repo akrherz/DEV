@@ -3,7 +3,7 @@
 Moved to https://mesonet.agron.iastate.edu/plotting/auto/?q=251
 """
 
-import datetime
+from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
 import matplotlib.dates as mdates
@@ -50,8 +50,8 @@ def getp(phenomena, sts, ets):
 
 def main(date):
     """Main"""
-    sts = date - datetime.timedelta(hours=24)
-    ets = date + datetime.timedelta(hours=24)
+    sts = date - timedelta(hours=24)
+    ets = date + timedelta(hours=24)
     to_t, to_c = getp("TO", sts, ets)
     _, sv_c = getp("SV", sts, ets)
     _, ff_c = getp("FF", sts, ets)
@@ -147,8 +147,8 @@ def work():
     )
     for event in events.split(","):
         print(event)
-        date = datetime.datetime.strptime(event.strip(), "%m/%d/%y")
-        date = date.replace(hour=12, tzinfo=ZoneInfo("UTC"))
+        date = datetime.strptime(event.strip(), "%m/%d/%y")
+        date = date.replace(hour=12, tzinfo=timezone.utc)
         main(date)
 
 

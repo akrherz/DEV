@@ -37,8 +37,8 @@ def main():
         slt = nc.variables["slt"][:].astype(int)
 
     df["lon"] = df["lon"].apply(lambda x: x if x > 0 else x + 360)
-    df["gridx"] = np.digitize(df["lon"].values, lons)
-    df["gridy"] = np.digitize(df["lat"].values, lats)
+    df["gridx"] = np.digitize(df["lon"].to_numpy(), lons)
+    df["gridy"] = np.digitize(df["lat"].to_numpy(), lats)
     pgconn, cursor = get_dbconnc("mesosite")
     for iemid, row in df.iterrows():
         soiltype = SOILTYPES[slt[0, int(row["gridy"]), int(row["gridx"])]]

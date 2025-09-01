@@ -31,7 +31,7 @@ def main():
         pgconn,
         index_col=None,
         geom_col="geom",
-    )
+    )  # type: ignore
     # Month,
     df["month"] = df["utc_issue"].dt.month
     # Day,

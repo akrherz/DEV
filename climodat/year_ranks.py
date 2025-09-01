@@ -4,10 +4,9 @@ import os
 
 import matplotlib.colors as mpcolors
 import pandas as pd
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.plot import MapPlot
 from pyiem.reference import state_names
-from pyiem.util import get_sqlalchemy_conn
-from sqlalchemy import text
 from tqdm import tqdm
 
 
@@ -19,7 +18,7 @@ def get_data():
         for state in progress:
             progress.set_description(state)
             df = pd.read_sql(
-                text(
+                sql_helper(
                     """
                 with obs as (
                     select station, year, sum(precip) from alldata WHERE

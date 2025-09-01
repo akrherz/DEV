@@ -5,7 +5,8 @@ import datetime
 
 # Third Party
 import pandas as pd
-from pyiem.util import get_dbconn, get_sqlalchemy_conn, logger
+from pyiem.database import get_dbconn, get_sqlalchemy_conn
+from pyiem.util import logger
 
 LOG = logger()
 FLOOR = datetime.date.today() - datetime.timedelta(days=365)

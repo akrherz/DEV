@@ -27,7 +27,7 @@ def investigate(station):
         (tracks_station, tracks_network) = res.fetchone()[0].split("|")
     # Go look at IEM access for recent high AND precip data, we need both
     sql = """
-    select max(day) from summary_2024 s JOIN stations t on
+    select max(day) from summary_2025 s JOIN stations t on
     (s.iemid = t.iemid) where t.id = :station and t.network = :network
     and max_tmpf is not null and pday is not null
     """

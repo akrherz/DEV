@@ -12,7 +12,7 @@ def main():
         "SELECT wfo, eventid, issue at time zone 'UTC' as issue, report, "
         "expire at time zone 'UTC' as expire, "
         "svs, row_number() OVER (PARTITION by wfo, eventid, "
-        "extract(year from issue) ORDER by length(svs) DESC) from "
+        "vtec_year ORDER by length(svs) DESC) from "
         "warnings where phenomena = 'FF' and significance = 'W' and "
         "is_emergency) "
         "SELECT * from data WHERE row_number = 1 ORDER by issue, wfo, eventid"

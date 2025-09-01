@@ -8,8 +8,9 @@ import datetime
 
 import pandas as pd
 import requests
+from pyiem.database import get_dbconn, get_sqlalchemy_conn
 from pyiem.reference import ncei_state_codes
-from pyiem.util import get_dbconn, get_sqlalchemy_conn, logger
+from pyiem.util import logger
 
 code2state = dict((v, k) for k, v in ncei_state_codes.items())
 LOG = logger()

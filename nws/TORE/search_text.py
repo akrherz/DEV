@@ -13,10 +13,8 @@ for year in tqdm(range(2019, 2020)):
     for suffix in ["0106", "0712"]:
         table = "products_%s_%s" % (year, suffix)
         acursor.execute(
-            """
-            SELECT data, source, entered from """
-            + table
-            + """
+            f"""
+            SELECT data, source, entered from {table}
             WHERE entered > '2018-09-14 12:00' and
             substr(pil, 1, 3) in ('TOR', 'SVS')
             and data ~* 'EMERGENCY' ORDER by entered ASC
