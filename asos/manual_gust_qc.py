@@ -36,7 +36,6 @@ def process(conn, row, station, nt, threshold: int, autozap: bool):
             | (obs["gust"] >= threshold)
             | (obs["peak_wind_gust"] >= threshold)
         ]
-    print(row["valid"])
     print(obs.head(100))
     if autozap:
         res = []

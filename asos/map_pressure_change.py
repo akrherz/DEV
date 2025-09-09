@@ -2,14 +2,14 @@
 
 from datetime import timedelta, timezone
 
+import geopandas as gpd
 import matplotlib.colors as mpcolors
 import numpy as np
 import pandas as pd
-from geopandas import read_postgis
 from matplotlib.colorbar import ColorbarBase
+from pyiem.database import get_dbconn
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_POLITICAL
-from pyiem.util import get_dbconn
 
 
 def main():
@@ -23,7 +23,7 @@ def main():
     for dt in pd.date_range(
         "2022-01-15 11:00", "2022-01-15 17:00", freq="300S"
     ).tz_localize(timezone.utc):
-        df = read_postgis(
+        df = gpd.read_postgis(
             """
             with now as (
                 select station, alti from t2022 where valid = %s
@@ -45,7 +45,7 @@ def main():
             index_col="id",
             geom_col="geom",
             params=(dt, dt - timedelta(minutes=15)),
-        )
+        )  # type: ignore
         colors = cmap(norm(df["delta"]))
 
         m = MapPlot(

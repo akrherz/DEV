@@ -37,7 +37,7 @@ def common(ax, df2, label):
         transform=ax.transAxes,
         bbox={"color": "white"},
     )
-    ax.set_ylabel(r"Air/Dewpt Temperature $^\circ$F")
+    ax.set_ylabel("Air/Dewpt Temperature °F")
 
 
 def main():

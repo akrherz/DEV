@@ -2,12 +2,10 @@
 
 import datetime
 
-import psycopg2.extras
 import pytz
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconnc
 
-pgconn = get_dbconn("asos")
-cursor = pgconn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+pgconn, cursor = get_dbconnc("asos")
 
 
 def get_data(sid, valid):

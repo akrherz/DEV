@@ -4,7 +4,7 @@ import datetime
 
 import matplotlib.pyplot as plt
 import numpy as np
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def main():
@@ -71,15 +71,12 @@ def main():
     ax.set_ylabel("Year")
     ax.set_yticks(range(2000, 2025, 5))
     ax.set_xlabel(
-        (
-            r"Hours from first fall sub 29$^\circ$F Temperature, "
-            "tan is missing"
-        )
+        ("Hours from first fall sub 29°F Temperature, tan is missing")
     )
     ax.set_title(
         "Ames [AMW] Cloud Coverage Reports\n"
         f"{baseyear}-2024 for  +/- 24 hours around first fall "
-        r"sub 29$^\circ$F Temp"
+        "sub 29°F Temp"
     )
     fig.savefig("test.png")
 

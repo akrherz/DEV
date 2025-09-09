@@ -4,8 +4,8 @@ import os
 
 import netCDF4
 import numpy as np
+from pyiem.database import get_dbconn
 from pyiem.plot import MapPlot, get_cmap
-from pyiem.util import get_dbconn
 from tqdm import tqdm
 
 

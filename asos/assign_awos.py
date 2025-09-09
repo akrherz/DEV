@@ -15,7 +15,7 @@ def compute_is_awos(station):
     with get_sqlalchemy_conn("asos") as conn:
         df = pd.read_sql(
             """
-            SELECT extract(minute from valid) as minute, count(*) from t2024
+            SELECT extract(minute from valid) as minute, count(*) from t2025
             where station = %s and valid > now() - '30 days'::interval
             GROUP by minute
             """,

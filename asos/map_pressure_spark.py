@@ -8,9 +8,9 @@ import numpy as np
 import pandas as pd
 from geopandas import read_postgis
 from matplotlib.colorbar import ColorbarBase
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_POLITICAL
-from pyiem.util import get_sqlalchemy_conn
 from tqdm import tqdm
 
 CST = ZoneInfo("America/Chicago")

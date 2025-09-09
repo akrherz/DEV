@@ -9,8 +9,9 @@ import matplotlib.dates as mdates
 import pandas as pd
 import pytz
 from matplotlib.patches import Rectangle
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot.use_agg import plt
-from pyiem.util import get_sqlalchemy_conn, utc
+from pyiem.util import utc
 
 
 def shade(ax):

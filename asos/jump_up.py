@@ -50,7 +50,7 @@ def main():
         ),
         apctx={"_r": "43"},
     )
-    ax = fig.add_axes([0.1, 0.65, 0.85, 0.25])
+    ax = fig.add_axes((0.1, 0.65, 0.85, 0.25))
     ax.bar(df["year"], df["jump"], color="r")
     ax.set_ylim(0, 17)
     ax.set_yticks(range(0, 17, 4))
@@ -58,13 +58,13 @@ def main():
     ax.grid(True)
     ax.set_xlim(1996.5, 2022.5)
 
-    ax = fig.add_axes([0.1, 0.36, 0.85, 0.24])
+    ax = fig.add_axes((0.1, 0.36, 0.85, 0.24))
     ax.bar(df["year"], df["jump"], bottom=(df["max"] - df["jump"]), color="r")
     ax.set_ylabel("Actual Max Jump (F)")
     ax.grid(True)
     ax.set_xlim(1996.5, 2022.5)
 
-    ax = fig.add_axes([0.1, 0.08, 0.85, 0.24])
+    ax = fig.add_axes((0.1, 0.08, 0.85, 0.24))
     ax.bar(df["year"], firstvals, color="r")
     ax.set_xlim(1996.5, 2022.5)
     ax.set_ylim(80, 100)

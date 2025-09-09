@@ -35,8 +35,8 @@ def process(valid):
     storefn = valid.strftime("/mesonet/ARCHIVE/raw/sao/%Y_%m/%y%m%d%H.sao.gz")
     if os.path.isfile(storefn):
         os.rename(storefn, storefn.replace(".sao.gz", "_iem.sao.gz"))
-    subprocess.call(f"gzip {valid:%y%m%d%H}.sao", shell=True)
-    subprocess.call(f"mv {valid:%y%m%d%H}.sao.gz {storefn}", shell=True)
+    subprocess.call(["gzip", f"{valid:%y%m%d%H}.sao"])
+    subprocess.call(["mv", f"{valid:%y%m%d%H}.sao.gz", storefn])
 
 
 def auto():
@@ -55,5 +55,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    # main(sys.argv)
     auto()

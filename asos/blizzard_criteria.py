@@ -77,16 +77,16 @@ def main():
             continue
         for i, row in df.iterrows():
             j = i
-            while j < obs and (df.valid[j] - row["valid"]).total_seconds() < (
-                3 * 3600
-            ):
+            while j < obs and (
+                df.at[j, "valid"] - row["valid"]
+            ).total_seconds() < (3 * 3600):
                 j += 1
-            avg_sknt = np.average(df.wind.values[i:j])
-            min_sknt = np.min(df.wind.values[i:j])
-            med_sknt = np.median(df.wind.values[i:j])
-            avg_vsby = np.average(df.vsby.values[i:j])
-            max_vsby = np.max(df.vsby.values[i:j])
-            med_vsby = np.median(df.vsby.values[i:j])
+            avg_sknt = np.average(df.wind.to_numpy()[i:j])
+            min_sknt = np.min(df.wind.to_numpy()[i:j])
+            med_sknt = np.median(df.wind.to_numpy()[i:j])
+            avg_vsby = np.average(df.vsby.to_numpy()[i:j])
+            max_vsby = np.max(df.vsby.to_numpy()[i:j])
+            med_vsby = np.median(df.vsby.to_numpy()[i:j])
             if avg_sknt >= 30 and avg_vsby <= 0.25:
                 ahits[sid] = True
             if min_sknt >= 30 and max_vsby <= 0.25:
@@ -135,9 +135,9 @@ def main():
         return "%1i" % (x)
 
     fig = figure(title="Iowa ASOS/AWOS 4 February 2021 Blizzard Criteria")
-    ax1 = fig.add_axes([0.075, 0.1, 0.25, 0.7])
-    ax2 = fig.add_axes([0.4, 0.1, 0.25, 0.7])
-    ax3 = fig.add_axes([0.725, 0.1, 0.25, 0.7])
+    ax1 = fig.add_axes((0.075, 0.1, 0.25, 0.7))
+    ax2 = fig.add_axes((0.4, 0.1, 0.25, 0.7))
+    ax3 = fig.add_axes((0.725, 0.1, 0.25, 0.7))
 
     ax1.set_ylim(0, 45)
     ax1.set_ylabel("Minimum 3HR Wind Speed/Gust [mph]")

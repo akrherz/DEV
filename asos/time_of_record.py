@@ -41,7 +41,7 @@ def main():
     # Get records
     ccursor.execute(
         """
-    SELECT valid, min_low_yr, min_low from climate where station = 'IA2203'
+    SELECT valid, min_low_yr, min_low from climate where station = 'IATDSM'
     and min_low_yr > 1932
     """
     )

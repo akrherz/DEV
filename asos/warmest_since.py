@@ -18,8 +18,7 @@ def get_data():
         cursor.execute(
             """
             SELECT min(feel) as min_feel
-                from t2023 where station = %s and
-                valid > '2023-03-17'
+                from t2023 where station = %s and valid > '2023-03-17'
                 and feel is not null
             """,
             (station,),

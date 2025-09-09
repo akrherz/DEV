@@ -1,7 +1,7 @@
 """Generate a plot of the equation shown in the ASOS manual for the website"""
 
 import numpy as np
-from pyiem.plot.use_agg import plt
+from pyiem.plot import figure_axes
 
 
 def main():
@@ -9,7 +9,7 @@ def main():
     x = np.arange(0, 4, 0.01)
     y = np.round(x + 0.6 * x**2, 2)
 
-    (fig, ax) = plt.subplots(1, 1)
+    (fig, ax) = figure_axes()
 
     ax.bar(
         x - 0.005,

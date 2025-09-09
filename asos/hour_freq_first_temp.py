@@ -4,7 +4,7 @@ from datetime import timedelta
 
 import pandas as pd
 from pyiem.database import get_dbconn
-from pyiem.plot.use_agg import plt
+from pyiem.plot import figure_axes
 
 
 def main():
@@ -22,7 +22,7 @@ def main():
         df["min"] - timedelta(hours=5) + timedelta(minutes=10)
     ).dt.hour
 
-    (fig, ax) = plt.subplots(1, 1)
+    (fig, ax) = figure_axes()
     gdf = df.groupby("cst_hour").count()
     ax.bar(gdf.index.values, gdf["min"])
     ax.annotate(
@@ -39,7 +39,7 @@ def main():
     ax.set_ylabel("Number of Years")
     ax.set_title(
         f"(DSM) Des Moines Airport ({df.index.min()}-{df.index.max()})\n"
-        r"Frequency of given hour having first fall season < 32$^\circ$F temp."
+        "Frequency of given hour having first fall season < 32°F temp."
     )
     ax.set_xticks(range(0, 24, 4))
     ax.set_xticklabels(["Mid", "4 AM", "8 AM", "Noon", "4 PM", "8 PM"])

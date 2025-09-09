@@ -4,7 +4,7 @@ import datetime
 
 import matplotlib.pyplot as plt
 import numpy as np
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 ASOS = get_dbconn("asos1min")
 cursor = ASOS.cursor()

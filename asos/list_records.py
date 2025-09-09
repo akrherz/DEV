@@ -5,10 +5,10 @@ from io import StringIO
 
 import pandas as pd
 import requests
+from pyiem.database import get_dbconn
 from pyiem.datatypes import temperature
 from pyiem.meteorology import heatindex
 from pyiem.network import Table as NetworkTable
-from pyiem.util import get_dbconn
 
 
 def two():

@@ -2,7 +2,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def do(station):
@@ -75,14 +75,13 @@ def main():
     )
     # ax.plot( numpy.arange(720), max_tmpf, color='pink')
     # ax.plot( [0,720], [32,32], color='k')
-    ax.set_ylabel(r"Mean Temperature $^{\circ}\mathrm{F}$")
+    ax.set_ylabel("Mean Temperature °F")
     ax.set_title(
         "March/April Radiational Cooling Events [2001-2011]\n"
-        r"temp reaches 32$^{\circ}\mathrm{F}$ between 3-6 AM "
-        "with winds below 5 knots"
+        "temp reaches 32°F between 3-6 AM with winds below 5 knots"
     )
-    ax.set_xlabel(r"Time before observation of 32$^{\circ}\mathrm{F}$")
-    max_tmpf, tot_tmpf, tot_sknt, tot_cnt = do("ALO")
+    ax.set_xlabel("Time before observation of 32°F")
+    _max_tmpf, tot_tmpf, _tot_sknt, tot_cnt = do("ALO")
     ax.plot(
         np.arange(720),
         tot_tmpf / tot_cnt,

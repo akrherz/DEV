@@ -33,17 +33,15 @@ def main():
     ax1.plot(df.index.values, df["dwpf"], label="Dew Point")
     ax1.legend()
     ax1.grid(True)
-    ax1.set_ylabel(r"Temperature $^\circ$F")
+    ax1.set_ylabel("Temperature °F")
     ax1.set_xticks(xticks)
     ax1.set_xticklabels(xticklabels)
     ax1.set_title(
         (
             "Monticello, IA (KMXO) AWOS Observations for 28 Jun 2019\n"
             "Heat Burst Event, "
-            f"Max Temp: {df['tmpf'].max():.1f}"
-            r"$^\circ$F Min Dewpoint: "
-            f"{df['tmpf'].min():.1f}"
-            r"$^\circ$F"
+            f"Max Temp: {df['tmpf'].max():.1f}°F Min Dewpoint: "
+            f"{df['tmpf'].min():.1f}°F"
         )
     )
 

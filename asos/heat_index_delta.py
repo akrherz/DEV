@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import numpy
 import pyiem.datatypes as dt
 from pyiem import meteorology
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def main():

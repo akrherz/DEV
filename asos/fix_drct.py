@@ -2,7 +2,7 @@
 
 import re
 
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 WIND_RE = re.compile(r" ([0-9]{3})(\d+)G?(\d*)KT ")
 

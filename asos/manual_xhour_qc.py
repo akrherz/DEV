@@ -6,7 +6,7 @@ automation here to help with manual dumping.
 import click
 import pandas as pd
 import pytz
-from pyiem.util import get_dbconn, get_sqlalchemy_conn
+from pyiem.database import get_dbconn, get_sqlalchemy_conn
 
 
 def process(engine, conn, row, station):

@@ -8,10 +8,11 @@ import sys
 import pandas as pd
 from pyiem.database import get_dbconn, get_sqlalchemy_conn
 from pyiem.network import Table as NetworkTable
+from pyiem.reference import StationAttributes
 from pyiem.util import logger
 
 LOG = logger()
-ATTR = "METAR_RESET_MINUTE"
+ATTR = StationAttributes.METAR_RESET_MINUTE
 
 
 def determine_winner(df, station):
@@ -48,7 +49,7 @@ def do(mesosite, iemid, station):
         df = pd.read_sql(
             "SELECT extract(minute from valid) as minute, count(*), "
             "sum(p01i) as precip from "
-            "t2022 where station = %s and report_type = 2 "
+            "t2025 where station = %s and report_type = 2 "
             "GROUP by minute order by count desc",
             conn,
             params=(station,),

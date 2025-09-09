@@ -24,7 +24,7 @@ def main():
         )
 
     mp = MapPlot(
-        title=r"2020 Fall Season Minimum Temperature $^\circ$F",
+        title="2020 Fall Season Minimum Temperature °F",
         axisbg="white",
         subtitle=(
             "Automated Weather Stations ASOS/AWOS, Valid Fall 2020 "

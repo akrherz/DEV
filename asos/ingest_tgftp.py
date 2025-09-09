@@ -7,8 +7,9 @@ from datetime import datetime
 
 import requests
 from psycopg2.extras import DictCursor
+from pyiem.database import get_dbconn
 from pyiem.nws.products.metarcollect import METARReport
-from pyiem.util import exponential_backoff, get_dbconn, logger
+from pyiem.util import exponential_backoff, logger
 
 LOG = logger()
 URLBASE = "https://tgftp.nws.noaa.gov/data/observations/metar/cycles/"

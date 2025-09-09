@@ -2,14 +2,15 @@
 
 import httpx
 from pyiem.database import get_dbconn
+from pyiem.reference import StationAttributes
 from pyiem.util import logger
 
 LOG = logger()
 INV = (
     "https://www.ncei.noaa.gov/pub/data/asos-onemin/"
-    "Inventory/Om2MonthInventory202405.Report2"
+    "Inventory/Om2MonthInventory202508.Report2"
 )
-HAS1MIN = "HAS1MIN"
+HAS1MIN = StationAttributes.HAS1MIN
 
 
 def main():

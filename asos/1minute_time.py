@@ -4,8 +4,8 @@ import calendar
 
 import pandas as pd
 import seaborn as sns
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import figure_axes
-from pyiem.util import get_sqlalchemy_conn
 
 
 def main():

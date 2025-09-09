@@ -6,8 +6,9 @@ import re
 from datetime import timedelta, timezone
 
 from metar.Metar import Metar, ParserError
+from pyiem.database import get_dbconn
 from pyiem.reference import TRACE_VALUE
-from pyiem.util import get_dbconn, logger, utc
+from pyiem.util import logger, utc
 
 LOG = logger()
 UNPARSED = re.compile(r"Unparsed groups in body '([^']*)'", re.IGNORECASE)

@@ -7,7 +7,7 @@ import pandas as pd
 
 # Third Party
 from colorama import Fore, Style
-from pyiem.util import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn
 
 
 def colorize(val, perfect, bad):

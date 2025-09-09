@@ -2,7 +2,7 @@
 
 import pandas as pd
 from pyiem.database import get_sqlalchemy_conn
-from pyiem.plot.use_agg import plt
+from pyiem.plot import figure_axes
 
 SQL = """
 WITH mins as (
@@ -30,10 +30,10 @@ def main():
     with get_sqlalchemy_conn("asos") as conn:
         df = pd.read_sql(SQL, conn)
 
-    (fig, ax) = plt.subplots(1, 1)
+    (fig, ax) = figure_axes()
     ax.scatter(df["hr"], df["t2"])
     ax.grid(True)
-    ax.set_ylabel(r"New Fall Minimum Temperature [$^\circ$F]")
+    ax.set_ylabel("New Fall Minimum Temperature °F")
     ax.set_title(
         (
             "October Hour that new Fall Minimum Temperature was Set\n"

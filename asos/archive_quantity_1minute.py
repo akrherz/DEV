@@ -4,7 +4,7 @@ import datetime
 import sys
 
 import numpy as np
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 BASEYEAR = 2000
 
