@@ -42,26 +42,25 @@ def main():
             if res.rowcount > 0:
                 continue
             url = (
-                "https://aviationweather.gov/cgi-bin/data/metar.php?"
-                f"ids={sid4}&hours=48&order=id%2C-obs&sep=true"
+                "https://aviationweather.gov/api/data/metar?"
+                f"ids={sid4}&hours=48&format=raw"
             )
-            attempt = 0
-            while attempt < 3:
-                attempt += 1
-                try:
-                    req = client.get(url, timeout=20)
-                    if req.status_code == 429:
-                        LOG.info("Got 429, cooling jets for 5 seconds.")
-                        time.sleep(5)
-                        continue
-                    if req.status_code != 200:
-                        LOG.warning(f"Failed fetch {sid4} {req.status_code}")
-                        continue
-                    break
-                except Exception as exp:
-                    LOG.info("Failed to fetch %s: %s", sid4, exp)
+            try:
+                resp = client.get(url, timeout=20)
+                if resp.status_code == 204:
+                    LOG.info("IEM does not have %s, but no AWC data", sid4)
+                    continue
+                if resp.status_code == 429:
+                    LOG.info("Got 429, cooling jets for 5 seconds.")
+                    time.sleep(5)
+                    continue
+                if resp.status_code != 200:
+                    LOG.warning(f"Failed fetch {sid4} {resp.status_code}")
+                    continue
+            except Exception as exp:
+                LOG.info("Failed to fetch %s: %s", sid4, exp)
             awx = {}
-            for line in req.text.split("\n"):
+            for line in resp.text.split("\n"):
                 if line.strip() == "":
                     continue
                 awx[line[5:11]] = f"{line}="
