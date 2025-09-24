@@ -1,20 +1,25 @@
 """Fancy bar plot for feature fun"""
 
-import datetime
-
+import numpy as np
 from matplotlib.font_manager import FontProperties
-from pyiem.plot import figure, plt
+from pyiem.plot import figure
 
-DATA = """   2011-04-27 |   450
- 2012-03-02 |   285
- 2004-05-30 |   283
- 2011-05-25 |   282
- 2011-04-26 |   274
- 2010-10-26 |   222
- 2023-03-31 |   215
- 2008-02-05 |   211
- 2006-04-07 |   198
- 2011-04-15 |   194"""
+DATA = """OUN - Norman, OK |      2025 |  1121
+OUN - Norman, OK  |      2024 |   988
+FFC - Atlanta, GA |      1998 |   956
+OUN - Norman, OK |      2019 |   942
+OUN - Norman, OK |      2017 |   923
+OUN - Norman, OK |      2016 |   907
+OUN - Norman, OK |      2023 |   894
+LZK - Little Rock, AR |      2011 |   888
+OUN - Norman, OK |      2008 |   871
+JAN - Jackson, MS |      2001 |   848
+SKIP
+FSD - Sioux Falls, SD |      2004 |   548
+DMX - Des Moines, IA |      2008 |   509
+OAX - Omaha, NE |      2001 |   469
+DVN - Davenport, IA |      2024 |   364
+ARX - La Crosse, WI |      1998 |   241"""
 
 FONT = FontProperties()
 FONT.set_weight("bold")
@@ -23,55 +28,68 @@ FONT.set_size("large")
 
 def main():
     """Go"""
-    plt.style.use("ggplot")
     fig = figure(
         title=(
-            "Top 10 Number of NWS Issued Tornado Warnings\n"
-            "by 'convective day' (~7AM - 7AM CDT), "
-            "date shown for start of period [2002-]"
+            "Largest Yearly Severe Thunderstorm Warning Totals [1986-]"
+            "\nby NWS Forecast Office"
         ),
         figsize=(10.24, 7.68),
     )
-    ax = fig.add_axes([0.2, 0.15, 0.75, 0.7])
+    ax = fig.add_axes((0.4, 0.15, 0.55, 0.7))
 
     ylabels = []
     vals = []
-    colors = []
     for line in DATA.split("\n"):
+        if line.strip() == "SKIP":
+            ylabels.append("-- Max for Iowa Forecast Offices --")
+            vals.append(np.nan)
+            continue
         tokens = line.strip().split("|")
-        vals.append(int(tokens[1]))
-        ts = datetime.datetime.strptime(tokens[0].strip(), "%Y-%m-%d")
-        colors.append("r" if ts.year == 2023 else "tan")
-        ylabels.append(ts.strftime("%b %d, %Y"))
+        vals.append(int(tokens[2]))
+        ylabels.append(f"{tokens[0]} | {tokens[1].strip()}")
 
     vals = vals[::-1]
     ylabels = ylabels[::-1]
-    colors = colors[::-1]
 
-    ax.barh(range(len(vals)), vals, color=colors)
+    ax.barh(range(len(vals)), vals)
     for y, x in enumerate(vals):
-        ax.text(
-            x - 2,
-            y,
-            f"{x}",
-            va="center",
-            ha="right",
-            color="k",
-            fontproperties=FONT,
-        )
+        if not np.isnan(x):  # Skip text for NaN values
+            # Simple white text that's easy to read
+            ax.text(
+                x - 2,
+                y,
+                f"{x:,}",  # Add comma formatting
+                va="center",
+                ha="right",
+                color="white",
+                fontproperties=FONT,
+                fontsize=14,
+            )
     fig.text(
         0.5,
         0.03,
-        (
-            "* based on unofficial archives maintained by the IEM, "
-            "thru 31 March 2023, @akrherz"
-        ),
+        ("* thru 23 September 2025, unofficial IEM accounting."),
         ha="center",
     )
     ax.set_xlabel("Number of Warnings")
     ax.set_yticks(range(len(vals)))
     ax.set_yticklabels(ylabels, fontsize=14)
-    fig.savefig("test.png")
+
+    # Clean up the axes presentation
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["left"].set_linewidth(0.5)
+    ax.spines["bottom"].set_linewidth(0.5)
+
+    # Style the ticks
+    ax.tick_params(axis="x", which="major", labelsize=12, length=4, width=0.5)
+    ax.tick_params(axis="y", which="major", labelsize=14, length=0, width=0)
+
+    # Add subtle grid for x-axis only
+    ax.grid(axis="x", alpha=0.3, linestyle="-", linewidth=0.5)
+    ax.set_axisbelow(True)
+
+    fig.savefig("250924.png")
 
 
 if __name__ == "__main__":
