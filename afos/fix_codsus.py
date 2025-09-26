@@ -4,37 +4,89 @@ https://github.com/Unidata/MetPy/issues/3921
 https://github.com/Unidata/MetPy/pull/3922
 """
 
-import sys
-import traceback
+import re
 from io import BytesIO
 
-import httpx
 from metpy.io import parse_wpc_surface_bulletin
-from tqdm import tqdm
+from pyiem.database import sql_helper, with_sqlalchemy_conn
+from sqlalchemy.engine import Connection
+
+ALLOWED_CHARS = set("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ\r\n ")
+"""
+        # Does this string have bad characters?
+        result = set(row["data"]).difference(ALLOWED_CHARS)
+        if result:
+            print(result)
+            cleaned = row["data"]
+            for char in result:
+                cleaned = cleaned.replace(char, "")
+            bio = BytesIO(cleaned.encode("ascii"))
+            try:
+                parse_wpc_surface_bulletin(bio, year=2000)
+            except Exception:
+                print("Double failure")
+                continue
+            conn.execute(
+                sql_helper("
+    update {table} SET data = :data where ctid = :ctid
+                           ", table=table),
+                {"data": cleaned, "ctid": row["ctid"]},
+            )
+            conn.commit()
+"""
 
 
-def main(argv):
+@with_sqlalchemy_conn("afos")
+def do_table(table: str, conn: Connection | None = None):
     """Go Main Go."""
-    year = int(argv[1])
-    resp = httpx.get(
-        "https://mesonet.agron.iastate.edu/cgi-bin/afos/retrieve.py?"
-        f"sdate={year}-01-01&edate={year + 1}-01-01&limit=9999"
-        "&pil=CODSUS&fmt=text",
-        timeout=60,
+    res = conn.execute(
+        sql_helper(
+            """
+    select ctid, data from {table} where pil = 'CODSUS' order by entered ASC
+                   """,
+            table=table,
+        )
     )
-    failure = 0
-    progress = tqdm(resp.content.split(b"\003"))
-    for prod in progress:
-        progress.set_description(f"Failures: {failure}")
-        bio = BytesIO(prod)
+    for row in res.mappings():
+        bio = BytesIO(row["data"].encode("ascii"))
         try:
-            parse_wpc_surface_bulletin(bio, year=year)
-        except Exception:
-            traceback.print_exc()
-            with open(f"CODSUS_fail_{failure:04.0f}.txt", "wb") as fh:
-                fh.write(prod)
-            failure += 1
+            parse_wpc_surface_bulletin(bio, year=2000)
+        except Exception as exp:
+            errmsg = str(exp)
+            if "could not convert string" not in errmsg:
+                continue
+            # dot comes from metpy
+            badchars = re.findall(r"[\"']\s*(.*?)\s*[\"']", errmsg)[0].replace(
+                ".", ""
+            )
+            justdigits = re.sub(r"[^0-9]", "", badchars)
+            if badchars != "" and badchars in row["data"]:
+                print(f"{errmsg} {badchars} -> {justdigits}")
+                cleaned = row["data"].replace(badchars, justdigits)
+                bio = BytesIO(cleaned.encode("ascii"))
+                try:
+                    parse_wpc_surface_bulletin(bio, year=2000)
+                except Exception:
+                    print("Double failure")
+                    continue
+                conn.execute(
+                    sql_helper(
+                        "update {table} SET data = :data where ctid = :ctid",
+                        table=table,
+                    ),
+                    {"data": cleaned, "ctid": row["ctid"]},
+                )
+                conn.commit()
+
+
+def main():
+    """Go Main Go."""
+    for year in range(1994, 2000):
+        for suffix in ["0106", "0712"]:
+            table = f"products_{year}_{suffix}"
+            print(f"Processing {table}")
+            do_table(table)
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()
