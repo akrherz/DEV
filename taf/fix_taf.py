@@ -10,7 +10,7 @@ from pyiem.nws.products.taf import parser
 from tqdm import tqdm
 
 
-def process(progress, cursor, year, tafid, product_id):
+def process(progress, cursor, station, tafid, product_id):
     """Fix by rewritting."""
     # Check 1, can we get the text
     resp = httpx.get(
@@ -24,9 +24,11 @@ def process(progress, cursor, year, tafid, product_id):
     )
     # Check 2, can we parse the product
     prod = parser(resp.text, utcnow)
-    if not prod.data.forecasts:
-        progress.write(f"{product_id} had no forecasts")
+    useme = [taf for taf in prod.data if taf.station == station]
+    if not useme:
+        progress.write(f"{product_id} had no data for {station}")
         return
+    prod.data = useme
     # Step 1, delete old entry
     cursor.execute("delete from taf_forecast where taf_id = %s", (tafid,))
     cursor.execute("delete from taf where id = %s", (tafid,))
@@ -42,8 +44,8 @@ def main(year: int):
         tafs = pd.read_sql(
             sql_helper(
                 """
-    SELECT distinct t.id, t.product_id FROM taf t JOIN {table} d
-    on t.id = d.taf_id where strpos(raw, 'PROB30') > 2
+    SELECT distinct t.id, t.station, t.product_id FROM taf t JOIN {table} d
+    on t.id = d.taf_id where raw ~* '[a-z]{{3}}[0-9]{{2}}$'
     and product_id is not null """,
                 table=f"taf{year}",
             ),
@@ -53,7 +55,7 @@ def main(year: int):
     conn, cursor = get_dbconnc("asos")
     for _, row in tafs.iterrows():
         progress.set_description(row["product_id"])
-        process(progress, cursor, year, row["id"], row["product_id"])
+        process(progress, cursor, row["station"], row["id"], row["product_id"])
         cursor.close()
         conn.commit()
         cursor = conn.cursor()
