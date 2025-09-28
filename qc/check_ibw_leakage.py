@@ -1,6 +1,7 @@
 """Requested check for pre-implementation of IBW for 2021."""
 
-from pyiem.util import get_dbconn, logger
+from pyiem.database import get_dbconn
+from pyiem.util import logger
 
 LOG = logger()
 
@@ -10,7 +11,7 @@ def main():
     pgconn = get_dbconn("postgis")
     cursor = pgconn.cursor()
     cursor.execute(
-        "SELECT product_id from sps_2021 where issue > 'YESTERDAY' and "
+        "SELECT product_id from sps_2025 where issue > 'YESTERDAY' and "
         "(max_wind_gust is null or max_hail_size is null) "
         "and not ST_IsEmpty(geom)"
     )
@@ -20,7 +21,7 @@ def main():
         LOG.warning("https://mesonet.agron.iastate.edu/p.php?pid=%s", row[0])
 
     cursor.execute(
-        "SELECT distinct wfo from sbw_2021 "
+        "SELECT distinct wfo from sbw_2025 "
         "where phenomena = 'SV' and issue > 'YESTERDAY' and "
         "windthreat is null and hailthreat is null"
     )
