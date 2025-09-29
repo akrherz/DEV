@@ -23,7 +23,8 @@ def main():
     cursor.execute(
         "SELECT distinct wfo from sbw_2025 "
         "where phenomena = 'SV' and issue > 'YESTERDAY' and "
-        "windthreat is null and hailthreat is null"
+        "windthreat is null and hailthreat is null and "
+        "status not in ('EXP, 'CAN')"
     )
     if cursor.rowcount > 0:
         LOG.warning("SVR Products from WFOs without the new tags")
