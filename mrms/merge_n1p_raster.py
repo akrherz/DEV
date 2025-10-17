@@ -6,6 +6,7 @@ import click
 import numpy as np
 from osgeo import gdal
 from pyiem import iemre
+from pyiem.grid.nav import get_nav
 from pyiem.util import archive_fetch, logger, ncopen, utc
 
 LOG = logger()
@@ -35,6 +36,8 @@ def run(dt: date, fordep: bool):
                 data = ds.ReadAsArray()
                 if total is None:
                     total = np.zeros(data.shape, np.float32)
+                # Account for bad darly bug with everything 1 instead of 0
+                data = np.where(data == 1, 0, data)
                 # Convert the color index value to mm
                 # Anything over 254 is bad
                 res = np.where(data > 254, 0, data)
@@ -56,10 +59,11 @@ def run(dt: date, fordep: bool):
 
     # CAREFUL HERE!  The MRMS grid is North to South
     # set top (smallest y)
-    y0 = int((55.0 - iemre.NORTH) * 100.0)
-    y1 = int((55.0 - iemre.SOUTH) * 100.0)
-    x0 = int((iemre.WEST + 130) * 100.0)
-    x1 = int((iemre.EAST + 130) * 100.0)
+    nav = get_nav("MRMS_IEMRE", "")
+    y0 = int((55.0 - nav.top) * 100.0)
+    y1 = int((55.0 - nav.bottom) * 100.0) + 1  # lame
+    x0 = int((nav.left + 130) * 100.0)
+    x1 = int((nav.right + 130) * 100.0) + 1  # lame
     with ncopen(ncfn, "a") as nc:
         ncprecip = nc.variables["p01d"]
         LOG.info(
