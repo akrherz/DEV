@@ -3,7 +3,7 @@
 import datetime
 
 import geopandas as gpd
-from pyiem.util import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn
 from sqlalchemy import text
 
 

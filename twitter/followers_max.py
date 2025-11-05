@@ -3,8 +3,9 @@
 import time
 
 import twitter
+from pyiem.database import get_dbconn
 from pyiem.network import Table as NetworkTable
-from pyiem.util import get_dbconn, get_properties
+from pyiem.util import get_properties
 
 
 def main():
