@@ -6,10 +6,9 @@ from zoneinfo import ZoneInfo
 
 import click
 import pandas as pd
-from pyiem.database import get_dbconnc, get_sqlalchemy_conn
+from pyiem.database import get_dbconnc, get_sqlalchemy_conn, sql_helper
 from pyiem.network import Table as NetworkTable
 from pyiem.util import logger
-from sqlalchemy import text
 
 LOG = logger()
 
@@ -18,7 +17,7 @@ def process(conn, row, station, nt, threshold: int, autozap: bool):
     """Do what we need to do here."""
     delta = pd.Timedelta(hours=3)
     obs = pd.read_sql(
-        text("""
+        sql_helper("""
     SELECT valid, drct, sknt, gust, peak_wind_gust from alldata where
     station = :station and valid >= :sts and valid <= :ets
     ORDER by valid ASC
@@ -67,10 +66,12 @@ def process(conn, row, station, nt, threshold: int, autozap: bool):
         colval = entry[-1]
         col = mapper[colval]
         conn.execute(
-            text(
-                f"UPDATE t{cullrow['valid'].year} SET {col} = null, "
+            sql_helper(
+                "UPDATE {table} SET {col} = null, "
                 "editable = 'f' "
-                "WHERE station = :station and valid = :dt"
+                "WHERE station = :station and valid = :dt",
+                table=f"t{cullrow['valid']:%Y}",
+                col=col,
             ),
             {
                 "station": station,
@@ -97,20 +98,30 @@ def process(conn, row, station, nt, threshold: int, autozap: bool):
 @click.option("--network", required=True)
 @click.option("--threshold", type=int, default=100)
 @click.option("--autozap", is_flag=True)
-def main(station, network, threshold, autozap: bool):
+@click.option("--month", type=int, default=None)
+def main(station, network, threshold, autozap: bool, month: int | None):
     """Go Main Go."""
     nt = NetworkTable(network, only_online=False)
+
+    month_limiter = (
+        "" if month is None else "and extract(month from valid) = :month"
+    )
+
     # Look for obs that are maybe bad
     with get_sqlalchemy_conn("asos") as conn:
         obs = pd.read_sql(
-            text("""
+            sql_helper(
+                """
             select valid, sknt, gust, peak_wind_gust, drct from alldata
             where station = :station and (
                  sknt > :t or gust > :t or peak_wind_gust > :t
-            ) ORDER by greatest(sknt, gust, peak_wind_gust) desc
-                """),
+            ) {month_limiter}
+            ORDER by greatest(sknt, gust, peak_wind_gust) desc
+                """,
+                month_limiter=month_limiter,
+            ),
             conn,
-            params={"station": station, "t": threshold},
+            params={"station": station, "t": threshold, "month": month},
         )
         LOG.info("Found %s rows", len(obs.index))
 

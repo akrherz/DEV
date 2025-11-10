@@ -4,8 +4,9 @@ import cartopy.crs as ccrs
 import numpy as np
 import rasterio
 import shapefile
+from pyiem.database import get_dbconn
 from pyiem.plot import MapPlot, get_cmap
-from pyiem.util import get_dbconn, mm2inch
+from pyiem.util import mm2inch
 from shapely.geometry import shape
 
 

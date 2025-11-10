@@ -2,9 +2,8 @@
 
 import click
 import pandas as pd
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.network import Table as NetworkTable
-from sqlalchemy import text
 
 
 @click.command()
@@ -17,7 +16,7 @@ def main(station, network):
         # backup the timestamp to make top of the hour obs work more cleanly
         # and account for standard time
         obsdf = pd.read_sql(
-            text("""
+            sql_helper("""
             select (valid - '61 minutes'::interval) at time zone 'UTC'
             as utc_valid,
             (valid - '61 minutes'::interval) at time zone :tzname
@@ -39,7 +38,7 @@ def main(station, network):
     minmaxdf["count"] = obsdf.groupby(obsdf["localvalid"].dt.date).size()
     with get_sqlalchemy_conn("iem") as conn:
         summarydf = pd.read_sql(
-            text(
+            sql_helper(
                 """
             select day,
             max_tmpf, min_tmpf from summary where iemid = :iemid

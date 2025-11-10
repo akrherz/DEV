@@ -4,7 +4,8 @@ Specialized airspaces entry for Alaska AAWU zones
 """
 
 import geopandas as gpd
-from pyiem.util import get_dbconn, logger
+from pyiem.database import get_dbconn
+from pyiem.util import logger
 
 LOG = logger()
 

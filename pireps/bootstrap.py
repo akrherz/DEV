@@ -4,7 +4,8 @@ Create airspaces folder
 
 import geopandas as gpd
 import requests
-from pyiem.util import get_dbconn, logger
+from pyiem.database import get_dbconn
+from pyiem.util import logger
 from shapely import force_2d
 
 LOG = logger()
