@@ -4,6 +4,20 @@ import os
 import subprocess
 
 
+def fix_permissions(rootdir):
+    """Set proper permissions: directories 755, files 644."""
+    subprocess.run(
+        ["find", rootdir, "-type", "d", "-exec", "chmod", "755", "{}", "+"],
+        check=True,
+        capture_output=True,
+    )
+    subprocess.run(
+        ["find", rootdir, "-type", "f", "-exec", "chmod", "644", "{}", "+"],
+        check=True,
+        capture_output=True,
+    )
+
+
 def main():
     """Go Main Go."""
     # Start from current directory
@@ -34,13 +48,23 @@ def main():
 
             # Extract in the same directory as the zip file
             try:
+                # Set environment variable to ignore ZIP BOMB warnings
+                # (false positives for files just over 4GB)
+                env = os.environ.copy()
+                env["UNZIP_DISABLE_ZIPBOMB_DETECTION"] = "TRUE"
+
                 subprocess.run(
                     ["unzip", "-n", "-q", filename],
                     cwd=rootdir,
                     check=True,
                     capture_output=True,
                     text=True,
+                    env=env,
                 )
+
+                # Fix permissions: directories 755, files 644
+                fix_permissions(rootdir)
+
                 # Only delete if extraction succeeded
                 zip_filepath = os.path.join(rootdir, filename)
                 os.remove(zip_filepath)

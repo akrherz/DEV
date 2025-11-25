@@ -1,8 +1,9 @@
 """See how our statewide estimates compare with PRISM."""
 
 import pandas as pd
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import figure
-from pyiem.util import c2f, get_sqlalchemy_conn
+from pyiem.util import c2f
 
 
 def main():
@@ -29,7 +30,7 @@ def main():
         title="(1981-2022) Iowa Daily Temperature Bias",
         subtitle="IEM Areal Average minus PRISM Areal Average",
     )
-    ax = fig.add_axes([0.1, 0.52, 0.8, 0.32])
+    ax = fig.add_axes((0.1, 0.52, 0.8, 0.32))
     dd = df[df["iem_high_bias"] >= 0]
     ax.scatter(dd.index, dd["iem_high_bias"], color="r")
     dd = df[df["iem_high_bias"] < 0]
@@ -39,7 +40,7 @@ def main():
     ax.set_ylabel("IEM Bias [F]")
     ax.set_ylim(-15, 25)
 
-    ax = fig.add_axes([0.1, 0.1, 0.8, 0.32])
+    ax = fig.add_axes((0.1, 0.1, 0.8, 0.32))
     dd = df[df["iem_low_bias"] >= 0]
     ax.scatter(dd.index, dd["iem_low_bias"], color="r")
     dd = df[df["iem_low_bias"] < 0]

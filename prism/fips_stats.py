@@ -6,7 +6,7 @@ import os
 import pandas as pd
 import pyiem.reference as reference
 import requests
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 from tqdm import tqdm
 
 
@@ -63,13 +63,13 @@ def main():
         df["heavyrain5cm"] = 0
         df.at[df["sdd86"] < 0, ["sdd86"]] = 0
         df.at[df["precip_in"] > 1.97, ["heavyrain5cm"]] = 1
-        mmeans = df.resample("M", how="mean")
+        mmeans = df.resample("M").mean()
         mmeans["month"] = mmeans.index.month
         mmeans0711 = mmeans["2007-01-01":"2012-01-01"]
         mmeans0711m = mmeans0711.groupby("month").mean()
         mmeanss = mmeans.groupby("month").std()
 
-        msums = df.resample("M", how="sum")
+        msums = df.resample("M").sum()
         msums["month"] = msums.index.month
         msums0711 = msums["2007-01-01":"2012-01-01"]
         msums0711m = msums0711.groupby("month").mean()
@@ -95,7 +95,7 @@ def main():
         pstd = msumss["precip_in"]
         for idx, row in mmeans0711.iterrows():
             t = row["high_f"]
-            p = msums0711.loc[idx, "precip_in"]
+            p = msums0711.at[idx, "precip_in"]
             month = idx.month
             tavg = mmeans0711m.loc[month, "high_f"]
             pavg = msums0711m.loc[month, "precip_in"]

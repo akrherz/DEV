@@ -25,7 +25,7 @@ def main(year: int):
             "python",
             "init_daily.py",
             "--year",
-            str(year),
+            f"{year}",
         ]
     )
 

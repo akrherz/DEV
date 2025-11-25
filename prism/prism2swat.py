@@ -12,8 +12,8 @@ import geopandas as gpd
 import netCDF4
 import numpy as np
 from affine import Affine
+from pyiem.database import get_dbconn
 from pyiem.grid.zs import CachingZonalStats
-from pyiem.util import get_dbconn
 from tqdm import tqdm
 
 GRIDINFO = namedtuple("GridInfo", ["x0", "y0", "xsz", "ysz", "mask"])
@@ -41,7 +41,8 @@ def main(argv):
     for dirname in ["precipitation", "temperature"]:
         os.mkdir("%s/%s" % (outdir, dirname))
     pgconn = get_dbconn("idep")
-    myhucs = [x.strip() for x in open("myhucs.txt")]
+    with open("myhucs.txt") as fh:
+        myhucs = [x.strip() for x in fh]
     huc8df = gpd.GeoDataFrame.from_postgis(
         """
     SELECT huc_12, ST_Transform(simple_geom, %s) as geo from huc12

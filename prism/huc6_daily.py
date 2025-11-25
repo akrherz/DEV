@@ -12,9 +12,9 @@ from rasterstats import zonal_stats
 AFF = Affine(0.0417, 0.0, -125.0, 0.0, -0.0417, 49.9357)
 
 
-def do_year(gdf, rows, year):
+def do_year(gdf: pd.DataFrame, rows, year):
     """Do year please"""
-    nc = netCDF4.Dataset("/mesonet/data/prism/%s_daily.nc" % (year,))
+    nc = netCDF4.Dataset(f"/mesonet/data/prism/{year}_daily.nc")
     now = datetime.datetime(year, 1, 1)
     maxv = 0
     for i in range(nc.dimensions["time"].size):

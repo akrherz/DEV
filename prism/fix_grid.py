@@ -1,7 +1,7 @@
 """Fix an off-by-one debacle."""
 
 import numpy as np
-from pyiem import prism
+from pyiem.grid.nav import get_nav
 from pyiem.util import logger, ncopen
 
 LOG = logger()
@@ -9,6 +9,7 @@ LOG = logger()
 
 def main():
     """Go Main Go."""
+    prism = get_nav("PRISM", "")
     for year in range(1981, 2025):
         LOG.info(year)
         with ncopen(f"/mesonet/data/prism/{year}_daily.nc", "a") as nc:
@@ -19,23 +20,23 @@ def main():
             nc.createVariable("lon_bnds", float, ("lon", "bnds"))
         with ncopen(f"/mesonet/data/prism/{year}_daily.nc", "a") as nc:
             nc.variables["lat"][:] = (
-                prism.SOUTH + np.arange(prism.NY) * prism.DY
+                prism.bottom + np.arange(prism.ny) * prism.dy
             )
             nc.variables["lat_bnds"][:, 0] = (
-                prism.SOUTH_EDGE + np.arange(prism.NY) * prism.DY
+                prism.bottom_edge + np.arange(prism.ny) * prism.dy
             )
             nc.variables["lat_bnds"][:, 1] = (
-                prism.SOUTH_EDGE + np.arange(1, prism.NY + 1) * prism.DY
+                prism.bottom_edge + np.arange(1, prism.ny + 1) * prism.dy
             )
 
             nc.variables["lon"][:] = (
-                prism.WEST + np.arange(prism.NX) * prism.DX
+                prism.left + np.arange(prism.nx) * prism.dx
             )
             nc.variables["lon_bnds"][:, 0] = (
-                prism.WEST_EDGE + np.arange(prism.NX) * prism.DX
+                prism.left_edge + np.arange(prism.nx) * prism.dx
             )
             nc.variables["lon_bnds"][:, 1] = (
-                prism.WEST_EDGE + np.arange(1, prism.NX + 1) * prism.DX
+                prism.left_edge + np.arange(1, prism.nx + 1) * prism.dx
             )
 
 

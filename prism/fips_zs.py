@@ -6,8 +6,8 @@ import geopandas as gpd
 import netCDF4
 import numpy as np
 from affine import Affine
+from pyiem.database import get_dbconn
 from pyiem.iemre import daily_offset
-from pyiem.util import get_dbconn
 from rasterstats import zonal_stats
 
 
