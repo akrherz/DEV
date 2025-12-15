@@ -34,7 +34,7 @@ def main():
         west=minx + buffer,
         east=maxx - buffer,
         title="DEP Ratio of median to mean soil delivery by HUC12",
-        subtitle="Computed over 2007-2024",
+        # subtitle="Computed over 2007-2024",
         logo=None,
         nocaption=True,
         continentalcolor="white",

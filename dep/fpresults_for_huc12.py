@@ -3,6 +3,7 @@
 import click
 import pandas as pd
 from pydep.io.wepp import read_env
+from pydep.reference import KG_M2_TO_TON_ACRE
 from pyiem.database import get_sqlalchemy_conn
 from sqlalchemy import text
 
@@ -32,8 +33,8 @@ def main(huc12, year):
         res = read_env(f"/i/0/env/{huc12[:8]}/{huc12[8:]}/{huc12}_{fpath}.env")
         res["delivery"] = res["sed_del"] / row["st_length"]
         df2 = res[(res["date"] > sts) & (res["date"] < ets)]
-        df.at[fpath, "delivery"] = df2["delivery"].sum() * 4.463
-        df.at[fpath, "loss"] = df2["av_det"].sum() * 4.463
+        df.at[fpath, "delivery"] = df2["delivery"].sum() * KG_M2_TO_TON_ACRE
+        df.at[fpath, "loss"] = df2["av_det"].sum() * KG_M2_TO_TON_ACRE
         df.at[fpath, "events"] = df2["delivery"].count()
         df.at[fpath, "precip"] = df2["precip"].sum() / 25.4
     print(df["delivery"].describe())

@@ -3,6 +3,7 @@
 import calendar
 
 import pandas as pd
+from pydep.reference import KG_M2_TO_TON_ACRE
 from pyiem.database import get_dbconn
 from pyiem.plot.use_agg import plt
 
@@ -31,14 +32,14 @@ def gendata():
             select count(*) from huc12 WHERE scenario = 0 and states ~* 'IA'
         ),
         agg as (
-            SELECT sday, sum(d) * 4.463 as data
+            SELECT sday, sum(d) * %s as data
             FROM data d, huc_count h GROUP by sday ORDER by sday
         )
         select sday, data / h.count as avg from agg a, huc_count h
         WHERE sday != '0229' ORDER by sday
         """,
             pgconn,
-            params=(scenario,),
+            params=(scenario, KG_M2_TO_TON_ACRE),
             index_col="sday",
         )
         df = df.reindex(dates).fillna(0)

@@ -3,12 +3,12 @@
 import click
 import geopandas as gpd
 import matplotlib.colors as mpcolors
-from pyiem.database import get_sqlalchemy_conn
+from pydep.reference import KG_M2_TO_TON_ACRE
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.dep import RAMPS
 from pyiem.plot import MapPlot
 from pyiem.plot.colormaps import dep_erosion
 from pyiem.reference import Z_OVERLAY2
-from sqlalchemy import text
 
 
 @click.command()
@@ -18,9 +18,9 @@ def main(year):
     # Get DEP by huc12
     with get_sqlalchemy_conn("idep") as conn:
         idep = gpd.read_postgis(
-            text("""
+            sql_helper("""
             with data as (
-                select huc_12, sum(avg_loss) * 4.463 as loss
+                select huc_12, sum(avg_loss) * :factor as loss
                 from results_by_huc12
                 where scenario = 0 and valid >= :sts and
                 valid <= :ets GROUP by huc_12)
@@ -30,9 +30,13 @@ def main(year):
             """),
             conn,
             geom_col="geo",
-            params={"sts": f"{year}-01-01", "ets": f"{year}-12-31"},
+            params={
+                "sts": f"{year}-01-01",
+                "ets": f"{year}-12-31",
+                "factor": KG_M2_TO_TON_ACRE,
+            },
             index_col="huc_12",
-        )
+        )  # type: ignore
     # Get counties so that we can later join
     with get_sqlalchemy_conn("postgis") as conn:
         counties = gpd.read_postgis(

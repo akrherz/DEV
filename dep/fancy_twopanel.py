@@ -5,6 +5,7 @@ import matplotlib.colors as mpcolors
 import numpy as np
 from geopandas import read_postgis
 from matplotlib.patches import Polygon
+from pydep.reference import KG_M2_TO_TON_ACRE
 from pyiem.dep import RAMPS
 from pyiem.plot import geoplot
 from pyiem.plot.colormaps import dep_erosion, james
@@ -15,7 +16,7 @@ pgconn = get_dbconn("idep")
 df = read_postgis(
     """
 WITH data as (
-SELECT huc_12, avg_delivery * 4.463 as delivery,
+SELECT huc_12, avg_delivery * %s as delivery,
 qc_precip / 25.4 as precip from results_by_huc12
 WHERE scenario = 0 and valid = '2019-5-24')
 
@@ -26,6 +27,7 @@ from huc12 i LEFT JOIN data d
 ON (i.huc_12 = d.huc_12) WHERE i.scenario = 0
 """,
     pgconn,
+    params=(KG_M2_TO_TON_ACRE,),
     geom_col="geom",
 )
 minx, miny, maxx, maxy = df["geom"].total_bounds

@@ -6,6 +6,7 @@ import os
 import click
 import pandas as pd
 from pydep.io.wepp import read_env
+from pydep.reference import KG_M2_TO_TON_ACRE
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import figure
 from tqdm import tqdm
@@ -44,8 +45,12 @@ def compute(huc12):
                 {
                     "scenario": scenario,
                     "fpath": fpath,
-                    "delivery": env["delivery"].sum() * 4.463 / 17.0,
-                    "detachment": env["av_det"].sum() * 4.463 / 17.0,
+                    "delivery": env["delivery"].sum()
+                    * KG_M2_TO_TON_ACRE
+                    / 17.0,
+                    "detachment": env["av_det"].sum()
+                    * KG_M2_TO_TON_ACRE
+                    / 17.0,
                     "bulk_slope": fpdf.at[fpath, "bulk_slope"],
                 }
             )
@@ -125,7 +130,7 @@ def main(huc12):
     ax.grid()
     ax.set_ylim(bottom=-1.5)
 
-    ax2 = fig.add_axes([0.64, 0.1, 0.25, 0.8])
+    ax2 = fig.add_axes((0.64, 0.1, 0.25, 0.8))
     for i, scenario in enumerate(
         [
             0,

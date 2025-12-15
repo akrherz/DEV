@@ -7,6 +7,7 @@ import click
 import numpy as np
 import pandas as pd
 from pydep.io.wepp import read_env, read_ofe
+from pydep.reference import KG_M2_TO_TON_ACRE
 from pyiem.database import get_sqlalchemy_conn
 from tqdm import tqdm
 
@@ -33,7 +34,10 @@ def compute_env(huc12):
         df = read_env(envfn)
         fpath = int(envfn.split("_")[1].split(".")[0])
         res.append(
-            df["sed_del"].sum() * 4.463 / 17.0 / fp.at[fpath, "real_length"]
+            df["sed_del"].sum()
+            * KG_M2_TO_TON_ACRE
+            / 17.0
+            / fp.at[fpath, "real_length"]
         )
     print(f"ENV Mean: {np.mean(res):.2f} T/a/yr")
 
@@ -50,9 +54,8 @@ def main(huc12):
             conn,
             params=(huc12,),
         )
-    print(
-        f"Prod Delivery: {res['avg_delivery'].sum() * 4.463 / 17:.2f} T/a/yr"
-    )
+    vv = res["avg_delivery"].sum() * KG_M2_TO_TON_ACRE / 17
+    print(f"Prod Delivery: {vv:.2f} T/a/yr")
 
     compute_env(huc12)
 
@@ -96,7 +99,9 @@ def main(huc12):
             row = ofedf.iloc[0]
             accum_length += row["real_length"]
             df2 = df[df["ofe"] == ofe]
-            thisdelivery = df2["sedleave"].sum() * 4.463 / 17.0 / accum_length
+            thisdelivery = (
+                df2["sedleave"].sum() * KG_M2_TO_TON_ACRE / 17.0 / accum_length
+            )
             ofes.loc[ofedf.index, "delivery"] = thisdelivery
             ofes.loc[ofedf.index, "loss"] = thisdelivery - lastdelivery
             lastdelivery = thisdelivery

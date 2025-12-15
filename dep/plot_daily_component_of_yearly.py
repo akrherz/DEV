@@ -6,6 +6,7 @@ import click
 import numpy as np
 import pandas as pd
 from matplotlib.ticker import MaxNLocator
+from pydep.reference import KG_M2_TO_TON_ACRE
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import figure
 
@@ -22,13 +23,13 @@ def main(huc12):
         )
         df = pd.read_sql(
             """
-            select valid, avg_delivery * 4.463 as delivery_ta from
+            select valid, avg_delivery * %s as delivery_ta from
             results_by_huc12 where scenario = 0 and huc_12 = %s
             and valid < '2024-01-01'
             order by delivery_ta DESC
             """,
             conn,
-            params=(huc12,),
+            params=(KG_M2_TO_TON_ACRE, huc12),
             index_col="valid",
             parse_dates="valid",
         )
@@ -48,7 +49,7 @@ def main(huc12):
         logo="dep",
         figsize=(10.24, 7.68),
     )
-    ax = fig.add_axes([0.1, 0.2, 0.5, 0.65])
+    ax = fig.add_axes((0.1, 0.2, 0.5, 0.65))
 
     # create a stacked bar chart by year of the top 5 contributors
     bottom = np.zeros(2024 - 2007)

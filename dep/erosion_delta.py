@@ -4,32 +4,34 @@ import calendar
 
 import numpy as np
 import pandas as pd
+from pydep.reference import KG_M2_TO_TON_ACRE
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.plot import figure_axes
-from pyiem.util import get_sqlalchemy_conn
 
 
 def main():
     """Go Main Go."""
     with get_sqlalchemy_conn("idep") as conn:
         df = pd.read_sql(
-            """
+            sql_helper("""
         with two as (
             select to_char(valid, 'mmdd') as sday,
-            sum(avg_delivery) * 4.463 / 16 as delivery,
-            sum(avg_loss) * 4.463 / 16 as loss from results_by_huc12
+            sum(avg_delivery) * :factor as delivery,
+            sum(avg_loss) * :factor as loss from results_by_huc12
             where huc_12 = '102300070305' and valid < '2023-01-01'
             and scenario = 0 group by sday),
         one as (
             select to_char(valid, 'mmdd') as sday,
-            sum(avg_delivery) * 4.463 / 16 as delivery,
-            sum(avg_loss) * 4.463 / 16 as loss from results_by_huc12_save
+            sum(avg_delivery) * :factor as delivery,
+            sum(avg_loss) * :factor as loss from results_by_huc12_save
             where huc_12 = '102300070305' and valid < '2023-01-01'
             and scenario = 0 group by sday)
             select t.sday, t.delivery - o.delivery as del_delivery,
             t.loss - o.loss as del_loss
             from two t JOIn one o on (t.sday = o.sday) ORDER by t.sday asc
-        """,
+        """),
             conn,
+            params={"factor": KG_M2_TO_TON_ACRE / 16},
             index_col="sday",
         )
 

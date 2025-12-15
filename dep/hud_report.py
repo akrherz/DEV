@@ -1,7 +1,8 @@
 """Dump out a table."""
 
 from pandas.io.sql import read_sql
-from pyiem.util import get_sqlalchemy_conn
+from pydep.reference import KG_M2_TO_TON_ACRE
+from pyiem.database import get_sqlalchemy_conn
 
 VALS = [
     ("Headwaters Cedar Creek", "071000060202"),
@@ -45,9 +46,9 @@ def main():
         )
     df["Precipitation (in)"] = df["Precipitation (mm)"] / 25.4
     df["Runoff (in)"] = df["Runoff (mm)"] / 25.4
-    df["Detachment (ton/acre)"] = df["Detachment (kg/m^2)"] * 4.463
+    df["Detachment (ton/acre)"] = df["Detachment (kg/m^2)"] * KG_M2_TO_TON_ACRE
     df["Hillslope Soil Loss (ton/acre)"] = (
-        df["Hillslope Soil Loss (kg/m^2)"] * 4.463
+        df["Hillslope Soil Loss (kg/m^2)"] * KG_M2_TO_TON_ACRE
     )
     hucs = []
     for name, huc12 in VALS:

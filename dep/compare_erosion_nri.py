@@ -3,6 +3,7 @@
 import geopandas as gpd
 import matplotlib.colors as mpcolors
 import pandas as pd
+from pydep.reference import KG_M2_TO_TON_ACRE
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.dep import RAMPS
 from pyiem.plot import MapPlot, figure
@@ -23,7 +24,7 @@ def plot_comparison(counties):
     )
 
     # left side, direct x vs y
-    ax = fig.add_axes([0.1, 0.1, 0.35, 0.8])
+    ax = fig.add_axes((0.1, 0.1, 0.35, 0.8))
     ax.grid(True)
     ax.set_xlabel("NRI Avg Erosion [T/a/yr]")
     ax.set_ylabel("DEP Avg Erosion [T/a/yr]")
@@ -33,7 +34,7 @@ def plot_comparison(counties):
     ax.set_ylim(0, 15)
 
     # right side, plot dep number as percent of nri
-    ax = fig.add_axes([0.55, 0.1, 0.35, 0.8])
+    ax = fig.add_axes((0.55, 0.1, 0.35, 0.8))
     ax.grid(True)
     ax.set_xlabel("NRI Avg Erosion [T/a/yr]")
     ax.set_ylabel("DEP Avg Erosion [% of NRI]")
@@ -53,7 +54,7 @@ def main():
         idep = gpd.read_postgis(
             """
             with data as (
-                select huc_12, sum(avg_loss) * 4.463 / 10. as loss
+                select huc_12, sum(avg_loss) * %s / 10. as loss
                 from results_by_huc12
                 where scenario = 0 and valid > '2008-01-01' and
                 valid < '2018-01-01' GROUP by huc_12)
@@ -63,6 +64,7 @@ def main():
             """,
             conn,
             geom_col="geo",
+            params=(KG_M2_TO_TON_ACRE,),
             index_col="huc_12",
         )
     # Get counties so that we can later join
