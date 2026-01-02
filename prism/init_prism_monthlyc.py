@@ -38,7 +38,7 @@ def populate_file():
                     np.nanmin(data),
                     np.nanmax(data),
                 )
-            nc.variables[varname, month - 1, :, :] = data
+            nc.variables[varname][month - 1] = data
 
     nc.close()
 
