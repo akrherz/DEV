@@ -208,13 +208,27 @@ MOVE_TO_SUBREGIONAL = {
 }
 
 
+def rectify_move(src_dir, dest_dir):
+    """Do some protected moving."""
+    final_dest = f"{dest_dir}/{src_dir}"
+    if os.path.isdir(final_dest):
+        LOG.info("Rut roh, final %s exists, doing rsync", final_dest)
+        os.system(f"rsync -a --remove-source-files {src_dir} {dest_dir}/")
+        os.system(f"rm -rf {src_dir}")
+        return
+    LOG.info("Renaming %s to %s", src_dir, final_dest)
+    os.makedirs(dest_dir, exist_ok=True)
+    os.rename(src_dir, final_dest)
+
+
 @click.command()
 @click.option("--date", "dt", type=click.DateTime(), required=True)
-def main(dt: datetime):
+@click.option("--rootdir", type=str, default="/isu/mtarchive/data")
+def main(dt: datetime, rootdir: str):
     """Go Main Go."""
     dt = dt.date()
     LOG.info("Processing %s", dt)
-    basedir = Path(f"/isu/mtarchive/data/{dt:%Y}/{dt:%m}/{dt:%d}/cod/sat")
+    basedir = Path(f"{rootdir}/{dt:%Y}/{dt:%m}/{dt:%d}/cod/sat")
     if not basedir.exists():
         LOG.warning("Directory %s does not exist, exiting", basedir)
         return
@@ -242,15 +256,9 @@ def main(dt: datetime):
             if candidate in GOOD_DIR_NAMES:
                 continue
             if candidate in MOVE_TO_REGIONAL:
-                to_folder = "regional"
-                LOG.info("Moving %s to %s/", candidate, to_folder)
-                os.makedirs(to_folder, exist_ok=True)
-                os.rename(candidate, f"{to_folder}/{candidate}")
+                rectify_move(candidate, "regional")
             elif candidate in MOVE_TO_SUBREGIONAL:
-                to_folder = "subregional"
-                LOG.info("Moving %s to %s/", candidate, to_folder)
-                os.makedirs(to_folder, exist_ok=True)
-                os.rename(candidate, f"{to_folder}/{candidate}")
+                rectify_move(candidate, "subregional")
             else:
                 LOG.warning(
                     "Unknown directory %s/%s",
