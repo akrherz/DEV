@@ -61,6 +61,7 @@ MOVE_TO_SUBREGIONAL = {
     "HEADER.html",
     "Mid_Atlantic",
     "N_Plains",
+    "NW_Plains",
     "OH_RV",
     "S_SK",
     "W_Caribbean",
