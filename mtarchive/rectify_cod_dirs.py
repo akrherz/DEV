@@ -253,6 +253,11 @@ def main(dt: datetime, rootdir: str):
             if not subentry.is_dir():
                 continue
             candidate = subentry.name
+            if candidate == "fullconus":
+                LOG.warning("Moving fullconus to continental/conus")
+                os.makedirs("continental", exist_ok=True)
+                os.rename("fullconus", "continental/conus")
+                continue
             # Nothing to do here
             if candidate in GOOD_DIR_NAMES:
                 continue
