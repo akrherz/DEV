@@ -5,9 +5,8 @@ from datetime import datetime, timedelta, timezone
 import click
 import httpx
 import pandas as pd
-from pyiem.database import get_dbconn, get_sqlalchemy_conn
+from pyiem.database import get_dbconn, get_sqlalchemy_conn, sql_helper
 from pyiem.util import logger, utc
-from sqlalchemy import text
 
 LOG = logger()
 
@@ -20,7 +19,7 @@ def do(dt: datetime, cursor):
         get_sqlalchemy_conn("afos") as aconn,
     ):
         res = conn.execute(
-            text(
+            sql_helper(
                 f"""
             select distinct product_id
             from {table} WHERE valid >= :sts and valid <= :ets
@@ -49,7 +48,7 @@ def do(dt: datetime, cursor):
             entered = datetime.strptime(row["product_id"][:12], "%Y%m%d%H%M")
             entered = entered.replace(tzinfo=timezone.utc)
             ares = aconn.execute(
-                text(
+                sql_helper(
                     """select entered at time zone 'UTC' as utc_entered,
                 source, wmo, pil, bbb from products
                 where pil = :pil and
@@ -72,7 +71,7 @@ def do(dt: datetime, cursor):
                 if arow[4] is not None:
                     new_product_id += f"-{arow[4]}"
                 res = conn.execute(
-                    text(
+                    sql_helper(
                         f"update {table} "
                         "SET product_id = :new where product_id = :old"
                     ),

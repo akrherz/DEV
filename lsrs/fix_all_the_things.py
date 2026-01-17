@@ -6,11 +6,10 @@ import click
 import httpx
 import pandas as pd
 from psycopg import Connection
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.nws.lsr import LSR
 from pyiem.nws.products.lsr import parser
 from pyiem.util import logger, utc
-from sqlalchemy import text
 
 LOG = logger()
 
@@ -65,7 +64,7 @@ def cross_check(afosdb: Connection, textdf: pd.DataFrame) -> bool:
                 prod.get_product_id(),
             )
             afosdb.execute(
-                text(
+                sql_helper(
                     f"""update {row["table"]} SET entered = :entered,
                     source = :source, wmo = :wmo, pil = :pil, bbb = :bbb
                     where ctid = :ctid"""
@@ -106,7 +105,7 @@ def process_product_id(conn: Connection, product_id: str, df: pd.DataFrame):
         problems = True
         while problems:
             textdf = pd.read_sql(
-                text(
+                sql_helper(
                     "select *, tableoid::regclass as table, ctid "
                     "from products where pil = :pil and "
                     "entered >= :sts and entered <= :ets order by entered ASC"
@@ -149,7 +148,7 @@ def process_product_id(conn: Connection, product_id: str, df: pd.DataFrame):
             for lsr in prod.lsrs:
                 if matches(row, lsr):
                     conn.execute(
-                        text(
+                        sql_helper(
                             f"UPDATE {row['tablename']} SET {col} = :pid, "
                             "qualifier = :q, unit = :unit where ctid = :ctid"
                         ),
@@ -174,7 +173,7 @@ def do(dt: datetime, conn: Connection):
     """Find things to update."""
     # Step 1, find all the LSRs for this date
     lsrs = pd.read_sql(
-        text(
+        sql_helper(
             "select *, ctid, tableoid::regclass as tablename, "
             "ST_x(geom) as lon, ST_y(geom) as lat from lsrs "
             "where valid >= :sts and "

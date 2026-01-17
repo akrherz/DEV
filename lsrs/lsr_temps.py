@@ -90,7 +90,7 @@ def main():
         label="Iowa Reports",
     )
     ax.plot([32, 32], [0, 3], linestyle="--", color="k")
-    ax.text(32.4, 2.8, r"32$^{\circ}\mathrm{F}$")
+    ax.text(32.4, 2.8, "32°F")
     ax.grid(True)
     ax.set_title(
         (
@@ -101,7 +101,7 @@ def main():
     ax.set_ylabel("Reported Hail Size [inch]")
     ax.set_xlabel(
         (
-            r"Surface Air Temperature $^{\circ}\mathrm{F}$\n"
+            "Surface Air Temperature °F\n"
             "within ~40 miles and 30 minutes of report"
         )
     )

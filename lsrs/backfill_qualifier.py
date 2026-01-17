@@ -5,10 +5,9 @@ from datetime import datetime
 import click
 import httpx
 import pandas as pd
-from pyiem.database import get_dbconn, get_sqlalchemy_conn
+from pyiem.database import get_dbconn, get_sqlalchemy_conn, sql_helper
 from pyiem.nws.products.lsr import parser
 from pyiem.util import logger, utc
-from sqlalchemy import text
 
 LOG = logger()
 
@@ -18,7 +17,7 @@ def do(dt: datetime, cursor):
     table = f"lsrs_{dt:%Y}"
     with get_sqlalchemy_conn("postgis") as conn:
         res = conn.execute(
-            text(
+            sql_helper(
                 f"""
             select ctid, *, st_x(geom) as lon, st_y(geom) as lat
             from {table} WHERE valid >= :sts and valid <= :ets
