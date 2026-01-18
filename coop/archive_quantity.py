@@ -1,10 +1,11 @@
 """Create a simple prinout of observation quanity in the database"""
 
-import datetime
 import sys
+from datetime import datetime, timedelta
 
 import numpy as np
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
+from pyiem.util import utc
 
 
 class bcolors:
@@ -28,7 +29,7 @@ def d(possible, actual):
 
 def main(argv):
     """Go Main Go"""
-    now = datetime.datetime.utcnow()
+    now = utc()
     years = now.year - 1893 + 1
     counts = np.zeros((years, 12))
 
@@ -74,8 +75,8 @@ def main(argv):
 
         days = []
         for mo in range(1, 13):
-            sts = datetime.datetime(year, mo, 1)
-            ets = sts + datetime.timedelta(days=35)
+            sts = datetime(year, mo, 1)
+            ets = sts + timedelta(days=35)
             ets = ets.replace(day=1)
             days.append((ets - sts).days)
 

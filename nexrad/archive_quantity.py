@@ -1,15 +1,15 @@
 """Create a simple prinout of observation quanity in the database"""
 
-import datetime
 import sys
 
 import numpy as np
 from pyiem.database import get_dbconn
+from pyiem.util import utc
 
 
 def main():
     """Go Main Go."""
-    now = datetime.datetime.utcnow()
+    now = utc()
     years = now.year - 2000 + 1
     counts = np.zeros((years, 12))
 

@@ -1,10 +1,10 @@
 """Create a simple prinout of observation quanity in the database"""
 
-import datetime
 import sys
 
 import numpy as np
 from pyiem.database import get_dbconn
+from pyiem.util import utc
 
 BASEYEAR = 2000
 
@@ -33,7 +33,7 @@ def d(hits, total):
 
 def main(argv):
     """Go Main Go"""
-    now = datetime.datetime.utcnow()
+    now = utc()
     years = int(now.year - 2000 + 1)
     counts = np.zeros((years, 12))
     mslp = np.zeros((years, 12))

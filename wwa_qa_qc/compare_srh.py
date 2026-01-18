@@ -1,16 +1,15 @@
 """Do a comparison with what's on SRH"""
 
-import datetime
-
 import pandas as pd
 from pyiem.database import get_dbconn
+from pyiem.util import utc
 
 SRH = "http://www.srh.noaa.gov/ridge2/shapefiles/psql_currenthazards.html"
 
 
 def main():
     """Go Main Go"""
-    print("Report run at %s" % (datetime.datetime.utcnow(),))
+    print("Report run at %s" % (utc(),))
     srhdf = pd.read_html(SRH, header=0)[0]
     srhdf["wfo"] = srhdf["wfo"].str.slice(1, 4)
     iemdf = pd.read_sql(
