@@ -7,9 +7,9 @@ from tqdm import tqdm
 
 def main():
     """Go Main Go."""
-    series = pd.date_range("2025/02/06 13:00", "2025/02/06 18:00", freq="300S")
+    series = pd.date_range("2026/01/20 05:00", "2026/01/22 11:00", freq="600s")
     progress = tqdm(series)
-    i = 313
+    i = 0
     for now in progress:
         progress.set_description(f"{now:%Y%m%d %H%M}")
         uri = now.strftime(
