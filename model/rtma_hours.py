@@ -7,35 +7,26 @@ import numpy as np
 import pygrib
 
 # from matplotlib.colors import ListedColormap
-from metpy.units import units
-from pyiem.plot import MapPlot
-from pyiem.plot.use_agg import plt
+from pyiem.plot import MapPlot, get_cmap
 
 
 def plot():
     """Do plotting work"""
-    cmap = plt.get_cmap("RdBu_r")
+    # cmap = get_cmap("RdBu_r")
     # colors = list(cmap1(np.arange(1, 7) / 7.0))
-    # cmap2 = plt.get_cmap("Pastel1")
+    cmap = get_cmap("coolwarm_r")
     # colors.extend(list(cmap2(np.arange(3) / 3.0)))
     # cmap = ListedColormap(colors)
 
-    total = None
-    for year in range(2018, 2023):
-        val = np.load(f"hours{year}.npy")
-        if total is None:
-            total = val
-        else:
-            total += val
+    hours = np.load("/tmp/hours.npy") / 24.0
 
-    cmap.set_over("yellow")
-    cmap.set_under("black")
-    hours = np.load("hours.npy") - (total / 5.0)
+    # cmap.set_over("yellow")
+    # cmap.set_under("black")
     hours = np.where(hours == 0, np.nan, hours)
-    lons = np.load("lons.npy")
-    lats = np.load("lats.npy")
+    lons = np.load("/tmp/lons.npy")
+    lats = np.load("/tmp/lats.npy")
     mp = MapPlot(
-        sector="southernplains",
+        sector="iowa",
         # south=24,
         # west=-120,
         # north=49,
@@ -48,8 +39,9 @@ def plot():
         ),
     )
 
-    levels = [-350, -200, -100, -50, 0, 50, 100, 200, 350]
-    # levels2 = list(range(24, 14 * 24 + 1, 48))
+    # levels = [-350, -200, -100, -50, 0, 50, 100, 200, 350]
+    levels = list(range(0, 25, 2))
+    levels[0] = 0.1
     # levels.extend(levels2)
     # levels = range(12, 145, 12)
     # levels = list(range(0, 14 * 24, 24))
@@ -61,23 +53,23 @@ def plot():
         levels,
         cmap=cmap,
         clip_on=False,
-        units="hours",
+        units="days",
         # spacing="proportional",
-        extend="both",
+        extend="max",
     )
     # mp.drawcounties()
     # mp.draw_usdm(filled=False, hatched=True)
-    mp.postprocess(filename="230906.png")
+    mp.postprocess(filename="260206.png")
 
 
 def process():
     """Go Main Go"""
-    now = datetime.datetime(2022, 9, 28, 0)
-    ets = datetime.datetime(2022, 9, 28, 18)
-    interval = datetime.timedelta(hours=1)
-    minval = None
+    now = datetime.datetime(2026, 2, 5, 6)
+    ets = datetime.datetime(2026, 1, 1, 0)
+    interval = datetime.timedelta(hours=-1)
+    hits = None
     hours = None
-    while now < ets:
+    while now > ets:
         fn = now.strftime(
             "/mesonet/ARCHIVE/data/%Y/%m/%d/"
             "model/rtma/%H/rtma.t%Hz.awp2p5f000.grib2"
@@ -92,21 +84,22 @@ def process():
                     print(f"failed to get 2t in {fn}!")
                     now += interval
                     continue
-                if minval is None:
+                if hits is None:
                     hours = np.zeros(np.shape(t2))
-                    minval = np.ones(np.shape(t2)) * 100.0
+                    hits = np.zeros(np.shape(t2))
                     lats, lons = grbs.select(shortName="2t")[0].latlons()
                     np.save("/tmp/lons", lons)
                     np.save("/tmp/lats", lats)
-            t2 = (t2 * units("degK")).to(units("degF")).magnitude
-            hours = np.where(t2 < 32, hours + 1, hours)
-            minval = np.where(t2 < minval, t2, minval)
+            hours = np.where(
+                np.logical_and(t2 < 273.15, hits == 0), hours + 1, hours
+            )
+            hits = np.where(t2 > 273.15, 1, hits)
             print(f"{now} max: {np.max(hours):.1f}")
 
         now += interval
 
     np.save("/tmp/hours", hours)
-    np.save("/tmp/minval", minval)
+    np.save("/tmp/hits", hits)
 
 
 if __name__ == "__main__":
