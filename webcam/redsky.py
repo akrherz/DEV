@@ -6,7 +6,7 @@ import os
 import ephem
 import httpx
 from PIL import Image
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def main():

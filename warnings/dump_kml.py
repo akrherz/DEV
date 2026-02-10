@@ -3,7 +3,7 @@
 import fiona
 import geopandas as gpd
 from geopandas import read_postgis
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 gpd.io.file.fiona.drvsupport.supported_drivers["LIBKML"] = "rw"
 gpd.io.file.fiona.drvsupport.supported_drivers["libkml"] = "rw"
@@ -38,7 +38,7 @@ def main():
     """,
         pgconn,
         geom_col="geom",
-    )
+    )  # type:ignore
     with fiona.Env():
         df.to_file("wdsm.kml")
 

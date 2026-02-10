@@ -36,7 +36,7 @@ def process(row, station, varname: str, conn: Connection | None = None):
     if res == "":
         return
     for _, cullrow in obs.loc[[int(i) for i in res.split()]].iterrows():
-        conn.execute(
+        res = conn.execute(
             sql_helper(
                 """
     UPDATE {table} SET tmpf = null, dwpf = null, feel = null, relh = null,
@@ -45,7 +45,7 @@ def process(row, station, varname: str, conn: Connection | None = None):
             ),
             {"station": station, "valid": cullrow["valid"]},
         )
-        print(f"Nulled out {cullrow['valid']} count: {conn.rowcount}")
+        print(f"Nulled out {cullrow['valid']} count: {res.rowcount}")
     conn.commit()
 
 

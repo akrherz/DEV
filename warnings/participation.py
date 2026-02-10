@@ -2,8 +2,8 @@
 
 import matplotlib.cm as cm
 import numpy as np
+from pyiem.database import get_dbconn
 from pyiem.plot import MapPlot
-from pyiem.util import get_dbconn
 
 
 def main():
@@ -54,7 +54,7 @@ def main():
     for row in pcursor:
         data[row[0]] = float(row[1])
 
-    mp.fill_ugcs(data, bins, cmap=cmap, units="Count")
+    mp.fill_ugcs(data, bins=bins, cmap=cmap, units="Count")
     mp.postprocess(filename="test.png")
 
 

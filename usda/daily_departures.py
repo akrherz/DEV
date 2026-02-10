@@ -6,8 +6,8 @@ from datetime import date, timedelta
 import numpy as np
 import pandas as pd
 from pandas.io.sql import read_sql
-from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
+from pyiem.plot import figure_axes
 
 
 def main():
@@ -72,7 +72,7 @@ def main():
     df = df.sort_values("week_ending", ascending=True)
     df["week_ending"] = pd.to_datetime(df["week_ending"])
     df = df.set_index("week_ending")
-    (fig, ax) = plt.subplots(1, 1)
+    (fig, ax) = figure_axes()
     ls = {"PCT HARVESTED": "-", "PCT EMERGED": "-."}
     st = {2012: "g", 2019: "k", 2020: "r", 2021: "b"}
     for state in ["IA"]:

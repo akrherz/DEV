@@ -7,7 +7,8 @@ from datetime import datetime, timezone
 import geopandas as gpd
 import pandas as pd
 import requests
-from pyiem.util import get_dbconn, logger
+from pyiem.database import get_dbconn
+from pyiem.util import logger
 from shapely.geometry import MultiPolygon
 
 LOG = logger()

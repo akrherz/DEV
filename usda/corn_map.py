@@ -2,14 +2,14 @@
 
 import pandas as pd
 from pandas.io.sql import read_sql
+from pyiem.database import get_dbconn
 from pyiem.plot.geoplot import MapPlot
 from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
 
 
 def get_data():
     """The data we want and the data we need"""
-    pgconn = get_dbconn("coop", user="nobody")
+    pgconn = get_dbconn("coop")
     df = read_sql(
         """
         select year, week_ending, num_value, state_alpha from nass_quickstats

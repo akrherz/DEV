@@ -1,12 +1,12 @@
 """Unsure, but looks interesting."""
 
 import datetime
+from zoneinfo import ZoneInfo
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
-import pytz
+from pyiem.database import get_dbconn
 from pyiem.nws import vtec
-from pyiem.util import get_dbconn
 
 
 def main():
@@ -74,15 +74,15 @@ def main():
     ax.set_xlabel("Warnings as of 5 AM 30 January 2013")
     ax.set_yticks(range(1, len(labels) + 1))
     sts = datetime.datetime(2013, 1, 26)
-    sts = sts.replace(tzinfo=pytz.timezone("America/Chicago"))
+    sts = sts.replace(tzinfo=ZoneInfo("America/Chicago"))
     ets = datetime.datetime(2013, 2, 1)
-    ets = ets.replace(tzinfo=pytz.timezone("America/Chicago"))
+    ets = ets.replace(tzinfo=ZoneInfo("America/Chicago"))
     ax.set_xlim(sts, ets)
     ax.xaxis.set_major_locator(
-        mdates.DayLocator(interval=1, tz=pytz.timezone("America/Chicago"))
+        mdates.DayLocator(interval=1, tz=ZoneInfo("America/Chicago"))
     )
     ax.xaxis.set_major_formatter(
-        mdates.DateFormatter("%-d %b", tz=pytz.timezone("America/Chicago"))
+        mdates.DateFormatter("%-d %b", tz=ZoneInfo("America/Chicago"))
     )
     ax.grid(True)
     ax2.legend(loc=4, ncol=2)
