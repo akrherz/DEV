@@ -1,16 +1,14 @@
 """Address problems found with akrherz/pyIEM/issues/1104 improvements."""
 
-from datetime import datetime, timezone
-
 import click
 import httpx
 import pandas as pd
 from pyiem.database import get_dbconnc, get_sqlalchemy_conn, sql_helper
-from pyiem.nws.products.taf import parser
+from pyiem.util import utc
 from tqdm import tqdm
 
 
-def process(progress, cursor, station, tafid, product_id):
+def process(progress, cursor, tafid, product_id):
     """Fix by rewritting."""
     # Check 1, can we get the text
     resp = httpx.get(
@@ -19,21 +17,11 @@ def process(progress, cursor, station, tafid, product_id):
     if resp.status_code != 200:
         progress.write(f"Failed to fetch {product_id}")
         return
-    utcnow = datetime.strptime(product_id[:12], "%Y%m%d%H%M").replace(
-        tzinfo=timezone.utc
+    is_amendment = "TAF AMD" in resp.text
+    cursor.execute(
+        "update taf SET is_amendment = %s where id = %s",
+        (is_amendment, tafid),
     )
-    # Check 2, can we parse the product
-    prod = parser(resp.text, utcnow)
-    useme = [taf for taf in prod.data if taf.station == station]
-    if not useme:
-        progress.write(f"{product_id} had no data for {station}")
-        return
-    prod.data = useme
-    # Step 1, delete old entry
-    cursor.execute("delete from taf_forecast where taf_id = %s", (tafid,))
-    cursor.execute("delete from taf where id = %s", (tafid,))
-    # Step 2, insert new entry
-    prod.sql(cursor)
 
 
 @click.command()
@@ -44,22 +32,26 @@ def main(year: int):
         tafs = pd.read_sql(
             sql_helper(
                 """
-    SELECT distinct t.id, t.station, t.product_id FROM taf t JOIN {table} d
-    on t.id = d.taf_id where raw ~* '[a-z]{{3}}[0-9]{{2}}$'
-    and product_id is not null """,
+    SELECT id, product_id FROM taf where valid >= :sts and valid < :ets
+    and is_amendment is null limit 10000""",
                 table=f"taf{year}",
             ),
             conn,
+            params={"sts": utc(year), "ets": utc(year + 1)},
         )
     progress = tqdm(total=len(tafs.index))
     conn, cursor = get_dbconnc("asos")
+    updates = 0
     for _, row in tafs.iterrows():
-        progress.set_description(row["product_id"])
-        process(progress, cursor, row["station"], row["id"], row["product_id"])
-        cursor.close()
-        conn.commit()
-        cursor = conn.cursor()
+        progress.set_description(f"{row['product_id']:38s}")
+        process(progress, cursor, row["id"], row["product_id"])
+        updates += 1
+        if updates % 1_000 == 0:
+            cursor.close()
+            conn.commit()
+            cursor = conn.cursor()
         progress.update(1)
+    conn.commit()
 
 
 if __name__ == "__main__":
