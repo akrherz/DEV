@@ -4,32 +4,30 @@ import os
 
 import atproto
 import pandas as pd
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.network import Table as NetworkTable
 from pyiem.plot import MapPlot, get_cmap
-from sqlalchemy import text
 from tqdm import tqdm
 
 
 def get_followers_count():
     """Do the work."""
     nt = NetworkTable("WFO")
-    with get_sqlalchemy_conn("mesosite") as conn:
+    with get_sqlalchemy_conn("iembot") as conn:
         res = conn.execute(
-            text(
-                "select at_app_pass from iembot_twitter_oauth "
-                "where at_handle = 'dmx.weather.im'"
+            sql_helper(
+                "select app_pass from iembot_atmosphere_accounts "
+                "where handle = 'dmx.weather.im'"
             )
         )
         app_pass = res.first()[0]
         df = pd.read_sql(
-            text("""
-            SELECT at_handle from iembot_twitter_oauth
-            where iem_owned and at_handle is not null
-            ORDER by at_handle ASC
+            sql_helper("""
+            SELECT handle from iembot_atmosphere_accounts
+            where iem_owned ORDER by handle ASC
             """),
             conn,
-            index_col="at_handle",
+            index_col="handle",
         )
     client = atproto.Client()
     client.login("dmx.weather.im", app_pass)
@@ -58,10 +56,10 @@ def main():
     if not os.path.isfile("followers.csv"):
         df = get_followers_count()
         df.to_csv("followers.csv")
-    df = pd.read_csv("followers.csv").set_index("at_handle")
+    df = pd.read_csv("followers.csv").set_index("handle")
     mp = MapPlot(
         sector="nws",
-        title="BlueSky Followers Count (14 Mar 2025)",
+        title="BlueSky Followers Count (20 Feb 2026)",
         subtitle=f"Total: {df['count'].sum():,.0f}",
         twitter=True,
         nocaption=True,
