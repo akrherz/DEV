@@ -3,7 +3,7 @@
 import calendar
 
 import pandas as pd
-from pydep.reference import KG_M2_TO_TON_ACRE
+from dailyerosion.reference import KG_M2_TO_TON_ACRE
 from pyiem.database import get_dbconn
 from pyiem.plot.use_agg import plt
 

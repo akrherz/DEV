@@ -8,10 +8,10 @@ import geopandas as gpd
 import matplotlib.colors as mpcolors
 import numpy as np
 import pandas as pd
-from pydep.reference import KG_M2_TO_TON_ACRE
+from dailyerosion.reference import KG_M2_TO_TON_ACRE
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.dep import read_env
 from pyiem.plot import MapPlot, figure_axes, get_cmap
-from pyiem.util import get_sqlalchemy_conn
 
 # Third party
 from tqdm import tqdm

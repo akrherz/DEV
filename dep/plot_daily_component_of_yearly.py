@@ -5,8 +5,8 @@ from calendar import month_abbr
 import click
 import numpy as np
 import pandas as pd
+from dailyerosion.reference import KG_M2_TO_TON_ACRE
 from matplotlib.ticker import MaxNLocator
-from pydep.reference import KG_M2_TO_TON_ACRE
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import figure
 

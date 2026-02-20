@@ -2,7 +2,7 @@
 
 import httpx
 import pandas as pd
-from pydep.io.wepp import read_cli
+from dailyerosion.io.wepp import read_cli
 from pyiem.database import get_sqlalchemy_conn, sql_helper
 
 

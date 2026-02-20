@@ -6,8 +6,8 @@ import os
 import click
 import numpy as np
 import pandas as pd
-from pydep.io.wepp import read_env, read_ofe
-from pydep.reference import KG_M2_TO_TON_ACRE
+from dailyerosion.io.wepp import read_env, read_ofe
+from dailyerosion.reference import KG_M2_TO_TON_ACRE
 from pyiem.database import get_sqlalchemy_conn
 from tqdm import tqdm
 

@@ -3,7 +3,7 @@
 import os
 
 import pandas as pd
-from pydep.io.dep import read_env
+from dailyerosion.io.dep import read_env
 from tqdm import tqdm
 
 

@@ -5,7 +5,7 @@ import datetime
 import geopandas as gpd
 import pandas as pd
 import requests
-from pyiem.util import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn
 from shapely.geometry import Point
 
 

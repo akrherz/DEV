@@ -2,7 +2,7 @@
 
 import numpy as np
 import pandas as pd
-from pydep.io.dep import read_wb
+from dailyerosion.io.dep import read_wb
 from pyiem.plot import figure_axes
 
 

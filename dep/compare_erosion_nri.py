@@ -3,7 +3,7 @@
 import geopandas as gpd
 import matplotlib.colors as mpcolors
 import pandas as pd
-from pydep.reference import KG_M2_TO_TON_ACRE
+from dailyerosion.reference import KG_M2_TO_TON_ACRE
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.dep import RAMPS
 from pyiem.plot import MapPlot, figure

@@ -2,8 +2,8 @@
 
 import click
 import pandas as pd
-from pydep.io.wepp import read_env
-from pydep.reference import KG_M2_TO_TON_ACRE
+from dailyerosion.io.wepp import read_env
+from dailyerosion.reference import KG_M2_TO_TON_ACRE
 from pyiem.database import get_sqlalchemy_conn
 from sqlalchemy import text
 
