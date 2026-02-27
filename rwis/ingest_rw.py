@@ -11,11 +11,7 @@ from pyiem.observation import Observation
 from pyiem.util import logger
 
 LOG = logger()
-URI = (
-    "http://www.rainwise.net/inview/api/stationdata-iowa.php?"
-    "username=iowadot&sid=1f6075797434189912d55196d0be5bac&"
-    "pid=d0fb9ae6b1352a03720abdedcdc16e80"
-)
+URI = "http://www.rainwise.net/inview/api/stationdata-iowa.php?username=..."
 # &sdate=2013-12-09&edate=2013-12-09&mac=0090C2E90575
 
 ASSOC = {

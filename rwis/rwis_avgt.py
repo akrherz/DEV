@@ -3,8 +3,8 @@
 import calendar
 
 import pandas as pd
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import figure_axes
-from pyiem.util import get_sqlalchemy_conn
 
 
 def main():
@@ -53,7 +53,7 @@ def main():
     # ax.plot(doy, stddev, label='Pavement')
     ax.grid(True)
     ax.legend()
-    ax.set_ylabel(r"Average Temperature $^{\circ}\mathrm{F}$", color="b")
+    ax.set_ylabel("Average Temperature °F", color="b")
 
     fig.savefig("test.png")
 

@@ -29,7 +29,7 @@ def main(dt: datetime):
             text(
                 """
     select simple_geom, huc_12 from huc12 where huc_12 = Any(:hucs)
-    and scenario = 0
+    and scenario = -10
                 """
             ),
             conn,
@@ -52,8 +52,8 @@ def main(dt: datetime):
             index_col="fbndid",
         )  # type: ignore
     fieldsdf["erosion_ta"] = fieldsdf["erosion_kgm2"] * KG_M2_TO_TON_ACRE
-    minx, miny, maxx, maxy = fieldsdf.to_crs(4326)["geom"].total_bounds
-    minx, miny, maxx, maxy = (-96.874, 46.71621, -96.750, 46.965)
+    # minx, miny, maxx, maxy = fieldsdf.to_crs(4326)["geom"].total_bounds
+    minx, miny, maxx, maxy = (-96.874, 46.71621, -96.550, 47.065)
     print(minx, miny, maxx, maxy)
     mp = MapPlot(
         apctx={"_r": "43"},
@@ -68,8 +68,8 @@ def main(dt: datetime):
         continentalcolor="white",
         stateborderwidth=1,
     )
-    bins = np.arange(14, 20.1, 0.25)
-    # bins[0] = 0.01
+    bins = np.arange(0, 5.1, 0.25)
+    bins[0] = 0.01
     cmap = get_cmap("plasma")
     cmap.set_under("#0f0")
     norm = BoundaryNorm(bins, cmap.N)
@@ -77,17 +77,18 @@ def main(dt: datetime):
     fieldsdf.to_crs(mp.panels[0].crs).plot(
         aspect=None,
         ax=mp.panels[0].ax,
-        color=cmap(norm(fieldsdf["max_wmps"].to_numpy())),
+        color=cmap(norm(fieldsdf["erosion_ta"].to_numpy())),
         zorder=Z_POLITICAL,
     )
-    huc12df.to_crs(mp.panels[0].crs).plot(
-        aspect=None,
-        ax=mp.panels[0].ax,
-        ec="k",
-        fc="None",
-        zorder=Z_POLITICAL + 1,
-        linewidth=2,
-    )
+    if not huc12df.empty:
+        huc12df.to_crs(mp.panels[0].crs).plot(
+            aspect=None,
+            ax=mp.panels[0].ax,
+            ec="k",
+            fc="None",
+            zorder=Z_POLITICAL + 1,
+            linewidth=2,
+        )
     mp.fig.savefig(f"field_wind_erosion_{dt}_zoom.png")
 
 

@@ -2,14 +2,14 @@ import datetime
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
-import psycopg2
 import pytz
 from pandas.io.sql import read_sql
+from pyiem.database import get_dbconn
 
-POSTGIS = psycopg2.connect(database="postgis", host="iemdb", user="nobody")
+POSTGIS = get_dbconn("postgis")
 pcursor = POSTGIS.cursor()
 
-IEM = psycopg2.connect(database="iem", host="iemdb", user="nobody")
+IEM = get_dbconn("iem")
 icursor = IEM.cursor()
 
 obsdf = read_sql(
