@@ -1,8 +1,7 @@
 """CoCoRaHS county count map."""
 
-from pyiem.plot import MapPlot
-from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
+from pyiem.plot import MapPlot, get_cmap
 
 
 def main():
@@ -56,7 +55,7 @@ def main():
             "Sites with at least one report in past year (Sep 2023- Aug 2024)"
         ),
     )
-    cmap = plt.get_cmap("YlGnBu")
+    cmap = get_cmap("YlGnBu")
     mp.fill_ugcs(
         data,
         bins=[1, 2, 3, 4, 5, 7, 10, 15, 20],

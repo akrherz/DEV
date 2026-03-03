@@ -12,7 +12,7 @@ def get_station(station):
     cursor.execute(
         """
         SELECT distinct valid, value from raw2015_07 where
-        station = %s and valid > '2015-07-06' and key = 'HGIRGZ'
+        station = %s and valid > '2015-07-06' and key = 'HGIRGZZ'
         ORDER by valid ASC
     """,
         (station,),

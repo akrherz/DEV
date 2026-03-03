@@ -1,6 +1,6 @@
 """Map cli_data"""
 
-from pandas.io.sql import read_sql
+import pandas as pd
 from pyiem.database import get_dbconn
 from pyiem.plot import MapPlot
 
@@ -9,7 +9,7 @@ def main():
     """Map some CLI data"""
     pgconn = get_dbconn("iem")
 
-    df = read_sql(
+    df = pd.read_sql(
         """
     WITH data as (
         SELECT station, snow_jul1 - snow_jul1_normal as s

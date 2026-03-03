@@ -3,7 +3,7 @@
 import matplotlib.pyplot as plt
 import mx.DateTime
 import numpy
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 ASOS = get_dbconn("asos")
 acursor = ASOS.cursor()

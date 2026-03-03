@@ -3,8 +3,8 @@
 import datetime
 
 import numpy as np
-from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
+from pyiem.plot import figure_axes
 
 
 def main():
@@ -16,14 +16,14 @@ def main():
     # Get white christmases
     ccursor.execute(
         "SELECT year from alldata_ia where sday = '1225' and "
-        "snowd >= 1 and station = 'IA2203' and year > 1894"
+        "snowd >= 1 and station = 'IATAME' and year > 1894"
     )
 
     counts = np.zeros((60,), "f")
 
     for row in ccursor:
         ccursor2.execute(
-            "SELECT day, snowd from alldata_ia where station = 'IA2203' and "
+            "SELECT day, snowd from alldata_ia where station = 'IATAME' and "
             "sday < '1225' and year = %s and snowd is not null "
             "ORDER by day DESC LIMIT 60",
             (row[0],),
@@ -47,7 +47,7 @@ def main():
 
         xticklabels.append(ts.strftime("%-d\n%b"))
 
-    (fig, ax) = plt.subplots(1, 1)
+    (fig, ax) = figure_axes()
 
     ax.bar(
         np.arange(60),

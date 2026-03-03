@@ -62,7 +62,7 @@ def main():
     )
     y2 = ax.twinx()
     y2.plot(range(1, 13), climo, color="purple", lw=2)
-    y2.set_ylabel(r"Average Monthly Temperature $^\circ$F", color="purple")
+    y2.set_ylabel("Average Monthly Temperature °F", color="purple")
     y2.set_ylim(-10, 90)
     ax.set_ylim(22, 38)
     ax.set_xticklabels(calendar.month_abbr[1:])
