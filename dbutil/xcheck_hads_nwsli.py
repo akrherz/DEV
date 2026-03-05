@@ -4,14 +4,14 @@ import re
 
 import pandas as pd
 import requests
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from tqdm import tqdm
 
 CSVFN = "/home/akrherz/Downloads/nwsli_database.csv"
 NWSLI_RE = re.compile(r"^[A-Z]{4}\d$")
 
 
-def dowork(progress, row: dict):
+def dowork(progress, row: dict, iem_unknown: bool):
     """do work!"""
     nwsli = row["station"]
     # Check 1, is this NWSLIsh
@@ -24,13 +24,22 @@ def dowork(progress, row: dict):
         timeout=20,
     )
     if "is not available on this web site" not in resp.text:
+        extra = "--> " if iem_unknown else ""
         progress.write(
-            f"{row['pid']} {nwsli} {row['state']} {row['wfo']} {row['name']}"
+            f"{extra}{row['pid']} {nwsli} "
+            f"{row['state']} {row['wfo']} {row['name']}"
         )
 
 
 def main():
     """Go Main Go!"""
+    with get_sqlalchemy_conn("hads") as conn:
+        unknown = pd.read_sql(
+            sql_helper("""
+    select nwsli from unknown
+                       """),
+            conn,
+        )
     with get_sqlalchemy_conn("iem") as conn:
         udf = pd.read_sql(
             """
@@ -52,7 +61,7 @@ def main():
         if row["station"] in df["NWSLI"].values:
             continue
         progress.set_description(row["station"])
-        dowork(progress, row)
+        dowork(progress, row, row["station"] in unknown["nwsli"].values)
 
 
 if __name__ == "__main__":
