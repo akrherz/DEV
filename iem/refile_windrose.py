@@ -4,7 +4,7 @@ import calendar
 import os
 import shutil
 
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 from tqdm import tqdm
 
 OLDDIR = "/mesonet/share/windrose/climate"

@@ -4,9 +4,9 @@ import datetime
 
 import numpy as np
 from pyiem import reference
+from pyiem.database import get_dbconn
 from pyiem.plot import MapPlot
 from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
 
 GX = 0.05
 

@@ -3,8 +3,8 @@
 import sys
 
 import pytz
+from pyiem.database import get_dbconn
 from pyiem.nws.products.dsm import parser, process
-from pyiem.util import get_dbconn
 
 
 def load_stations():

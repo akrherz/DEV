@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pytz
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def main():

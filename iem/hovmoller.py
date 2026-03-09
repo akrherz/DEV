@@ -37,13 +37,11 @@ def main():
     ax.axvline(-96.5, linestyle="-", lw=1.5, zorder=5, c="k")
     ax.axvline(-90, linestyle="-", lw=1.5, zorder=5, c="k")
     ax.set_title(
-        r"MidWest Daily High Temperature Departure $^\circ\mathrm{C}$\n"
-        "Hovmöller Diagram"
+        "MidWest Daily High Temperature Departure °C\nHovmöller Diagram"
     )
     ax.set_ylabel("1 July - 8 October 2013")
     ax.set_xlabel(
-        r"Longitude $^\circ$E, solid lines are Iowa extent, over 36 - 48.75$"
-        r"^\circ$N"
+        "Longitude °E, solid lines are Iowa extent, over 36 - 48.75°N"
     )
     ax.grid(True)
 

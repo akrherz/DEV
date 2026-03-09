@@ -51,7 +51,7 @@ def main():
     ax.set_title(
         (
             "Iowa Flood Center Iowa Gridded Precip Estimates\n"
-            r"2 Aug vs 1 Aug 2016 Coverage, ~0.005$^\circ$ cell size"
+            "2 Aug vs 1 Aug 2016 Coverage, ~0.005° cell size"
         )
     )
     ax.set_xlabel("1 August 2016 Total [inch]")

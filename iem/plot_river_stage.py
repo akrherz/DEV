@@ -7,8 +7,8 @@ import matplotlib.patches as patches
 import matplotlib.ticker
 import numpy
 import pytz
+from pyiem.database import get_dbconn
 from pyiem.plot.use_agg import plt
-from pyiem.util import get_dbconn
 
 
 def uv(sped, drct2):

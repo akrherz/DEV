@@ -2,7 +2,6 @@
 
 import pandas as pd
 from pyiem.plot import figure
-from pyiem.plot.use_agg import plt
 
 ARCHIVES = [
     ("ASOS/METAR Observations", 183_000_000),
@@ -53,7 +52,6 @@ def main():
             ],
             ignore_index=True,
         ).reindex()
-    plt.style.use("ggplot")
     fig = figure(
         title="2024 IEM Estimated Database Row Counts by Observation Type",
         subtitle=f"Total row counts plotted: {obs['size'].sum():,.0f}",

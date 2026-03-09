@@ -4,7 +4,7 @@ import datetime
 
 import numpy
 from matplotlib import pyplot as plt
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def main():
@@ -63,7 +63,7 @@ def main():
     xticklabels = []
     sts = datetime.datetime(2000, 1, 1)
     ets = datetime.datetime(2001, 1, 1)
-    interval = datetime.timedelta(months=1)
+    interval = datetime.timedelta(days=32)
     now = sts
     while now < ets:
         xticks.append((now - datetime.datetime(2000, 1, 1)).days)
@@ -95,7 +95,7 @@ def main():
     ax.set_xticklabels(xticklabels)
     ax.grid()
     ax.legend(ncol=2, loc=3)
-    ax.set_ylabel(r"Temperature Difference (CST-CDT) $^{\circ}\mathrm{F}$")
+    ax.set_ylabel("Temperature Difference (CST-CDT) °F")
     fig.savefig("test.png")
 
 

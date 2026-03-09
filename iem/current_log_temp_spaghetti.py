@@ -34,7 +34,7 @@ def main():
         "21 March 2017 Temperature Time Series\n"
         "Aububon and Des Moines Experienced Snow"
     )
-    ax.set_ylabel("Temperature $^{\circ}\mathrm{F}$")
+    ax.set_ylabel("Temperature (°F)")
     axes[1].set_xlabel("CDT")
     ax.set_ylim(15, 65)
 
@@ -93,7 +93,7 @@ def main():
         )
     ax.grid(True)
     axes[1].grid(True)
-    axes[1].set_ylabel(r"Dew Point Depression $^{\circ}\mathrm{F}$")
+    axes[1].set_ylabel("Dew Point Depression (°F)")
     ax.legend(loc=2, ncol=3, prop=prop)
 
     fig.savefig("test.png")

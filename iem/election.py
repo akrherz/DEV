@@ -1,3 +1,5 @@
+"""Shrug."""
+
 import numpy
 from pyiem.database import get_dbconn
 

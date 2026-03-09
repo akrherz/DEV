@@ -7,7 +7,7 @@ from pyiem.plot import MapPlot
 
 
 def compute_sunrise(lat, long):
-    arr = []
+    """Meh."""
     sun = ephem.Sun()
     ames = ephem.Observer()
     ames.lat = lat
@@ -15,8 +15,6 @@ def compute_sunrise(lat, long):
     sts = mx.DateTime.DateTime(2018, 3, 10)
     interval = mx.DateTime.RelativeDateTime(days=1)
     now = sts
-    doy = []
-    returnD = 0
     ames.date = now.strftime("%Y/%m/%d")
     rise = mx.DateTime.strptime(
         str(ames.next_rising(sun)), "%Y/%m/%d %H:%M:%S"
@@ -35,8 +33,6 @@ def compute_sunrise(lat, long):
             return (rise2 - rise).days
 
         now += interval
-
-    return doy, arr, returnD
 
 
 def main():

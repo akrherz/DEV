@@ -89,7 +89,7 @@ def main():
     m.ax.set_position([0.57, 0.35, 0.35, 0.55])
     m.cax.set_position([0.93, 0.1, 0.06, 0.8])
 
-    ax = m.fig.add_axes([0.07, 0.35, 0.48, 0.55])
+    ax = m.fig.add_axes((0.07, 0.35, 0.48, 0.55))
     ids = []
     colors = []
     delay0 = None
