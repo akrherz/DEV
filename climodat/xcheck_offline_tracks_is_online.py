@@ -1,10 +1,10 @@
 """
-Double check offline stations, maybe we can fix.
+Review the combination of an offline CLIMATE site, but online TRACKS site.
 """
 
 import requests
 from pyiem.database import get_dbconn, get_sqlalchemy_conn
-from pyiem.reference import ncei_state_codes
+from pyiem.reference import StationAttributes, ncei_state_codes
 from pyiem.util import logger
 from sqlalchemy import text
 
@@ -12,22 +12,25 @@ LOG = logger()
 SERVICE = "https://data.rcc-acis.org/StnMeta"
 
 
-def investigate(station):
+def investigate(station: str):
     """ACIS says online, IEM says otherwise."""
     # Figure out who this station is tracking
     sql = """
     select value from stations t JOIN station_attributes a on
-    (t.iemid = a.iemid) WHERE t.id = :station and a.attr = 'TRACKS_STATION'
+    (t.iemid = a.iemid) WHERE t.id = :station and a.attr = :attr
     """
     with get_sqlalchemy_conn("mesosite") as conn:
-        res = conn.execute(text(sql), {"station": station})
+        res = conn.execute(
+            text(sql),
+            {"station": station, "attr": StationAttributes.TRACKS_STATION},
+        )
         if res.rowcount == 0:
             LOG.info("No TRACKS for %s", station)
             return
         (tracks_station, tracks_network) = res.fetchone()[0].split("|")
     # Go look at IEM access for recent high AND precip data, we need both
     sql = """
-    select max(day) from summary_2025 s JOIN stations t on
+    select max(day) from summary_2026 s JOIN stations t on
     (s.iemid = t.iemid) where t.id = :station and t.network = :network
     and max_tmpf is not null and pday is not null
     """
