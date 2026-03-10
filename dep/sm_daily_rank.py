@@ -20,14 +20,14 @@ def main():
 
     df = pd.concat(dfs)
     # Rank sw1 by jday
-    df["rank"] = df.groupby("jday")["sw1"].rank()
+    df["rank"] = df.groupby("jday")["sw"].rank()
     # Pick a random flowpath
     randfp = df["fp"].unique().tolist()[randint(0, len(dfs) - 1)]
 
     fig, ax = figure_axes(
         title=(
             "Daily Erosion Project:: South Fork 2025\n"
-            f"Flowpath #{randfp} 0-10 cm Soil Moisture Rank by Day"
+            f"Flowpath #{randfp} 0-1.8 m Soil Moisture Rank by Day"
         ),
         logo=None,
         figsize=(8, 6),
@@ -48,7 +48,7 @@ def main():
     ax.set_xticklabels(calendar.month_abbr[1:])
     ax.set_ylabel("Flowpath Rank over HUC12 (1=driest)")
     ax.set_xlabel("Day of 2025")
-    outpng = f"dep_sm_rank_{randfp}.png"
+    outpng = f"dep_sw_rank_{randfp}.png"
     print(outpng)
     fig.savefig(outpng)
 
