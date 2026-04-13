@@ -31,6 +31,7 @@ def process(row, station, varname: str, conn: Connection | None = None):
         },
         index_col=None,
     )
+    pd.set_option("display.max_rows", None)
     print(obs.head(100))
     res = input("List (space sep) dumped obs or enter for noop: ")
     if res == "":
