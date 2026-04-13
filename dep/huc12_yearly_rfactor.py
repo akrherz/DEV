@@ -1,13 +1,19 @@
 """Download DEP's climate file, compute r-factor, summarize by year, profit."""
 
+from datetime import date
+
 import httpx
 import pandas as pd
 from dailyerosion.io.wepp import read_cli
 from pyiem.database import get_sqlalchemy_conn, sql_helper
+from pyiem.util import logger
+
+LOG = logger()
 
 
 def main():
     """Go Main Go."""
+    up_till_year = date.today().year
     hucs = (
         "102400130204 102801020803 102300010606 071000040101 102400010102 "
         "070600010601 070802051004 102300020402 070600051102 071000080302 "
@@ -24,6 +30,10 @@ def main():
             conn,
             params={"hucs": hucs.split()},
         )
+    if len(pts.index) != len(hucs):
+        LOG.warning(
+            "Mismatch len(hucs)=%s len(pts)=%s", len(hucs), len(pts.index)
+        )
     dfs = []
     for row in pts.itertuples():
         resp = httpx.get(
@@ -37,7 +47,7 @@ def main():
         data = cli.groupby(cli.index.year).sum(numeric_only=True).copy()
         data.index.name = "year"
         data["huc12"] = row.huc12
-        dfs.append(data.reset_index())
+        dfs.append(data.loc[:up_till_year].reset_index())
     pd.concat(dfs).to_csv(
         "/tmp/huc12_yearly_rfactor.csv",
         index=False,
