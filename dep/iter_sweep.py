@@ -12,33 +12,37 @@ def main():
     with open(fn) as fh:
         lines = fh.readlines()
 
-    xaxis = np.arange(0.0, 0.21, 0.01)
     yaxis = np.arange(0, 30)
 
+    # Soil Water
+    soil_water = 0.02
+    lines[183] = f"{soil_water:.2f}\n"
+    lines[189] = f"{soil_water:.2f} " * 12 + "\n"
+    lines[190] = f"{soil_water:.2f} " * 12 + "\n"
+    # GMD
+    gmd = 0.52
+    lines[145] = f"{gmd:.2f}\n"
+    # Roughness
+    roughness = 25.0
+    lines[211] = f" 10 {roughness:.2f} 0\n"
+    # Biomass
+    biomass = 0.0
+    lines[113] = f"{biomass:.2f}\n"
+    # Crop height
+    crop_height = 0.0
+    lines[85] = f"{crop_height:.2f}\n"
+    lines[88] = f"{crop_height:.2f}\n"
+    # Sand content
+    sand = 0.04
+    lines[129] = f"{sand:.2f}\n"
+    lines[133] = f"{(0.79 - sand):.2f}\n"
+
+    xaxis = np.arange(0.0, 1.0, 0.05)
     erosion = np.zeros((len(yaxis), len(xaxis)))
 
-    # Soil Water
-    xval = 0.02
-    lines[183] = f"{xval:.2f}\n"
-    lines[189] = f"{xval:.2f} " * 12 + "\n"
-    lines[190] = f"{xval:.2f} " * 12 + "\n"
-    # GMD
-    xval = 1.0
-    lines[145] = f"{xval:.2f}\n"
-    # Roughness
-    xval = 25.0
-    lines[211] = f" 10 {xval:.2f} 0\n"
-    # Biomass
-    xval = 0.2
-    lines[113] = f"{xval:.2f}\n"
-    # Crop height
-    xval = 0.0
-    lines[85] = f"{xval:.2f}\n"
-    lines[88] = f"{xval:.2f}\n"
-
-    for i, xval in tqdm(enumerate(xaxis), total=len(xaxis)):
-        lines[129] = f"{xval:.2f}\n"
-        lines[133] = f"{(0.77 - xval):.2f}\n"
+    for i, crop_height in tqdm(enumerate(xaxis), total=len(xaxis)):
+        lines[85] = f"{crop_height:.2f}\n"
+        lines[88] = f"{crop_height:.2f}\n"
         for j, yval in enumerate(yaxis):
             for linenum in range(220, 224):
                 lines[linenum] = f"{yval:.1f} " * 6 + "\n"
@@ -54,10 +58,14 @@ def main():
                 erosion[j, i] = float(fh.readlines()[0].split()[0])
 
     (fig, ax) = figure_axes(
-        title="SWEPP Sensitivity Wind Speed vs Sand Content (minus Silt)",
+        title="SWEPP Sensitivity Wind Speed vs Crop Height",
         subtitle=(
-            "Erosion kg m$^{-2}$, GMD=1mm, Roughness=25mm, "
-            "Soil Water=0.02 Mg/Mg, Biomass=0.2 m2/m2, Crop Height=0"
+            r"Erosion kg m$^{-2}$, "
+            f"GMD={gmd:.2f}mm, Roughness={roughness:.0f}mm, "
+            f"Sand={sand:.2f} Mg/Mg, "
+            f"Soil Water={soil_water:.2f} Mg/Mg, "
+            f"Residue Cover={biomass:.2f} m2/m2, "
+            f"Crop Height=Varies"
         ),
     )
     cmap = get_cmap("viridis")
@@ -67,6 +75,7 @@ def main():
     cmap.set_under("white")
     norm = BoundaryNorm(levels, cmap.N)
 
+    print("Mean grid value: {:.4f}".format(np.mean(erosion)))
     res = ax.imshow(
         erosion,
         origin="lower",
@@ -78,7 +87,7 @@ def main():
     )
     cax = fig.add_axes((0.92, 0.1, 0.02, 0.8))
     fig.colorbar(res, cax=cax, extend="both", label="Erosion kg m$^{-2}$")
-    ax.set_xlabel("Sand Content (m3/m3)")
+    ax.set_xlabel("Crop Height (m)")
     ax.set_ylabel("Hourly Wind Speed (m/s)")
     fig.savefig("erosion.png")
 
