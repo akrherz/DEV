@@ -1,7 +1,4 @@
-"""Merge in hourly noaaport files found here:
-
-http://idd.ssec.wisc.edu/native/nwstg/text/
-"""
+"""Merge hourly NOAAPort-ish files, like what nwwsoi saves."""
 
 from datetime import datetime, timezone
 
@@ -11,8 +8,15 @@ from pyiem.nws.product import TextProduct
 
 
 @click.command()
-@click.option("--valid", type=click.DateTime(), help="UTC valid time to use")
-@click.option("--filename", type=click.Path(), help="File to read")
+@click.option(
+    "--valid",
+    type=click.DateTime(),
+    help="UTC valid time to use",
+    required=True,
+)
+@click.option(
+    "--filename", type=click.Path(), help="File to read", required=True
+)
 def main(valid: datetime, filename: str):
     """Go Main Go."""
     utcnow = valid.replace(tzinfo=timezone.utc)
