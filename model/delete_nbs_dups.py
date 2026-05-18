@@ -30,7 +30,8 @@ def main(valid: datetime):
             ),
             {"valid": valid},
         )
-        LOG.warning("Removed %s NBS rows for %s", res.rowcount, valid)
+        lvl = LOG.warning if res.rowcount == 0 else LOG.info
+        lvl("Removed %s NBS rows for %s", res.rowcount, valid)
         conn.commit()
 
 
