@@ -52,23 +52,34 @@ def main(dt: datetime):
             index_col="fbndid",
         )  # type: ignore
     fieldsdf["erosion_ta"] = fieldsdf["erosion_kgm2"] * KG_M2_TO_TON_ACRE
-    # minx, miny, maxx, maxy = fieldsdf.to_crs(4326)["geom"].total_bounds
-    minx, miny, maxx, maxy = (-96.874, 46.71621, -96.550, 47.065)
+    stats = fieldsdf["erosion_ta"].describe(
+        percentiles=[0.05, 0.25, 0.5, 0.75, 0.95]
+    )
+
+    minx, miny, maxx, maxy = fieldsdf.to_crs(4326)["geom"].total_bounds
+    # minx, miny, maxx, maxy = (-96.874, 46.71621, -96.550, 47.065)
     print(minx, miny, maxx, maxy)
     mp = MapPlot(
         apctx={"_r": "43"},
-        sector="custom",
-        south=miny,
-        north=maxy,
-        west=minx,
-        east=maxx,
+        sector="state",
+        state="MN",
+        # sector="custom",
+        # south=miny,
+        # north=maxy,
+        # west=minx,
+        # east=maxx,
         title=f"Wind Erosion [T/a] for {dt}",
+        subtitle=(
+            f"Field mean: {stats['mean']:.1f} T/a, "
+            f" 95%: {stats['95%']:.1f} T/a,"
+            f" max: {stats['max']:.1f} T/a"
+        ),
         logo="dep",
         caption="Daily Erosion Project",
         continentalcolor="white",
         stateborderwidth=1,
     )
-    bins = np.arange(0, 5.1, 0.25)
+    bins = np.arange(0, 10.1, 0.5)
     bins[0] = 0.01
     cmap = get_cmap("plasma")
     cmap.set_under("#0f0")
@@ -89,7 +100,7 @@ def main(dt: datetime):
             zorder=Z_POLITICAL + 1,
             linewidth=2,
         )
-    mp.fig.savefig(f"field_wind_erosion_{dt}_zoom.png")
+    mp.fig.savefig(f"field_wind_erosion_{dt}.png")
 
 
 if __name__ == "__main__":

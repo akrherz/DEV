@@ -11,7 +11,7 @@ CSVFN = "/home/akrherz/Downloads/nwsli_database.csv"
 NWSLI_RE = re.compile(r"^[A-Z]{4}\d$")
 
 
-def dowork(progress, row: dict, iem_unknown: bool):
+def dowork(progress: tqdm, row: dict, iem_unknown: bool):
     """do work!"""
     nwsli = row["station"]
     # Check 1, is this NWSLIsh

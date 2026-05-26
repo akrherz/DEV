@@ -22,7 +22,7 @@ def main():
         lon, lat = feature["geometry"]["coordinates"]
         country = nwsli2country.get(nwsli[3:])
         state = nwsli2state.get(nwsli[3:])
-        network = "%s_DCP" % (state,)
+        network = f"{state}_DCP"
 
         sql = """
         INSERT into stations(id, name, network, country, state,
