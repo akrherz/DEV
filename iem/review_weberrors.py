@@ -34,7 +34,8 @@ def main(hours: int, ignoreapi: bool) -> None:
     with get_sqlalchemy_conn("mesosite") as conn:
         df = pd.read_sql(
             sql_helper("""
-            select distinct vhost, request_uri from website_telemetry
+            select distinct vhost, status_code, request_uri
+            from website_telemetry
             where status_code >= 500
             and valid > :sts
             and vhost not in ('iem.local', '')
@@ -52,7 +53,7 @@ def main(hours: int, ignoreapi: bool) -> None:
         if uri.startswith("http"):
             continue
         print("-------------------------------------------------")
-        print(f"[{vhost}] {uri}")
+        print(f"[{vhost}] {row['status_code']} {uri}")
         if uri.find("hads.py") > 0:
             print("Skipping HADS request")
             continue
