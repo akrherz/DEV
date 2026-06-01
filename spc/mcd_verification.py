@@ -73,7 +73,7 @@ def do_plotting(threshold):
     df = pd.read_excel("mcd_verif.xlsx")
     (fig, ax) = figure_axes(
         title=(
-            "SPC MCD Watch Probability Verification (1 May 2012 - 16 Apr 2025)"
+            "SPC MCD Watch Probability Verification (1 May 2012 - 31 May 2026)"
         ),
         subtitle=(
             "Subsequent Watch (within 2.5 hours of MCD, "
@@ -117,7 +117,7 @@ def do_plotting(threshold):
         va="center",
         bbox=dict(color="white"),
     )
-    fig.text(0.01, 0.01, "@akrherz, 16 Apr 2025")
+    fig.text(0.01, 0.01, "@akrherz.bsky.social, 31 May 2026")
     fig.savefig(f"mcd_verify_{threshold}.png")
 
 
