@@ -32,11 +32,13 @@ VHOST_MAPPER = {
 def main(hours: int, ignoreapi: bool) -> None:
     """Go Main Go."""
     with get_sqlalchemy_conn("mesosite") as conn:
+        # We want errors and not ones related to proxy or load balancers
+        # 502 is a bad response, but mostly a false positive
         df = pd.read_sql(
             sql_helper("""
             select distinct vhost, status_code, request_uri
             from website_telemetry
-            where status_code >= 500
+            where status_code >= 500 and status_code not in (503, 504)
             and valid > :sts
             and vhost not in ('iem.local', '')
             """),
