@@ -58,11 +58,13 @@ def process(row, station, varname: str, conn: Connection | None = None):
 @click.option("--how", required=True)  # exact or over
 @click.option("--varname", default="tmpf")
 @click.option("--syear", type=int, default=1900)
-def main(network, station, hours, mydir, how, varname, syear):
+@click.option("--month", default="all")
+def main(network, station, hours, mydir, how, varname, syear, month):
     """Go Main Go."""
     url = (
         "https://mesonet.agron.iastate.edu/plotting/auto/plot/169/"
-        f"network:{network}::zstation:{station}::hours:{hours}::month:all::"
+        f"network:{network}::zstation:{station}::hours:{hours}::"
+        f"month:{month}::"
         f"dir:{mydir}::how:{how}::v:{varname}::syear:{syear}::_cb:1.csv"
     )
     df = pd.read_csv(url, parse_dates=["start_valid_utc", "end_valid_utc"])
