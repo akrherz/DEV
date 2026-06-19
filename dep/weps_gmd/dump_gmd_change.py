@@ -83,6 +83,8 @@ def compute_operations() -> pd.DataFrame:
 def main():
     """Go Main Go."""
     gmd_df = read_gmd()
+    print(gmd_df.describe())
+    return
     operation_dates = compute_operations()
     results = []
     for _, row in operation_dates.iterrows():

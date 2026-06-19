@@ -41,6 +41,8 @@ def main():
                     total = 0
                 days.append(int(vals[1]))
                 ta = float(vals[gmd_p_idx]) * KG_M2_TO_TON_ACRE * -1
+                if ta > 0:
+                    print(vals[1], ta)
                 total += ta
                 gmd_p.append(ta)
 
