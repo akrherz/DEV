@@ -9,7 +9,7 @@ from sqlalchemy import text
 
 def main():
     """Go Main Go."""
-    with get_sqlalchemy_conn("idep") as conn:
+    with get_sqlalchemy_conn("dep") as conn:
         for root, _dirs, files in os.walk("/i/0/cli/"):
             for file in files:
                 path = Path(root) / Path(file)
@@ -20,7 +20,8 @@ def main():
                 lat = float(tokens[1].rsplit(".", maxsplit=1)[0])
                 res = conn.execute(
                     text("""
-    select id from climate_files where filepath = :path and scenario = 0
+    select climate_file_id from climate_file
+    where filepath = :path and scenario_id = 0
                                   """),
                     {"path": str(path)},
                 )
@@ -29,7 +30,7 @@ def main():
                     conn.execute(
                         text(
                             """
-        INSERT into climate_files(filepath, scenario, geom)
+        INSERT into climate_file(filepath, scenario_id, geom)
         VALUES (:path, 0, ST_Point(:lon, :lat, 4326))
         """
                         ),
