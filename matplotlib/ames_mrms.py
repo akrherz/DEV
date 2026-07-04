@@ -80,7 +80,7 @@ def get_data() -> pd.DataFrame:
 
 def main():
     """Go!"""
-    title = "NOAA MRMS: RADAR + Guage Corrected Rainfall Estimates"
+    title = "NOAA MRMS: RADAR + Gauge Corrected Rainfall Estimates"
     mp = MapPlot(
         sector="spherical_mercator",
         north=41.9,
