@@ -93,19 +93,19 @@ def gauge_factory(fig, row, col, title, value):
 @click.option("--huc12", help="HUC12 to plot")
 def main(huc12):
     """."""
-    with get_sqlalchemy_conn("idep") as conn:
+    with get_sqlalchemy_conn("dep") as conn:
         huc12df = pd.read_sql(
-            "SELECT huc_12, name "
-            "from huc12 WHERE scenario = 0 and huc_12 = %s",
+            "SELECT huc12_code, huc12_name "
+            "from huc12 WHERE scenario_id = 0 and huc12_code = %s",
             conn,
             params=(huc12,),
-            index_col="huc_12",
+            index_col="huc12_code",
         )
     fn = f"scenario_tracks_{huc12}.csv"
     dfall = pd.read_csv(fn)
 
     fig = figure(
-        title=f"HUC12: {huc12} {huc12df.loc[huc12, 'name']}",
+        title=f"HUC12: {huc12} {huc12df.loc[huc12, 'huc12_name']}",
         subtitle="Yearly Hillslope Soil Delivery by Tillage Scenario",
         logo="dep",
         figsize=(8, 6),

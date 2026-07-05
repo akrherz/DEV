@@ -2,17 +2,16 @@
 
 import geopandas as gpd
 from matplotlib import colors as mpcolors
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.plot import MapPlot
 from pyiem.reference import Z_POLITICAL
-from sqlalchemy import text
 
 
 def main():
     """Go Main Go."""
     with get_sqlalchemy_conn("idep") as conn:
         df = gpd.read_postgis(
-            text(
+            sql_helper(
                 """
                 select huc_12, simple_geom, dominant_tillage from
                 huc12 where scenario = 0 and states ~* 'IA'
@@ -21,7 +20,7 @@ def main():
             conn,
             geom_col="simple_geom",
             index_col="huc_12",
-        )
+        )  # type: ignore
     # df = df.fillna(0)
     # df["ratio"] = df["runoff"] / df["precip"] * 100.0
     # df2 = df[df["precip"] >= 5]

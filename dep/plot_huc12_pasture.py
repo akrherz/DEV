@@ -38,7 +38,7 @@ def main():
             conn,
             geom_col="simple_geom",
             index_col="huc_12",
-        )
+        )  # type: ignore
     # ratio of Pasture OFEs to Pasture Acres
     df["ratio"] = df["pasture_count"] - (
         df["ofe_count"] * (df["pasture_acres"] / df["ag_acres"])

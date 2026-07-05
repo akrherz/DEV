@@ -35,11 +35,11 @@ def edit_slp(row):
 
 def main():
     """Go Main Go."""
-    with get_sqlalchemy_conn("idep") as conn:
+    with get_sqlalchemy_conn("dep") as conn:
         flowpaths = pd.read_sql(
             text("""
-            select huc_12, fpath, real_length, bulk_slope from flowpaths
-            where scenario = 0
+            select huc12_code, fpath, real_length, bulk_slope from flowpaths
+            where scenario_id = 0
                  """),
             conn,
         )

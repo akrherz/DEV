@@ -21,15 +21,15 @@ def plot():
     df2 = pd.read_csv("/tmp/data.csv", dtype={"huc12": str}).set_index("huc12")
     df2["ratio"] = df2["count"] / df2["flowpaths"] * 100.0
     print(df2)
-    pgconn = get_dbconn("idep")
+    pgconn = get_dbconn("dep")
     df = read_postgis(
         """
-        SELECT huc_12, ST_Transform(simple_geom, 4326) as geom
-        from huc12  WHERE scenario = 0
+        SELECT huc12_code, ST_Transform(simple_geom, 4326) as geom
+        from huc12  WHERE scenario_id = 0
     """,
         pgconn,
         geom_col="geom",
-        index_col="huc_12",
+        index_col="huc12_code",
     )
     minx, miny, maxx, maxy = df["geom"].total_bounds
     mp = MapPlot(
@@ -53,8 +53,8 @@ def plot():
     cmap = plt.get_cmap("tab20c")
     clevs = np.arange(0, 21.0, 1.0)
     norm = mpcolors.BoundaryNorm(clevs, cmap.N)
-    for huc_12, row in df.iterrows():
-        val = df2.at[huc_12, "ratio"]
+    for huc12_code, row in df.iterrows():
+        val = df2.at[huc12_code, "ratio"]
         c = cmap(norm([val]))[0]
         p = Polygon(row["geom"].exterior, fc=c, ec=c, zorder=2, lw=0.1)
         mp.ax.add_patch(p)

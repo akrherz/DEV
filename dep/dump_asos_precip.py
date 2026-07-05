@@ -4,7 +4,7 @@ import shutil
 
 import pandas as pd
 from pandas.io.sql import read_sql
-from pyiem.util import get_dbconn
+from pyiem.database import get_dbconn
 
 
 def main():
@@ -13,12 +13,13 @@ def main():
     hucs = [x.strip() for x in open("myhucs.txt")]
     # Figure out the centroid of each
     df = read_sql(
-        "SELECT huc_12, st_x(ST_transform(ST_centroid(geom), 4326)) as lon, "
-        "st_y(ST_transform(ST_centroid(geom), 4326)) as lat from huc12 where "
-        "scenario = 0 and huc_12 in %s",
-        get_dbconn("idep"),
+        """
+        SELECT huc12_code, st_x(ST_transform(ST_centroid(geom), 4326)) as lon,
+        st_y(ST_transform(ST_centroid(geom), 4326)) as lat from huc12 where
+        scenario_id = 0 and huc12_code in %s""",
+        get_dbconn("dep"),
         params=(tuple(hucs),),
-        index_col="huc_12",
+        index_col="huc12_code",
     )
     cursor = get_dbconn("mesosite").cursor()
     done = {}

@@ -3,10 +3,9 @@
 import click
 import geopandas as gpd
 from matplotlib.patches import Rectangle
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.plot import MapPlot
 from pyiem.reference import Z_POLITICAL
-from sqlalchemy import text
 
 
 @click.command()
@@ -21,7 +20,7 @@ def main(huc12, fbndid):
     # fbndsql = "" if fbndid is None else " and fbndid = :fbndid"
     with get_sqlalchemy_conn("idep") as conn:
         huc12df = gpd.read_postgis(
-            text(
+            sql_helper(
                 """
                 select huc12, geom, name from wbd_huc12 where
                 huc12 = :huc12
@@ -31,9 +30,9 @@ def main(huc12, fbndid):
             params=params,
             geom_col="geom",
             index_col="huc12",
-        )
+        )  # type: ignore
         fieldsdf = gpd.read_postgis(
-            text(
+            sql_helper(
                 """
                 select fbndid, geom, isag from fields where scenario = 0
                 and huc12 = :huc12
@@ -43,9 +42,9 @@ def main(huc12, fbndid):
             params=params,
             geom_col="geom",
             index_col="fbndid",
-        )
+        )  # type: ignore
         fpdf = gpd.read_postgis(
-            text(
+            sql_helper(
                 """
                 select fpath, geom from flowpaths where scenario = 0
                 and huc_12 = :huc12
@@ -55,7 +54,7 @@ def main(huc12, fbndid):
             params=params,
             geom_col="geom",
             index_col="fpath",
-        )
+        )  # type: ignore
     if fbndid is not None:
         minx, miny, maxx, maxy = (
             fieldsdf.loc[[fbndid]].to_crs(4326)["geom"].total_bounds

@@ -2,10 +2,9 @@
 
 import click
 import geopandas as gpd
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.plot import figure_axes
 from shapely.geometry import Point
-from sqlalchemy import text
 
 
 @click.command()
@@ -19,7 +18,7 @@ def main(huc12, flowpath):
     }
     with get_sqlalchemy_conn("idep") as conn:
         ofedf = gpd.read_postgis(
-            text(
+            sql_helper(
                 """
                 select ofe, o.real_length, o.geom from
                 flowpaths f JOIN flowpath_ofes o on (f.fid = o.flowpath)
@@ -31,7 +30,7 @@ def main(huc12, flowpath):
             params=params,
             geom_col="geom",
             index_col="ofe",
-        )
+        )  # type: ignore
     fig, ax = figure_axes(
         title=f"HUC12 {huc12} Flowpath {flowpath} Profile",
         logo="dep",

@@ -3,10 +3,9 @@
 import pandas as pd
 from geopandas import read_postgis
 from matplotlib import colors as mpcolors
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.plot import MapPlot
 from pyiem.reference import Z_POLITICAL
-from sqlalchemy import text
 
 
 def main():
@@ -24,7 +23,7 @@ def main():
 
     with get_sqlalchemy_conn("idep") as conn:
         df = read_postgis(
-            text(
+            sql_helper(
                 """
                 select huc_12, simple_geom, dominant_tillage from
                 huc12 where scenario = 0
@@ -33,7 +32,7 @@ def main():
             conn,
             geom_col="simple_geom",
             index_col="huc_12",
-        )
+        )  # type: ignore
     df["old"] = old["dominant_tillage"]
     df["change"] = df["dominant_tillage"] - df["old"]
     # df = df.fillna(0)

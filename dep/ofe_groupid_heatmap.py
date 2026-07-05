@@ -3,10 +3,9 @@
 import click
 import geopandas as gpd
 from matplotlib.colors import BoundaryNorm
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_OVERLAY2_LABEL
-from sqlalchemy import text
 
 
 @click.command()
@@ -17,7 +16,7 @@ def main(groupid: str, radius: float):
 
     with get_sqlalchemy_conn("idep") as conn:
         ofedf = gpd.read_postgis(
-            text("""
+            sql_helper("""
     select groupid, st_pointn(o.geom, 1) as pt
     from flowpath_ofes o JOIN flowpaths f on
     (o.flowpath = f.fid) where scenario = 0 and groupid = :groupid
@@ -27,7 +26,7 @@ def main(groupid: str, radius: float):
             params={"groupid": groupid},
             geom_col="pt",
             crs="EPSG:5070",
-        )
+        )  # type: ignore
     print(ofedf.shape[0])
     minx, miny, maxx, maxy = ofedf.to_crs(4326).total_bounds
     buffer = 0.1

@@ -11,12 +11,12 @@ from pyiem.reference import Z_OVERLAY
 @click.option("--domain", required=True)
 def main(domain: str):
     """make maps, not war."""
-    dbname = "idep" if domain == "" else f"dep_{domain}"
+    dbname = "dep" if domain == "" else f"dep_{domain}"
     print(f"Using database {dbname}")
     with get_sqlalchemy_conn(dbname) as pgconn:
         pts = gpd.read_postgis(
             sql_helper("""
-    select geom from climate_files where scenario = 0
+    select geom from climate_file where scenario_id = 0
 """),
             pgconn,
             geom_col="geom",

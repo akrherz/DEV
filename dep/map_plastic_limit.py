@@ -3,17 +3,16 @@
 import geopandas as gpd
 import matplotlib.colors as mpcolors
 import numpy as np
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_OVERLAY
-from sqlalchemy import text
 
 
 def main():
     """Go main Go."""
     with get_sqlalchemy_conn("idep") as conn:
         gdf = gpd.read_postgis(
-            text(
+            sql_helper(
                 """
             with ofes as (
                 select st_pointn(o.geom, 1) as pt, gssurgo_id
@@ -30,7 +29,7 @@ def main():
             geom_col="pt",
             index_col=None,
             crs=5070,
-        )
+        )  # type: ignore
     print(gdf["toplot"].describe())
     minx, miny, maxx, maxy = gdf["pt"].to_crs(4326).total_bounds
     buffer = 0.1

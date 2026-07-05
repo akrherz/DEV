@@ -59,15 +59,15 @@ def pick_dates_by_neighbor_diff() -> Tuple[str]:
 
 def pick_dates_by_database():
     """Look in the database for dates of interest."""
-    pgconn = get_dbconn("idep")
+    pgconn = get_dbconn("dep")
     cursor = pgconn.cursor()
     days = []
     cursor.execute(
         """
         with data as (
-            select valid, abs(avg_precip - qc_precip) as diff
-            from results_by_huc12
-            where scenario = 0 ORDER by diff DESC LIMIT 1000)
+            select valid, abs(avg_precip_mm - qc_precip_mm) as diff
+            from water_results_by_huc12
+            where scenario_id = 0 ORDER by diff DESC LIMIT 1000)
         select valid, count(*), max(diff) from data
         GROUP by valid ORDER by count desc
     """

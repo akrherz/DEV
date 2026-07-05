@@ -7,8 +7,9 @@ from zoneinfo import ZoneInfo
 import matplotlib.dates as mdates
 import pandas as pd
 import requests
+from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import figure
-from pyiem.util import get_sqlalchemy_conn, mm2inch
+from pyiem.util import mm2inch
 from sqlalchemy import text
 
 
@@ -85,7 +86,7 @@ def main(argv):
         logo="dep",
         figsize=(8, 6),
     )
-    ax = fig.add_axes([0.1, 0.1, 0.8, 0.35])
+    ax = fig.add_axes((0.1, 0.1, 0.8, 0.35))
     ax.plot(
         obs.index.values,
         obs["precip"].cumsum(),
@@ -103,7 +104,7 @@ def main(argv):
         mdates.DateFormatter("%-I:%M %p", tz=ZoneInfo("America/Chicago"))
     )
 
-    ax = fig.add_axes([0.1, 0.5, 0.8, 0.35])
+    ax = fig.add_axes((0.1, 0.5, 0.8, 0.35))
     ax.scatter(obs.index.values, obs["precip"], label="ASOS 1 minute")
     ax.scatter(obs.index.values, obs["dep"], label="DEP")
     ax.legend(loc="best")

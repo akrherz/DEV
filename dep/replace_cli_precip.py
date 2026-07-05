@@ -1,9 +1,9 @@
 """Forklift a CLI file's precip data."""
 
 from datetime import date
+from zoneinfo import ZoneInfo
 
 import pandas as pd
-import pytz
 
 print("DOUBLE CHECK THE TIMING!  30 MIN vs 1 HOUR....")
 
@@ -34,8 +34,8 @@ def do(scenario, huc12):
     # Timestamps are in UTC
     obs["valid"] = (
         pd.to_datetime(obs["valid"])
-        .dt.tz_localize(pytz.UTC)
-        .dt.tz_convert(pytz.timezone("America/Chicago"))
+        .dt.tz_localize(ZoneInfo("UTC"))
+        .dt.tz_convert(ZoneInfo("America/Chicago"))
     )
     obs["date"] = obs["valid"].dt.date
     clifn = f"/i/{scenario}/cli/{huc12}.cli"

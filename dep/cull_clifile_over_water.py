@@ -17,8 +17,8 @@ def main(domain):
     with get_sqlalchemy_conn(f"dep_{domain}") as conn:
         res = conn.execute(
             sql_helper("""
-    select filepath, st_x(geom), st_y(geom), ctid from climate_files
-    where scenario = 0 ORDER by st_y(geom) asc
+    select filepath, st_x(geom), st_y(geom), climate_file_id from climate_file
+    where scenario_id = 0 ORDER by st_y(geom) asc
                                   """),
         )
         good = 0
@@ -34,7 +34,9 @@ def main(domain):
             if os.path.isfile(row[0]):
                 os.unlink(row[0])
             conn.execute(
-                sql_helper("delete from climate_files where ctid = :c"),
+                sql_helper(
+                    "delete from climate_file where climate_file_id = :c"
+                ),
                 {"c": row[3]},
             )
             conn.commit()

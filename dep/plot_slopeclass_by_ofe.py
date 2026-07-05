@@ -2,9 +2,8 @@
 
 import click
 import pandas as pd
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.plot import figure_axes
-from sqlalchemy import text
 
 
 @click.command()
@@ -13,7 +12,7 @@ def main():
 
     with get_sqlalchemy_conn("idep") as conn:
         ofedf = pd.read_sql(
-            text("""
+            sql_helper("""
     select ofe, left(groupid, 1)::int as slpclass, count(*)
     from flowpath_ofes o
     JOIN flowpaths f on (o.flowpath = f.fid)
