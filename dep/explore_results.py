@@ -15,15 +15,16 @@ from tqdm import tqdm
 def compute_env(huc12):
     """Compute for the env results."""
     # Figure out the flowpath lengths
-    with get_sqlalchemy_conn("idep") as conn:
+    with get_sqlalchemy_conn("dep") as conn:
         fp = pd.read_sql(
             """
-            select fpath, real_length from flowpaths
-            where huc_12 = %s and scenario = 0
+            select huc12_fpath_num, length_m
+            from flowpath f JOIN huc12 h on (f.huc12_id = h.huc12_id)
+            where huc12_code = %s and h.scenario_id = 0
             """,
             conn,
             params=(huc12,),
-            index_col="fpath",
+            index_col="huc12_fpath_num",
         )
 
     os.chdir(f"/i/0/env/{huc12[:8]}/{huc12[8:]}")
@@ -37,7 +38,7 @@ def compute_env(huc12):
             df["sed_del"].sum()
             * KG_M2_TO_TON_ACRE
             / 17.0
-            / fp.at[fpath, "real_length"]
+            / fp.at[fpath, "length_m"]
         )
     print(f"ENV Mean: {np.mean(res):.2f} T/a/yr")
 
@@ -46,10 +47,12 @@ def compute_env(huc12):
 @click.option("--huc12", default="102300060301")
 def main(huc12):
     """Go Main Go."""
-    with get_sqlalchemy_conn("idep") as conn:
+    with get_sqlalchemy_conn("dep") as conn:
         res = pd.read_sql(
             """
-            select * from results_by_huc12 where scenario = 0 and huc_12 = %s
+            select w.* from water_results_by_huc12 w JOIN huc12 h
+            on (w.huc12_id = h.huc12_id)
+            where w.scenario_id = 0 and h.huc12_code = %s
             """,
             conn,
             params=(huc12,),
@@ -60,25 +63,28 @@ def main(huc12):
     compute_env(huc12)
 
     # Figure out the fields
-    with get_sqlalchemy_conn("idep") as conn:
+    with get_sqlalchemy_conn("dep") as conn:
         fields = pd.read_sql(
             """
-            select f.fbndid, f.landuse, l.label, f.acres from fields f,
-            general_landuse l where f.huc12 = %s and
+            select f.huc12_fbndid_num, f.landuse, l.label, f.acres
+            from field f JOIN huc12 h on (f.huc12_id = h.huc12_id) WHERE
+            general_landuse l where h.huc12_code = %s and
             f.genlu = l.id
             """,
             conn,
             params=(huc12,),
-            index_col="fbndid",
+            index_col="huc12_fbndid_num",
         )
     # Figure out the OFEs
     with get_sqlalchemy_conn("idep") as conn:
         ofes = pd.read_sql(
             """
-            select ofe, fpath, fbndid, o.real_length
-            from flowpath_ofes o JOIN flowpaths f
-            on (o.flowpath = f.fid) WHERE f.huc_12 = %s and
-            f.scenario = 0 ORDER by fpath ASC, ofe ASC
+            select ofe, huc12_fpath_num as fpath, fbndid,
+            o.length_m as real_length
+            from flowpath_ofes o JOIN flowpath f
+            on (o.huc12_fpath_num = f.huc12_fpath_num)
+            WHERE f.huc12_code = %s and
+            f.scenario_id = 0 ORDER by fpath ASC, ofe ASC
             """,
             conn,
             params=(huc12,),

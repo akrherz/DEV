@@ -40,12 +40,12 @@ def plotmap():
         "/tmp/compare_older_dep.csv",
         dtype={"huc12": str},
     ).set_index("huc12")
-    with get_sqlalchemy_conn("idep") as conn:
+    with get_sqlalchemy_conn("dep") as conn:
         gdf = gpd.read_postgis(
-            "SELECT simple_geom, huc_12 from huc12 where scenario = 0",
+            "SELECT simple_geom, huc12_code from huc12 where scenario_id = 0",
             conn,
             geom_col="simple_geom",
-            index_col="huc_12",
+            index_col="huc12_code",
         )
     gdf = gdf.join(df).dropna()
     gdf["change"] = (gdf["new_5t"] / gdf["new_fpcount"]) * 100.0 - (

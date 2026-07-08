@@ -50,22 +50,22 @@ def plot_comparison(counties):
 def main():
     """Go Main."""
     # Get DEP by huc12
-    with get_sqlalchemy_conn("idep") as conn:
+    with get_sqlalchemy_conn("dep") as conn:
         idep = gpd.read_postgis(
             """
             with data as (
-                select huc_12, sum(avg_loss) * %s / 10. as loss
-                from results_by_huc12
-                where scenario = 0 and valid > '2008-01-01' and
-                valid < '2018-01-01' GROUP by huc_12)
-            select d.huc_12, d.loss, ST_Transform(simple_geom, 4326) as geo
-            from data d JOIN huc12 h on (d.huc_12 = h.huc_12) WHERE
-            h.scenario = 0 and h.states ~* 'IA'
+                select huc12_id, sum(avg_loss_kgm2) * %s / 10. as loss
+                from water_results_by_huc12
+                where scenario_id = 0 and valid > '2008-01-01' and
+                valid < '2018-01-01' GROUP by huc12_id)
+            select d.huc12_code, d.loss, ST_Transform(simple_geom, 4326) as geo
+            from data d JOIN huc12 h on (d.huc12_id = h.huc12_id) WHERE
+            h.scenario_id = 0 and h.states ~* 'IA'
             """,
             conn,
             geom_col="geo",
             params=(KG_M2_TO_TON_ACRE,),
-            index_col="huc_12",
+            index_col="huc12_code",
         )
     # Get counties so that we can later join
     with get_sqlalchemy_conn("postgis") as conn:

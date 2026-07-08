@@ -7,20 +7,20 @@ from pyiem.database import get_sqlalchemy_conn, sql_helper
 
 def main():
     """Go Main Go."""
-    with get_sqlalchemy_conn("idep") as conn:
+    with get_sqlalchemy_conn("dep") as conn:
         df = pd.read_sql(
             sql_helper("""
                 with data as (
-                select huc_12, extract(year from valid) as year,
-                sum(qc_precip) / 25.4 as precip_inch,
-                sum(avg_loss) * :factor as detachment_ta,
-                sum(avg_delivery) * :factor as delivery_ta,
-                sum(avg_runoff) / 25.4 as runoff_inch
-                from results_by_huc12 WHERE valid >= '2020-01-01'
-                and scenario = 0 GROUP by huc_12, year),
+                select huc12_id, extract(year from valid) as year,
+                sum(qc_precip_mm) / 25.4 as precip_inch,
+                sum(avg_loss_kgm2) * :factor as detachment_ta,
+                sum(avg_delivery_kgm2) * :factor as delivery_ta,
+                sum(avg_runoff_mm) / 25.4 as runoff_inch
+                from water_results_by_huc12 WHERE valid >= '2020-01-01'
+                and scenario_id = 0 GROUP by huc12_id, year),
                 agg as (
                  select d.*, h.ugc from data d JOIN huc12 h on
-                 (d.huc_12 = h.huc_12) where h.scenario = 0
+                 (d.huc12_id = h.huc12_id) where h.scenario_id = 0
                  )
                 select ugc, year,
                 avg(precip_inch) as precip_inch,

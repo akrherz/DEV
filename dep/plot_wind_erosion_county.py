@@ -26,14 +26,15 @@ def main():
             geom_col="simple_geom",
             index_col="ugc",
         )  # type: ignore
-    with get_sqlalchemy_conn("idep") as conn:
+    with get_sqlalchemy_conn("dep") as conn:
         fieldsdf = gpd.read_postgis(
             text(
                 """
-    select f.field_id, sum(erosion_kgm2), ST_Transform(geom, 4326) as geo from
+    select f.field_id, sum(erosion_kgm2) as sum,
+    ST_Transform(geom, 4326) as geo from
     field_wind_erosion_results r
-    join fields f on (r.field_id = f.field_id) where r.valid < '2026-01-01'
-    and erosion_kgm2 >= 0 group by f.field_id, geo
+    join field f on (r.field_id = f.field_id) where r.valid < '2026-01-01'
+    and erosion_kgm2 >= 0 group by f.field_id, geo order by sum desc
                 """
             ),
             conn,
