@@ -35,3 +35,4 @@ spc/fixed/
 /twitter/botdata
 /dep/weps_gmd
 /dep/weps
+/dep/weps_sensitivity/**
