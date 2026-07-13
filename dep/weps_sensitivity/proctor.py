@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import tempfile
+from functools import lru_cache
 from itertools import product
 from multiprocessing import Pool
 
@@ -99,14 +100,24 @@ def add_soil_meta(soil_file: str) -> dict:
         lines = fh.readlines()
     return {
         "sand": lines[29].split()[0],
-        "silt": lines[31].split()[1],
-        "clay": lines[33].split()[2],
+        "silt": lines[31].split()[0],
+        "clay": lines[33].split()[0],
+    }
+
+
+@lru_cache()
+def add_wind_meta(wind_file: str) -> dict:
+    """Compute interesting things with the wind file."""
+    data = np.loadtxt(wind_file, skiprows=7)
+    return {
+        "wind_mean": np.mean(data[:, 4:]),
+        "wind_daily_max_mean": np.mean(np.max(data[:, 4:], axis=1)),
     }
 
 
 def make_run(runopts: WEPSRun) -> dict:
     """Run WEPS and generate a dict result payload."""
-    with open("../weps.run") as fh:
+    with open("../../weps.run") as fh:
         lines = fh.readlines()
     # Replace the lines in the weps.run file with the runopts values
     # avert your eyes here, for now
@@ -136,9 +147,16 @@ def make_run(runopts: WEPSRun) -> dict:
         "-W1",  # simple runoff method, perf
         "-u0",  # No resurfacing of buried roots, perf opt?
     ]
-    subprocess.run(
-        cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-    )
+    try:
+        subprocess.run(
+            cmd,
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except Exception:
+        print(f"Run failure for {runopts}")
+        return None
     # Read the results from the output files
     data = np.loadtxt("plot.out", skiprows=1)
     with open("plot.out") as fh:
@@ -159,6 +177,7 @@ def make_run(runopts: WEPSRun) -> dict:
     }
     result.update(add_management_meta(runopts.man_file))
     result.update(add_soil_meta(runopts.soil_file))
+    result.update(add_wind_meta(runopts.wind_file))
     return result
 
 
@@ -198,7 +217,8 @@ def main(workers: int):
             for climate_file, wind_file, soil_file, man_file in jobs
         ),
     ):
-        results.append(result)
+        if result:
+            results.append(result)
         progress.update(1)
 
     # results = [r.get() for r in results]
