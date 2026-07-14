@@ -59,7 +59,7 @@ def process(cursor, zipfn, date, day, hr, cycle: int):
         names.append(name)
         if name.endswith(".shp"):
             shpfn = name
-    df = gpd.read_file(shpfn)
+    df = gpd.read_file(shpfn, engine="fiona")
     for fn in names:
         os.unlink(fn)
     os.unlink(zipfn)
@@ -117,6 +117,11 @@ def process(cursor, zipfn, date, day, hr, cycle: int):
             arr.append(row["geometry"])
     for threshold, arr in geoms.items():
         mp = MultiPolygon(arr)
+        if not mp.is_valid:
+            mp = mp.buffer(0)
+            if not mp.is_valid:
+                LOG.info("--- Double failure with invalid geometry")
+                continue
         cursor.execute(
             "INSERT into spc_outlook_geometries (spc_outlook_id, threshold, "
             "category, geom) VALUES (%s, %s, %s, "
@@ -128,7 +133,7 @@ def process(cursor, zipfn, date, day, hr, cycle: int):
 def main():
     """Go Main Go."""
     pgconn = get_dbconn("postgis")
-    for date in pd.date_range("2015/11/01", "2018/12/31"):
+    for date in pd.date_range("2017/07/13", "2017/07/13"):
         LOG.info("Processing %s", date)
         for day, hr, cycle in COMBOS:
             zipfn = f"shp_{PREFIX[day]}_{date:%Y%m%d}{hr:02.0f}.zip"
