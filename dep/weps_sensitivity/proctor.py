@@ -12,11 +12,14 @@ from multiprocessing import Pool
 import click
 import numpy as np
 import pandas as pd
+from dailyerosion.io.wepp import read_cli
 from dailyerosion.reference import KG_M2_TO_TON_ACRE
 from pydantic import BaseModel
 from tqdm import tqdm
 
+TBD = -99
 YEARS = 20.0
+DATE_AXIS = pd.date_range("2007/01/01", "2026/12/31")
 MAN_META = {
     "070102020605_9.man": {
         "landuse": "CBCBCCCBCCCBCWPCCCCC",
@@ -102,6 +105,41 @@ def add_soil_meta(soil_file: str) -> dict:
         "sand": lines[29].split()[0],
         "silt": lines[31].split()[0],
         "clay": lines[33].split()[0],
+        "om": lines[50].split()[0],
+        "caco3": lines[54].split()[0],
+        "gmd": lines[61].split()[0],
+        "min_agg_sz": lines[67].split()[0],
+        "max_agg_sz": lines[65].split()[0],
+        "agg_stability": lines[71].split()[0],
+        "wilting_point": lines[106].split()[0],
+        "field_capacity": lines[108].split()[0],
+        "random_roughness": lines[87].split()[0],
+        "surface_crust_fract": lines[80].split()[0],
+        "crust_thickness": lines[74].split()[0],
+        "slope_gradient": lines[14].split()[0],
+        "bulk_density": lines[48].split()[0],
+    }
+
+
+@lru_cache()
+def add_cli_meta(climate_file: str) -> dict:
+    """Compute some required metadata from the CLI file."""
+    clidf = read_cli(climate_file)
+    clidf["threeday_precip"] = clidf["pcpn"].rolling(3).sum()
+    spring_ddd = (
+        clidf[(clidf.index.month >= 3) & (clidf.index.month <= 5)][
+            "threeday_precip"
+        ]
+        < 0.01
+    ).sum() / YEARS
+    fall_ddd = (
+        clidf[(clidf.index.month >= 9)]["threeday_precip"] < 0.01
+    ).sum() / YEARS
+    return {
+        "spring_dry_duration_days": spring_ddd,
+        "fall_dry_duration_days": fall_ddd,
+        "spring_prevailing_drct": TBD,
+        "fall_prevailing_drct": TBD,
     }
 
 
@@ -109,9 +147,81 @@ def add_soil_meta(soil_file: str) -> dict:
 def add_wind_meta(wind_file: str) -> dict:
     """Compute interesting things with the wind file."""
     data = np.loadtxt(wind_file, skiprows=7)
+    dailydf = pd.DataFrame(
+        {"dailymax": np.max(data[:, 4:], axis=1)}, index=DATE_AXIS
+    )
+    springdf = dailydf[(dailydf.index.month >= 3) & (dailydf.index.month <= 5)]
+    # A bit more than fall here, but this was my guidance
+    falldf = dailydf[(dailydf.index.month >= 9)]
     return {
+        "avg_spring_days_gt_15": (springdf["dailymax"] > 15).sum() / YEARS,
+        "spring_p95": np.percentile(springdf["dailymax"], 95),
+        "avg_fall_days_gt_15": (falldf["dailymax"] > 15).sum() / YEARS,
+        "fall_p95": np.percentile(falldf["dailymax"], 95),
         "wind_mean": np.mean(data[:, 4:]),
-        "wind_daily_max_mean": np.mean(np.max(data[:, 4:], axis=1)),
+        "wind_daily_max_mean": dailydf["dailymax"].mean(),
+    }
+
+
+def add_plot_meta() -> dict:
+    """Harvest things from the plot.out file."""
+    # Read the results from the output files
+    data = np.loadtxt("plot.out", skiprows=1)
+    with open("plot.out") as fh:
+        names = [
+            x.strip() for x in fh.read(1000).split("\n")[0][2:].split("|")
+        ]
+    dailydf = pd.DataFrame(data, columns=names, index=DATE_AXIS)
+    springdf = dailydf[(dailydf.index.month >= 3) & (dailydf.index.month <= 5)]
+    falldf = dailydf[(dailydf.index.month >= 9)]
+
+    return {
+        "spring_soilmoist": TBD,
+        "spring_t_flat_cov": springdf["t_flat_cov"].mean(),
+        "spring_bio_lai": springdf["bio_lai"].mean(),
+        "spring_post_tillage_roughness": TBD,
+        "fall_soilmoist": TBD,
+        "fall_t_flat_cov": falldf["t_flat_cov"].mean(),
+        "fall_bio_lai": falldf["bio_lai"].mean(),
+        "fall_post_tillage_roughness": TBD,
+        "erosion_tayr": (
+            round(
+                dailydf["tot_loss"].abs().sum() * KG_M2_TO_TON_ACRE / YEARS, 4
+            )
+        ),
+        "spring_erosion_tayr": (
+            round(
+                springdf["tot_loss"].abs().sum() * KG_M2_TO_TON_ACRE / YEARS, 4
+            )
+        ),
+        "fall_erosion_tayr": (
+            round(
+                falldf["tot_loss"].abs().sum() * KG_M2_TO_TON_ACRE / YEARS, 4
+            )
+        ),
+        "suspension_tayr": (
+            round(dailydf["suspen"].abs().sum() * KG_M2_TO_TON_ACRE / YEARS, 4)
+        ),
+        "spring_suspension_tayr": (
+            round(
+                springdf["suspen"].abs().sum() * KG_M2_TO_TON_ACRE / YEARS, 4
+            )
+        ),
+        "fall_suspension_tayr": (
+            round(falldf["suspen"].abs().sum() * KG_M2_TO_TON_ACRE / YEARS, 4)
+        ),
+        "pm10_tayr": (
+            round(dailydf["pm10"].abs().sum() * KG_M2_TO_TON_ACRE / YEARS, 4)
+        ),
+        "spring_pm10_tayr": (
+            round(springdf["pm10"].abs().sum() * KG_M2_TO_TON_ACRE / YEARS, 4)
+        ),
+        "fall_pm10_tayr": (
+            round(falldf["pm10"].abs().sum() * KG_M2_TO_TON_ACRE / YEARS, 4)
+        ),
+        "saltation_tayr": TBD,
+        "spring_saltation_tayr": TBD,
+        "fall_saltation_tayr": TBD,
     }
 
 
@@ -157,27 +267,28 @@ def make_run(runopts: WEPSRun) -> dict:
     except Exception:
         print(f"Run failure for {runopts}")
         return None
-    # Read the results from the output files
-    data = np.loadtxt("plot.out", skiprows=1)
-    with open("plot.out") as fh:
-        names = [
-            x.strip() for x in fh.read(1000).split("\n")[0][2:].split("|")
-        ]
-    dailydf = pd.DataFrame(data, columns=names)
     result = {
         "man_file": runopts.man_file,
         "climate_file": runopts.climate_file,
         "wind_file": runopts.wind_file,
         "soil_file": runopts.soil_file,
-        "erosion_tayr": (
-            round(
-                dailydf["tot_loss"].abs().sum() * KG_M2_TO_TON_ACRE / YEARS, 4
-            )
-        ),
+        "field_width": 714.08,
+        "field_length": 714.08,
+        "annual_stir": TBD,
+        "tillage_angle": TBD,
+        "decomposition_rate": TBD,
+        "ridge_height": TBD,
+        "ridge_spacing": TBD,
+        "field_orientation": 0,
+        "windbreak_height": 0,
+        "barrier_porosity": 0,
+        "barrier_orientation": 0,
     }
+    result.update(add_plot_meta())
     result.update(add_management_meta(runopts.man_file))
     result.update(add_soil_meta(runopts.soil_file))
     result.update(add_wind_meta(runopts.wind_file))
+    result.update(add_cli_meta(runopts.climate_file))
     return result
 
 
