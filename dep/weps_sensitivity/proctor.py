@@ -8,15 +8,19 @@ import tempfile
 from functools import lru_cache
 from itertools import product
 from multiprocessing import Pool
+from typing import Annotated
 
 import click
 import numpy as np
 import pandas as pd
 from dailyerosion.io.wepp import read_cli
 from dailyerosion.reference import KG_M2_TO_TON_ACRE
-from pydantic import BaseModel
+from jinja2 import Template
+from pydantic import BaseModel, Field
 from tqdm import tqdm
 
+with open("weps_run.j2") as fh:
+    WEPS_RUN_TEMPLATE = Template(fh.read())
 TBD = -99
 YEARS = 20.0
 DATE_AXIS = pd.date_range("2007/01/01", "2026/12/31")
@@ -79,6 +83,18 @@ class WEPSRun(BaseModel):
     wind_file: str
     soil_file: str
     man_file: str
+    region_angle: Annotated[
+        int,
+        Field(ge=0, lt=360),
+    ]
+    field_xlength: Annotated[
+        float,
+        Field(gt=0),
+    ]
+    field_ylength: Annotated[
+        float,
+        Field(gt=0),
+    ]
 
 
 def add_management_meta(man_file: str) -> dict:
@@ -112,7 +128,7 @@ def add_soil_meta(soil_file: str) -> dict:
         "max_agg_sz": lines[65].split()[0],
         "agg_stability": lines[71].split()[0],
         "wilting_point": lines[106].split()[0],
-        "field_capacity": lines[108].split()[0],
+        "field_capacity": lines[104].split()[0],
         "random_roughness": lines[87].split()[0],
         "surface_crust_fract": lines[80].split()[0],
         "crust_thickness": lines[74].split()[0],
@@ -227,22 +243,26 @@ def add_plot_meta() -> dict:
 
 def make_run(runopts: WEPSRun) -> dict:
     """Run WEPS and generate a dict result payload."""
-    with open("../../weps.run") as fh:
-        lines = fh.readlines()
-    # Replace the lines in the weps.run file with the runopts values
-    # avert your eyes here, for now
-    lines[35] = f"{runopts.climate_file}\n"
+    with open("weps.run", "w") as fh:
+        fh.write(
+            WEPS_RUN_TEMPLATE.render(
+                {
+                    "climate_file": runopts.climate_file,
+                    "wind_file": runopts.wind_file,
+                    "soil_file": runopts.soil_file,
+                    "man_file": runopts.man_file,
+                    "region_angle": runopts.region_angle,
+                    "field_xlength": runopts.field_xlength,
+                    "field_ylength": runopts.field_ylength,
+                }
+            )
+        )
     shutil.copyfile(
         f"../../climate_files/{runopts.climate_file}", runopts.climate_file
     )
-    lines[37] = f"{runopts.wind_file}\n"
     shutil.copyfile(f"../../wind_files/{runopts.wind_file}", runopts.wind_file)
-    lines[41] = f"{runopts.soil_file}\n"
     shutil.copyfile(f"../../soil_files/{runopts.soil_file}", runopts.soil_file)
-    lines[43] = f"{runopts.man_file}\n"
     shutil.copyfile(f"../../man_files/{runopts.man_file}", runopts.man_file)
-    with open("weps.run", "w") as fh:
-        fh.writelines(lines)
     # Run WEPS
     cmd = [
         "/opt/dep/bin/weps_dep",
@@ -279,7 +299,7 @@ def make_run(runopts: WEPSRun) -> dict:
         "decomposition_rate": TBD,
         "ridge_height": TBD,
         "ridge_spacing": TBD,
-        "field_orientation": 0,
+        "region_angle": runopts.region_angle,
         "windbreak_height": 0,
         "barrier_porosity": 0,
         "barrier_orientation": 0,
@@ -299,7 +319,7 @@ def set_to_rundir():
 
 
 @click.command()
-@click.option("--workers", type=int, default=4)
+@click.option("--workers", type=int, required=True)
 def main(workers: int):
     """Go Main Go."""
     os.makedirs("rundir", exist_ok=True)
@@ -308,13 +328,18 @@ def main(workers: int):
     windfiles = glob.glob("wind_files/*")
     soilfiles = glob.glob("soil_files/*")
     manfiles = list(MAN_META.keys())
+    region_angles = [0, 30, 60, 90, 120, 150]
 
     pool = Pool(workers, initializer=set_to_rundir)
 
     results = []
-    jobs = product(clifiles, windfiles, soilfiles, manfiles)
+    jobs = product(clifiles, windfiles, soilfiles, manfiles, region_angles)
     progress = tqdm(
-        total=len(clifiles) * len(windfiles) * len(soilfiles) * len(manfiles)
+        total=len(clifiles)
+        * len(windfiles)
+        * len(soilfiles)
+        * len(manfiles)
+        * len(region_angles)
     )
     for result in pool.imap_unordered(
         make_run,
@@ -324,8 +349,17 @@ def main(workers: int):
                 wind_file=os.path.basename(wind_file),
                 soil_file=os.path.basename(soil_file),
                 man_file=os.path.basename(man_file),
+                region_angle=region_angle,
+                field_xlength=100,
+                field_ylength=200,
             )
-            for climate_file, wind_file, soil_file, man_file in jobs
+            for (
+                climate_file,
+                wind_file,
+                soil_file,
+                man_file,
+                region_angle,
+            ) in jobs
         ),
     ):
         if result:

@@ -1,0 +1,105 @@
+#VERSION=1.05
+#------------ WEPS SIMULATION RUN FILE ------------
+# Note: Lines beginning with '#' are comment lines.
+#       Lines beginning with '#   RFD' are comments used by the interface.
+#
+# --USER INFORMATION
+#   RFD-UserName
+Exercise 1
+#   FarmId TractId FieldId runtypedisp RotationYears CycleCount
+ |  |  | Date | 20 | 1
+#   RFD-Site
+FIPS:US-WI-097
+#
+# --SITE INFORMATION
+#   Signed Latitude
++48.44061583163063
+#   Signed Longitude
+-96.07449077560537
+#   RFD-Elevation(meters)
+337.99272
+#   RFD-ClimateFlag|RFD-cligen.station
+test1
+#   RFD-WindFlag|RFD-windgen.station
+test2
+#
+# --SIMULATION PERIOD
+#   RFD-StartDate(day month year)
+01 01 2007
+#   RFD-EndDate(day month year)
+31 12 2026
+#   RFD-TimeSteps(per day)
+24
+#
+# --RUN FILE FILENAMES (INPUT)
+#   RFD-climate file
+{{climate_file}}
+#   RFD-wind file
+{{wind_file}}
+#   RFD-sub-daily file
+none
+#   RFD-SoilFile
+{{soil_file}}
+#   RFD-ManageFile
+{{man_file}}
+#
+# --WEPS OUTPUT OPTIONS
+#   RFD-OutputFile
+null
+#   RFD-ReportForm
+0 0 0 0 0 0
+#   RFD-OutputPeriod
+2
+#   RFD-SubmodelOutput
+0 1 0 0 0 0
+#   RFD-DebugOutput
+0 0 0 0 0 0
+#
+# --SIMULATION REGION INFORMATION
+#   RFD-RegionAngle(degrees clockwise from North)
+{{region_angle}}
+#   Origin coordinates of simulation region (meters)
+0.0  0.0
+#    RFD-XLength(meters)  RFD-YLength(meters)
+{{field_xlength}}  {{field_ylength}}
+#   RFD-Scales(place holder line - needed for older versions of WEPS)
+5.5 5.5
+#
+#   RFD-AccNo
+1
+#   Accounting region coordinates (meters)
+0.0  0.0
+{{field_xlength}}  {{field_ylength}}
+#
+#   RFD-SubregionNo
+1
+#   Subregion region coordinates (meters)
+0.0  0.0
+{{field_xlength}}  {{field_ylength}}
+#   RFD-AverageSlope(ratio m/m)
+-1
+#   RFD-BarrierNo
+0
+0.0 0.0
+0.0 0.0
+none
+0.0
+0.0
+0.0
+#
+# --CIRCULAR FIELD INFORMATION
+# Note: These fields are not used by the weps simulation.
+#       The shape and radius values are used by the user
+#       interface to approximate a rectangular field.  They
+#       are included here so the reports can display the
+#       correct field shape.
+#
+#   RFD-Shape
+circle
+#   RFD-Radius
+402.87
+#   RFD-WaterErosionLoss
+0.00
+#   RFD-SoilRockFragments
+-1
+#---------- END OF SIMULATION RUN FILE ------------

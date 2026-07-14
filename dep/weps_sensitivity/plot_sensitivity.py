@@ -37,7 +37,7 @@ def main():
     make_scatter(ax, resultsdf, "erosion_tayr", "man_file")
 
     ax = fig.add_axes((0.75, 0.1, 0.2, 0.3))
-    make_scatter(ax, resultsdf, "erosion_tayr", "wind_file")
+    make_scatter(ax, resultsdf, "erosion_tayr", "region_angle")
 
     fig.savefig("test.png")
 
