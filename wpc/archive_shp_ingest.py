@@ -12,20 +12,22 @@ from pyiem.util import logger
 from shapely.geometry import MultiPolygon
 
 LOG = logger()
+# day, issue hr, cycle
 COMBOS = [
-    (1, 1),
-    (1, 8),
-    (1, 9),
-    (1, 16),
-    (2, 9),
-    (2, 21),
-    (3, 9),
-    (3, 21),
+    (1, 1, 1),
+    (1, 8, 8),
+    (1, 9, 8),
+    (1, 15, 16),
+    (1, 16, 16),
+    (2, 9, 8),
+    (2, 21, 20),
+    (3, 9, 8),
+    (3, 21, 20),
 ]
 PREFIX = {1: "94e", 2: "98e", 3: "99e"}
 
 
-def get_threshold(val):
+def get_threshold(val: str):
     """Blah"""
     if val.lower().startswith("marginal"):
         return "MRGL"
@@ -39,7 +41,7 @@ def get_threshold(val):
         return "HIGH"
 
 
-def process(cursor, zipfn, date, day, hr):
+def process(cursor, zipfn, date, day, hr, cycle: int):
     """Do magic."""
     uri = f"https://www.wpc.ncep.noaa.gov/archives/ero/{date:%Y%m%d}/{zipfn}"
     req = requests.get(uri, timeout=30)
@@ -58,7 +60,6 @@ def process(cursor, zipfn, date, day, hr):
         if name.endswith(".shp"):
             shpfn = name
     df = gpd.read_file(shpfn)
-    # print(df.columns)
     for fn in names:
         os.unlink(fn)
     os.unlink(zipfn)
@@ -69,9 +70,9 @@ def process(cursor, zipfn, date, day, hr):
     expire = expire.replace(tzinfo=timezone.utc)
     pissue = datetime.strptime(df.iloc[0]["ISSUE_TIME"], "%Y-%m-%d %H:%M:%S")
     pissue = pissue.replace(tzinfo=timezone.utc)
-    cycle = hr
-    if day == 1 and hr == 9:
-        cycle = 8
+    LOG.info(
+        "Found %s rows in %s day: %s[%s]", len(df.index), shpfn, day, cycle
+    )
 
     cursor.execute(
         "SELECT id from spc_outlook where product_issue = %s and day = %s and "
@@ -87,16 +88,21 @@ def process(cursor, zipfn, date, day, hr):
             (issue, pissue, expire, day, cycle),
         )
         oid = cursor.fetchone()[0]
+        LOG.info("Created metadata oid: %s", oid)
     else:
         oid = cursor.fetchone()[0]
         cursor.execute(
             "DELETE from spc_outlook_geometries where spc_outlook_id = %s",
             (oid,),
         )
+        LOG.info(
+            "Reusing metadata oid: %s, deleted %s geoms", oid, cursor.rowcount
+        )
     geoms = {}
     for _i, row in df.iterrows():
         outlook = row["OUTLOOK"]
         if outlook.startswith("None"):
+            LOG.info("Skipping %s", outlook)
             continue
         threshold = get_threshold(row["OUTLOOK"])
         if not row["geometry"].is_valid:
@@ -122,12 +128,12 @@ def process(cursor, zipfn, date, day, hr):
 def main():
     """Go Main Go."""
     pgconn = get_dbconn("postgis")
-    for date in pd.date_range("2019/01/04", "2021/07/13"):
+    for date in pd.date_range("2015/11/01", "2018/12/31"):
         LOG.info("Processing %s", date)
-        for day, hr in COMBOS:
+        for day, hr, cycle in COMBOS:
             zipfn = f"shp_{PREFIX[day]}_{date:%Y%m%d}{hr:02.0f}.zip"
             cursor = pgconn.cursor()
-            process(cursor, zipfn, date, day, hr)
+            process(cursor, zipfn, date, day, hr, cycle)
             cursor.close()
             pgconn.commit()
 
