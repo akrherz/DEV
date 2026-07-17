@@ -95,6 +95,10 @@ class WEPSRun(BaseModel):
         float,
         Field(gt=0),
     ]
+    tillage_direction: Annotated[
+        int,
+        Field(ge=0, lt=360),
+    ]
 
 
 def add_management_meta(man_file: str) -> dict:
@@ -263,6 +267,15 @@ def make_run(runopts: WEPSRun) -> dict:
     shutil.copyfile(f"../../wind_files/{runopts.wind_file}", runopts.wind_file)
     shutil.copyfile(f"../../soil_files/{runopts.soil_file}", runopts.soil_file)
     shutil.copyfile(f"../../man_files/{runopts.man_file}", runopts.man_file)
+    with open(runopts.man_file) as fh:
+        lines = fh.readlines()
+    for linenum, line in enumerate(lines):
+        if line.startswith("O 03"):
+            tokens = lines[linenum + 1].split()
+            tokens[4] = f"{runopts.tillage_direction:.1f}"
+            lines[linenum + 1] = " ".join(tokens) + "\n"
+    with open(runopts.man_file, "w") as fh:
+        fh.write("".join(lines))
     # Run WEPS
     cmd = [
         "/opt/dep/bin/weps_dep",
@@ -295,7 +308,7 @@ def make_run(runopts: WEPSRun) -> dict:
         "field_width": 714.08,
         "field_length": 714.08,
         "annual_stir": TBD,
-        "tillage_angle": TBD,
+        "tillage_direction": runopts.tillage_direction,
         "decomposition_rate": TBD,
         "ridge_height": TBD,
         "ridge_spacing": TBD,
@@ -328,18 +341,27 @@ def main(workers: int):
     windfiles = glob.glob("wind_files/*")
     soilfiles = glob.glob("soil_files/*")
     manfiles = list(MAN_META.keys())
-    region_angles = [0, 30, 60, 90, 120, 150]
+    region_angles = [0, 90]
+    tillage_direction = [0, 90]
 
     pool = Pool(workers, initializer=set_to_rundir)
 
     results = []
-    jobs = product(clifiles, windfiles, soilfiles, manfiles, region_angles)
+    jobs = product(
+        clifiles,
+        windfiles,
+        soilfiles,
+        manfiles,
+        region_angles,
+        tillage_direction,
+    )
     progress = tqdm(
         total=len(clifiles)
         * len(windfiles)
         * len(soilfiles)
         * len(manfiles)
         * len(region_angles)
+        * len(tillage_direction)
     )
     for result in pool.imap_unordered(
         make_run,
@@ -350,6 +372,7 @@ def main(workers: int):
                 soil_file=os.path.basename(soil_file),
                 man_file=os.path.basename(man_file),
                 region_angle=region_angle,
+                tillage_direction=tillage_direction,
                 field_xlength=100,
                 field_ylength=200,
             )
@@ -359,6 +382,7 @@ def main(workers: int):
                 soil_file,
                 man_file,
                 region_angle,
+                tillage_direction,
             ) in jobs
         ),
     ):
