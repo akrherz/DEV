@@ -34,7 +34,7 @@ def main():
         select f.field_id, sum(erosion_kgm2) as sum from
         field_wind_erosion_results r
         join field f on (r.field_id = f.field_id)
-        where r.valid < '2027-01-01' and erosion_kgm2 > 0 group by f.field_id
+        where r.valid < '2027-01-01' group by f.field_id
     )
     select f.field_id, a.sum, f.geom
     from field f JOIN agg a on (f.field_id = a.field_id)
@@ -67,7 +67,7 @@ def main():
         apctx={"_r": "43"},
         sector="state",
         state="MN",
-        title=r"2007-2025 Wind Erosion [$T a^{-1} yr^{-1}$]",
+        title=r"2007-2026 Wind Erosion [$T a^{-1} yr^{-1}$]",
         subtitle=(
             f"County mean: {stats['mean']:.1f} "
             r"$T a^{-1} yr^{-1}$, "
@@ -81,7 +81,7 @@ def main():
         continentalcolor="white",
         stateborderwidth=1,
     )
-    bins = np.arange(0, 15.1, 1)
+    bins = np.arange(0, 5.1, 0.5)
     cmap = get_cmap("plasma")
     cmap.set_under("#EEEEEE")
     norm = BoundaryNorm(bins, cmap.N)

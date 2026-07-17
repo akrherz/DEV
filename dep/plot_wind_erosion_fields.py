@@ -24,25 +24,25 @@ GRAPH_HUC12 = (
 def main(dt: datetime):
     """Go Main Go."""
     dt = dt.date()
-    with get_sqlalchemy_conn("idep") as conn:
+    with get_sqlalchemy_conn("dep") as conn:
         huc12df = gpd.read_postgis(
             text(
                 """
-    select simple_geom, huc_12 from huc12 where huc_12 = Any(:hucs)
-    and scenario = -10
+    select simple_geom, huc12_code from huc12 where huc12_code = Any(:hucs)
+    and scenario_id = -10
                 """
             ),
             conn,
             params={"hucs": GRAPH_HUC12},
             geom_col="simple_geom",
-            index_col="huc_12",
+            index_col="huc12_code",
         )  # type: ignore
         fieldsdf = gpd.read_postgis(
             text(
                 """
-    select fbndid, erosion_kgm2, max_wmps, geom from
+    select f.field_id as fbndid, erosion_kgm2, max_wind_speed_mps, f.geom from
     field_wind_erosion_results r
-    join fields f on (r.field_id = f.field_id) where r.valid = :dt
+    join field f on (r.field_id = f.field_id) where r.valid = :dt
     and erosion_kgm2 >= 0
                 """
             ),

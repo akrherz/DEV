@@ -25,25 +25,24 @@ with data as (
 
 def main():
     """Go Main Go."""
-    with get_sqlalchemy_conn("idep") as conn:
+    with get_sqlalchemy_conn("dep") as conn:
         huc12df = gpd.read_postgis(
             sql_helper(
                 """
 with hucs as (
-    select huc_12, simple_geom from huc12 where scenario = 0
+    select huc12_id, simple_geom from huc12 where scenario_id = 0
 ), agg as (
-    select huc_12, sum(case when qc_precip > 10 then 1 else 0 end) / 18 as days
-    from results_by_huc12 where scenario = 0 and valid < '2025-01-01' and
-    to_char(valid, 'MMDD') between '0415' and '0531'
-    group by huc_12
+    select huc12_id,
+    sum(case when rectangle_rotation_deg between 45 and 135 then 1 else 0 end)
+    / count(*)::real as fract_east_west from field GROUP by huc12_id
 )
-    select h.huc_12, simple_geom, days from hucs h JOIN agg a on
-    (h.huc_12 = a.huc_12)
+    select a.huc12_id, simple_geom, a.fract_east_west from hucs h JOIN agg a on
+    (h.huc12_id = a.huc12_id)
                 """
             ),
             conn,
             geom_col="simple_geom",
-            index_col="huc_12",
+            index_col="huc12_id",
         )  # type: ignore
     # datadf = pd.read_csv(
     #    "/tmp/huc12_stddev_rfactor.csv",
@@ -67,27 +66,28 @@ with hucs as (
         north=maxy,
         west=minx,
         east=maxx,
-        title=("2007-2024 Calendar days with >= 10mm precipitation by HUC12"),
-        subtitle="Between 15 April and 31 May",
+        title="Percentage of HUC12 Fields Generally Oriented East/West",
+        subtitle="",
         logo="dep",
         nocaption=True,
         continentalcolor="white",
         stateborderwidth=3,
     )
-    cmap = get_cmap("managua")
+    cmap = get_cmap("jet")
     # cmap.set_bad("#000000")
     # cmap.set_over("#ffff00")
-    bins = np.arange(0, 10.1, 2)
+    bins = np.arange(0, 100.1, 20)
     norm = mpcolors.BoundaryNorm(bins, cmap.N)
 
     huc12df.to_crs(mp.panels[0].crs).plot(
         aspect=None,
         ax=mp.panels[0].ax,
-        color=cmap(norm(huc12df["days"])),
+        edgecolor="None",
+        facecolor=cmap(norm(huc12df["fract_east_west"] * 100)),
         zorder=Z_POLITICAL,
     )
     # mp.drawcounties()
-    mp.draw_colorbar(bins, cmap, norm, title="days pear year", extend="max")
+    mp.draw_colorbar(bins, cmap, norm, title="percent", extend="neither")
 
     mp.fig.savefig("test.png")
 
