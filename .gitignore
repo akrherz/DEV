@@ -36,3 +36,4 @@ spc/fixed/
 /dep/weps_gmd
 /dep/weps
 /dep/weps_sensitivity/**
+/dep/weps_residue/**
