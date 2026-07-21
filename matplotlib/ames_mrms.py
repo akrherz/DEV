@@ -22,7 +22,7 @@ def get_data() -> pd.DataFrame:
             text("""
         SELECT id, st_x(geom), st_y(geom), sum(pday)
         from summary_2026 s JOIN stations t
-        on (s.iemid = t.iemid) WHERE s.day = '2026-07-03'
+        on (s.iemid = t.iemid) WHERE s.day = '2026-07-21'
         and t.network = ANY(:networks)
         and pday > 0 GROUP by id, st_x, st_y
         ORDER by sum DESC
@@ -40,7 +40,7 @@ def get_data() -> pd.DataFrame:
             text("""
         SELECT id, st_x(geom), st_y(geom), sum(precip)
         from cocorahs_2026 s JOIN stations t
-        on (s.iemid = t.iemid) WHERE s.day = '2026-07-03'
+        on (s.iemid = t.iemid) WHERE s.day = '2026-07-21'
         and t.network = ANY(:networks)
         and precip > 0 GROUP by id, st_x, st_y
         ORDER by sum DESC
@@ -57,8 +57,8 @@ def get_data() -> pd.DataFrame:
         res = conn.execute(
             text("""
         SELECT ctid, st_x(geom), st_y(geom), magnitude
-        from lsrs_2026 s WHERE valid > '2026-07-03 06:00'
-        and valid < '2026-07-03 20:00' and type = 'R'
+        from lsrs_2026 s WHERE valid > '2026-07-20 06:00'
+        and valid < '2026-07-21 04:00' and type = 'R'
         and magnitude > 0 ORDER by magnitude desc
         """),
             {"networks": networks},
@@ -90,17 +90,17 @@ def main():
         titlefontsize=14,
         title=title,
         subtitle=(
-            "MRMS 24h Ending: 10 AM 3 July 2026, "
+            "MRMS 24h Ending: 7 AM 21 July 2026, "
             "Morning CoCoRaHS/COOP Reports, NWS Local Storm Reports"
         ),
     )
 
-    grbs = pygrib.open("MultiSensor_QPE_24H_Pass2_00.00_20260703-150000.grib2")
+    grbs = pygrib.open("MultiSensor_QPE_24H_Pass2_00.00_20260721-120000.grib2")
     grb = grbs.message(1)
     pcpn = mm2inch(grb["values"])
     lats, lons = grb.latlons()
     lons -= 360.0
-    clevs = [0.01, 0.25, 0.5, 1, 2, 3, 5, 7, 10]
+    clevs = [0.01, 0.25, 0.5, 1, 2, 3, 4, 5]
     cmap = nwsprecip()
     cmap.set_over("k")
 
@@ -113,7 +113,7 @@ def main():
         latlon=True,
         units="inch",
         spacing="proportional",
-        alpha=0.1,
+        alpha=0.4,
     )
     mp.drawcounties()
     obsdf = get_data()
@@ -127,7 +127,7 @@ def main():
         zorder=Z_OVERLAY2,
         labelcolor="white",
     )
-    mp.postprocess(filename="260704.png")
+    mp.postprocess(filename="260721.png")
 
 
 if __name__ == "__main__":
