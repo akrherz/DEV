@@ -1,26 +1,44 @@
-"""Convert the plot.out into something more usable."""
+"""Proctor the running of these tests."""
 
 import calendar
+import os
+import subprocess
+from pathlib import Path
 
 import click
 import numpy as np
 import pandas as pd
 from dailyerosion.reference import KG_M2_TO_TON_ACRE
+from jinja2 import Template
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
+from pydantic import BaseModel
 from pyiem.plot import figure
 
 DATE_AXIS = pd.date_range("2007/01/01", "2026/12/31")
 VARNAMES = {
     "fl_cov%": "Fractional Flat Cover %",
     "ne_wus": "Actual Friction Velocity",
+    "ne_sfcv": "Actual Sfc Clod+Crust",
+    "ne_sf84": "Actual Sfc Fract < 0.84mm",
     "t_wust": "Threshold Friction Velocity",
+    "t_flat_cov": "Threshold Friction Velocity\nfor Flat Cover",
+    "t_ne_bare": "Bare\nThreshold Friction Velocity",
+    "t_surf_wet": "Threshold Friction Velocity\nfor Surface Wetness",
     "wus_anemom": "Friction Velocity\nafter Anemometer Only",
     "wus_random": "Friction Velocity\nafter Random Roughness Only",
     "wus_ridge": "Friction Velocity\nafter Ridge Only",
     "wus_biodrg": "Friction Velocity\nafter Biodrag Only",
 }
 XWIDTH = 0.19
+
+
+class WEPSRun(BaseModel):
+    """What knobs we turn."""
+
+    man_file: str
+    soil_file: str
+    wind_file: str
 
 
 def add_month_labels(ax: Axes):
@@ -41,7 +59,7 @@ def do_friction(dailydf: pd.DataFrame, fig: Figure):
         ax.set_ylabel(stepvar)
         for yr in range(2007, 2027):
             yeardf = dailydf[dailydf.index.year == yr]
-            ax.plot(
+            ax.scatter(
                 yeardf["doy"],
                 yeardf[stepvar].to_numpy(),
             )
@@ -60,7 +78,7 @@ def row2(dailydf: pd.DataFrame, fig: Figure):
     ax1.set_ylabel("fl_cov%")
     for yr in range(2007, 2027):
         yeardf = dailydf[dailydf.index.year == yr]
-        ax1.plot(
+        ax1.scatter(
             yeardf["doy"],
             yeardf["fl_cov%"].to_numpy(),
         )
@@ -73,7 +91,7 @@ def row2(dailydf: pd.DataFrame, fig: Figure):
     ax1.set_ylabel("t_wust")
     for yr in range(2007, 2027):
         yeardf = dailydf[dailydf.index.year == yr]
-        ax1.plot(
+        ax1.scatter(
             yeardf["doy"],
             yeardf["t_wust"].to_numpy(),
         )
@@ -87,7 +105,7 @@ def row2(dailydf: pd.DataFrame, fig: Figure):
     ax1.set_ylabel("ne_wus")
     for yr in range(2007, 2027):
         yeardf = dailydf[dailydf.index.year == yr]
-        ax1.plot(
+        ax1.scatter(
             yeardf["doy"],
             yeardf["ne_wus"].to_numpy(),
         )
@@ -112,11 +130,46 @@ def row2(dailydf: pd.DataFrame, fig: Figure):
     )
 
 
+def run_model(config: WEPSRun):
+    """Do the run."""
+    if Path("weps.runx").exists():
+        os.unlink("weps.runx")
+    with open("weps_run.j2") as fh:
+        tpl = Template(fh.read())
+    with open("weps.run", "w") as fh:
+        fh.write(tpl.render(**config.__dict__))
+    subprocess.run(
+        [
+            "/opt/dep/bin/weps_dep",
+            "-c0",
+            "-E1",
+            "-e0",
+            "-H0",
+            "-i3",
+            "-I0",
+            "-n0",
+            "-o12052026",
+            "-t0",
+            "-T0",
+            "-W0",
+            "-u0",
+        ],
+        check=True,
+    )
+
+
 @click.command()
 @click.option("--var1", required=True)
 @click.option("--var2", required=True)
-def main(var1: str, var2: str) -> None:
+@click.option("--man-file", required=True)
+@click.option("--soil-file", required=True)
+@click.option("--wind-file", required=True)
+def main(
+    var1: str, var2: str, man_file: str, soil_file: str, wind_file: str
+) -> None:
     """Go Main Go."""
+    cfg = WEPSRun(man_file=man_file, soil_file=soil_file, wind_file=wind_file)
+    run_model(cfg)
     data = np.loadtxt("plot.out", skiprows=1)
     with open("plot.out") as fh:
         names = [
@@ -128,9 +181,12 @@ def main(var1: str, var2: str) -> None:
     tayr = abs(dailydf["tot_loss"].sum() * KG_M2_TO_TON_ACRE / 20.0 * -1)
     events = (dailydf["tot_loss"] < 0).sum()
     fig = figure(
-        title="WEPS: Real wind. Grace6, 70% Sand",
+        title=(
+            f"WEPS: man: {cfg.man_file} soil: {cfg.soil_file} "
+            f"wind: {cfg.wind_file}"
+        ),
         subtitle=(
-            f"Total Erosion: {tayr:.4f} tons/acre/yr over {events} events"
+            f"Total Erosion: {tayr:.2f} tons/acre/yr over {events} events"
         ),
         logo="dep",
         figsize=(10.24, 10.24),
@@ -157,7 +213,7 @@ def main(var1: str, var2: str) -> None:
     ax1.set_ylabel(var1)
     for yr in range(2007, 2027):
         yeardf = dailydf[dailydf.index.year == yr]
-        ax1.plot(
+        ax1.scatter(
             yeardf["doy"],
             yeardf[var1].to_numpy(),
         )
@@ -170,7 +226,7 @@ def main(var1: str, var2: str) -> None:
     ax1.set_ylabel(var2)
     for yr in range(2007, 2027):
         yeardf = dailydf[dailydf.index.year == yr]
-        ax1.plot(
+        ax1.scatter(
             yeardf["doy"],
             yeardf[var2].to_numpy(),
         )

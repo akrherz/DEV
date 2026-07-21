@@ -16,6 +16,8 @@ import pandas as pd
 from dailyerosion.io.wepp import read_cli
 from dailyerosion.reference import KG_M2_TO_TON_ACRE
 from jinja2 import Template
+from metpy.calc import wind_components, wind_direction
+from metpy.units import units
 from pydantic import BaseModel, Field
 from tqdm import tqdm
 
@@ -146,20 +148,31 @@ def add_cli_meta(climate_file: str) -> dict:
     """Compute some required metadata from the CLI file."""
     clidf = read_cli(climate_file)
     clidf["threeday_precip"] = clidf["pcpn"].rolling(3).sum()
-    spring_ddd = (
-        clidf[(clidf.index.month >= 3) & (clidf.index.month <= 5)][
-            "threeday_precip"
-        ]
-        < 0.01
-    ).sum() / YEARS
-    fall_ddd = (
-        clidf[(clidf.index.month >= 9)]["threeday_precip"] < 0.01
-    ).sum() / YEARS
+    springdf = clidf[(clidf.index.month >= 3) & (clidf.index.month <= 5)]
+    spring_ddd = (springdf["threeday_precip"] < 0.01).sum() / YEARS
+    u, v = wind_components(
+        units("m/s") * springdf["wmps"].to_numpy(),
+        units("deg") * springdf["wdir"].to_numpy(),
+    )
+    spring_drct = wind_direction(
+        units("m/s") * np.mean(u), units("m/s") * np.mean(v)
+    )
+
+    falldf = clidf[(clidf.index.month >= 9)]
+    fall_ddd = (falldf["threeday_precip"] < 0.01).sum() / YEARS
+    u, v = wind_components(
+        units("m/s") * falldf["wmps"].to_numpy(),
+        units("deg") * falldf["wdir"].to_numpy(),
+    )
+    fall_drct = wind_direction(
+        units("m/s") * np.mean(u), units("m/s") * np.mean(v)
+    )
+
     return {
         "spring_dry_duration_days": spring_ddd,
         "fall_dry_duration_days": fall_ddd,
-        "spring_prevailing_drct": TBD,
-        "fall_prevailing_drct": TBD,
+        "spring_prevailing_drct": spring_drct,
+        "fall_prevailing_drct": fall_drct,
     }
 
 
