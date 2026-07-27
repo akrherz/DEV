@@ -81,10 +81,12 @@ def process(
         )
         print(f"Setting {cullrow['valid']} {tonull}")
 
+        # Reset all the temp related summary variables for this day
         iemcursor.execute(
             f"update summary_{cullrow['valid'].year} set max_feel = null, "
             "max_tmpf = null, min_tmpf = null, min_feel = null, "
-            "avg_feel = null, max_rh = null, avg_rh = null, min_rh = null "
+            "avg_feel = null, max_rh = null, avg_rh = null, min_rh = null, "
+            "max_dwpf = null, min_dwpf = null "
             "where iemid = %s and day = %s",
             (
                 nt.sts[station]["iemid"],
