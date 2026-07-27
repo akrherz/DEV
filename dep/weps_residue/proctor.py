@@ -52,7 +52,7 @@ def do_friction(dailydf: pd.DataFrame, fig: Figure):
     xpos = 0.05
     xdelta = 0.24
     ymax = None
-    for stepvar in ["wus_anemom", "wus_random", "wus_ridge", "wus_biodrg"]:
+    for stepvar in ["t_ne_bare", "t_flat_cov", "t_ag_den", "t_surf_wet"]:
         ax = fig.add_axes((xpos, 0.6, XWIDTH, 0.25))
         xpos += xdelta
         ax.set_title(VARNAMES.get(stepvar, stepvar))
@@ -67,24 +67,30 @@ def do_friction(dailydf: pd.DataFrame, fig: Figure):
         ax.grid(True)
         if ymax is None:
             ymax = ax.get_ylim()[1]
-        ax.set_ylim(0, ymax)
+        # ax.set_ylim(0, ymax)
 
 
 def row2(dailydf: pd.DataFrame, fig: Figure):
     """Stuff done in row2"""
 
     ax1 = fig.add_axes((0.05, 0.35, XWIDTH, 0.2))
-    ax1.set_title(VARNAMES["fl_cov%"])
-    ax1.set_ylabel("fl_cov%")
+    ax1.set_title("Does t_* == t_wust?")
+    ax1.set_ylabel("Difference")
     for yr in range(2007, 2027):
         yeardf = dailydf[dailydf.index.year == yr]
+        sanity = (
+            yeardf[["t_ne_bare", "t_flat_cov", "t_ag_den", "t_surf_wet"]].sum(
+                axis=1
+            )
+            - yeardf["t_wust"]
+        )
         ax1.scatter(
             yeardf["doy"],
-            yeardf["fl_cov%"].to_numpy(),
+            sanity.to_numpy(),
         )
     add_month_labels(ax1)
     ax1.grid(True)
-    ax1.set_ylim(0, 1)
+    ax1.set_ylim(-1, 1)
 
     ax1 = fig.add_axes((0.3, 0.35, XWIDTH, 0.2))
     ax1.set_title(VARNAMES["t_wust"])
@@ -140,7 +146,7 @@ def run_model(config: WEPSRun):
         fh.write(tpl.render(**config.__dict__))
     subprocess.run(
         [
-            "/opt/dep/bin/weps_dep",
+            "/tmp/weps",
             "-c0",
             "-E1",
             "-e0",
@@ -164,12 +170,19 @@ def run_model(config: WEPSRun):
 @click.option("--man-file", required=True)
 @click.option("--soil-file", required=True)
 @click.option("--wind-file", required=True)
+@click.option("--skiprun", is_flag=True, help="Skip running WEPS model")
 def main(
-    var1: str, var2: str, man_file: str, soil_file: str, wind_file: str
+    var1: str,
+    var2: str,
+    man_file: str,
+    soil_file: str,
+    wind_file: str,
+    skiprun: bool,
 ) -> None:
     """Go Main Go."""
     cfg = WEPSRun(man_file=man_file, soil_file=soil_file, wind_file=wind_file)
-    run_model(cfg)
+    if not skiprun:
+        run_model(cfg)
     data = np.loadtxt("plot.out", skiprows=1)
     with open("plot.out") as fh:
         names = [
@@ -178,7 +191,13 @@ def main(
     dailydf = pd.DataFrame(data, columns=names, index=DATE_AXIS)
     dailydf["doy"] = dailydf.index.dayofyear
 
-    tayr = abs(dailydf["tot_loss"].sum() * KG_M2_TO_TON_ACRE / 20.0 * -1)
+    tayr = abs(dailydf["tot_loss"].sum() * KG_M2_TO_TON_ACRE / 20.0)
+    print(dailydf["Surf_H2O"].groupby(dailydf.index.year).describe())
+    print(
+        dailydf[
+            ["t_ne_bare", "t_flat_cov", "t_ag_den", "t_surf_wet"]
+        ].describe()
+    )
     events = (dailydf["tot_loss"] < 0).sum()
     fig = figure(
         title=(
