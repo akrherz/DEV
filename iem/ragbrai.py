@@ -1,24 +1,12 @@
-"""Useful."""
+"""List out some RAGBRAI stats."""
 
-import math
 from datetime import datetime
 
-import matplotlib.pyplot as plt
-import numpy
+import pandas as pd
+from metpy.calc import wind_components
+from metpy.units import units
 from pyiem.database import get_dbconn
-
-ASOS = get_dbconn("asos")
-acursor = ASOS.cursor()
-
-
-def uv(sped, drct2):
-    dirr = drct2 * math.pi / 180.00
-    s = math.sin(dirr)
-    c = math.cos(dirr)
-    u = round(-sped * s, 2)
-    v = round(-sped * c, 2)
-    return u, v
-
+from pyiem.plot import figure
 
 DATES = [
     [datetime(1973, 8, 26), datetime(1973, 8, 31)],
@@ -63,74 +51,138 @@ DATES = [
     [datetime(2012, 7, 22), datetime(2012, 7, 28)],
     [datetime(2013, 7, 21), datetime(2013, 7, 27)],
     [datetime(2014, 7, 20), datetime(2014, 7, 26)],
+    [datetime(2015, 7, 19), datetime(2015, 7, 25)],
+    [datetime(2016, 7, 24), datetime(2016, 7, 30)],
+    [datetime(2017, 7, 23), datetime(2017, 7, 29)],
+    [datetime(2018, 7, 22), datetime(2018, 7, 28)],
+    [datetime(2019, 7, 21), datetime(2019, 7, 27)],
+    # COVID
+    [datetime(2021, 7, 25), datetime(2021, 7, 31)],
+    [datetime(2022, 7, 24), datetime(2022, 7, 30)],
+    [datetime(2023, 7, 23), datetime(2023, 7, 29)],
+    [datetime(2024, 7, 21), datetime(2024, 7, 27)],
+    [datetime(2025, 7, 20), datetime(2025, 7, 26)],
+    [datetime(2026, 7, 19), datetime(2026, 7, 25)],
 ]
 
-hindex = numpy.zeros((2015 - 1973))
-uwnd = numpy.zeros((2015 - 1973))
 
-# output = open('ragbrai.dat', 'w')
-for sdate, edate in DATES:
-    acursor.execute(
-        """
-    SELECT tmpf, dwpf, sknt, drct, valid, feel from t%s WHERE station = 'DSM'
-    and valid BETWEEN '%s 00:00' and '%s 23:59' and tmpf > 0
-    and dwpf > 0 and sknt >= 0 and drct >= 0 ORDER by valid ASC
-    """
-        % (sdate.year, sdate.strftime("%Y-%m-%d"), edate.strftime("%Y-%m-%d"))
-    )
-    cnt = 0
-    tot = 0
-    ttot = 0
-    utot = 0
-    ucnt = 0
-    vtot = 0
-    for row in acursor:
-        ttot += row[0]
-        h = row[5]
-        if row[4].hour > 5 and row[4].hour < 22:
-            u, v = uv(row[2], row[3])
-            # output.write("%s,%s,%s,%.1f,%.2f,%.2f\n" % (
-            # row[4].strftime("%Y,%m,%d,%H,%M"), row[0], row[1], h, u, v))
-            utot += u
-            vtot += v
-            ucnt += 1
-        tot += h
-        cnt += 1
-    print(
-        "%s %3s %4.1f %4.1f %4.1f %4.1f"
-        % (
-            sdate.year,
-            cnt,
-            ttot / float(cnt),
-            tot / float(cnt),
-            utot / float(ucnt),
-            vtot / float(ucnt),
+def main():
+    """Go Main Go."""
+    pgconn = get_dbconn("asos")
+    acursor = pgconn.cursor()
+
+    last_year = DATES[-1][0].year
+
+    results: list[dict] = []
+
+    for sts, ets in DATES:
+        acursor.execute(
+            """
+        SELECT tmpf, dwpf, sknt, drct, valid, feel from alldata
+        WHERE station = 'DSM'
+        and valid >= %s and valid <= %s and tmpf is not null
+        and dwpf is not null
+        and sknt >= 0 and drct >= 0 and report_type = 3
+        ORDER by valid ASC
+        """,
+            (sts, ets.replace(hour=23, minute=59)),
         )
+        cnt = 0
+        tot = 0
+        ttot = 0
+        utot = 0
+        ucnt = 0
+        vtot = 0
+        threshold_hours = 0
+        for row in acursor:
+            ttot += row[0]
+            h = row[5]
+            if h > 85:
+                threshold_hours += 1
+            if row[4].hour > 5 and row[4].hour < 22:
+                u, v = wind_components(
+                    units("kt") * row[2],
+                    units("degree") * row[3],
+                )
+                utot += u.m
+                vtot += v.m
+                ucnt += 1
+            tot += h
+            cnt += 1
+        results.append(
+            {
+                "year": sts.year,
+                "uwnd": utot / float(ucnt) * 1.15,
+                "hindex": tot / float(cnt),
+                "threshold_hours": threshold_hours,
+            }
+        )
+
+    obsdf = pd.DataFrame(results).set_index("year")
+
+    fig = figure(
+        title=f"1973-{last_year} RAGBRAI Weather",
+        subtitle=(
+            "* Using Des Moines Airport data as proxy for entire route "
+            "conditions."
+        ),
+        figsize=(10.24, 7.68),
     )
-    uwnd[sdate.year - 1973] = utot / float(ucnt) * 1.15
-    hindex[sdate.year - 1973] = tot / float(cnt)
-# output.close()
+    ax = fig.add_subplot(211)
+    avgval = obsdf["threshold_hours"].mean()
+    above = obsdf["threshold_hours"] > avgval
+    ax.bar(
+        obsdf[above].index.to_numpy(),
+        obsdf[above]["threshold_hours"].to_numpy(),
+        fc="r",
+    )
+    ax.bar(
+        obsdf[~above].index.to_numpy(),
+        obsdf[~above]["threshold_hours"].to_numpy(),
+        fc="b",
+    )
+    ax.axhline(
+        avgval,
+        color="k",
+        lw=2,
+        zorder=10,
+        label=f"Avg {avgval:.1f} Hours",
+    )
+    ax.set_ylim(ymin=0)
+    ax.set_ylabel("Hours with Heat Index >= 85°F")
+    ax.grid(True)
+    ax.set_xlim(1972.5, last_year + 0.5)
+    ax.legend()
+
+    # Shade 2020 as no-data
+    ax.axvspan(2019.5, 2020.5, fc="tan", ec="tan", alpha=0.5)
+
+    ax2 = fig.add_subplot(212)
+    tail = obsdf["uwnd"] > 0
+    ax2.bar(
+        obsdf[tail].index.to_numpy(),
+        obsdf[tail]["uwnd"].to_numpy(),
+        fc="g",
+    )
+    ax2.bar(
+        obsdf[~tail].index.to_numpy(),
+        obsdf[~tail]["uwnd"].to_numpy(),
+        fc="r",
+    )
+    ax2.set_ylabel("6 AM - 9 PM\nEast/West Daytime\n Average Wind Speed [mph]")
+    ax2.text(1990, 5, "Tail-winds")
+    ax2.text(1990, -5, "Head-winds")
+    ax2.set_xlim(1972.5, last_year + 0.5)
+    ax2.set_ylim(-6, 6)
+
+    ax2.grid(True)
+
+    # Shade 2020 as no-data
+    ax2.axvspan(2019.5, 2020.5, fc="tan", ec="tan", alpha=0.5)
+    ax2.set_xlabel("Year, 2020 cancelled due to COVID-19")
+
+    fig.savefig("260728.png")
 
 
-fig = plt.figure()
-ax = fig.add_subplot(211)
-ax.set_xlim(1972.5, 2014.5)
-ax.set_title("1973-2014 RAGBRAI Weather (Des Moines Airport Data)")
-ax.bar(numpy.arange(1973, 2015) - 0.4, hindex, color="r")
-ax.set_ylim(60, 100)
-ax.set_ylabel("Average Heat Index $^{\circ}\mathrm{F}$")
-ax.grid(True)
-
-ax2 = fig.add_subplot(212)
-ax2.set_xlim(1972.5, 2014.5)
-bars = ax2.bar(numpy.arange(1973, 2015) - 0.4, uwnd, fc="r")
-for bar in bars:
-    if bar.get_xy()[1] == 0:
-        bar.set_facecolor("g")
-ax2.set_ylabel("East/West Daytime\n Average Wind Speed [mph]")
-ax2.text(1990, 5, "Tail-winds")
-ax2.text(1990, -5, "Head-winds")
-
-ax2.grid(True)
-
-fig.savefig("test.png")
+if __name__ == "__main__":
+    main()
