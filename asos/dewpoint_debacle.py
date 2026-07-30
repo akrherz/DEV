@@ -4,6 +4,9 @@ from zoneinfo import ZoneInfo
 
 import matplotlib.dates as mdates
 import pandas as pd
+from matplotlib.axes import Axes
+from metpy.calc import dewpoint_from_relative_humidity
+from metpy.units import units
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import figure
 from pyiem.util import utc
@@ -11,71 +14,119 @@ from pyiem.util import utc
 CST = ZoneInfo("America/Chicago")
 
 
-def common(ax, df2, label):
+def common(ax: Axes, df2: pd.DataFrame, label):
     """Plot..."""
+    maxval = df2["dwpf"].max()
     ax.plot(df2.valid, df2.tmpf, color="r")
     ax.plot(df2.valid, df2.dwpf, color="g")
-    ax.set_ylim(63, 100)
+    ax.axhline(maxval, color="k", lw=1, ls="--")
+    ax.set_ylim(60, 101)
+    ax.set_yticks(range(60, 101, 5))
     ax.grid(True)
-    ax.xaxis.set_major_locator(mdates.HourLocator(range(0, 24, 4), tz=CST))
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%-I %p", tz=CST))
+    ax.xaxis.set_major_locator(mdates.HourLocator(range(0, 24, 6), tz=CST))
+    ax.xaxis.set_major_formatter(
+        mdates.DateFormatter("%-m/%-d\n%-I %p", tz=CST)
+    )
     ax.axvspan(
-        utc(2023, 8, 21, 11, 30),
-        utc(2023, 8, 21, 17),
+        utc(2026, 7, 26, 11, 30),
+        utc(2026, 7, 26, 17),
         color="pink",
     )
     ax.axvspan(
-        utc(2023, 8, 21, 23),
-        utc(2023, 8, 22, 1, 30),
+        utc(2026, 7, 26, 23),
+        utc(2026, 7, 27, 1, 30),
         color="lightblue",
     )
-    maxx = f"\nMax Dewpt:{df2.dwpf.max():.1f}"
-    ax.text(
-        0.02,
-        0.8,
-        label + maxx,
-        transform=ax.transAxes,
-        bbox={"color": "white"},
+    ax.axvspan(
+        utc(2026, 7, 27, 11, 30),
+        utc(2026, 7, 27, 17),
+        color="pink",
+    )
+    ax.axvspan(
+        utc(2026, 7, 27, 23),
+        utc(2026, 7, 28, 1, 30),
+        color="lightblue",
+    )
+    ax.annotate(
+        f"{label} Max Dewpt:{maxval:.1f}°F",
+        xy=(0.02, 0.96),
+        xycoords="axes fraction",
+        ha="left",
+        va="bottom",
+        color="b",
+        bbox={"facecolor": "white", "alpha": 1, "pad": 2, "edgecolor": "k"},
+        fontsize=10,
     )
     ax.set_ylabel("Air/Dewpt Temperature °F")
 
 
 def main():
     """Go Main Go."""
-    with get_sqlalchemy_conn("iem") as conn:
-        df = pd.read_sql(
+    with get_sqlalchemy_conn("asos1min") as conn:
+        amwdf = pd.read_sql(
             """
-            select id, valid, tmpf, dwpf from current_log c JOIN
-            stations t on (c.iemid = t.iemid) where
-            t.id in ('BOOI4', 'SUX', 'DNS') and tmpf is not null
-            and dwpf is not null
-            and valid > '2023-08-21' and valid < '2023-08-22'
-            order by valid asc
+            select valid, tmpf, dwpf from alldata_1minute where station = 'AMW'
+            and valid >= '2026-07-26' and valid <= '2026-07-28'
+            ORDER by valid asc
+            """,
+            conn,
+        )
+    with get_sqlalchemy_conn("isuag") as conn:
+        knai4df = pd.read_sql(
+            """
+            select valid, tair_c_avg_qc, rh_avg_qc from sm_minute
+            where station = 'KNAI4'
+            and valid > '2026-07-26' and valid < '2026-07-28'
+            ORDER by valid asc
+            """,
+            conn,
+        )
+        knai4df["tmpf"] = (
+            (units("degC") * knai4df["tair_c_avg_qc"].to_numpy())
+            .to(units("degF"))
+            .m
+        )
+        knai4df["dwpf"] = (
+            dewpoint_from_relative_humidity(
+                units("degC") * knai4df["tair_c_avg_qc"].to_numpy(),
+                knai4df["rh_avg_qc"].to_numpy() * units.percent,
+            )
+            .to(units("degF"))
+            .m
+        )
+
+    with get_sqlalchemy_conn("asos") as conn:
+        axadf = pd.read_sql(
+            """
+            select valid, tmpf, dwpf from alldata
+            where station = 'AXA'
+            and valid > '2026-07-26' and valid < '2026-07-28'
+            ORDER by valid asc
             """,
             conn,
         )
 
     fig = figure(
-        title="21 August 2023 :: Air + Dew Point Temperature Time Series",
-        subtitle="Times in CDT",
+        title="26-27 July 2026 :: Air + Dew Point Temperature Time Series",
+        subtitle="Times in CDT, dashed line shows max dew point level",
         figsize=(8, 7),
     )
-    ax = fig.add_axes((0.1, 0.05, 0.85, 0.25))
-    df2 = df[df["id"] == "DNS"]
-    common(ax, df2, "KDNS Denison, IA AWOS")
-    ax.set_xlim(df.valid.values[0], df.valid.values[-1])
+    ysz = 0.22
+    y0 = 0.06
+    ypad = 0.08
+    ax = fig.add_axes((0.1, y0, 0.85, ysz))
+    common(ax, axadf, "KAXA Algona, IA ASOS")
+    ax.set_xlim(amwdf.valid.values[0], amwdf.valid.values[-1])
 
-    ax = fig.add_axes((0.1, 0.35, 0.85, 0.25))
-    df2 = df[df["id"] == "SUX"]
-    common(ax, df2, "KSUX Sioux City, IA ASOS")
-    ax.set_xlim(df.valid.values[0], df.valid.values[-1])
+    ax2 = fig.add_axes((0.1, y0 + ysz + ypad, 0.85, ysz))
+    common(ax2, amwdf, "KAMW Ames, IA ASOS")
+    ax2.set_xlim(*ax.get_xlim())
 
-    ax = fig.add_axes((0.1, 0.65, 0.85, 0.25))
-    df2 = df[df["id"] == "BOOI4"]
-    common(ax, df2, "BOOI4 Ames AEA Farm, IA")
-    ax.set_xlim(df.valid.values[0], df.valid.values[-1])
+    ax3 = fig.add_axes((0.1, y0 + 2 * (ysz + ypad), 0.85, ysz))
+    common(ax3, knai4df, "KNAI4 Kanawha ISU Farm, IA")
+    ax3.set_xlim(*ax.get_xlim())
 
-    fig.savefig("230822.png")
+    fig.savefig("260731.png")
 
 
 if __name__ == "__main__":
