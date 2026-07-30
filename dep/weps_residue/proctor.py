@@ -147,18 +147,12 @@ def run_model(config: WEPSRun):
     subprocess.run(
         [
             "/tmp/weps",
-            "-c0",
-            "-E1",
-            "-e0",
-            "-H0",
-            "-i3",
-            "-I0",
-            "-n0",
-            "-o12052026",
-            "-t0",
-            "-T0",
-            "-W0",
-            "-u0",
+            "-c0",  # No soil conditioning output, 1 is default
+            "-H0",  # No heartbeat output for GUI, 1 is default
+            "-I1",  # Initialization loops, 1 is default
+            "-n1",  # Don't write XML inputs
+            "-W0",  # Runoff calculation, holy sensitive to Surf_H2O
+            "-u0",  # Resurface roots, default is 1 , sensitive
         ],
         check=True,
     )
@@ -192,7 +186,7 @@ def main(
     dailydf["doy"] = dailydf.index.dayofyear
 
     tayr = abs(dailydf["tot_loss"].sum() * KG_M2_TO_TON_ACRE / 20.0)
-    print(dailydf["Surf_H2O"].groupby(dailydf.index.year).describe())
+    print(dailydf["max_wind"].groupby(dailydf.index.year).describe())
     print(
         dailydf[
             ["t_ne_bare", "t_flat_cov", "t_ag_den", "t_surf_wet"]
