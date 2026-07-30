@@ -1,4 +1,4 @@
-"""Shrug, just do as I am told."""
+"""Dump hillslopes to a GIS."""
 
 import geopandas as gpd
 from pyiem.database import get_sqlalchemy_conn, sql_helper
@@ -9,12 +9,13 @@ LOG = logger()
 
 def main():
     """Go Main Go."""
-    with get_sqlalchemy_conn("idep") as conn:
+    with get_sqlalchemy_conn("dep") as conn:
         flowpaths = gpd.read_postgis(
             sql_helper("""
-            SELECT st_transform(f.geom, 4326) as geom, f.huc_12, fpath
-            from flowpaths f, huc12 h WHERE f.scenario = 0 and h.scenario = 0
-            and h.states ~* 'KS' and f.huc_12 = h.huc_12
+            SELECT st_transform(f.geom, 4326) as geom, h.huc12_code as huc_12,
+            huc12_fpath_num as fpath
+            from flowpath f JOIN huc12 h on (f.huc12_id = h.huc12_id)
+            WHERE f.scenario_id = 0 and h.states ~* 'KS'
         """),
             conn,
             geom_col="geom",
