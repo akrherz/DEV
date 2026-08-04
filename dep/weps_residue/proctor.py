@@ -146,12 +146,12 @@ def run_model(config: WEPSRun):
         fh.write(tpl.render(**config.__dict__))
     subprocess.run(
         [
-            "/tmp/weps",
+            "/opt/dep/bin/weps_dep",
             "-c0",  # No soil conditioning output, 1 is default
             "-H0",  # No heartbeat output for GUI, 1 is default
             "-I1",  # Initialization loops, 1 is default
             "-n1",  # Don't write XML inputs
-            "-W0",  # Runoff calculation, holy sensitive to Surf_H2O
+            "-W1",  # Runoff calculation, holy sensitive to Surf_H2O
             "-u0",  # Resurface roots, default is 1 , sensitive
         ],
         check=True,
