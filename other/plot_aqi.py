@@ -2,7 +2,7 @@
 
 import pandas as pd
 from matplotlib.dates import DateFormatter
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.plot import figure_axes
 
 
@@ -10,15 +10,16 @@ def main():
     """GO Main."""
     with get_sqlalchemy_conn("other") as conn:
         df = pd.read_sql(
-            """
+            sql_helper("""
         select date(valid), min(pm2_5_aqi_b), avg(pm2_5_aqi_b),
-        max(pm2_5_aqi_b) from purpleair group by date order by date            
-""",
+        max(pm2_5_aqi_b) from purpleair
+        where valid > '2026-01-01' group by date order by date
+"""),
             conn,
         )
 
     (fig, ax) = figure_axes(
-        title="Ames, IA ISU Agronomy Hall Purple Air PM2.5 AQI",
+        title="Ames, IA ISU Agronomy Hall:: 2026 Purple Air PM2.5 AQI",
         figsize=(8, 6),
     )
     ax.set_position([0.1, 0.1, 0.7, 0.8])
@@ -75,7 +76,7 @@ def main():
     ax.set_ylim(0, 500)
     ax.legend(loc=2)
     ax.xaxis.set_major_formatter(DateFormatter("%-d\n%b"))
-    fig.savefig("240515.png")
+    fig.savefig("260804.png")
 
 
 if __name__ == "__main__":
