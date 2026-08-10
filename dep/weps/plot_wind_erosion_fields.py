@@ -12,38 +12,30 @@ from pyiem.plot import MapPlot, get_cmap
 from pyiem.reference import Z_POLITICAL
 from sqlalchemy import text
 
-GRAPH_HUC12 = (
-    "090201081101 090201081102 090201060605 102702040203 101500041202 "
-    "090203010403 070200070501 070102050503 090203030703 090203030702 "
-    "090203030304 090201081002 070102020203 070200080101 101702040106"
-).split()
-
 
 @click.command()
-@click.option("--date", "dt", type=click.DateTime(), help="Date to plot")
+@click.option(
+    "--date", "dt", type=click.DateTime(), help="Date to plot", required=True
+)
 def main(dt: datetime):
     """Go Main Go."""
     dt = dt.date()
     with get_sqlalchemy_conn("dep") as conn:
-        huc12df = gpd.read_postgis(
-            text(
-                """
-    select simple_geom, huc12_code from huc12 where huc12_code = Any(:hucs)
-    and scenario_id = -10
-                """
-            ),
-            conn,
-            params={"hucs": GRAPH_HUC12},
-            geom_col="simple_geom",
-            index_col="huc12_code",
-        )  # type: ignore
         fieldsdf = gpd.read_postgis(
             text(
                 """
-    select f.field_id as fbndid, erosion_kgm2, max_wind_speed_mps, f.geom from
-    field_wind_erosion_results r
-    join field f on (r.field_id = f.field_id) where r.valid = :dt
-    and erosion_kgm2 >= 0
+    with myfields as (
+        select f.field_id, f.geom from
+        field f JOIN field_wind_erosion_results r on (f.field_id = r.field_id)
+        where r.valid = '2026-05-12'
+    ), myday as (
+        select field_id, max_wind_speed_mps, erosion_kgm2 from
+        field_wind_erosion_results where valid = :dt
+    )
+    select f.field_id as fbndid,
+    coalesce(erosion_kgm2, 0) as erosion_kgm2, max_wind_speed_mps, f.geom from
+    myfields f LEFT JOIN myday r on (f.field_id = r.field_id)
+    ORDER by erosion_kgm2 asc
                 """
             ),
             conn,
@@ -72,7 +64,7 @@ def main(dt: datetime):
         subtitle=(
             f"Field mean: {stats['mean']:.1f} T/a, "
             f" 95%: {stats['95%']:.1f} T/a,"
-            f" max: {stats['max']:.1f} T/a"
+            f" max: {stats['max']:.1f} T/a. Fields plotted as points."
         ),
         logo="dep",
         caption="Daily Erosion Project",
@@ -82,24 +74,26 @@ def main(dt: datetime):
     bins = np.arange(0, 10.1, 0.5)
     bins[0] = 0.01
     cmap = get_cmap("plasma")
-    cmap.set_under("#0f0")
+    cmap.set_under("tan")
     norm = BoundaryNorm(bins, cmap.N)
     mp.draw_colorbar(bins, cmap, norm, title="T/a", extend="both")
+    pts = fieldsdf.to_crs(mp.panels[0].crs).centroid
+    mp.panels[0].ax.scatter(
+        pts.x,
+        pts.y,
+        c=cmap(norm(fieldsdf["erosion_ta"].to_numpy())),
+        s=10,
+        edgecolor="None",
+        zorder=Z_POLITICAL + 1,
+    )
+    """
     fieldsdf.to_crs(mp.panels[0].crs).plot(
         aspect=None,
         ax=mp.panels[0].ax,
         color=cmap(norm(fieldsdf["erosion_ta"].to_numpy())),
         zorder=Z_POLITICAL,
     )
-    if not huc12df.empty:
-        huc12df.to_crs(mp.panels[0].crs).plot(
-            aspect=None,
-            ax=mp.panels[0].ax,
-            ec="k",
-            fc="None",
-            zorder=Z_POLITICAL + 1,
-            linewidth=2,
-        )
+    """
     mp.fig.savefig(f"field_wind_erosion_{dt}.png")
 
 
