@@ -8,11 +8,10 @@ import matplotlib.colors as mpcolors
 import matplotlib.dates as mdates
 import pandas as pd
 from matplotlib.colorbar import ColorbarBase
-from pyiem.database import get_sqlalchemy_conn
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.plot import MapPlot, geoplot, get_cmap
 from pyiem.reference import Z_OVERLAY2
 from pyiem.util import utc
-from sqlalchemy import text
 from tqdm import tqdm
 
 CST = ZoneInfo("America/Chicago")
@@ -21,35 +20,49 @@ geoplot.MAIN_AX_BOUNDS = [0.05, 0.3, 0.89, 0.6]
 
 def main():
     """Go Main Go."""
-    sts = utc(2024, 7, 15, 20)
-    ets = utc(2024, 7, 16, 6)
+    sts = utc(2026, 8, 11, 12)
+    ets = utc(2026, 8, 11, 17, 30)
     interval = datetime.timedelta(minutes=5)
     i = 0
     now = sts
+    west = -91.8
+    east = -86.0
+    south = 39.7
+    north = 43.1
     with get_sqlalchemy_conn("postgis") as conn:
         df = pd.read_sql(
-            text(
-                "SELECT distinct ST_x(geom) as lon, ST_y(geom) as lat, "
-                "typetext, "
-                "valid at time zone 'UTC' as valid, magnitude from lsrs "
-                "where valid >= :sts and valid < :ets ORDER by magnitude ASC"
+            sql_helper(
+                """
+    SELECT distinct ST_x(geom) as lon, ST_y(geom) as lat,
+    typetext,
+    valid at time zone 'UTC' as valid, magnitude from lsrs
+    where valid >= :sts and valid < :ets 
+    and ST_WithIn(geom, ST_MakeEnvelope(:west, :south, :east, :north, 4326))
+    ORDER by magnitude ASC"""
             ),
             conn,
-            params={"sts": sts, "ets": ets},
+            params={
+                "sts": sts,
+                "ets": ets,
+                "west": west,
+                "east": east,
+                "south": south,
+                "north": north,
+            },
         )
         df["valid"] = df["valid"].dt.tz_localize("UTC")
         print(df["magnitude"].describe())
         warndf = gpd.read_postgis(
-            text(
+            sql_helper(
                 "SELECT phenomena, geom, issue at time zone 'UTC' as issue, "
-                "expire at time zone 'UTC' as expire from sbw_2024 where "
+                "expire at time zone 'UTC' as expire from sbw_2026 where "
                 "status = 'NEW' and expire >= :sts and issue <= :ets and "
                 "phenomena in ('TO', 'SV', 'MA') and significance = 'W'"
             ),
             conn,
             params={"sts": sts, "ets": ets},
             geom_col="geom",
-        )
+        )  # type: ignore
         print(f"Warnings found {len(warndf.index)}")
     warndf["color"] = "yellow"
     warndf.loc[warndf["phenomena"] == "TO", "color"] = "red"
@@ -87,10 +100,10 @@ def main():
         progress.set_description(now.strftime("%Y-%m-%d %H:%M"))
         mp = MapPlot(
             sector="spherical_mercator",
-            west=-93.5,
-            east=-88.0,
-            south=38.5,
-            north=42.5,
+            west=west,
+            east=east,
+            south=south,
+            north=north,
             # dark gray color
             continentalcolor="#808080",
             statebordercolor="k",
@@ -98,7 +111,7 @@ def main():
             title=(f"{now.astimezone(CST):%d %b %Y %I:%M %p %Z}"),
             subtitle="NWS NEXRAD, SVR+TORs, Unfiltered Local Storm Reports",
             figsize=(10.24, 7.68),
-            caption="@akrherz",
+            nocaption=True,
         )
         """
         df2 = nldn[nldn["valid"] <= now]
@@ -221,9 +234,7 @@ def main():
         ax.set_xlim(sts, ets)
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%-I %p", tz=CST))
         ax.xaxis.set_major_locator(mdates.HourLocator(interval=1))
-        ax.set_xlabel(
-            "16-17 July 2024 Central Daylight Time, 5 minute bar width"
-        )
+        ax.set_xlabel("11 Aug 2026 Central Daylight Time, 5 minute bar width")
         ax.set_yticks(range(50, 111, 10))
         ax.set_ylim(50, 110)
         ax.set_ylabel("Wind Gust [MPH]")
