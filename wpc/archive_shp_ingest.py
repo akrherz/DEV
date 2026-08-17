@@ -144,4 +144,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    print("BUG: geom_layers is not computed, see spc/compute_geom_layers.py")
+    # main()
