@@ -5,8 +5,8 @@ Review website_telemetry for errors.
 from datetime import timedelta
 
 import click
-import httpx
 import pandas as pd
+import requests
 from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.util import utc
 
@@ -62,9 +62,9 @@ def main(hours: int, ignoreapi: bool) -> None:
         waiting = True
         while waiting:
             vhost = VHOST_MAPPER.get(vhost, vhost)
-            req = httpx.get(f"http://{vhost}{uri}", timeout=600)
+            req = requests.get(f"http://{vhost}{uri}", timeout=600)
             # Rumfields Known Knowns
-            if req.status_code in [200, 400, 404, 422, 503]:
+            if req.status_code in [200, 301, 400, 404, 422, 503]:
                 waiting = False
                 continue
             res = input(f"Got {req.status_code} Try again?([y]/n) ")
