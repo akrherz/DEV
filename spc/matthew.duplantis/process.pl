@@ -18,10 +18,10 @@ $PRODUCT = "$directory/products/$ARGV[0].txt";
 
 $total=1;
 $value=0;
-open US, "< $US" or die "$US file cannot be read"; 
+open US, "< $US" or die "$US file cannot be read";
 while(<US>)
 {
-	chomp $_;	
+	chomp $_;
 	@readline = split/,/, $_;
 	$uslonval = $readline[0]; $uslonval =~ s/\s+//;
 	$uslatval = $readline[1]; $uslatval =~ s/\s+//;
@@ -74,7 +74,7 @@ if($nothing != 1)
 	while(<PRODUCT>)
 	{
 		chomp($_);
-	
+
 		if($countline == 0)
 		{
  			@prodline = split/\s+/, $_;
@@ -88,12 +88,12 @@ if($nothing != 1)
 			$_ = <PRODUCT>;
 		}
 
-		$points = $_;	
+		$points = $_;
 		@prodline = split/\s+/, $_;
 		$name = $prodline[0];
 	        @nameline = split/_/,$name;
 		$subname = $nameline[0];
-		$index = $prodline[1];	
+		$index = $prodline[1];
 		$size = $#prodline;
 
 		push(@names,$name);
@@ -103,10 +103,10 @@ if($nothing != 1)
 
 		@subline = split/99999999/, $points;
 		$sublinesize = ($#subline+1);
-	
+
 		$sizeof{$name} = $sublinesize;
         	$polygon_count = 0; $start_num = 0; $finish_num = 0; $initial_range_1 = 0; $initial_range_2 = 0; $segment_count = 0; $diff = 0;
-		
+
 		for($j=1;$j<=$sublinesize;$j++)
 		{
 			for($k=($j+1);$k<=$sublinesize;$k++)
@@ -143,15 +143,15 @@ if($nothing != 1)
         	    $test_x1y1 = point_in_polygon($init_x1,$init_y1,@uspoly);
         	    $test_x4y4 = point_in_polygon($init_x4,$init_y4,@uspoly);
         	    $test_x5y5 = point_in_polygon($init_x5,$init_y5,@uspoly);
-	    
-	    
+
+
 		    if(($test_x0y0==0)&&($test_x1y1==0)&&($subpointsize>3))
         	    {
 			$start_str_to_replace = "$subpoint[0] $subpoint[1] $subpoint[2] $subpoint[3]";
 			for($a=1;$test_x1y1==0;$a++)
 			{
-				($init_x0, $init_y0) = ($subpoint[$a*2],$subpoint[($a*2)+1]);		
-				($init_x1, $init_y1) = ($subpoint[($a*2)+2],$subpoint[($a*2)+3]);          
+				($init_x0, $init_y0) = ($subpoint[$a*2],$subpoint[($a*2)+1]);
+				($init_x1, $init_y1) = ($subpoint[($a*2)+2],$subpoint[($a*2)+3]);
         	    		$test_x1y1 = point_in_polygon($init_x1,$init_y1,@uspoly);
 				if($test_x1y1==0)
 				{
@@ -160,7 +160,7 @@ if($nothing != 1)
 				if($a==100){last;}
 			}
 			($start_x,$start_y,$start_num) = test_segment($init_x0,$init_y0,$init_x1,$init_y1);
-			$start_error = 1;		
+			$start_error = 1;
 	            }
 		    elsif(($test_x0y0==0)&&($test_x1y1==1))
 		    {
@@ -181,19 +181,19 @@ if($nothing != 1)
 				($start_x,$start_y,$start_num) = test_segment($init_x0,$init_y0,$init_x1,$init_y1);
 			}
 		    }
-            
+
 		    $start_x = sprintf "%.3f",$start_x; $start_y = sprintf "%.3f",$start_y;
 		    $start_x{$name}[$j] = $start_x; $start_y{$name}[$j] = $start_y;
 		    $start_num{$name}[$j] = $start_num;
 		    $start_x{$name}[$start_num] = $start_x; $start_y{$name}[$start_num] = $start_y;
-	    	 
+
 	            if(($test_x4y4==0)&&($test_x5y5==0)&&($subpointsize>3))
         	    {
 			$finish_str_to_replace = "$subpoint[$subpointsize-3] $subpoint[$subpointsize-2] $subpoint[$subpointsize-1] $subpoint[$subpointsize]";
 			for($b=1;$test_x4y4==0;$b++)
 			{
-				($init_x5, $init_y5) = ($subpoint[$subpointsize-(($b*2)+1)],$subpoint[$subpointsize-($b*2)]);		
-				($init_x4, $init_y4) = ($subpoint[$subpointsize-(($b*2)+3)],$subpoint[$subpointsize-(($b*2)+2)]);          
+				($init_x5, $init_y5) = ($subpoint[$subpointsize-(($b*2)+1)],$subpoint[$subpointsize-($b*2)]);
+				($init_x4, $init_y4) = ($subpoint[$subpointsize-(($b*2)+3)],$subpoint[$subpointsize-(($b*2)+2)]);
         	    		$test_x4y4 = point_in_polygon($init_x4,$init_y4,@uspoly);
 				if($test_x4y4==0)
 				{
@@ -202,7 +202,7 @@ if($nothing != 1)
 				if($b==100){last;}
 			}
 			($finish_x,$finish_y,$finish_num) = test_segment($init_x4,$init_y4,$init_x5,$init_y5);
-			$finish_error = 1;		
+			$finish_error = 1;
         	    }
 		    elsif(($test_x5y5==0)&&($test_x4y4==1))
 		    {
@@ -215,7 +215,7 @@ if($nothing != 1)
         	        {
 				($new_finish_x,$new_finish_y) = slope_out($init_x5,$init_y5,$init_x4,$init_y4);
 				($finish_x,$finish_y,$finish_num) = test_segment($new_finish_x,$new_finish_y,$init_x5,$init_y5);
-			}		
+			}
             	    }
 	    	    else
 	    	    {
@@ -227,14 +227,14 @@ if($nothing != 1)
 				($finish_x,$finish_y,$finish_num) = reverse_test_segment($init_x4,$init_y4,$init_x5,$init_y5);
 			}
                     }
-   
-		    $finish_x = sprintf "%.3f",$finish_x; $finish_y = sprintf "%.3f",$finish_y;		 
+
+		    $finish_x = sprintf "%.3f",$finish_x; $finish_y = sprintf "%.3f",$finish_y;
 		    $finish_x{$name}[$j] = $finish_x; $finish_y{$name}[$j] = $finish_y;
 		    $finish_num{$name}[$j] = $finish_num;
 
 		    $finish_x{$name}[$finish_num] = $finish_x; $finish_y{$name}[$finish_num] = $finish_y;
-		    $finishing{$name}[$start_num] = $finish_num;            
-            
+		    $finishing{$name}[$start_num] = $finish_num;
+
 	            if($start_error==1)
             	    {
 	    		$subline[$j-1] =~ s/$start_str_to_replace/$start_x $start_y/;
@@ -252,8 +252,8 @@ if($nothing != 1)
  	        	$subline[$j-1] =~ s/$subpoint[$subpointsize-1] $subpoint[$subpointsize]/$finish_x $finish_y/;
             	    }
 	    	    $subline[$j-1] =~ s/\n//;
-	    	    $subline{$name}[$start_num] = $subline[$j-1];	    
-	          }          
+	    	    $subline{$name}[$start_num] = $subline[$j-1];
+	          }
           	  if($poly_check{$name}[$j]==1)
           	  {
             		$subpointsize = ($#subpoint+1);
@@ -272,14 +272,14 @@ if($nothing != 1)
 				($poly_x0, $poly_y0) = ($subpoint[$p1],$subpoint[$p2]);
 	        		($poly_x1, $poly_y1) = ($subpoint[$p3],$subpoint[$p4]);
 	    			($poly_x2, $poly_y2) = ($subpoint[$p5],$subpoint[$p6]);
-				$poly_clockwise = clockwise($poly_x0,$poly_y0,$poly_x1,$poly_y1,$poly_x2,$poly_y2);		
-				$poly_total = ($poly_total + $poly_clockwise);		
+				$poly_clockwise = clockwise($poly_x0,$poly_y0,$poly_x1,$poly_y1,$poly_x2,$poly_y2);
+				$poly_total = ($poly_total + $poly_clockwise);
 	    		}
 	    		if($poly_total<0){$poly_counter{$name}[$j]=1;$poly_counter_x{$name}[$j]=$poly_x0;$poly_counter_y{$name}[$j]=$poly_y0;}# print "$name BECOMES j=$j poly_counter=$poly_counter{$name}[$j]\n";}
 	    		$subline[$j-1] =~ s/\n//;
-            		$segment_count=0;            
+            		$segment_count=0;
           	  }
-                } 
+                }
 	        $v = 0; $w = 0; @new_subline=""; @unsorted=""; $new_seg_count = 0;
         	for($j=1;$j<=$sublinesize;$j++)
         	{
@@ -291,12 +291,12 @@ if($nothing != 1)
 				{
 					$poly_counter{$name}[$v]=1;
 					$poly_counter_x{$name}[$v]=$poly_counter_x{$name}[$j];
-					$poly_counter_y{$name}[$v]=$poly_counter_y{$name}[$j];	
+					$poly_counter_y{$name}[$v]=$poly_counter_y{$name}[$j];
 					if($j>$v)
 					{
 						$poly_counter{$name}[$j]=0; $poly_counter_x{$name}[$j]=""; $poly_counter_y{$name}[$j]="";
-					}			
-				}	
+					}
+				}
 			}
 			else
 			{
@@ -313,7 +313,7 @@ if($nothing != 1)
 					$new_seg_count=($new_seg_count-1);
 				}
 			}
-		}	
+		}
 		@sorted="";@beginning_sorted="";
 		if($w!=0)
 		{
@@ -335,7 +335,7 @@ if($nothing != 1)
 				$start_and_end[$beginning_sorted[$j]] = $val_of_end[$finishing{$name}[$sorted[$beginning_sorted[$j]]]];
 			}
 			for($h=1;$h<($#uslat+1);$h++)
-			{		
+			{
 				$start_done[$sorted[$h]] = 0;
 			}
 			for($j=1;($j<=($w/2));$j++)
@@ -405,7 +405,7 @@ if($nothing != 1)
 			if($v!=1)
 			{
 				if($new_subline[$v] != "")
-				{			
+				{
 					$shpline{$name}[1] .= "+ $new_subline[$v]";
 				}
 			}
@@ -413,20 +413,20 @@ if($nothing != 1)
 			{
 				$shpline{$name}[1] .= $new_subline[$v];
 			}
-		}	
+		}
 		$countline++;
 	}
 	close PRODUCT;
 
 	foreach $m (@names)
 	{
-		push(@temp_array, $m) unless ($seen{$m}++);	
+		push(@temp_array, $m) unless ($seen{$m}++);
 	}
 	@names = @temp_array;
 
 	foreach $n (@subnames)
 	{
-		push(@temp_array1, $n) unless ($seen{$n}++);	
+		push(@temp_array1, $n) unless ($seen{$n}++);
 	}
 	@subnames = @temp_array1;
 
@@ -484,7 +484,7 @@ sub create_kml
 {
 	if($ARGV[0] eq "NEWPTSDY1")
 	{
-		%kmlhash = ("TORNADO_02%" => "0", 
+		%kmlhash = ("TORNADO_02%" => "0",
 			    "TORNADO_05%" => "1000",
 		            "TORNADO_10%" => "2000",
 		            "TORNADO_15%" => "3000",
@@ -492,24 +492,24 @@ sub create_kml
 		            "TORNADO_45%" => "5000",
         		    "TORNADO_60%" => "6000",
         		    "TORNADO_SIGNIFICANT" => "7000",
-			    "HAIL_05%" => "0", 
+			    "HAIL_05%" => "0",
 			    "HAIL_15%" => "1000",
         		    "HAIL_30%" => "2000",
 		            "HAIL_45%" => "3000",
         		    "HAIL_60%" => "4000",
         		    "HAIL_SIGNIFICANT" => "5000",
-			    "WIND_05%" => "0", 
+			    "WIND_05%" => "0",
 			    "WIND_15%" => "1000",
         		    "WIND_30%" => "2000",
 		            "WIND_45%" => "3000",
         		    "WIND_60%" => "4000",
         		    "WIND_SIGNIFICANT" => "5000",
-			    "CATEGORICAL_GENERAL" => "0", 
+			    "CATEGORICAL_GENERAL" => "0",
 			    "CATEGORICAL_SLIGHT" => "1000",
         		    "CATEGORICAL_MODERATE" => "2000",
 		            "CATEGORICAL_HIGH" => "3000",
 		);
-		%kmlcolorhash = ("TORNADO_02%" => "7feded00", 
+		%kmlcolorhash = ("TORNADO_02%" => "7feded00",
 			         "TORNADO_05%" => "7fff0000",
       	        	         "TORNADO_10%" => "7f00cc00",
 	                	 "TORNADO_15%" => "7f007f00",
@@ -517,19 +517,19 @@ sub create_kml
         	 	         "TORNADO_45%" => "7f0178ff",
         		         "TORNADO_60%" => "7f0000eb",
         	        	 "TORNADO_SIGNIFICANT" => "7fed20d8",
-			         "HAIL_05%" => "7fff0000", 
+			         "HAIL_05%" => "7fff0000",
 			         "HAIL_15%" => "7f007f00",
         		         "HAIL_30%" => "7f00eded",
 	                	 "HAIL_45%" => "7f0178ff",
 	        	         "HAIL_60%" => "7f0000eb",
         		         "HAIL_SIGNIFICANT" => "7fed20d8",
-			         "WIND_05%" => "7fff0000", 
+			         "WIND_05%" => "7fff0000",
 		        	 "WIND_15%" => "7f007f00",
 	        	         "WIND_30%" => "7f00eded",
 		                 "WIND_45%" => "7f0178ff",
         		         "WIND_60%" => "7f0000eb",
         	        	 "WIND_SIGNIFICANT" => "7fed20d8",
-			         "CATEGORICAL_GENERAL" => "7f007f00", 
+			         "CATEGORICAL_GENERAL" => "7f007f00",
 			         "CATEGORICAL_SLIGHT" => "7f00eded",
         		         "CATEGORICAL_MODERATE" => "7f0000eb",
 	                	 "CATEGORICAL_HIGH" => "7fed20d8",
@@ -537,24 +537,24 @@ sub create_kml
 	}
 	if(($ARGV[0] eq "NEWPTSDY2")||($ARGV[0] eq "NEWPTSDY3"))
 	{
-		%kmlhash = ("ANY-SEVERE_05%" => "0", 
+		%kmlhash = ("ANY-SEVERE_05%" => "0",
 			    "ANY-SEVERE_15%" => "1000",
 		            "ANY-SEVERE_30%" => "2000",
 		            "ANY-SEVERE_45%" => "3000",
         		    "ANY-SEVERE_60%" => "4000",
-		            "ANY-SEVERE_SIGNIFICANT" => "5000",		            
-			    "CATEGORICAL_GENERAL" => "0", 
+		            "ANY-SEVERE_SIGNIFICANT" => "5000",
+			    "CATEGORICAL_GENERAL" => "0",
 			    "CATEGORICAL_SLIGHT" => "1000",
         		    "CATEGORICAL_MODERATE" => "2000",
 		            "CATEGORICAL_HIGH" => "3000",
 		);
-		%kmlcolorhash = ("ANY-SEVERE_05%" => "7fff0000", 
+		%kmlcolorhash = ("ANY-SEVERE_05%" => "7fff0000",
 			         "ANY-SEVERE_15%" => "7f007f00",
       	        	         "ANY-SEVERE_30%" => "7f00eded",
 	                	 "ANY-SEVERE_45%" => "7f0178ff",
 	        	         "ANY-SEVERE_60%" => "7f0000eb",
         	 	         "ANY-SEVERE_SIGNIFICANT" => "7fed20d8",
-        		         "CATEGORICAL_GENERAL" => "7f007f00", 
+        		         "CATEGORICAL_GENERAL" => "7f007f00",
 			         "CATEGORICAL_SLIGHT" => "7f00eded",
         		         "CATEGORICAL_MODERATE" => "7f0000eb",
 	                	 "CATEGORICAL_HIGH" => "7fed20d8",
@@ -562,20 +562,20 @@ sub create_kml
 	}
 	if($ARGV[0] eq "NEWPTSD48")
 	{
-		%kmlhash = ("ANY-SEVERE_DAY4" => "0", 
+		%kmlhash = ("ANY-SEVERE_DAY4" => "0",
 			    "ANY-SEVERE_DAY5" => "1000",
 		            "ANY-SEVERE_DAY6" => "2000",
 		            "ANY-SEVERE_DAY7" => "3000",
         		    "ANY-SEVERE_DAY8" => "4000",
 		);
-		%kmlcolorhash = ("ANY-SEVERE_DAY4" => "7f0000eb", 
+		%kmlcolorhash = ("ANY-SEVERE_DAY4" => "7f0000eb",
 			         "ANY-SEVERE_DAY5" => "7f8f0f98",
       	        	         "ANY-SEVERE_DAY6" => "7f007f00",
 	                	 "ANY-SEVERE_DAY7" => "7fff0000",
 	        	         "ANY-SEVERE_DAY8" => "7f08355a",
 		);
 	}
-	
+
 	$KMLFILE = "$directory/shp/$base_prod_name/$prod_name.kml\n";
 	open KMLFILE, "> $KMLFILE" or die "$KMLFILE file cannot be overwritten\n";
 	print KMLFILE "<\?xml version=\"1.0\" encoding=\"UTF-8\"\?>\n";
@@ -587,7 +587,7 @@ sub create_kml
         print KMLFILE "      Matthew Duplantis - Information Technology Officer<br>\n";
 	print KMLFILE "	     National Weather Service - Shreveport, LA<br>]]>\n";
         print KMLFILE "  </description>\n";
- 	print KMLFILE "  <open>1</open>\n";	
+ 	print KMLFILE "  <open>1</open>\n";
 	print KMLFILE "  <ScreenOverlay>\n";
 	print KMLFILE "    <name>Product Legend</name>\n";
 	print KMLFILE "    <description>\n";
@@ -610,7 +610,7 @@ sub create_kml
 			if($names[$k] =~ /$subnames[$l]/)
 			{
 				$name = $names[$k];
-				$color = $kmlcolorhash{$name};	
+				$color = $kmlcolorhash{$name};
 				print KMLFILE "	<Style id=\"$name\">\n";
 				print KMLFILE "			<LineStyle>\n";
 				print KMLFILE "			<width>6</width>\n";
@@ -621,7 +621,7 @@ sub create_kml
 				print KMLFILE " </Style>\n";
 			}
 		}
-	}	
+	}
 	for($l=0;$l<($#subnames+1);$l++)
 	{
 		for($k=0;$k<($#names+1);$k++)
@@ -630,12 +630,12 @@ sub create_kml
 			{
 				print KMLFILE "<Folder>\n";
 				print KMLFILE "<name>$subnames[$l]</name>\n";
-				print KMLFILE "<open>1</open>\n";								
+				print KMLFILE "<open>1</open>\n";
 			}
 			if($names[$k] =~ /$subnames[$l]/)
 			{
 				$name = $names[$k];
-				$height = $kmlhash{$name};	
+				$height = $kmlhash{$name};
 				print KMLFILE "	<Placemark>\n";
 				print KMLFILE "         <visibility>1</visibility>\n";
 				print KMLFILE "		<name>$name</name>\n";
@@ -645,10 +645,10 @@ sub create_kml
 				{
 					if($kml_outer{$name}[$i]!="")
 					{
-						print KMLFILE "		<Polygon>\n";	
+						print KMLFILE "		<Polygon>\n";
 						print KMLFILE "			<outerBoundaryIs>\n";
 						print KMLFILE "				<LinearRing>\n";
-						print KMLFILE "					<coordinates>\n";				
+						print KMLFILE "					<coordinates>\n";
 						@coords = split/\s+/,$kml_outer{$name}[$i];
 						for($j=0;$j<($#coords+1);$j++)
 						{
@@ -674,7 +674,7 @@ sub create_kml
 					{
 						print KMLFILE "			<innerBoundaryIs>\n";
 						print KMLFILE "				<LinearRing>\n";
-						print KMLFILE "					<coordinates>\n";				
+						print KMLFILE "					<coordinates>\n";
 						@coords1 = split/\s+/,$kml_inner{$name}[$i];
 						for($j1=0;$j1<($#coords1+1);$j1++)
 						{
@@ -699,22 +699,22 @@ sub create_kml
 					if($kml_outer{$name}[$i]!="")
 					{
 						print KMLFILE "		</Polygon>\n";
-					}					
-				}				
+					}
+				}
 				print KMLFILE " </MultiGeometry>\n";
-				print KMLFILE "	</Placemark>\n";							
+				print KMLFILE "	</Placemark>\n";
 			}
 			if($k==$#names)
 			{
 				print KMLFILE "</Folder>\n";
 			}
 		}
-	}	
+	}
 	print KMLFILE "</Document>\n";
 	print KMLFILE "</kml>\n";
 	close KMLFILE;
 	##system("scp $directory/shp/$base_prod_name/$prod_name.kml ldad\@ls1:/data/ldad/shp/$base_prod_name/$timeline");
-	##system("scp $directory/shp/$base_prod_name/$prod_name.kml ldad\@ls1:/data/ldad/web/images/shp/$base_prod_name/$base_prod_name".".latest.kml");	
+	##system("scp $directory/shp/$base_prod_name/$prod_name.kml ldad\@ls1:/data/ldad/web/images/shp/$base_prod_name/$base_prod_name".".latest.kml");
 }
 
 sub create_nothing_kml
@@ -730,7 +730,7 @@ sub create_nothing_kml
         print KMLFILE "      Matthew Duplantis - Information Technology Officer<br>\n";
 	print KMLFILE "	     National Weather Service - Shreveport, LA<br>]]>\n";
         print KMLFILE "  </description>\n";
- 	print KMLFILE "  <open>1</open>\n";	
+ 	print KMLFILE "  <open>1</open>\n";
 	print KMLFILE "  <ScreenOverlay>\n";
 	print KMLFILE "    <name>Product Legend</name>\n";
 	print KMLFILE "    <description>\n";
@@ -745,7 +745,7 @@ sub create_nothing_kml
 	print KMLFILE "    <screenXY x=\".02\" y=\".01\" xunits=\"fraction\" yunits=\"fraction\" />\n";
 	print KMLFILE "    <rotationXY x=\"0\" y=\"0\" xunits=\"fraction\" yunits=\"fraction\" />\n";
 	print KMLFILE "    <size x=\"-1\" y=\"-1\" xunits=\"fraction\" yunits=\"fraction\" />\n";
-	print KMLFILE "  </ScreenOverlay>\n";	
+	print KMLFILE "  </ScreenOverlay>\n";
 	print KMLFILE "    <LookAt>\n";
 	print KMLFILE "    <longitude>-101.00</longitude>\n";
 	print KMLFILE "    <latitude>38.50</latitude>\n";
@@ -798,7 +798,7 @@ sub create_shp_new
 		if($subnames[$l] eq "HAIL"){$hail_find = 1;}
 		if($subnames[$l] eq "TORNADO"){$tornado_find = 1;}
 		if($subnames[$l] eq "WIND"){$wind_find = 1;}
-						
+
 		system("./shapelib-1.2.10/shpcreate shp/$base_prod_name/"."$subnames[$l] polygon");
 		system("./shapelib-1.2.10/dbfcreate shp/$base_prod_name/"."$subnames[$l] -s NAME 50, -s ISSUED 15, -s VALID_FROM 15, -s VALID_UNTIL 15");
 		for($k=0;$k<($#theorder+1);$k++)
@@ -807,8 +807,8 @@ sub create_shp_new
 			{
 				$name = $theorder[$k];
 				system("./shapelib-1.2.10/shpadd shp/$base_prod_name/"."$subnames[$l] $shpline{$name}[1]");
-				system("./shapelib-1.2.10/dbfadd shp/$base_prod_name/"."$subnames[$l].dbf $name $issued $valid_from $valid_until");	
-				system("cp $directory/config/MAIN.prj shp/$base_prod_name/"."$subnames[$l].prj");					
+				system("./shapelib-1.2.10/dbfadd shp/$base_prod_name/"."$subnames[$l].dbf $name $issued $valid_from $valid_until");
+				system("cp $directory/config/MAIN.prj shp/$base_prod_name/"."$subnames[$l].prj");
 
 			}
 		}
@@ -821,8 +821,8 @@ sub create_shp_new
 		system("./shapelib-1.2.10/shpcreate shp/$base_prod_name/"."CATEGORICAL point");
 		system("./shapelib-1.2.10/dbfcreate shp/$base_prod_name/"."CATEGORICAL -s NAME 50, -s ISSUED 15, -s VALID_FROM 15, -s VALID_UNTIL 15");
 		system("./shapelib-1.2.10/shpadd shp/$base_prod_name/"."CATEGORICAL -97.00 38.00");
-		system("./shapelib-1.2.10/dbfadd shp/$base_prod_name/"."CATEGORICAL.dbf $predictability $issued $valid_from $valid_until");						
-		system("cp $directory/config/MAIN.prj shp/$base_prod_name/"."CATEGORICAL.prj");			
+		system("./shapelib-1.2.10/dbfadd shp/$base_prod_name/"."CATEGORICAL.dbf $predictability $issued $valid_from $valid_until");
+		system("cp $directory/config/MAIN.prj shp/$base_prod_name/"."CATEGORICAL.prj");
 	}
 	if($hail_find == 0)
 	{
@@ -830,8 +830,8 @@ sub create_shp_new
 		system("./shapelib-1.2.10/shpcreate shp/$base_prod_name/"."HAIL point");
 		system("./shapelib-1.2.10/dbfcreate shp/$base_prod_name/"."HAIL -s NAME 50, -s ISSUED 15, -s VALID_FROM 15, -s VALID_UNTIL 15");
 		system("./shapelib-1.2.10/shpadd shp/$base_prod_name/"."HAIL -97.00 38.00");
-		system("./shapelib-1.2.10/dbfadd shp/$base_prod_name/"."HAIL.dbf $predictability $issued $valid_from $valid_until");						
-		system("cp $directory/config/MAIN.prj shp/$base_prod_name/"."HAIL.prj");			
+		system("./shapelib-1.2.10/dbfadd shp/$base_prod_name/"."HAIL.dbf $predictability $issued $valid_from $valid_until");
+		system("cp $directory/config/MAIN.prj shp/$base_prod_name/"."HAIL.prj");
 	}
 	if($tornado_find == 0)
 	{
@@ -839,8 +839,8 @@ sub create_shp_new
 		system("./shapelib-1.2.10/shpcreate shp/$base_prod_name/"."TORNADO point");
 		system("./shapelib-1.2.10/dbfcreate shp/$base_prod_name/"."TORNADO -s NAME 50, -s ISSUED 15, -s VALID_FROM 15, -s VALID_UNTIL 15");
 		system("./shapelib-1.2.10/shpadd shp/$base_prod_name/"."TORNADO -97.00 38.00");
-		system("./shapelib-1.2.10/dbfadd shp/$base_prod_name/"."TORNADO.dbf $predictability $issued $valid_from $valid_until");						
-		system("cp $directory/config/MAIN.prj shp/$base_prod_name/"."TORNADO.prj");			
+		system("./shapelib-1.2.10/dbfadd shp/$base_prod_name/"."TORNADO.dbf $predictability $issued $valid_from $valid_until");
+		system("cp $directory/config/MAIN.prj shp/$base_prod_name/"."TORNADO.prj");
 	}
 	if($wind_find == 0)
 	{
@@ -848,12 +848,12 @@ sub create_shp_new
 		system("./shapelib-1.2.10/shpcreate shp/$base_prod_name/"."WIND point");
 		system("./shapelib-1.2.10/dbfcreate shp/$base_prod_name/"."WIND -s NAME 50, -s ISSUED 15, -s VALID_FROM 15, -s VALID_UNTIL 15");
 		system("./shapelib-1.2.10/shpadd shp/$base_prod_name/"."WIND -97.00 38.00");
-		system("./shapelib-1.2.10/dbfadd shp/$base_prod_name/"."WIND.dbf $predictability $issued $valid_from $valid_until");						
-		system("cp $directory/config/MAIN.prj shp/$base_prod_name/"."WIND.prj");			
+		system("./shapelib-1.2.10/dbfadd shp/$base_prod_name/"."WIND.dbf $predictability $issued $valid_from $valid_until");
+		system("cp $directory/config/MAIN.prj shp/$base_prod_name/"."WIND.prj");
 	}
 
 	#system("rsync -ave ssh $directory/config/$base_prod_name.lyr ldad\@ls1:/data/ldad/shp/$base_prod_name/$timeline/$base_prod_name"."_$timeline.lyr");
-	#system("cp $directory/config/$base_prod_name.lyr shp/$base_prod_name/$base_prod_name"."_$timeline.lyr");										
+	#system("cp $directory/config/$base_prod_name.lyr shp/$base_prod_name/$base_prod_name"."_$timeline.lyr");
 	#system("zip -j $directory/shp/$base_prod_name/$base_prod_name $directory/shp/$base_prod_name/*");
 	#system("scp $directory/shp/$base_prod_name/$base_prod_name.zip ldad\@ls1:/data/ldad/web/images/shp/$base_prod_name/$base_prod_name".".latest.zip");
 }
@@ -879,11 +879,11 @@ sub create_nothing_shp
 		system("./shapelib-1.2.10/shpcreate shp/$base_prod_name/"."$hazards[$e] point");
 		system("./shapelib-1.2.10/dbfcreate shp/$base_prod_name/"."$hazards[$e] -s NAME 50, -s ISSUED 15, -s VALID_FROM 15, -s VALID_UNTIL 15");
 		system("./shapelib-1.2.10/shpadd shp/$base_prod_name/"."$hazards[$e] -97.00 38.00");
-		system("./shapelib-1.2.10/dbfadd shp/$base_prod_name/"."$hazards[$e].dbf $predictability $issued $valid_from $valid_until");						
+		system("./shapelib-1.2.10/dbfadd shp/$base_prod_name/"."$hazards[$e].dbf $predictability $issued $valid_from $valid_until");
 		system("cp $directory/config/MAIN.prj shp/$base_prod_name/"."$hazards[$e].prj");
 	}
 	#system("cp $directory/config/$layerfile shp/$base_prod_name/$base_prod_name"."_$timeline.lyr");
-	#system("rsync -ave ssh $directory/shp/$base_prod_name/* ldad\@ls1:/data/ldad/shp/$base_prod_name/$timeline");	
+	#system("rsync -ave ssh $directory/shp/$base_prod_name/* ldad\@ls1:/data/ldad/shp/$base_prod_name/$timeline");
 	#system("scp $directory/shp/$base_prod_name/$prod_name-* ldad\@ls1:/data/ldad/shp/$base_prod_name");
 	#system("zip -j $directory/shp/$base_prod_name/$base_prod_name $directory/shp/$base_prod_name/*");
 	#system("scp $directory/shp/$base_prod_name/$base_prod_name.zip ldad\@ls1:/data/ldad/web/images/shp/$base_prod_name/$base_prod_name".".latest.zip");
@@ -903,16 +903,16 @@ sub distance
 
 sub find
 {
-	my $find; my $finding_index;	
+	my $find; my $finding_index;
 	my($x0, $y0) = @_;
         for(my $c=1;$c<($#uslat+1);$c++)
 	{
 		$y1 = $uslat[$c];
 		$x1 = $uslon[$c];
 		if($c == $#uslat)
-		{	
+		{
 			$y2 = $uslat[1];
-			$x2 = $uslon[1];			
+			$x2 = $uslon[1];
 		}
 		else
 		{
@@ -942,11 +942,11 @@ sub get_array_of_us_points
 		$y2 = $uslat[$c]; chomp $y2;
 		$x2 = $uslon[$c]; chomp $x2;
 		if($c == $#uslat)
-		{	
+		{
 			$y3 = $uslat[1];
 			$x3 = $uslon[1];
 			$c = 0;
-			$internal_count++;		
+			$internal_count++;
 		}
 		else
 		{
@@ -963,7 +963,7 @@ sub get_array_of_us_points
 		}
 		if(($x0>=$x2)&&($x0<=$x3)&&((($y0>=$y2)&&($y0<=$y3))||(($y0<=$y2)&&($y0>=$y3)))&&($start_find==0))
 		{
-			$starting_index = $c; $start_find = 1; $capture = 1;	
+			$starting_index = $c; $start_find = 1; $capture = 1;
 		}
 		if(($x1<=$x2)&&($x1>=$x3)&&((($y1>=$y2)&&($y1<=$y3))||(($y1<=$y2)&&($y1>=$y3)))&&($end_find==0)&&($start_find==1))
 		{
@@ -978,22 +978,22 @@ sub get_array_of_us_points
 			# An error has occurred!
 			print "An error has occurred in get_array_of_us_points\n";
 			return "0 0 ";
-		}	
-	}	
+		}
+	}
 }
 
 sub test_segment
 {
-	my $val;	
+	my $val;
 	my ($x0, $y0, $x1, $y1) = @_;
 	for(my $c=1;$c<($#uslat+1);$c++)
 	{
 		$y2 = $uslat[$c];
 		$x2 = $uslon[$c];
 		if($c == $#uslat)
-		{	
+		{
 			$y3 = $uslat[1];
-			$x3 = $uslon[1];			
+			$x3 = $uslon[1];
 		}
 		else
 		{
@@ -1004,33 +1004,33 @@ sub test_segment
 		if($true)
                 {
                       	if($c == $#uslat)
-			{	
+			{
 				$y3 = $uslat[1];
-				$x3 = $uslon[1];			
+				$x3 = $uslon[1];
 			}
 			else
 			{
 				$y3 = $uslat[$c+1];
 				$x3 = $uslon[$c+1];
 			}
-                        $val = find($ret_x, $ret_y);			
+                        $val = find($ret_x, $ret_y);
 			return ($ret_x, $ret_y, $val);
                 }
-	}	
+	}
 }
 
 sub reverse_test_segment
 {
-	my $val;	
+	my $val;
 	my ($x0, $y0, $x1, $y1) = @_;
 	for(my $c=$#uslat;$c>0;$c--)
 	{
 		$y2 = $uslat[$c];
 		$x2 = $uslon[$c];
 		if($c == 1)
-		{	
+		{
 			$y3 = $uslat[$#uslat];
-			$x3 = $uslon[$#uslat];			
+			$x3 = $uslon[$#uslat];
 		}
 		else
 		{
@@ -1041,25 +1041,25 @@ sub reverse_test_segment
 		if($true)
                 {
                       	if($c == 1)
-			{	
+			{
 				$y3 = $uslat[$#uslat];
-				$x3 = $uslon[$#uslat];			
+				$x3 = $uslon[$#uslat];
 			}
 			else
 			{
 				$y3 = $uslat[$c-1];
 				$x3 = $uslon[$c-1];
 			}
-                        $val = find($ret_x, $ret_y);			
+                        $val = find($ret_x, $ret_y);
 			return ($ret_x, $ret_y, $val);
                 }
-	}	
+	}
 }
 
 sub bounding_box
 {
 	my ($d, @bb) = @_;
-	my @p = splice(@bb, 0, 4);	
+	my @p = splice(@bb, 0, 4);
 
 	@bb = (@p, @p) unless @bb;
 
@@ -1079,7 +1079,7 @@ sub bounding_box_intersect
 {
 	my ($d, @bb) = @_;
 	my @aa = splice(@bb, 0, 2 * $d);
-	
+
 	for(my $i_min=0; $i_min<$d; $i_min++)
 	{
 		my $i_max = $i_min + $d;
@@ -1096,13 +1096,13 @@ sub line_intersection
 	my($x0, $y0, $x1, $y1, $x2, $y2, $x3, $y3);
 	($x0, $y0, $x1, $y1, $x2, $y2, $x3, $y3) = @_;
 
-	my @box_a = bounding_box(2, $x0, $y0, $x1, $y1);	
+	my @box_a = bounding_box(2, $x0, $y0, $x1, $y1);
 	my @box_b = bounding_box(2, $x2, $y2, $x3, $y3);
 
 	return (0,0,0) unless bounding_box_intersect(2, @box_a, @box_b);
 
 	my ($x,$y);
-	
+
 	my $dy10 = $y1 - $y0;
 	my $dx10 = $x1 - $x0;
 	my $dy32 = $y3 - $y2;
@@ -1152,7 +1152,7 @@ sub line_intersection
 		$x = ($y2 - $y0 + $dyx10*$x0 - $dyx32*$x2)/($dyx10 - $dyx32);
 		$y = $y0 + $dyx10 * ($x - $x0);
 	}
-	
+
 	my $h10 = $dx10 ? ($x - $x0) / $dx10 : ($dy10 ? ($y - $y0) / $dy10 : 1);
 	my $h32 = $dx32 ? ($x - $x2) / $dx32 : ($dy32 ? ($y - $y2) / $dy32 : 1);
 
@@ -1165,7 +1165,7 @@ sub slope_in
 	my $dy10 = $y1 - $y0;
 	my $dx10 = $x1 - $x0;
 	my $x2; my $y2;
-	
+
 	if($dy10<0){$y2=($y1-((abs($dy10)*2)));}
 	elsif($dy10>0){$y2=($y1+($dy10*2));}
 	else{$y2=$y1;}
@@ -1173,7 +1173,7 @@ sub slope_in
 	if($dx10<0){$x2=($x1+((abs($dx10)*2)));}
 	elsif($dx10>0){$x2=($x1-($dx10*2));}
 	else{$x2=$x1;}
-	
+
 	return ($x2,$y2);
 }
 
@@ -1183,7 +1183,7 @@ sub slope_out
 	my $dy10 = $y1 - $y0;
 	my $dx10 = $x1 - $x0;
 	my $x2; my $y2;
-	
+
 	if($dy10<0){$y2=($y0+(abs($dy10)*2));}
 	elsif($dy10>0){$y2=($y0-($dy10*2));}
 	else{$y2=$y0;}
@@ -1191,7 +1191,7 @@ sub slope_out
 	if($dx10<0){$x2=($x0+((abs($dx10)*2)));}
 	elsif($dx10>0){$x2=($x0-($dx10*2));}
 	else{$x2=$x0;}
-	
+
 	return ($x2,$y2);
 }
 
@@ -1204,7 +1204,7 @@ sub point_in_polygon
 	my @i = map{2*$_} 0 .. (@xy/2);
 	my @x = map{$xy[$_]  } @i;
 	my @y = map{$xy[$_+1]} @i;
-	
+
 	my($i,$j);
 
 	my $side = 0;

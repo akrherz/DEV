@@ -40,7 +40,7 @@ def main():
             """
             # get BUFR key iterator
             iterid = codes_bufr_keys_iterator_new(bufr)
-    
+
             # loop over the keys
             while codes_bufr_keys_iterator_next(iterid):
                 # print key name

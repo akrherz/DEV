@@ -3,7 +3,7 @@ load "$WEBWXHOME/ncl_lib/cmap.ncl"
 load "$WEBWXHOME/ncl_lib/meteo_funcs.ncl"
 ;
 ;# File eta_model.ncl -----------------------------------------------------
-;# 
+;#
 ;# Purpose: Create plots of wind speed and temperature
 ;#          on pressure levels from Eta model input files.
 ;#
@@ -39,12 +39,12 @@ begin
     setvalues wks
         "wkColorMap" : cmap
     end setvalues
- 
+
     ; Ingest GRIB file for Eta data (GRIB filename dynamically changed).
 
     gribfile = "/old_ftp/root/pub/grib/Eta_80/2002Apr25/200211500.F12.ETA80.grb"
     print ("Ingesting GRIB file, " + gribfile)
-    file1 = addfile (gribfile,"r") 
+    file1 = addfile (gribfile,"r")
 
     ; Set flag for plotting analysis (0) vs. forecast time (1)
 

@@ -35,11 +35,11 @@ huc6.centroids <- ddply(huc, c("huc6_name"), .fun = function(x){
 
 # adding the watershed names to huc6.centroids for mapping
 huc6.centroids$map.labels <- c(
-	"Big\nBlue", 
-	"Big\nSioux", 
+	"Big\nBlue",
+	"Big\nSioux",
 	"Des\nMoines",
 	"Elkhorn",
-	"Iowa", 
+	"Iowa",
 	"Kaskaskia",
 	"Loup",
 	"Lower\nIllinois",
@@ -65,9 +65,9 @@ huc6.centroids[c(2, 3, 4, 5, 6, 9, 12, 13, 16, 17, 20, 21),"longitude"] <- c(-96
 
 # defining additional theme elements for maps
 map_themes <- theme(
-  axis.text.x = element_blank(), 
+  axis.text.x = element_blank(),
   axis.text.y = element_blank(),
-  axis.title.x = element_blank(), 
+  axis.title.x = element_blank(),
   axis.title.y = element_blank(),
   axis.ticks = element_line(colour=rgb(0,0,0,alpha=0)),
   panel.background =  element_blank(),
@@ -75,13 +75,13 @@ map_themes <- theme(
   panel.grid.minor =  element_blank(),
   plot.margin = unit(c(0,0,0,0), "lines")
   )
-  
+
 # function to format discretized legend
 format.legend.labels <- function(labs) {
   RVAL <- sub("\\(", "\\1", labs)
   RVAL <- sub("\\]", "\\1", RVAL)
   RVAL <- sub(",", " - ", RVAL)
-  
+
   return(RVAL)
 }
 
@@ -112,7 +112,7 @@ wxsb = weather[,c("huc6_id","SeasPrcp07")]
 # merging the weather data with the HUC6 plotting information
 prcp_huc6 <- merge(x = huc, y = wxsb)
 
-# reordering after the merge -- this makes sure the plotting order is 
+# reordering after the merge -- this makes sure the plotting order is
 # preserved for the polygon geometry
 prcp_huc6 <- prcp_huc6[order(prcp_huc6$huc6_name, prcp_huc6$poly_id, prcp_huc6$vert_ord),]
 # Multiply percentile rank by 100
@@ -121,14 +121,14 @@ prcp_huc6$SeasPrcp07 = prcp_huc6$SeasPrcp07 * 100
 # creating a map for seasonal precip
 g1 = ggplot(states, aes(longitude, latitude, group = poly_id)) +
   geom_polygon(data = states, colour = "gray30", fill = NA, size = 0.5) +
-  geom_polygon(aes(x = longitude, y = latitude, fill = SeasPrcp07, group = poly_id), 
-               data = prcp_huc6, inherit.aes = FALSE, 
-               colour = "black", alpha = .9, size = 0.2) + 
+  geom_polygon(aes(x = longitude, y = latitude, fill = SeasPrcp07, group = poly_id),
+               data = prcp_huc6, inherit.aes = FALSE,
+               colour = "black", alpha = .9, size = 0.2) +
   scale_fill_gradient("Pct Rank",
-                      low = "#99CCFF", high = "#000099") + 
-  geom_text(aes(label = map.labels, x = longitude, y = latitude, group = huc6_name), 
-            data = huc6.centroids, size = 2, lineheight = .7, 
-            colour = "black") + coord_fixed(ratio=1) + 
+                      low = "#99CCFF", high = "#000099") +
+  geom_text(aes(label = map.labels, x = longitude, y = latitude, group = huc6_name),
+            data = huc6.centroids, size = 2, lineheight = .7,
+            colour = "black") + coord_fixed(ratio=1) +
   map_themes
 
 pdf("SeasPrcpMap.pdf",width=8,height=6)

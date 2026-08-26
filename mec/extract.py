@@ -27,7 +27,7 @@ for line in open("dates.txt"):
     output.write("turbineid,utcvalid,power,pitch,yaw,windspeed\n")
     cursor.execute(
         """
-      select turbineid, valid, power, pitch, yaw, windspeed from turbine_data 
+      select turbineid, valid, power, pitch, yaw, windspeed from turbine_data
       WHERE valid >= %s and valid < %s ORDER by valid ASC
     """,
         (sts, ets),

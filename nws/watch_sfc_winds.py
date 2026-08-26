@@ -57,7 +57,7 @@ def main():
     SELECT issued, expired, ST_AsText(w.geom) as geo,
     xmax(w.geom), xmin(w.geom), ymax(w.geom), ymin(w.geom) from watches w,
     states s where
-    ST_Contains(s.the_geom, ST_Centroid(w.geom)) and s.state_abbr = 'IA' 
+    ST_Contains(s.the_geom, ST_Centroid(w.geom)) and s.state_abbr = 'IA'
     and type = 'TOR' and issued > '2002-01-01'
     """
     )
@@ -77,7 +77,7 @@ def main():
         ids = []
         sql = """
         SELECT id, x(geom) as lon, y(geom) as lat from stations s
-        WHERE ST_Contains(ST_SetSrid(GeometryFromText('%s'),4326), s.geom) 
+        WHERE ST_Contains(ST_SetSrid(GeometryFromText('%s'),4326), s.geom)
         and network ~* 'ASOS'
         """ % (row[2],)
         mcursor.execute(sql)
@@ -92,9 +92,9 @@ def main():
         V = []
         sql = """
         SELECT distinct station, sknt, drct from t%s d
-        WHERE  
+        WHERE
         d.station in (%s)
-        and d.valid BETWEEN '%s'::timestamp - '30 minutes'::interval and 
+        and d.valid BETWEEN '%s'::timestamp - '30 minutes'::interval and
         '%s'::timestamp + '30 minutes'::interval and sknt >= 0 and drct >= 0
         """ % (
             row[0].year,

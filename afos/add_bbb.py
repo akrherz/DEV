@@ -87,7 +87,7 @@ def workflow(row):
             select ctid from sbw where vtec_year = :vtec_year and
             eventid = :eventid and phenomena = :phenomena and
             significance = :significance and wfo = :wfo and
-            product_id = :product_id 
+            product_id = :product_id
             """),
             {
                 "vtec_year": prods[rraidx].valid.year,
@@ -107,7 +107,7 @@ def workflow(row):
             select ctid from warnings where vtec_year = :vtec_year and
             eventid = :eventid and phenomena = :phenomena and
             significance = :significance and wfo = :wfo and
-            product_ids[1] = :product_id 
+            product_ids[1] = :product_id
             """),
             {
                 "vtec_year": prods[rraidx].valid.year,

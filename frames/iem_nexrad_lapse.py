@@ -36,7 +36,7 @@ def main():
     SELECT distinct ST_x(geom) as lon, ST_y(geom) as lat,
     typetext,
     valid at time zone 'UTC' as valid, magnitude from lsrs
-    where valid >= :sts and valid < :ets 
+    where valid >= :sts and valid < :ets
     and ST_WithIn(geom, ST_MakeEnvelope(:west, :south, :east, :north, 4326))
     ORDER by magnitude ASC"""
             ),

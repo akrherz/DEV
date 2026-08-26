@@ -65,7 +65,7 @@ def main():
         draw.text((x - (w / 2), 18), str(y), fill=255, font=font)
     draw.text((235, 18), "in", fill=255, font=font)
 
-    """ 
+    """
     #DBZ
     for x in range(6,235,20):
         dbz = int(x/2.0 - 33)

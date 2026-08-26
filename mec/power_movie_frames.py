@@ -49,8 +49,8 @@ def do(valid, frame):
 
     cursor.execute(
         """select turbineid, power, ST_x(geom), ST_y(geom), yaw,
-    windspeed 
-     from sampled_data s JOIN turbines t on (t.id = s.turbineid) 
+    windspeed
+     from sampled_data s JOIN turbines t on (t.id = s.turbineid)
      WHERE valid = %s and power is not null and yaw is not null
      and windspeed is not null""",
         (valid,),

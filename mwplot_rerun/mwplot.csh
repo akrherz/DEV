@@ -21,7 +21,7 @@ gddelt << EOF > gddelt.out
   GVCORD   = ALL
   GFUNC    = ALL
   run
-  
+
   exit
 EOF
 
@@ -32,7 +32,7 @@ oabsfc << EOF > oabsfc.out
  DATTIM   = ${timestamp}
  DTAAREA  = ${AREA}
  GUESS    =
- GUESFUN = 
+ GUESFUN =
  GAMMA    = .3
  SEARCH   = 10/EX
  NPASS    = 2
@@ -50,8 +50,8 @@ EOF
 sfmap << EOF > sfmap.out
 	AREA    = ${AREA}
 	GAREA	= ${AREA}
- 	SATFIL   =  
-	RADFIL   =  
+ 	SATFIL   =
+	RADFIL   =
 	SFPARM   =  skyc:.6;tmpf;wsym:1.2:2;alti;;dwpf;;;;brbk:0.8:1:231
 	COLORS   =  32;2;32;0;(50;70/4;23;23/DWPF);32
  	DATTIM   =  ${date}/${hh}
@@ -66,7 +66,7 @@ sfmap << EOF > sfmap.out
         TEXT     = 1
         LUTFIL   =
         STNPLT   =
-  CLRBAR = 
+  CLRBAR =
 	MAP	= 25 + 25//2
 	\$MAPFIL = HICNUS.NWS + hipowo.cia
 	list
@@ -89,24 +89,24 @@ gdcntr << EOF > gdcntr.out
 	MAP      = 0
 	TEXT     = 1
 	DEVICE   = ${DEVICE}
-	SATFIL   =  
-	RADFIL   =  
+	SATFIL   =
+	RADFIL   =
 	PROJ     = LCC/20;-160;24
 	CLEAR    = no
 	PANEL	= 0
-	TITLE	= 
+	TITLE	=
 	SCALE    = 0
 	LATLON   = 0
-	HILO     =  
-	HLSYM    =  
+	HILO     =
+	HLSYM    =
 	CLRBAR   = 1
 	CONTUR   = 3/3
 	SKIP     = 0
 	FINT     = 0
 	FLINE    = 10-20
 	CTYPE    = C
-	LUTFIL   =  
-	STNPLT   =  
+	LUTFIL   =
+	STNPLT   =
 	list
 	run
 
@@ -115,4 +115,3 @@ EOF
 
 
 ${GEMEXE}/gpend
-

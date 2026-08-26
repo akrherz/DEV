@@ -9,7 +9,7 @@ cursor2 = PGCONN.cursor()
 xref = {"131": "227", "119": "233", "113": "243", "114": "244", "115": "245"}
 
 cursor.execute(
-    """SELECT id, unitnumber, ST_x(geom), ST_y(geom) 
+    """SELECT id, unitnumber, ST_x(geom), ST_y(geom)
     from turbines WHERE unitnumber in ('131', '119', '113', '114', '115')"""
 )
 
@@ -23,7 +23,7 @@ for row in cursor:
     o.write("%s,%.6f,%.6f\n" % (row[0], row[2], row[3]))
 
     cursor2.execute(
-        """SELECT valid, power, yaw, 
+        """SELECT valid, power, yaw,
     windspeed, pitch from sampled_data_%s WHERE
     valid between '2008-08-26 10:00' and '2008-08-26 19:00'
     and extract(minute from valid)::numeric %% 10 = 0

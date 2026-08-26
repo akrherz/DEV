@@ -44,9 +44,9 @@ def main():
         )
         sql = """"SELECT * from lsrs_2007 WHERE wfo = '%s' and
         valid >= '%s' and valid < '%s' and
-        ((type = 'H' and magnitude >= 0.75) 
+        ((type = 'H' and magnitude >= 0.75)
         or (type = 'G' and magnitude >= 58) or type = 'D') and
-        geom && SetSrid(GeometryFromText('%s'),4326) and 
+        geom && SetSrid(GeometryFromText('%s'),4326) and
         contains(SetSrid(GeometryFromText('%s'),4326), geom)""" % (
             rs[i]["wfo"],
             rs[i]["issue"],

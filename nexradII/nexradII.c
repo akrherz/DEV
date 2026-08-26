@@ -60,7 +60,7 @@ static void
 signal_handler(int sig)
 {
 #ifdef SVR3SIGNALS
-	/* 
+	/*
 	 * Some systems reset handler to SIG_DFL upon entry to handler.
 	 * In that case, we reregister our handler.
 	 */
@@ -98,7 +98,7 @@ set_sigactions()
 {
 #ifndef NO_POSIXSIGNALS
     struct sigaction sigact ;
-    
+
     sigact.sa_handler = signal_handler;
     sigemptyset(&sigact.sa_mask) ;
     sigact.sa_flags = 0 ;
@@ -106,7 +106,7 @@ set_sigactions()
     /* usually, restart system calls */
     sigact.sa_flags |= SA_RESTART ;
 #endif
-    
+
     (void) sigaction(SIGHUP, &sigact, NULL) ;
     (void) sigaction(SIGINT, &sigact, NULL) ;
     (void) sigaction(SIGTERM, &sigact, NULL) ;
@@ -200,7 +200,7 @@ int main(int argc, char *argv[], char *envp[])
     set_sigactions();
     go = 1;
     while (go) {
-	int i; 
+	int i;
 
 	if ((i=getbuf(0, &length, 4)) != 4) {
 	    if (i > 0) uerror("Short block length");

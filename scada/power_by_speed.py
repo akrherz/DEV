@@ -9,7 +9,7 @@ def do(turbine_id):
     df = read_sql(
         """
     WITH wfavg as (
-     SELECT valid, avg(windspeed) as ws2 from data 
+     SELECT valid, avg(windspeed) as ws2 from data
      WHERE windspeed > 0 GROUP by valid)
 
     SELECT w.ws2::int as ws, (yawangle  / 5)::int * 5 as yaw, avg(power) as p

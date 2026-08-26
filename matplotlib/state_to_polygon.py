@@ -8,7 +8,7 @@ pcursor = POSTGIS.cursor()
 
 pcursor.execute(
     """
- select ST_asText(ST_convexhull(ST_collect( the_geom ))) from states 
+ select ST_asText(ST_convexhull(ST_collect( the_geom ))) from states
  where state_abbr in ('IA','MO', 'KY','OH','IN','IL','MI'
  ,'WI','MN','ND','SD','KS', 'NE')
 """

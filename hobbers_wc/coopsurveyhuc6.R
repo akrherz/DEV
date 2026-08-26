@@ -1,4 +1,4 @@
-# Various summaries from the Co-op data 
+# Various summaries from the Co-op data
 source("coopfns.R")
 library(RPostgreSQL)
 library(plyr)
@@ -436,4 +436,3 @@ coopdat = coopdat[,c("coop_id","longitude","latitude","huc6_id","SeasPrcpMedian"
                      "WarmNight07_11","WarmNight11")]
 
 write.csv(coopdat,file="WeatherCoopInHUC6.csv",row.names=FALSE,quote=FALSE)
-

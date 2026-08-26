@@ -50,14 +50,14 @@ def main():
 
     pcursor.execute(
         """
-    SELECT x(ST_Centroid(ST_Transform(geom,2163))) as center_x,  
+    SELECT x(ST_Centroid(ST_Transform(geom,2163))) as center_x,
         y(ST_Centroid(ST_Transform(geom,2163))) as center_y, *,
         ST_AsText(geom) as gtext,
         x(ST_CEntroid(geom)) as lon, y(ST_Centroid(geom)) as lat,
         ST_AsText(ST_Transform(geom,2163)) as projtext
         from warnings
         WHERE issue > '2008-01-01' and issue < '2012-01-01' and gtype = 'P'
-        and significance = 'W' and 
+        and significance = 'W' and
         phenomena in ('TO') and wfo = 'OAX'
     """
     )
@@ -98,12 +98,12 @@ def main():
         SELECT distinct *, x(ST_Transform(geom,2163)) as x,
             y(ST_Transform(geom,2163)) as y,
             x(geom) as lon, y(geom) as lat
-            from lsrs_%s w WHERE 
-            geom && ST_Buffer(SetSrid(GeometryFromText('%s'),4326),0.01) and 
+            from lsrs_%s w WHERE
+            geom && ST_Buffer(SetSrid(GeometryFromText('%s'),4326),0.01) and
             contains(ST_Buffer(
-                SetSrid(GeometryFromText('%s'),4326),0.01), geom) 
+                SetSrid(GeometryFromText('%s'),4326),0.01), geom)
             and  wfo = '%s' and
-            ((type = 'M' and magnitude >= 34) or 
+            ((type = 'M' and magnitude >= 34) or
             (type = 'H' and magnitude >= 1) or type = 'W' or
             type = 'T' or (type = 'G' and magnitude >= 58) or type = 'D'
             or type = 'F')

@@ -9,7 +9,7 @@ if($ARGV[0] eq "NEWPTSDY1")
 
 @hazards = ("TORNADO","HAIL","WIND","CATEGORICAL");
 
-%torhash = ("0.02" => "02\%", 
+%torhash = ("0.02" => "02\%",
 	    "0.05" => "05\%",
             "0.10" => "10\%",
             "0.15" => "15\%",
@@ -27,7 +27,7 @@ if($ARGV[0] eq "NEWPTSDY1")
                  "SIGN" => "SIGNIFICANT",
 );
 
-%cathash = ("HIGH" => "HIGH", 
+%cathash = ("HIGH" => "HIGH",
 	    "MDT"  => "MODERATE",
             "SLGT" => "SLIGHT",
             "TSTM" => "GENERAL",
@@ -44,7 +44,7 @@ $PRODUCT = "/data/local/scripts/severe/products/$ARGV[0]";
 open OUT2, ">/data/local/scripts/severe/products/$ARGV[0].txt";
 
 $end_of_year = 0;
-open PRODUCT, "< $PRODUCT" or die "PRODUCT file cannot be read"; 
+open PRODUCT, "< $PRODUCT" or die "PRODUCT file cannot be read";
 while(<PRODUCT>)
 {
 	if((/T SUN /) || (/T MON /) || (/T TUE /) || (/T WED /) || (/T THU /) || (/T FRI /) || (/T SAT /))
@@ -104,7 +104,7 @@ $current_name = "";
 
 for($j=0;$j<($#hazards+1);$j++)
 {
-	open PRODUCT, "< $PRODUCT" or die "PRODUCT file cannot be read"; 
+	open PRODUCT, "< $PRODUCT" or die "PRODUCT file cannot be read";
 	while(<PRODUCT>)
 	{
 		if(/\.\.\. $hazards[$j]/)
@@ -113,7 +113,7 @@ for($j=0;$j<($#hazards+1);$j++)
 			$linecount = 1;
 			while(<PRODUCT>)
 			{
-				@readline = split/\s+/, $_;				
+				@readline = split/\s+/, $_;
 				if($readline[1] ne "")
                                 {
 					if($readline[0] ne "")
@@ -126,14 +126,14 @@ for($j=0;$j<($#hazards+1);$j++)
 					{
 						$linecount++;
 					}
-					$current_name = "$hazards[$j]_$label";										
+					$current_name = "$hazards[$j]_$label";
 				        if($hazards[$j] eq "TORNADO")
 					{
-						$name = "$basename"."$torhash{$label}"; 
+						$name = "$basename"."$torhash{$label}";
 					}
 					elsif($hazards[$j] eq "CATEGORICAL")
 					{
-						$name = "$basename"."$cathash{$label}"; 
+						$name = "$basename"."$cathash{$label}";
 					}
 					else
 					{
@@ -141,7 +141,7 @@ for($j=0;$j<($#hazards+1);$j++)
 					}
 					if(($old_name eq $current_name)&&($linecount==1))
 					{
-						$shpline{$name} .= "99999999";						
+						$shpline{$name} .= "99999999";
 					}
 					if($linecount==1)
 					{
@@ -155,13 +155,13 @@ for($j=0;$j<($#hazards+1);$j++)
 					for (@readline)
 					{
 						if($readline[$i] ne "")
-						{					
+						{
 							if($readline[$i] ne "99999999")
-							{							
+							{
 								($lat[$i],$lon[$i]) = readlatlon($readline[$i]);
 								if($linecount==1)
 								{
-									$initial1{$name} = "$lon[1] $lat[1]";									
+									$initial1{$name} = "$lon[1] $lat[1]";
 								}
 								$shpline{$name} .= "$lon[$i] $lat[$i] ";
 								$final{$name} = $readline[$i];
@@ -173,8 +173,8 @@ for($j=0;$j<($#hazards+1);$j++)
 								$i++;
 							}
 						}
-					}	
-				}			
+					}
+				}
 				if(/\&\&/)
 				{
 					last;
@@ -183,12 +183,12 @@ for($j=0;$j<($#hazards+1);$j++)
 			last;
 		}
 	}
-	close PRODUCT;							
+	close PRODUCT;
 }
 
 foreach $m (@found)
 {
-	push(@temp_array, $m) unless ($seen{$m}++);	
+	push(@temp_array, $m) unless ($seen{$m}++);
 }
 @found = @temp_array;
 
@@ -199,25 +199,25 @@ if($found[0] eq "")
 else
 {
 	for $n (@found)
-	{	
+	{
 		$name = $n;
-		print OUT2 "$name 1 $shpline{$name}\n";	
+		print OUT2 "$name 1 $shpline{$name}\n";
 	}
 	if($shpline{CATEGORICAL_GENERAL} ne "")
 	{
-		print OUT2 "CATEGORICAL_GENERAL 1 $shpline{CATEGORICAL_GENERAL}\n";	
+		print OUT2 "CATEGORICAL_GENERAL 1 $shpline{CATEGORICAL_GENERAL}\n";
 	}
 	if($shpline{CATEGORICAL_SLIGHT} ne "")
 	{
-		print OUT2 "CATEGORICAL_SLIGHT 1 $shpline{CATEGORICAL_SLIGHT}\n";	
+		print OUT2 "CATEGORICAL_SLIGHT 1 $shpline{CATEGORICAL_SLIGHT}\n";
 	}
 	if($shpline{CATEGORICAL_MODERATE} ne "")
 	{
-		print OUT2 "CATEGORICAL_MODERATE 1 $shpline{CATEGORICAL_MODERATE}\n";	
+		print OUT2 "CATEGORICAL_MODERATE 1 $shpline{CATEGORICAL_MODERATE}\n";
 	}
 	if($shpline{CATEGORICAL_HIGH} ne "")
 	{
-		print OUT2 "CATEGORICAL_HIGH 1 $shpline{CATEGORICAL_HIGH}\n";	
+		print OUT2 "CATEGORICAL_HIGH 1 $shpline{CATEGORICAL_HIGH}\n";
 	}
 }
 
@@ -231,7 +231,7 @@ sub readlatlon
         if($varline[4] <= 2)
 	{
 		$ln = "-1"."$varline[4]$varline[5]"."."."$varline[6]$varline[7]";
-	}	
+	}
 	else
 	{
 		$ln = "-"."$varline[4]$varline[5]"."."."$varline[6]$varline[7]";

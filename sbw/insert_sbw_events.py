@@ -36,7 +36,7 @@ def insert(cursor, year, row, prod: TextProduct):
     cursor.execute(
         """
         SELECT eventid, st_area(geom), ctid from sbw WHERE
-        vtec_year = %s and wfo = %s and 
+        vtec_year = %s and wfo = %s and
         eventid = %s and phenomena = %s and significance = %s and
         status = 'NEW' and product_id = %s order by st_area(geom) asc
     """,

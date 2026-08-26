@@ -35,7 +35,7 @@ def get_hits(pgconn):
             SELECT wfo, eventid, geom, issue, expire from sbw
             WHERE phenomena = 'TO'
             and significance = 'W' and status = 'NEW' and
-            (expire - issue) >= '30 minutes'::interval   
+            (expire - issue) >= '30 minutes'::interval
         ), mylsrs as (
             SELECT valid, w.wfo, w.eventid, w.issue, w.expire from
             lsrs l, tornadowarnings w WHERE l.type = 'T' and

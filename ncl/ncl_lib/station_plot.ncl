@@ -6,7 +6,7 @@ end
 procedure station_plot(drawingarea:graphic, xpos[*]:float, ypos[*]:float, temp[*]:float, dewp[*]:float, hght[*]:float, uwnd[*]:float, vwnd[*]:float)
 local dims1, dims2, dims3, dims4, temp_string, dewp_string, hght_string, temp_anno, dewp_anno, hght_anno, marker, ind_xtemp, ind_temp, ind_xdewp, ind_dewp, ind_xhght, ind_hght, ind_dewp_gt_30, ind_wind, it, id, ih
 begin
- 
+
        dims1 = dimsizes(xpos)
        temp_string = new(dims1(0), string)
        dewp_string = new(dims1(0), string)
@@ -42,7 +42,7 @@ begin
           "gsMarkerSizeF" : 0.0080
        end create
        NhlNDCPolymarker(drawingarea,marker,xpos,ypos)
- 
+
 ;  Fill temp, dewpoint depression, and height strings
 
        temp_string(:) = " :V20:"
@@ -123,5 +123,5 @@ begin
        if (.not.all(ismissing(ind_wind))) then
            windbarb(drawingarea,xpos(ind_wind),ypos(ind_wind),uwnd(ind_wind),vwnd(ind_wind),0.029,"north")
        end if
- 
+
 end

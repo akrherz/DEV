@@ -33,7 +33,7 @@ while (list($key,$val) = each($wfos)){
       if ($warn["perimeter"] > 0){
           $bratio = $warn["sharedborder"] / $warn["perimeter"] * 100.0;
       }
-      fwrite($output, sprintf("%s,%s,%s.%s,%s,%s,%.2f,%.2f,%.2f,%.2f,", $key, 
+      fwrite($output, sprintf("%s,%s,%s.%s,%s,%s,%.2f,%.2f,%.2f,%.2f,", $key,
         gmdate("Y", $warn["sts"]), $warn["phenomena"], $warn["eventid"],
         date("m/d/Y H:i", $warn["sts"]),
         date("m/d/Y H:i", $warn["expire"]),
@@ -47,13 +47,13 @@ while (list($key,$val) = each($wfos)){
               $lt[$lsr["type"]], $lsr["magnitude"], $lsr["city"], $lsr["county"]));
       }
       fwrite($output, "\n");
-      
+
   }
-  
+
    fclose($output);
 
    $output = fopen("data/${key}-LSR.csv", 'w');
-   
+
    fwrite($output, "WFO,LSR_VALID,LSR_TYPE,LSR_MAG,LSR_CITY,LSR_COUNTY,\n");
    reset($cow->lsrs);
    while ( list($k,$lsr) = each($cow->lsrs)){
@@ -63,5 +63,5 @@ while (list($key,$val) = each($wfos)){
               $lt[$lsr["type"]], $lsr["magnitude"], $lsr["city"], $lsr["county"]));
    }
    fclose($output);
-   
+
 }

@@ -19,7 +19,7 @@ h6spatial = function(dfrm,dbcon) {
     return(dmpca)
 }
 
-h6poly = function(dfrm,dbcon) { 
+h6poly = function(dfrm,dbcon) {
     # Get HUC6 polygons and return as a list of Polygon
     qr1 = paste("SELECT huc6_id, poly_id, vert_ord, longitude, latitude ",
                 "FROM huc6_poly WHERE huc6_id = '",dfrm$huc6_id,"' ",
@@ -109,7 +109,7 @@ yrstdd = function(dfrm,dbcon) {
     qrst = paste("SELECT coop_id, date_part('year',obs_date) AS year, ",
                  "COUNT (obs_date) AS totobs, ",
                  t1," FROM coop_data WHERE coop_id = '",
-                 dfrm$coop_id,"'", 
+                 dfrm$coop_id,"'",
                  "GROUP BY year, coop_id ",
                  "ORDER BY year",sep="")
     dout = dbGetQuery(dbcon,qrst)
@@ -192,7 +192,7 @@ mnthextct = function(dfrm,dbcon,vrext="q95",flagfrm,vrsmry,extfn) {
 yrcdf = function(dfrm,dbcon,flagfrm,vrsmry,yrfn) {
     # Evaluate empirical CDF of a seasonal variable
     d1 = yrfn(dfrm,dbcon)
-    # Check for valid data here - 
+    # Check for valid data here -
     fsb = flagfrm[flagfrm$coop_id == dfrm$coop_id[1],]
     if (nrow(fsb) > 0) {
         for (i in seq(1,nrow(fsb))) {
@@ -213,7 +213,7 @@ yrcdf = function(dfrm,dbcon,flagfrm,vrsmry,yrfn) {
 annsmry = function(dfrm,dbcon,flagfrm,vrsmry,yrfn) {
     # Give a summary of the annual values of a variable
     d1 = yrfn(dfrm,dbcon)
-    # Check for valid data here - 
+    # Check for valid data here -
     fsb = flagfrm[flagfrm$coop_id == dfrm$coop_id[1],]
     if (nrow(fsb) > 0) {
         for (i in seq(1,nrow(fsb))) {
@@ -318,4 +318,3 @@ drtinpoly = function(dfrm,dtstr,dbcon) {
     plystn$obs_date = rep(dtstr,nrow(plystn))
     return(plystn)
 }
-

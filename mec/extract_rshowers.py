@@ -47,8 +47,8 @@ for line in dates.split("\n"):
     cursor.execute(
         """
       select valid, avg(power), avg(windspeed), stddev(windspeed),
-      count(*), avg(yaw2) from sampled_data 
-      WHERE valid >= %s and valid < %s 
+      count(*), avg(yaw2) from sampled_data
+      WHERE valid >= %s and valid < %s
       and extract(minute from valid)::int %% 10 = 0 and power is not null
       and windspeed is not null GROUP by valid ORDER by valid ASC
     """,

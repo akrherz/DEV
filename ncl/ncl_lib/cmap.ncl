@@ -1,7 +1,7 @@
 ;--------------------------------------------------------------------------------------
 ;#
 ;# File:	cmap.ncl
-;# 
+;#
 ;# Contents:	Create a color map
 ;#		   gen_colormap			generate a color map array of RGB values
 ;#
@@ -9,11 +9,11 @@
 ;
 ; Name: 	gen_colormap
 ;
-; Purpose: 	This function explicitly sets the red, green, and blue intensities 
-;		for each element in a colormap array. It is based on HSV where 
-;		sat and val equal 100% AND internet web-browser accepted color 
+; Purpose: 	This function explicitly sets the red, green, and blue intensities
+;		for each element in a colormap array. It is based on HSV where
+;		sat and val equal 100% AND internet web-browser accepted color
 ;		values of 0,20,60,80,100% of the R,G,B components.
-;		
+;
 ; Input:	none
 ;
 ; Returns:	cmap		array of color map values
@@ -45,7 +45,7 @@
         cmap(  0, :) = (/1.0, 1.0, 1.0/)
         ; Entry 1 is the foreground color and map objects
         cmap(  1, :) = (/0.0, 0.0, 0.0/)
- 
+
         cmap(  2, :) = (/1.0, 0.0, 0.8/)
         cmap(  3, :) = (/1.0, 0.0, 1.0/)
         cmap(  4, :) = (/0.8, 0.0, 1.0/)

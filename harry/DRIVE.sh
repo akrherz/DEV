@@ -1,6 +1,6 @@
 # DRIVE the processing of the monthly datafile from Harry Hillaker
 
-if [ $# -ne 2 ] 
+if [ $# -ne 2 ]
 then
   echo "Need two arguments!  sh DRIVE.sh YEAR MONTH";
   exit 1

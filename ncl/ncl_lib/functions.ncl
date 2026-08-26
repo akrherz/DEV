@@ -7,9 +7,9 @@
         end
 
 ; [Greg this will be an important function for you to use]
-; Given the corners of an area in lat and longitude this will set 
+; Given the corners of an area in lat and longitude this will set
 ; the map limit to be these corner values
-;  
+;
         procedure fitmap(mp[1]:graphic,lat[*][*]:numeric,lon[*][*]:numeric)
         local tlat,tlon,t,b,l,r
         begin
@@ -29,7 +29,7 @@
                         "mpLeftNDCF" : l
                         "mpRightNDCF" : r
                 end setvalues
-        end 
+        end
 
 
 ;
@@ -144,8 +144,8 @@
 ;
 ; create a vector plot from a vector field
 ; create the vector field with makedata
-;	
-	function vector(wk[1]:graphic,vf[1]:graphic,name[1]:string) 
+;
+	function vector(wk[1]:graphic,vf[1]:graphic,name[1]:string)
 	local vc
 	begin
 		vc = create name vectorPlotClass wk
@@ -162,11 +162,11 @@
                         "vcWindBarbColor" : 36
 		end create
 		return(vc)
-	end 	
+	end
 ;
 ; create a contour plot from a scalar field
 ; create the scalar field with makedata
-;	
+;
 	function contour(wk[1]:graphic,sf[1]:graphic,name[1]:string)
 	local cn
 	begin
@@ -224,7 +224,7 @@
 	local xy
 	begin
 		xy = create name xyPlotClass wk
-			"xyCoordData" : cas 
+			"xyCoordData" : cas
 		end create
 
 		return(xy)
@@ -237,7 +237,7 @@
 	begin
 		mp = create name mapPlotClass wk end create
 		return(mp)
-	end 
+	end
 
 ;
 ; makes a plot smaller by the value of "frac"
@@ -293,7 +293,7 @@
 	end
 
 ;
-; moves a plot by (dx,dy)	
+; moves a plot by (dx,dy)
 ;
 	procedure move(plot[1]:graphic,dx[1]:numeric,dy[1]:numeric)
 	local vpx,vpy
@@ -328,9 +328,9 @@
 			"vpYF" : vpy + dy
 		end setvalues
 	end
-	
+
 ;
-; moves the upper left corner to (vpx,vpy)	
+; moves the upper left corner to (vpx,vpy)
 ;
 	procedure moveto(plot[1]:graphic,vpx[1]:numeric,vpy[1]:numeric)
 	begin
@@ -361,7 +361,7 @@
 			lb(i) = create "lb" + i labelBarClass wks
 				"vpXF" : .05 + i * .3
 				"vpWidthF" : .3
-				"lbBoxCount" : size 
+				"lbBoxCount" : size
 				"lbFillColors" : labels(i*size:i*size + size - 1)
 				"lbLabelStrings" : labels(i*size:i*size + size - 1 )
 				"lbLabelStride" : 1
@@ -371,9 +371,9 @@
 			end create
 		end do
 		NhlDraw(lb)
-	end 
+	end
 
-	
+
 	procedure PlotPatterns(wks:graphic)
 	local clen, labels, i, lb, size
 	begin
@@ -390,7 +390,7 @@
 			lb(i) = create "lb" + i labelBarClass wks
 				"vpXF" : .05 + i * .3
 				"vpWidthF" : .3
-				"lbBoxCount" : size 
+				"lbBoxCount" : size
 				"lbFillPatterns" : labels(i*size:i*size + size - 1)
 				"lbLabelStrings" : labels(i*size:i*size + size - 1 )
 				"lbLabelStride" : 1
@@ -399,7 +399,7 @@
 			end create
 			end do
 			NhlDraw(lb)
-	end 
+	end
 
 	procedure setaspect(plot[1]:graphic)
 	local xmin,xmax,ymax,ymin,asp,vph,vpw,cx,cy
@@ -423,16 +423,16 @@
 		else
 			vpw = vpw * asp
 		end if
-		
+
 		setvalues plot
 			"vpWidthF" : vpw
 			"vpHeightF" : vph
 		end setvalues
 
 		centerat(plot,cx,cy)
-	end 
-	
-	
+	end
+
+
 	procedure saveps(wk[1]:graphic,name[1]:string,plots:graphic)
 	local ps,cmap
 	begin

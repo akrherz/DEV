@@ -55,7 +55,7 @@ def compute_correction(unitnumber, turbineid):
         cursor2.execute(
             """SELECT yaw from sampled_data_"""
             + unitnumber
-            + """ 
+            + """
         where valid = %s and yaw is not null""",
             (row[0],),
         )

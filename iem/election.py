@@ -72,7 +72,7 @@ iowa_results = [
 
 def runner(a, b):
     icursor.execute(
-        """    
+        """
     SELECT avg(p) from (Select year, avg((high+low)/2.) as p from alldata_ia
     where station = 'IA0000' and month = %s GROUP by year) as foo
     """

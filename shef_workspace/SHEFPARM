@@ -21,7 +21,7 @@ $   010720     Added PE codes for ST, TE; modified factors for HQ, MS
 $              Changed factor for PA, PD
 $              Treat PL English as mb, so use 10.0 for metric to KPA
 $              (Note that the -1.0 conversion factor is for temperature C to F)
-$   020112     Added 8 TS codes (R2-R9); 
+$   020112     Added 8 TS codes (R2-R9);
 $              added 6 PE codes (MD, MN, MV,RN, RW, WD)
 $   031124     Added SF SFD to instantaneous duration list
 $              added TS codes #A-D, #2-9, as in 1A..1D..12..19..99
