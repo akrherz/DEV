@@ -22,7 +22,7 @@ def get_data() -> pd.DataFrame:
             text("""
         SELECT id, st_x(geom), st_y(geom), sum(pday)
         from summary_2026 s JOIN stations t
-        on (s.iemid = t.iemid) WHERE s.day = '2026-07-21'
+        on (s.iemid = t.iemid) WHERE s.day = '2026-09-09'
         and t.network = ANY(:networks)
         and pday > 0 GROUP by id, st_x, st_y
         ORDER by sum DESC
@@ -40,7 +40,7 @@ def get_data() -> pd.DataFrame:
             text("""
         SELECT id, st_x(geom), st_y(geom), sum(precip)
         from cocorahs_2026 s JOIN stations t
-        on (s.iemid = t.iemid) WHERE s.day = '2026-07-21'
+        on (s.iemid = t.iemid) WHERE s.day = '2026-09-09'
         and t.network = ANY(:networks)
         and precip > 0 GROUP by id, st_x, st_y
         ORDER by sum DESC
@@ -57,8 +57,8 @@ def get_data() -> pd.DataFrame:
         res = conn.execute(
             text("""
         SELECT ctid, st_x(geom), st_y(geom), magnitude
-        from lsrs_2026 s WHERE valid > '2026-07-20 06:00'
-        and valid < '2026-07-21 04:00' and type = 'R'
+        from lsrs_2026 s WHERE valid > '2026-09-08 06:00'
+        and valid < '2026-09-09 04:00' and type = 'R'
         and magnitude > 0 ORDER by magnitude desc
         """),
             {"networks": networks},
@@ -83,24 +83,24 @@ def main():
     title = "NOAA MRMS: RADAR + Gauge Corrected Rainfall Estimates"
     mp = MapPlot(
         sector="spherical_mercator",
-        north=41.9,
+        north=41.8,
         east=-93.35,
-        south=41.55,
+        south=41.45,
         west=-93.7,
         titlefontsize=14,
         title=title,
         subtitle=(
-            "MRMS 24h Ending: 7 AM 21 July 2026, "
+            "MRMS 24h Ending: 7 AM 9 September 2026, "
             "Morning CoCoRaHS/COOP Reports, NWS Local Storm Reports"
         ),
     )
 
-    grbs = pygrib.open("MultiSensor_QPE_24H_Pass2_00.00_20260721-120000.grib2")
+    grbs = pygrib.open("MultiSensor_QPE_24H_Pass2_00.00_20260909-120000.grib2")
     grb = grbs.message(1)
     pcpn = mm2inch(grb["values"])
     lats, lons = grb.latlons()
     lons -= 360.0
-    clevs = [0.01, 0.25, 0.5, 1, 2, 3, 4, 5]
+    clevs = [0.01, 0.5, 1, 2, 3, 4, 5, 6]
     cmap = nwsprecip()
     cmap.set_over("k")
 
@@ -127,7 +127,7 @@ def main():
         zorder=Z_OVERLAY2,
         labelcolor="white",
     )
-    mp.postprocess(filename="260721.png")
+    mp.postprocess(filename="260909.png")
 
 
 if __name__ == "__main__":
