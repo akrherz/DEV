@@ -21,6 +21,7 @@ def main(filename: str) -> None:
         ]
     dailydf = pd.DataFrame(data, columns=names, index=DATE_AXIS)
     dailydf["doy"] = dailydf.index.dayofyear
+    dailydf.to_excel(filename.replace(".", "_") + ".xlsx")
     cols = [
         "t_ne_bare",
         "cr_fr_los",
