@@ -16,13 +16,13 @@ def get_data() -> pd.DataFrame:
     vals = []
     labels = []
 
-    networks = ["IA_COOP"]
+    networks = ["IA_COOP", "IL_COOP", "WI_COOP"]
     with get_sqlalchemy_conn("iem") as conn:
         res = conn.execute(
             text("""
         SELECT id, st_x(geom), st_y(geom), sum(pday)
         from summary_2026 s JOIN stations t
-        on (s.iemid = t.iemid) WHERE s.day = '2026-09-09'
+        on (s.iemid = t.iemid) WHERE s.day in ('2026-09-19', '2026-09-20')
         and t.network = ANY(:networks)
         and pday > 0 GROUP by id, st_x, st_y
         ORDER by sum DESC
@@ -34,13 +34,13 @@ def get_data() -> pd.DataFrame:
             lats.append(row[2])
             vals.append("%.2f" % (row[3],))
             labels.append(row[0])
-    networks = ["IA_COCORAHS"]
+    networks = ["IA_COCORAHS", "IL_COCORAHS", "WI_COCORAHS"]
     with get_sqlalchemy_conn("coop") as conn:
         res = conn.execute(
             text("""
         SELECT id, st_x(geom), st_y(geom), sum(precip)
         from cocorahs_2026 s JOIN stations t
-        on (s.iemid = t.iemid) WHERE s.day = '2026-09-09'
+        on (s.iemid = t.iemid) WHERE s.day in ('2026-09-19', '2026-09-20')
         and t.network = ANY(:networks)
         and precip > 0 GROUP by id, st_x, st_y
         ORDER by sum DESC
@@ -57,8 +57,8 @@ def get_data() -> pd.DataFrame:
         res = conn.execute(
             text("""
         SELECT ctid, st_x(geom), st_y(geom), magnitude
-        from lsrs_2026 s WHERE valid > '2026-09-08 06:00'
-        and valid < '2026-09-09 04:00' and type = 'R'
+        from lsrs_2026 s WHERE valid > '2026-09-18 06:00'
+        and valid < '2026-09-20 12:00' and type = 'R'
         and magnitude > 0 ORDER by magnitude desc
         """),
             {"networks": networks},
@@ -83,19 +83,20 @@ def main():
     title = "NOAA MRMS: RADAR + Gauge Corrected Rainfall Estimates"
     mp = MapPlot(
         sector="spherical_mercator",
-        north=41.8,
-        east=-93.35,
-        south=41.45,
-        west=-93.7,
+        north=43.45,
+        east=-90.35,
+        south=41.8,
+        west=-91.7,
         titlefontsize=14,
         title=title,
         subtitle=(
-            "MRMS 24h Ending: 7 AM 9 September 2026, "
+            "MRMS 48h Ending: 7 AM 20 September 2026, "
             "Morning CoCoRaHS/COOP Reports, NWS Local Storm Reports"
         ),
     )
 
-    grbs = pygrib.open("MultiSensor_QPE_24H_Pass2_00.00_20260909-120000.grib2")
+    # grbfn = fetch("MultiSensor_QPE_48H_Pass2", utc(2026, 9, 20, 12))
+    grbs = pygrib.open("MultiSensor_QPE_48H_Pass2_00.00_20260920-120000.grib2")
     grb = grbs.message(1)
     pcpn = mm2inch(grb["values"])
     lats, lons = grb.latlons()
@@ -127,7 +128,7 @@ def main():
         zorder=Z_OVERLAY2,
         labelcolor="white",
     )
-    mp.postprocess(filename="260909.png")
+    mp.postprocess(filename="260921.png")
 
 
 if __name__ == "__main__":
