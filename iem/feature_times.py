@@ -56,7 +56,7 @@ def main():
         f"Abstain {df['abstain'].sum():,.0f} ({aa:.1f}%)"
     )
 
-    fig.savefig("250516.png")
+    fig.savefig("voting.png")
 
 
 if __name__ == "__main__":

@@ -33,6 +33,14 @@ def process_sweepin(sweepin: Path) -> dict:
     troot = ttree.getroot()
     tnode = troot.find("./SCI_BiomassFlatCover")
 
+    treat_nodes = troot.findall("./SCI_brcdInputs/SCI_brcdInput/SCI_brcdRsai")
+    if not treat_nodes:
+        rsai = None
+    else:
+        rsai = float(treat_nodes[0].text)
+        if rsai > 1:
+            print(treatfn)
+
     return {
         "huc12": huc12,
         "fpath": fpath,
@@ -40,6 +48,7 @@ def process_sweepin(sweepin: Path) -> dict:
         "max_wind_speed_mps": np.max(obs),
         "avg_wind_speed_mps": np.mean(obs),
         "sci_watercontent": float(soil_nodes[0].text),
+        "brcd_rsai": rsai,
     }
 
 

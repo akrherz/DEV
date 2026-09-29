@@ -2,7 +2,7 @@
 
 import datetime
 
-from pyiem.plot import figure
+from pyiem.plot import figure_axes
 
 
 def main():
@@ -15,15 +15,18 @@ def main():
         xs.append(ts)
         ys.append(int(tokens[1]))
 
-    fig = figure(figsize=(8, 6))
-    ax = fig.add_subplot(111)
+    fig, ax = figure_axes(
+        figsize=(8, 6),
+        title="IEM Daily Web Requests Milestones [17 Jun 2001-2026]",
+    )
+    ax.set_position((0.1, 0.2, 0.8, 0.7))
 
     ax.semilogy(xs, ys, lw=3)
     # ax.set_xlim( x[0].ticks(), x[-1].ticks() )
     xticks = []
     xticklabels = []
     ts0 = datetime.datetime(2001, 1, 1)
-    ts1 = datetime.datetime(2018, 1, 2)
+    ts1 = datetime.datetime(2026, 9, 24)
     interval = datetime.timedelta(days=1)
     now = ts0
     while now < ts1:
@@ -32,12 +35,10 @@ def main():
             xticklabels.append(now.strftime("%Y"))
         now += interval
     ax.set_xticks(xticks)
-    ax.set_xticklabels(xticklabels, fontsize=20, rotation=90)
-    ax.set_xlabel("Year", fontsize=20)
+    ax.set_xticklabels(xticklabels, fontsize=18, rotation=90)
+    ax.set_xlabel("Year", fontsize=18)
     ax.set_ylabel("Maximum Daily Web Requests", fontsize=20)
-    ax.set_title("IEM Web Requests Milestones [17 Jun 2001-2017]", fontsize=18)
     ax.grid(True)
-    fig.tight_layout()
     fig.savefig("test.png")
 
 

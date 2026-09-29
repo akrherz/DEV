@@ -12,7 +12,7 @@ def main():
     """Go Main Go."""
     df = pd.read_csv("sweepin_vars.csv")
     fig = figure(
-        title="30 Apr 2023 :: Sweepin Variable Histograms",
+        title="12 May 2026 :: Sweepin Variable Histograms",
         logo="dep",
     )
     vars_to_plot = df.columns[2:]
@@ -22,10 +22,12 @@ def main():
         ax = fig.add_axes((x0 + 0.02, 0.05, subplot_width - 0.05, 0.75))
         ax.hist(df[varname], bins=20, orientation="horizontal")
         avgval = df[varname].mean()
-        ax.set_title(f"{varname}\nAvg:{avgval:.2f}")
+        ax.set_title(
+            f"{varname}\nAvg:{avgval:.2f}, Max:{df[varname].max():.2f}",
+            fontsize=10,
+        )
         ax.axhline(avgval, color="red", linestyle="--")
-        if "wind" in varname:
-            ax.set_ylim(top=25)
+        ax.set_ylim(top=25 if "wind" in varname else 1)
         x0 += subplot_width
 
     fig.savefig("test.png")
