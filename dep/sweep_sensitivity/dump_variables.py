@@ -1,15 +1,17 @@
 """Dump sweepin variables to file for further analysis."""
 
-import os
+from datetime import datetime
 from pathlib import Path
 
 import click
 import numpy as np
 import pandas as pd
 from lxml import etree
+from pyiem.database import get_sqlalchemy_conn, sql_helper
+from tqdm import tqdm
 
 
-def process_sweepin(sweepin: Path) -> dict:
+def process_sweepin(sweepin: Path, cropinfo: pd.Series) -> dict:
     """Do the processing work."""
     (huc12, fpath) = sweepin.stem.split("_", 1)
 
@@ -44,6 +46,10 @@ def process_sweepin(sweepin: Path) -> dict:
     return {
         "huc12": huc12,
         "fpath": fpath,
+        "prev_crop": cropinfo["prev_crop"],
+        "cur_crop": cropinfo["cur_crop"],
+        "prev_mgmt": cropinfo["prev_mgmt"],
+        "cur_mgmt": cropinfo["cur_mgmt"],
         "sci_biomass_flat_cover": float(tnode.text),
         "max_wind_speed_mps": np.max(obs),
         "avg_wind_speed_mps": np.mean(obs),
@@ -53,15 +59,50 @@ def process_sweepin(sweepin: Path) -> dict:
 
 
 @click.command()
-def main():
+@click.option(
+    "--date",
+    "dt",
+    type=click.DateTime(),
+    required=True,
+    help="The date the sweepin files are valid for, needed to get crop.",
+)
+def main(dt: datetime):
     """Go Main Go."""
+    if dt.year == 2007:
+        raise click.BadArgumentUsage("Year 2007 is not supported.")
+    with get_sqlalchemy_conn("dep") as conn:
+        cropsdf = pd.read_sql(
+            sql_helper("""
+            select huc12_code || '_' || huc12_fpath_num as key,
+            substr(landuse, :previdx, 1) as prev_crop,
+            substr(landuse, :curidx, 1) as cur_crop,
+            substr(management, :previdx, 1) as prev_mgmt,
+            substr(management, :curidx, 1) as cur_mgmt
+            from ofe_view where ofe = 1
+            """),
+            conn,
+            index_col="key",
+            params={
+                "previdx": dt.year - 2007,
+                "curidx": dt.year - 2007 + 1,
+            },
+        )
     results = []
-    for rootdir, _dirs, files in os.walk("/i/0/sweepin"):
-        for fn in files:
-            if not fn.endswith(".sweep"):
-                continue
-            sweepin = Path(os.path.join(rootdir, fn))
-            results.append(process_sweepin(sweepin))
+    progress = tqdm(cropsdf.iterrows(), total=len(cropsdf.index))
+    hits = 0
+    for key, row in progress:
+        huc12, _fpath = key.split("_")
+        sweep_path = (
+            Path("/i/0/sweepin_260512")
+            / f"{huc12[:8]}"
+            / f"{huc12[8:]}"
+            / f"{key}.sweep"
+        )
+        if not sweep_path.exists():
+            continue
+        progress.set_description(f"{hits}")
+        hits += 1
+        results.append(process_sweepin(sweep_path, row))
 
     pd.DataFrame(results).to_csv("sweepin_vars.csv", index=False)
 

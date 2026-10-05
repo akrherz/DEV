@@ -56,4 +56,13 @@ const wind 24.9 mps, NW | 29,928 | 8.22 | 23.84
 label | Eroding Fields | Overall Avg t/a | Eroding Fields Avg
 --- | --- | --- | ---
 baseline | 558 | 0.02 | 3.23
+const GMD 0.5mm | 1979 |     0.04 |        1.88
+const GMD 1mm | 787 |        0.02 |        2.27
+const GMD 3mm | 108 |        0.01 |        7.44
+delta GMD -0.25mm | 877 |        0.03 |        2.79
+delta GMD +0.25mm | 332 |        0.02 |        4.24
+
+label | Eroding Fields | Overall Avg t/a | Eroding Fields Avg
+--- | --- | --- | ---
+baseline | 558 | 0.02 | 3.23
 24.9 wind, 0 soilmoist, 0 residue |
