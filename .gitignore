@@ -33,8 +33,4 @@ spc/PTS*
 spc/fixed/
 /.vscode
 /twitter/botdata
-/dep/weps_gmd
-/dep/weps
-/dep/weps_sensitivity/**
-/dep/weps_residue/**
-/dep/sweep_sensitivity/**
+/dep/**
