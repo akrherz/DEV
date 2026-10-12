@@ -49,7 +49,7 @@ def main(argv):
             possible=24,
         )
         .fillna(0)
-        .resample("m")
+        .resample("ME")
         .sum()
         .assign(
             year=lambda df_: df_.index.year,
