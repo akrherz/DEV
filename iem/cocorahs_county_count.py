@@ -6,7 +6,7 @@ from pyiem.plot import MapPlot, get_cmap
 
 def main():
     """Go Main Go."""
-    iemdb = get_dbconn("iem")
+    iemdb = get_dbconn("coop")
     icursor = iemdb.cursor()
 
     postgis = get_dbconn("postgis")
@@ -16,8 +16,8 @@ def main():
         """
     WITH data as (
     SELECT distinct s.iemid
-    from summary s JOIN stations t on (t.iemid = s.iemid)
-    WHERE t.network = 'IACOCORAHS' and s.day >= '2023-09-01' and pday > 0)
+    from alldata_cocorahs s JOIN stations t on (t.iemid = s.iemid)
+    WHERE t.network = 'IA_COCORAHS' and s.day >= '2025-09-01' and precip > 0)
 
     SELECT ugc_county, count(*)
     from stations t JOIN data d on (d.iemid = t.iemid)
@@ -30,6 +30,8 @@ def main():
     for row in icursor:
         data[row[0]] = row[1]
         total += row[1]
+
+    print(data)
 
     # Query out centroids of counties...
     pcursor.execute(
@@ -52,7 +54,7 @@ def main():
         axisbg="white",
         title=f"Iowa CoCoRaHS Observers Per County ({total} Total)",
         subtitle=(
-            "Sites with at least one report in past year (Sep 2023- Aug 2024)"
+            "Sites with at least one report in past year (Sep 2025 - Oct 2026)"
         ),
     )
     cmap = get_cmap("YlGnBu")
@@ -65,7 +67,7 @@ def main():
     )
     mp.plot_values(clons, clats, cvals, labelbuffer=0)
     mp.drawcounties()
-    mp.postprocess(filename="240830.png")
+    mp.postprocess(filename="261012.png", dpi=200)
 
 
 if __name__ == "__main__":
