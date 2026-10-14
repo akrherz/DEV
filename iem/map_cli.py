@@ -1,7 +1,7 @@
 """Map cli_data"""
 
 import pandas as pd
-from matplotlib.colors import LinearSegmentedColormap, Normalize
+from matplotlib.colors import ListedColormap, Normalize
 from pyiem.database import get_sqlalchemy_conn
 from pyiem.plot import MapPlot
 
@@ -29,7 +29,7 @@ def main():
         )
 
     hex_colors = ["#FFFFFF", "#FFD200", "#FF5500", "#E6005C"]
-    cmap = LinearSegmentedColormap.from_list("text_ramp", hex_colors)
+    cmap = ListedColormap(hex_colors)
     clevs = list(range(0, 41, 10))
     norm = Normalize(vmin=0, vmax=40)
     df["color"] = df["val"].apply(lambda x: cmap(norm(x)))
