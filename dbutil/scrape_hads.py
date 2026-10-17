@@ -5,8 +5,8 @@ from io import StringIO
 import pandas as pd
 import requests
 from pandas import read_sql
+from pyiem.database import get_dbconn, get_dbconnstr
 from pyiem.reference import nwsli2country, nwsli2state
-from pyiem.util import get_dbconn, get_dbconnstr
 
 
 def main():
@@ -27,16 +27,17 @@ def main():
         state = nwsli2state.get(stcode)
         hadscode = country if country != "US" else state
         if country == "US":
-            network = "%s_DCP" % (state,)
+            network = f"{state}_DCP"
         elif country == "CA":
             hadscode = "CN"
-            network = "%s_%s_DCP" % (country, state)
+            network = f"{country}_{state}_DCP"
         else:
-            network = "%s__DCP" % (country,)
-        print("Processing country:%s state:%s" % (country, state))
+            network = f"{country}__DCP"
+        print(f"Processing country:{country} state:{state}")
         uri = (
-            "https://hads.ncep.noaa.gov/compressed_defs/%s_dcps_compressed.txt"
-        ) % (hadscode,)
+            "https://hads.ncep.noaa.gov/compressed_defs/"
+            f"{hadscode}_dcps_compressed.txt"
+        )
         req = requests.get(uri, timeout=60)
         if req.status_code != 200:
             print("uri: %s failed" % (uri,))
