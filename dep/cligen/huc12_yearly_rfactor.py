@@ -14,21 +14,17 @@ LOG = logger()
 def main():
     """Go Main Go."""
     up_till_year = date.today().year
-    hucs = (
-        "102400130204 102801020803 102300010606 071000040101 102400010102 "
-        "070600010601 070802051004 102300020402 070600051102 071000080302 "
-        "070801041201"
-    )
-    with get_sqlalchemy_conn("idep") as conn:
+    hucs = ("102400130204 071000050204").split()
+    with get_sqlalchemy_conn("dep") as conn:
         pts = pd.read_sql(
             sql_helper("""
         with data as (
-            select huc12, st_centroid(st_transform(geom, 4326)) as geo from
-            wbd_huc12 where huc12 = ANY(:hucs))
-        select huc12, st_x(geo) as lon, st_y(geo) as lat from data
+            select huc12_code, st_centroid(st_transform(geom, 4326)) as geo
+            from huc12 where huc12_code = ANY(:hucs) and scenario_id = 0)
+        select huc12_code, st_x(geo) as lon, st_y(geo) as lat from data
                        """),
             conn,
-            params={"hucs": hucs.split()},
+            params={"hucs": hucs},
         )
     if len(pts.index) != len(hucs):
         LOG.warning(
@@ -46,7 +42,7 @@ def main():
         cli = read_cli("/tmp/dep.cli", compute_rfactor=True)
         data = cli.groupby(cli.index.year).sum(numeric_only=True).copy()
         data.index.name = "year"
-        data["huc12"] = row.huc12
+        data["huc12"] = row.huc12_code
         dfs.append(data.loc[:up_till_year].reset_index())
     pd.concat(dfs).to_csv(
         "/tmp/huc12_yearly_rfactor.csv",
