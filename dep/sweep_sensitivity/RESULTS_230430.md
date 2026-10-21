@@ -1,5 +1,11 @@
 # 30 Apr 2023 Scenario work
 
+Updated sensitivity with now 120,048 fields
+
+label | Eroding Fields | Overall Avg t/a | Eroding Fields Avg
+--- | --- | --- | ---
+baseline |  925 | 0.03 | 4.04
+
 There are 86,790 fields.
 
 label | Eroding Fields | Overall Avg t/a | Eroding Fields Avg

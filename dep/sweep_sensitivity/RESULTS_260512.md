@@ -1,6 +1,16 @@
 # 12 May 2026 Scenario work
 
-There are 86,790 fields.
+Updated sensitivity with now 120,048 fields
+
+label | Eroding Fields | Overall Avg t/a | Eroding Fields Avg t/a
+--- | --- | --- | ---
+baseline | 2,080 | 0.11 | 6.12
+GMD 0.5 | 3,471 | 0.14 | 4.84
+GMD 1.0 | 2,564 | 0.11 | 5.36
+GMD -0.25 | 2,358 | 0.12 | 5.91
+GMD +0.25 | 1,912 | 0.10 | 6.40
+
+There are(were) 86,790 fields.
 
 label | Eroding Fields | Overall Avg t/a | Eroding Fields Avg
 --- | --- | --- | ---
