@@ -1,14 +1,19 @@
 """Look to see if we have something systematic wrong with IEMRE"""
 
-import json
 import sys
 
 import pandas as pd
 import requests
+from pyiem.database import get_sqlalchemy_conn, sql_helper
 from pyiem.network import Table as NetworkTable
-from pyiem.util import get_sqlalchemy_conn
 
-COLS = ["ob_pday", "daily_precip_in", "precip_delta", "prism_precip_in"]
+COLS = [
+    "ob_pday",
+    "daily_precip_in",
+    "precip_delta",
+    "prism_precip_in",
+    "mrms_precip_in",
+]
 
 
 def main(argv):
@@ -19,13 +24,16 @@ def main(argv):
 
     with get_sqlalchemy_conn("coop") as pgconn:
         df = pd.read_sql(
-            """
-            SELECT day, precip, high, low from alldata WHERE station = %s and
-            year = %s ORDER by day ASC
-        """,
+            sql_helper("""
+            SELECT day, precip, high, low from alldata
+            WHERE station = :station and year = :year ORDER by day ASC
+        """),
             pgconn,
-            params=(station, year),
+            params={"station": station, "year": year},
             index_col="day",
+            parse_dates=[
+                "day",
+            ],
         )
 
     uri = (
@@ -33,12 +41,13 @@ def main(argv):
         f"{year}-12-31/{nt.sts[station]['lat']:.2f}/"
         f"{nt.sts[station]['lon']:.2f}/json"
     )
-    req = requests.get(uri, timeout=30)
-    j = json.loads(req.content)
+    resp = requests.get(uri, timeout=30)
+    resp.raise_for_status()
+    j = resp.json()
 
     idf = pd.DataFrame(j["data"])
     idf["day"] = pd.to_datetime(idf["date"])
-    idf.set_index("day", inplace=True)
+    idf = idf.set_index("day")
 
     idf["ob_high"] = df["high"]
     idf["ob_low"] = df["low"]
@@ -58,7 +67,7 @@ def main(argv):
     print(idf2[["ob_pday", "daily_precip_in", "precip_delta"]].tail())
 
     print("Monthly Totals")
-    print(idf[COLS].groupby(pd.Grouper(freq="M")).sum())
+    print(idf[COLS].groupby(pd.Grouper(freq="ME")).sum())
     print("sum")
     print(idf[COLS].sum())
 
