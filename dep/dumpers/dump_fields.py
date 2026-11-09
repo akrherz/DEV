@@ -18,7 +18,7 @@ def main():
         row_number() over (
             partition by o.field_id ORDER by huc12_fpath_num asc),
         p.huc12_fpath_num, h.huc12_code, f.landuse, f.management,
-        st_transform(o.geom, 4326) as geom, c.filepath as clifile,
+        st_transform(f.geom, 4326) as geom, c.filepath as clifile,
         g.mukey, f.rectangle_length_m, f.rectangle_width_m,
         f.rectangle_rotation_deg
         from flowpath_ofe o
